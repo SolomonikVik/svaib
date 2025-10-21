@@ -1,0 +1,67 @@
+# ============================================
+# SVAIB Project .gitignore
+# AI Startup | macOS | VS Code | Node.js
+# ============================================
+
+# --- macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# --- VS Code ---
+.vscode/settings.json
+.vscode/launch.json
+.vscode/*.code-workspace
+
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# --- Python (если используешь) ---
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+env/
+.venv
+
+# --- Переменные окружения (ВАЖНО!) ---
+.env
+.env.local
+.env.*.local
+*.env
+
+# --- API ключи и секреты ---
+**/secrets/
+**/config/secrets.json
+credentials.json
+*.pem
+*.pfx
+*.key
+
+# --- Логи ---
+*.log
+logs/
+*.log.*
+
+# --- Временные файлы ---
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# --- Build артефакты ---
+dist/
+build/
+*.zip
+*.tar.gz
+
+# --- Дополнительно ---
+.idea/
+*.swp
+*~
