@@ -39,7 +39,7 @@ svaib/
 
 ### GitHub (облачное хранилище)
 
-**URL:** https://github.com/solomonikvik/svaib  
+**URL:** https://github.com/SolomonikVik/svaib
 **Статус:** Публичный репозиторий (open-source)
 
 **Для чего:**
