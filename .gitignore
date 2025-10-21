@@ -10,9 +10,8 @@
 ._*
 
 # --- VS Code ---
-.vscode/settings.json
-.vscode/launch.json
-.vscode/*.code-workspace
+.vscode/
+**/.vscode/
 
 # --- Node.js ---
 node_modules/
