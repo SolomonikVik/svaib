@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>svaib — AI для бизнеса</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #00B4A6 0%, #008B7F 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1A1A1A;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 600px;
+        }
+        
+        .logo {
+            font-family: 'Sora', sans-serif;
+            font-size: 72px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+        }
+        
+        .tagline {
+            font-size: 24px;
+            color: #F0FDFB;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+        
+        .status {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status h2 {
+            font-family: 'Sora', sans-serif;
+            font-size: 28px;
+            color: #00B4A6;
+            margin-bottom: 16px;
+        }
+        
+        .status p {
+            font-size: 16px;
+            color: #6B7280;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #00B4A6 0%, #008B7F 100%);
+            color: white;
+            border-radius: 999px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        .pulse {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #10B981;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @media (max-width: 640px) {
+            .logo {
+                font-size: 48px;
+            }
+            .tagline {
+                font-size: 18px;
+            }
+            .status h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">svaib</div>
+        <div class="tagline">Продуктовая AI-мастерская для бизнеса</div>
+        
+        <div class="status">
+            <h2><span class="pulse"></span>Система запущена</h2>
+            <p>Git → GitHub → Vercel → svaib.com</p>
+            <p>Первый успешный деплой! 🚀</p>
+            <div class="badge">MVP в разработке</div>
+        </div>
+    </div>
+</body>
+</html>
