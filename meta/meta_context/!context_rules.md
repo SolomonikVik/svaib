@@ -1,7 +1,7 @@
 ---
 title: "Правила работы с контекстом проекта SVAIB"
 updated: 2025-11-07
-version: 4
+version: 5
 scope: "always"
 priority: critical
 ---
@@ -14,6 +14,7 @@ priority: critical
 - **!context_rules.md** - правила работы с контекстом, навигация по проекту
 - **!!custom_instructions.md** - кастомные инструкции для AI-ассистентов в проекте
 - **viktor_profile.md** - профиль Виктора Соломоника (компетенции, ценности, мотивация)
+- **nikita_profile.md** - профиль Никиты (со-основатель, продажи/маркетинг/коммерция)
 - **project_overview.md** - целостное описание проекта SVAIB
 - **execution_plan.md** - OKR и план исполнения проекта
 - **weekly_progress.md** - трекер "камней недели" и прогресса
@@ -45,6 +46,7 @@ priority: critical
 | Тип запроса | Приоритетные файлы | Дополнительные |
 |-------------|-------------------|----------------|
 | О создателе/Викторе | viktor_profile.md | project_overview.md |
+| О партнере/Никите/команде | nikita_profile.md | project_overview.md |
 | О проекте SVAIB | project_overview.md | viktor_profile.md |
 | Планирование/OKR | execution_plan.md | weekly_progress.md |
 | Еженедельный прогресс | weekly_progress.md | execution_plan.md |
