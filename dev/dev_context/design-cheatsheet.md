@@ -1,4 +1,18 @@
+---
+title: "Дизайн-система svaib: quick reference для разработки"
+updated: 2025-11-06
+version: 1
+scope: "product_development"
+priority: high
+---
+
 # svaib Design System — Quick Reference
+
+## Кратко
+
+Полная спецификация дизайн-системы svaib для быстрого копирования кода. Основана на Ocean Wave Hybrid версии. Включает цвета (бирюзовый primary + розовый accent для сайта), типографику (Sora для заголовков, Inter для остального), компоненты (кнопки, карточки, формы, badges) с готовыми CSS-сниппетами, спейсинг (кратно 4px), скругления, тени и CSS-переменные. Ключевое правило: в приложении только бирюзовый, розовый и градиент только на сайте.
+
+---
 
 ## 🎨 Основные цвета (копируй hex-коды)
 
@@ -230,8 +244,8 @@ font-weight: 600;
 20px  — var(--space-5)   или  1.25rem
 24px  — var(--space-6)   или  1.5rem
 32px  — var(--space-8)   или  2rem
-48px  — var(--space-12)  или  3rem
-64px  — var(--space-16)  или  4rem
+48px  — var(--space-12)  або  3rem
+64px  — var(--space-16)  або  4rem
 ```
 
 **Типичное использование:**
@@ -263,15 +277,15 @@ font-weight: 600;
 --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
 
 /* Standard (стандартная для карточек) */
---shadow-md: 0 1px 3px rgba(0, 0, 0, 0.02), 
+--shadow-md: 0 1px 3px rgba(0, 0, 0, 0.02),
              0 4px 16px rgba(0, 0, 0, 0.04);
 
 /* Elevated (при hover) */
---shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.02), 
+--shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.02),
              0 12px 24px rgba(0, 0, 0, 0.06);
 
 /* Extra (модалки) */
---shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.04), 
+--shadow-xl: 0 8px 16px rgba(0, 0, 0, 0.04),
              0 20px 40px rgba(0, 0, 0, 0.08);
 ```
 
@@ -286,40 +300,40 @@ font-weight: 600;
   --color-primary-hover: #008B7F;
   --color-primary-light: #E0F7F5;
   --color-primary-subtle: #F0FDFB;
-  
+
   /* Accent (Розовый) */
   --color-accent: #FF4D8D;
   --color-accent-hover: #E6548A;
   --color-accent-light: #FFE5ED;
-  
+
   /* Gradient */
   --gradient-hero: linear-gradient(135deg, #00B4A6 0%, #FF4D8D 100%);
-  
+
   /* Backgrounds */
   --bg-primary: #FAFBFC;
   --bg-secondary: #F3F4F6;
   --surface: #FFFFFF;
-  
+
   /* Text */
   --text-primary: #1A1A1A;
   --text-secondary: #6B7280;
   --text-tertiary: #9CA3AF;
   --text-on-primary: #FFFFFF;
-  
+
   /* Borders */
   --border: #E5E7EB;
   --border-light: #F3F4F6;
-  
+
   /* States */
   --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
   --info: #3B82F6;
-  
+
   /* Typography */
   --font-heading: 'Sora', sans-serif;
   --font-body: 'Inter', sans-serif;
-  
+
   /* Spacing */
   --space-1: 0.25rem;   /* 4px */
   --space-2: 0.5rem;    /* 8px */
@@ -328,14 +342,14 @@ font-weight: 600;
   --space-6: 1.5rem;    /* 24px */
   --space-8: 2rem;      /* 32px */
   --space-12: 3rem;     /* 48px */
-  
+
   /* Border Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-full: 9999px;
-  
+
   /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.02), 0 4px 16px rgba(0, 0, 0, 0.04);
@@ -414,7 +428,7 @@ transition: all 0.2s ease;
 
 ### Input
 ```html
-<input type="text" 
+<input type="text"
   placeholder="Введите текст"
   style="
     width: 100%;
@@ -499,7 +513,6 @@ Icon box:     48px square, 12px radius
 
 ---
 
-**Версия:** 1.0  
-**Дата:** 15.10.2025  
-**Автор:** Виктор Соломоник  
+**Дата финальной версии:** 15.10.2025
+**Автор:** Виктор Соломоник
 **Источник:** Ocean Wave Hybrid — финальная утверждённая версия

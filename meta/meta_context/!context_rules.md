@@ -1,6 +1,7 @@
 ---
 title: "Правила работы с контекстом проекта SVAIB"
-updated: 2025-10-21
+updated: 2025-11-07
+version: 4
 scope: "always"
 priority: critical
 ---
@@ -11,6 +12,7 @@ priority: critical
 
 ### Стратегия и управление
 - **!context_rules.md** - правила работы с контекстом, навигация по проекту
+- **!!custom_instructions.md** - кастомные инструкции для AI-ассистентов в проекте
 - **viktor_profile.md** - профиль Виктора Соломоника (компетенции, ценности, мотивация)
 - **project_overview.md** - целостное описание проекта SVAIB
 - **execution_plan.md** - OKR и план исполнения проекта
@@ -20,16 +22,21 @@ priority: critical
 - **storage_system.md** - система хранения проекта (Git + Google Drive)
 
 ### Продукт и клиенты
-- **mvp_overview.md** - описание MVP продукта svaib
+- **product_overview.md** - описание продукта svaib (управленческий AI для встреч)
+- **presentation_methodology.md** - методология "Презентажка" (управленческий фреймворк)
 - **implementation_AI_strategies.md** - стратегии внедрения AI в бизнесе
-- **smb_roles_tasks_research.md** - исследование задач для AI-ролей в малом бизнесе
 - **design-cheatsheet.md** - дизайн-система svaib
 
 ### Внутренняя мастерская
 - **agents_catalog.md** - каталог AI-агентов команды SVAIB
 
+### Исследования
+- **smb_meetings_research.md** - исследование планерок в малом бизнесе
+- **smb_roles_tasks_research.md** - исследование задач для AI-ролей в малом бизнесе
+
 ### Публичная активность
 - **osvaivaemsia_meetings.md** - интерактивные встречи с Никитой
+- **svaib_presentation_guide.md** - гайд по стилю презентаций svaib
 
 ---
 
@@ -50,11 +57,14 @@ priority: critical
 | Инвестиции и финансирование | investment_strategy.md | project_overview.md |
 | Оценка проекта | investment_strategy.md | execution_plan.md |
 | AI-агенты команды | agents_catalog.md | - |
-| Продукт svaib (MVP) | mvp_overview.md | project_overview.md |
+| Продукт svaib (описание) | product_overview.md | presentation_methodology.md |
+| Методология "Презентажка" | presentation_methodology.md | product_overview.md |
+| Исследование планерок в МСБ | smb_meetings_research.md | product_overview.md |
 | Стратегии внедрения AI | implementation_AI_strategies.md | - |
-| Задачи для ролей в SMB | smb_roles_tasks_research.md | mvp_overview.md |
+| Задачи для ролей в SMB | smb_roles_tasks_research.md | product_overview.md |
 | Дизайн-система | design-cheatsheet.md | - |
 | Встречи с Никитой | osvaivaemsia_meetings.md | - |
+| Стиль презентаций / Визуал слайдов | svaib_presentation_guide.md | - |
 | Организация файлов / Где что хранится | storage_system.md | technical_infrastructure.md |
 
 ---
@@ -68,6 +78,18 @@ priority: critical
 
 ---
 
+## Naming Conventions
+
+### Типы файлов
+- **Обычные файлы:** короткие названия (`project_overview.md`, `execution_plan.md`)
+- **Исследования:** с суффиксом `_research.md` → размещаются в `meta/research/`
+  - Примеры: `smb_meetings_research.md`, `competitors_research.md`
+- **Архивные версии:** с префиксом версии → размещаются в `meta/z_archive/`
+  - Формат: `{original_name}_v{N}_{reason}.md`
+  - Пример: `mvp_overview_v1_platform.md`
+
+---
+
 ## Правила обновления контекста
 
 ### Single Source of Truth
@@ -75,21 +97,16 @@ priority: critical
 - Другие файлы ссылаются на имя файла, но не копируют содержимое
 - При изменении → обновляем только один источник
 
-### Когда обновлять
-- **project_overview.md** - изменение стратегии/видения
-- **execution_plan.md** - корректировка OKR/планов
-- **weekly_progress.md** - еженедельно (итоги недели)
-- **technical_infrastructure.md** - изменение архитектуры/инфраструктуры
-- **investment_strategy.md** - обновление инвестиционной стратегии
-- **mvp_overview.md** - изменения в продукте
-- Остальные файлы - при появлении новой значимой информации
+### Правила обновления
 
-### Принципы обновления
-- Дата в YAML frontmatter (`updated:`) = дата последнего изменения
-- Краткость: только важный контекст, без воды
-- Консистентность между связанными файлами
-- Ссылки на другие файлы - только по именам, без путей
+**Когда обновлять файл:**
+1. **Прямое изменение** - появилась новая информация по теме файла
+2. **Устранение коллизии** - связанный файл изменился, текущий стал противоречить ему
+
+**Как обновлять:**
+- Инкремент `version` в YAML (было N → стало N+1)
+- Обновление `updated` на текущую дату
+- После обновления → проверка связанных файлов на новые коллизии
+- Ссылки между файлами только по именам, без путей
 
 ---
-
-**Последнее обновление:** 21 октября 2025

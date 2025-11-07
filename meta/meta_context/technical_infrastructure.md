@@ -1,6 +1,7 @@
 ---
 title: "Техническая инфраструктура проекта SVAIB"
-updated: 2025-10-17
+updated: 2025-11-06
+version: 1
 scope: "infrastructure"
 priority: critical
 ---
