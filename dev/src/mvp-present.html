@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Архитектура MVP svaib - Google-экосистема + AI">
+    <title>Архитектура MVP - svaib</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+
+    <style>
+        /* Architecture Diagram Styles */
+        .architecture-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--space-12) var(--space-6);
+        }
+
+        .diagram-wrapper {
+            position: relative;
+            min-height: 800px;
+            margin: var(--space-12) 0;
+        }
+
+        /* Architecture Blocks */
+        .arch-block {
+            position: absolute;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .arch-block:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--color-primary);
+        }
+
+        .arch-block.active {
+            border-color: var(--color-primary);
+            border-width: 3px;
+        }
+
+        .arch-block.fog {
+            border-style: dashed;
+            border-color: var(--text-tertiary);
+            opacity: 0.8;
+        }
+
+        /* Center Block (Презентация) */
+        .block-presentation {
+            top: 250px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            background: linear-gradient(135deg, rgba(0, 180, 166, 0.05) 0%, rgba(255, 77, 141, 0.05) 100%);
+            border-color: var(--color-primary);
+            border-width: 3px;
+        }
+
+        /* Surrounding Blocks */
+        .block-context {
+            top: 80px;
+            left: 20%;
+            width: 240px;
+        }
+
+        .block-metrics {
+            top: 80px;
+            right: 20%;
+            width: 240px;
+        }
+
+        .block-tasks {
+            top: 450px;
+            left: 15%;
+            width: 240px;
+        }
+
+        .block-transcription {
+            top: 450px;
+            right: 15%;
+            width: 240px;
+        }
+
+        /* AI Layer Block */
+        .block-ai {
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            background: linear-gradient(135deg, rgba(0, 180, 166, 0.1) 0%, rgba(255, 77, 141, 0.1) 100%);
+        }
+
+        .block-icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: var(--space-3);
+        }
+
+        .block-title {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+            text-align: center;
+        }
+
+        .block-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: var(--space-3);
+        }
+
+        .block-status {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        /* SVG Lines/Arrows */
+        .diagram-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .diagram-wrapper > .arch-block {
+            z-index: 10;
+        }
+
+        .flow-line {
+            stroke: var(--color-primary);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 8, 4;
+            animation: flow 3s linear infinite;
+        }
+
+        .flow-line.fog-line {
+            stroke: var(--text-tertiary);
+            opacity: 0.4;
+        }
+
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -24;
+            }
+        }
+
+        /* Animated dots on lines */
+        .flow-dot {
+            fill: var(--color-primary);
+            animation: flowDot 4s ease-in-out infinite;
+        }
+
+        @keyframes flowDot {
+            0%, 100% {
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-6);
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: var(--space-8);
+            box-shadow: var(--shadow-xl);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-close {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-icon {
+            font-size: 64px;
+            text-align: center;
+            margin: var(--space-4) 0;
+        }
+
+        .modal-title {
+            font-family: var(--font-heading);
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            text-align: center;
+        }
+
+        .modal-description {
+            font-size: 16px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .modal-description ul {
+            margin: var(--space-4) 0;
+            padding-left: var(--space-6);
+        }
+
+        .modal-description li {
+            margin-bottom: var(--space-2);
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-8);
+            margin-top: var(--space-12);
+            padding: var(--space-6);
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 14px;
+        }
+
+        .legend-icon {
+            font-size: 24px;
+        }
+
+        .legend-box {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .legend-box.clear {
+            border: 2px solid var(--color-primary);
+            background: rgba(0, 180, 166, 0.1);
+        }
+
+        .legend-box.fog {
+            border: 2px dashed var(--text-tertiary);
+            background: rgba(156, 163, 175, 0.1);
+        }
+
+        /* Principles Cards */
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-6);
+            margin-top: var(--space-12);
+        }
+
+        .principle-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-6);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .principle-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--color-primary);
+        }
+
+        .principle-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-hero);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: var(--space-4);
+        }
+
+        .principle-title {
+            font-family: var(--font-heading);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--space-3);
+            color: var(--text-primary);
+        }
+
+        .principle-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .diagram-wrapper {
+                min-height: 1000px;
+            }
+
+            .block-context {
+                left: 10%;
+                top: 60px;
+            }
+
+            .block-metrics {
+                right: 10%;
+                top: 60px;
+            }
+
+            .block-presentation {
+                top: 320px;
+            }
+
+            .block-tasks {
+                left: 10%;
+                top: 580px;
+            }
+
+            .block-transcription {
+                right: 10%;
+                top: 580px;
+            }
+
+            .block-ai {
+                bottom: 30px;
+                width: 80%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .diagram-wrapper {
+                min-height: 1400px;
+            }
+
+            .arch-block {
+                position: relative !important;
+                left: 0 !important;
+                right: 0 !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                transform: none !important;
+                margin: var(--space-4) auto;
+                width: 100% !important;
+                max-width: 300px;
+            }
+
+            .diagram-svg {
+                display: none;
+            }
+
+            .legend {
+                flex-direction: column;
+                gap: var(--space-4);
+            }
+
+            .principles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="app-header">
+        <div class="container">
+            <a href="index.html" class="logo">svaib</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero" style="padding: var(--space-12) 0;">
+            <div class="container-narrow">
+                <h1 class="hero-title">Архитектура MVP: Как это работает</h1>
+                <p class="hero-subtitle">
+                    Google-экосистема + AI = прозрачность и контроль для клиента
+                </p>
+            </div>
+        </section>
+
+        <!-- Architecture Diagram -->
+        <section class="architecture-container">
+            <div class="diagram-wrapper">
+                <!-- SVG for flow lines -->
+                <svg class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Lines from surrounding blocks to AI -->
+                    <path id="line-context-ai" class="flow-line" d="M 300 200 L 450 650" />
+                    <path id="line-metrics-ai" class="flow-line" d="M 900 200 L 750 650" />
+                    <path id="line-tasks-ai" class="flow-line" d="M 300 550 L 450 650" />
+                    <path id="line-transcription-ai" class="flow-line fog-line" d="M 900 550 L 750 650" />
+
+                    <!-- Lines from AI back to blocks -->
+                    <path id="line-ai-presentation" class="flow-line" d="M 600 650 L 600 450" />
+                    <path id="line-ai-context" class="flow-line" d="M 500 650 L 350 250" />
+                    <path id="line-ai-metrics" class="flow-line" d="M 700 650 L 850 250" />
+
+                    <!-- Animated dots -->
+                    <circle class="flow-dot" r="4" cx="300" cy="200">
+                        <animateMotion dur="4s" repeatCount="indefinite" path="M 0 0 L 150 450" />
+                    </circle>
+                    <circle class="flow-dot" r="4" cx="900" cy="200">
+                        <animateMotion dur="4s" repeatCount="indefinite" path="M 0 0 L -150 450" />
+                    </circle>
+                </svg>
+
+                <!-- Block 2: Контекст -->
+                <div class="arch-block block-context" data-block="context">
+                    <div class="block-icon">📝</div>
+                    <div class="block-title">Контекст</div>
+                    <div class="block-subtitle">Google Docs (MD файлы)</div>
+                    <div class="block-status">✅</div>
+                </div>
+
+                <!-- Block 3: Метрики -->
+                <div class="arch-block block-metrics" data-block="metrics">
+                    <div class="block-icon">📈</div>
+                    <div class="block-title">Метрики</div>
+                    <div class="block-subtitle">Google Sheets</div>
+                    <div class="block-status">✅</div>
+                </div>
+
+                <!-- Block 1: Презентация (центр) -->
+                <div class="arch-block block-presentation" data-block="presentation">
+                    <div class="block-icon">📊</div>
+                    <div class="block-title">Презентация</div>
+                    <div class="block-subtitle">Google Slides — центральный интерфейс</div>
+                    <div class="block-status">✅</div>
+                </div>
+
+                <!-- Block 4: Задачи -->
+                <div class="arch-block block-tasks" data-block="tasks">
+                    <div class="block-icon">✅</div>
+                    <div class="block-title">Задачи</div>
+                    <div class="block-subtitle">Google Sheets</div>
+                    <div class="block-status">✅</div>
+                </div>
+
+                <!-- Block 5: Транскрибация -->
+                <div class="arch-block block-transcription fog" data-block="transcription">
+                    <div class="block-icon">🎤</div>
+                    <div class="block-title">Транскрибация</div>
+                    <div class="block-subtitle">Запись встреч</div>
+                    <div class="block-status">🌫️</div>
+                </div>
+
+                <!-- Block 6: AI-слой -->
+                <div class="arch-block block-ai fog" data-block="ai">
+                    <div class="block-icon">🤖</div>
+                    <div class="block-title">AI-слой</div>
+                    <div class="block-subtitle">Обработка данных</div>
+                    <div class="block-status">🌫️</div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box clear">✅</div>
+                    <div>
+                        <strong>Ясно и понятно</strong><br>
+                        <span style="color: var(--text-secondary); font-size: 13px;">Технология определена</span>
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box fog">🌫️</div>
+                    <div>
+                        <strong>В тумане</strong><br>
+                        <span style="color: var(--text-secondary); font-size: 13px;">Требует технического ресерча</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Principles -->
+            <div style="margin-top: var(--space-16);">
+                <h2 class="text-center" style="margin-bottom: var(--space-8);">Принципы архитектуры</h2>
+                <div class="principles-grid">
+                    <div class="principle-card">
+                        <div class="principle-number">1</div>
+                        <div class="principle-title">Место под всё есть</div>
+                        <div class="principle-text">Каркас продуман целостно — каждый элемент на своём месте</div>
+                    </div>
+                    <div class="principle-card">
+                        <div class="principle-number">2</div>
+                        <div class="principle-title">Google-экосистема</div>
+                        <div class="principle-text">Легко давать доступы, привычный интерфейс для всех</div>
+                    </div>
+                    <div class="principle-card">
+                        <div class="principle-number">3</div>
+                        <div class="principle-title">Прозрачность</div>
+                        <div class="principle-text">Клиент видит и может редактировать всё в реальном времени</div>
+                    </div>
+                    <div class="principle-card">
+                        <div class="principle-number">4</div>
+                        <div class="principle-title">AI как дополнение</div>
+                        <div class="principle-text">Не заменяет, а усиливает работу команды</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: var(--surface); border-top: 1px solid var(--border); padding: 32px 0; margin-top: 64px;">
+        <div class="container text-center">
+            <p style="color: var(--text-tertiary); font-size: 14px; margin: 0;">
+                © 2025 svaib. Архитектура MVP версия 1.0
+            </p>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <div class="modal-icon" id="modal-icon">📊</div>
+            <h2 class="modal-title" id="modal-title">Заголовок</h2>
+            <div class="modal-description" id="modal-description">
+                Описание
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Block data with detailed descriptions
+        const blockData = {
+            presentation: {
+                icon: '📊',
+                title: 'Презентация',
+                description: `
+                    <p><strong>Google Slides — центральный интерфейс управления</strong></p>
+                    <p>Презентация — это единая точка входа для всех стейкхолдеров. Здесь собрана вся информация о проекте и встрече.</p>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Основные функции:</h4>
+                    <ul>
+                        <li><strong>Структура встречи:</strong> Повестка, цели, время</li>
+                        <li><strong>Метрики в реальном времени:</strong> Графики и показатели автоматически подтягиваются из Sheets</li>
+                        <li><strong>Кнопка транскрибации:</strong> Запуск записи и расшифровки встречи</li>
+                        <li><strong>AI-инсайты:</strong> Автоматически добавляются результаты анализа встреч</li>
+                        <li><strong>Action items:</strong> Ссылки на задачи с ответственными и сроками</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>Преимущество:</strong> Все участники видят одну и ту же информацию в знакомом интерфейсе Google Slides.</p>
+                `
+            },
+            context: {
+                icon: '📝',
+                title: 'Контекст компании',
+                description: `
+                    <p><strong>Google Docs с Markdown-файлами</strong></p>
+                    <p>Здесь хранится вся ключевая информация о компании, которая нужна для работы AI и команды.</p>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Что включено:</h4>
+                    <ul>
+                        <li><strong>Миссия и видение:</strong> Зачем существует компания, куда движемся</li>
+                        <li><strong>OKR (цели и ключевые результаты):</strong> Квартальные и годовые цели</li>
+                        <li><strong>Организационная структура:</strong> Кто за что отвечает</li>
+                        <li><strong>Глоссарий терминов:</strong> Специфичные для бизнеса понятия</li>
+                        <li><strong>Процессы и регламенты:</strong> Как мы работаем</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>Формат:</strong> Markdown для удобства редактирования и версионирования. AI читает этот контекст для персонализированных ответов.</p>
+                `
+            },
+            metrics: {
+                icon: '📈',
+                title: 'Метрики и показатели',
+                description: `
+                    <p><strong>Google Sheets — живые данные бизнеса</strong></p>
+                    <p>Ключевые показатели эффективности (KPI), которые обновляются в реальном времени.</p>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Типы метрик:</h4>
+                    <ul>
+                        <li><strong>Финансовые:</strong> Выручка, прибыль, расходы</li>
+                        <li><strong>Операционные:</strong> Количество клиентов, конверсии, LTV</li>
+                        <li><strong>Продуктовые:</strong> MAU, retention, engagement</li>
+                        <li><strong>Командные:</strong> Velocity, время на задачу, загрузка</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>Интеграция:</strong> Графики автоматически вставляются в презентации. AI анализирует тренды и находит аномалии.</p>
+                `
+            },
+            tasks: {
+                icon: '✅',
+                title: 'Задачи и Action Items',
+                description: `
+                    <p><strong>Google Sheets — трекинг выполнения</strong></p>
+                    <p>Все задачи, вытекающие из встреч и работы, собраны в одном месте с чёткими ответственными и дедлайнами.</p>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Структура задач:</h4>
+                    <ul>
+                        <li><strong>Название задачи:</strong> Что нужно сделать</li>
+                        <li><strong>Ответственный:</strong> Кто выполняет</li>
+                        <li><strong>Дедлайн:</strong> До какого числа</li>
+                        <li><strong>Статус:</strong> Новая / В работе / Готово / Заблокирована</li>
+                        <li><strong>Контекст:</strong> Ссылка на встречу или документ</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;"><strong>AI-фичи:</strong> Автоматическое извлечение задач из транскрипции встреч, напоминания, приоритизация.</p>
+                `
+            },
+            transcription: {
+                icon: '🎤',
+                title: 'Транскрибация встреч',
+                description: `
+                    <p><strong>Автоматическая запись и расшифровка</strong></p>
+                    <p>🌫️ <em>Технология в процессе определения</em></p>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Что планируется:</h4>
+                    <ul>
+                        <li><strong>Запись аудио/видео:</strong> Встреч онлайн и офлайн</li>
+                        <li><strong>Транскрипция в текст:</strong> С распознаванием спикеров</li>
+                        <li><strong>Перевод:</strong> Для международных встреч</li>
+                        <li><strong>Тайм-коды:</strong> Быстрый переход к ключевым моментам</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Возможные решения:</h4>
+                    <p>Google Meet API + Speech-to-Text, Otter.ai, Assembly.ai, или кастомное решение на Whisper.</p>
+
+                    <p style="margin-top: 20px;"><strong>Требует:</strong> Технический ресерч, тестирование точности, интеграция с Google Meet.</p>
+                `
+            },
+            ai: {
+                icon: '🤖',
+                title: 'AI-слой обработки',
+                description: `
+                    <p><strong>Центральный мозг системы</strong></p>
+                    <p>🌫️ <em>Архитектура в процессе проработки</em></p>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Основные задачи AI:</h4>
+                    <ul>
+                        <li><strong>Анализ встреч:</strong> Извлечение ключевых решений и задач</li>
+                        <li><strong>Генерация инсайтов:</strong> Тренды, риски, рекомендации</li>
+                        <li><strong>Обновление документов:</strong> Автоматическое внесение изменений</li>
+                        <li><strong>Управление данными:</strong> Синхронизация между Docs, Sheets, Slides</li>
+                        <li><strong>Контекстные ответы:</strong> На вопросы команды с учётом истории</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px; color: var(--text-primary);">Технологический стек (варианты):</h4>
+                    <p>Claude API, LangChain, векторные БД (Pinecone/Weaviate), Google Apps Script для интеграций.</p>
+
+                    <p style="margin-top: 20px;"><strong>Требует:</strong> Проектирование промптов, настройка RAG, тестирование качества ответов.</p>
+                `
+            }
+        };
+
+        // Open modal with block details
+        function openModal(blockId) {
+            const data = blockData[blockId];
+            if (!data) return;
+
+            document.getElementById('modal-icon').textContent = data.icon;
+            document.getElementById('modal-title').textContent = data.title;
+            document.getElementById('modal-description').innerHTML = data.description;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        // Add click handlers to blocks
+        document.addEventListener('DOMContentLoaded', function() {
+            const blocks = document.querySelectorAll('.arch-block');
+            blocks.forEach(block => {
+                block.addEventListener('click', function() {
+                    const blockId = this.getAttribute('data-block');
+                    openModal(blockId);
+                });
+            });
+
+            // Close modal on outside click
+            document.getElementById('modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+
+            // Add entrance animation to blocks
+            setTimeout(() => {
+                blocks.forEach((block, index) => {
+                    setTimeout(() => {
+                        block.style.opacity = '0';
+                        block.style.transform = 'translateY(20px)';
+                        block.style.transition = 'all 0.5s ease';
+                        setTimeout(() => {
+                            block.style.opacity = '1';
+                            block.style.transform = 'translateY(0)';
+                        }, 50);
+                    }, index * 100);
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
