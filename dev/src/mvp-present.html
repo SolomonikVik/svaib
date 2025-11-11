@@ -23,7 +23,7 @@
         .diagram-wrapper {
             position: relative;
             width: 100%;
-            height: 700px;
+            height: 750px;
             margin: var(--space-8) 0;
         }
 
@@ -98,9 +98,10 @@
         }
 
         .block-ai {
-            bottom: 0;
+            bottom: 30px;
             left: 100px;
             right: 100px;
+            padding: var(--space-3) var(--space-5) !important;
             background: linear-gradient(135deg, rgba(0, 180, 166, 0.1) 0%, rgba(255, 77, 141, 0.1) 100%);
             z-index: 10;
         }
@@ -252,6 +253,26 @@
 
         .modal-description li {
             margin-bottom: var(--space-2);
+        }
+
+        /* Example link button */
+        .example-link {
+            display: inline-block;
+            padding: 12px 24px;
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-md);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .example-link:hover {
+            background: var(--color-primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         /* Legend */
@@ -582,6 +603,12 @@
                     </ul>
 
                     <p style="margin-top: 20px;"><strong>Преимущество:</strong> Все участники видят одну и ту же информацию в знакомом интерфейсе Google Slides.</p>
+
+                    <div style="margin-top: 24px; text-align: center;">
+                        <a href="https://drive.google.com/drive/folders/1oqL07qpjkkQomXeOajJ6RfUsnITgAgxC?usp=share_link" target="_blank" class="example-link">
+                            Посмотреть пример
+                        </a>
+                    </div>
                 `
             },
             context: {
