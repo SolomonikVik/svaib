@@ -54,7 +54,7 @@
 
         /* Specific Block Positions - Centered layout */
         .block-presentation {
-            top: 250px;
+            top: 220px;
             left: 50%;
             transform: translateX(-50%);
             width: 280px;
@@ -62,6 +62,11 @@
             border-color: var(--color-primary);
             border-width: 3px;
             z-index: 10;
+        }
+
+        /* Fix hover for centered blocks */
+        .block-presentation:hover {
+            transform: translateX(-50%) translateY(-4px);
         }
 
         .block-context {
@@ -96,9 +101,15 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 450px;
+            width: 90%;
+            max-width: 1000px;
             background: linear-gradient(135deg, rgba(0, 180, 166, 0.1) 0%, rgba(255, 77, 141, 0.1) 100%);
             z-index: 10;
+        }
+
+        /* Fix hover for AI layer */
+        .block-ai:hover {
+            transform: translateX(-50%) translateY(-4px);
         }
 
         .block-icon {
@@ -432,16 +443,34 @@
             <div class="diagram-wrapper">
                 <!-- SVG for flow lines -->
                 <svg class="diagram-svg" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Lines from blocks to AI (downward) -->
-                    <line class="flow-line" x1="210" y1="140" x2="450" y2="620" />
-                    <line class="flow-line" x1="990" y1="140" x2="750" y2="620" />
-                    <line class="flow-line" x1="190" y1="540" x2="450" y2="620" />
-                    <line class="flow-line fog-line" x1="1010" y1="540" x2="750" y2="620" />
+                    <!-- Lines from blocks to Presentation -->
+                    <!-- Context to Presentation (first third top) -->
+                    <line class="flow-line" x1="210" y1="210" x2="520" y2="220" />
 
-                    <!-- Lines from AI to presentation and other blocks (upward) -->
-                    <line class="flow-line" x1="600" y1="620" x2="600" y2="380" />
-                    <line class="flow-line" x1="500" y1="620" x2="250" y2="180" />
-                    <line class="flow-line" x1="700" y1="620" x2="950" y2="180" />
+                    <!-- Metrics to Presentation (third third top) -->
+                    <line class="flow-line" x1="990" y1="210" x2="680" y2="220" />
+
+                    <!-- Tasks to Presentation (first third bottom) -->
+                    <line class="flow-line" x1="190" y1="450" x2="520" y2="400" />
+
+                    <!-- Transcription to Presentation (third third bottom) - foggy -->
+                    <line class="flow-line fog-line" x1="1010" y1="450" x2="680" y2="400" />
+
+                    <!-- Decorative pink arrows near AI layer -->
+                    <!-- Left arrow up -->
+                    <polygon fill="#FF4D8D" opacity="0.7" points="100,640 110,620 120,640" />
+                    <!-- Left arrow down -->
+                    <polygon fill="#FF4D8D" opacity="0.7" points="100,660 110,680 120,660" />
+
+                    <!-- Right arrow up -->
+                    <polygon fill="#FF4D8D" opacity="0.7" points="1080,640 1090,620 1100,640" />
+                    <!-- Right arrow down -->
+                    <polygon fill="#FF4D8D" opacity="0.7" points="1080,660 1090,680 1100,660" />
+
+                    <!-- Center-left arrow up -->
+                    <polygon fill="#FF4D8D" opacity="0.7" points="400,640 410,620 420,640" />
+                    <!-- Center-right arrow up -->
+                    <polygon fill="#FF4D8D" opacity="0.7" points="780,640 790,620 800,640" />
                 </svg>
 
                 <!-- Block 2: Контекст -->
