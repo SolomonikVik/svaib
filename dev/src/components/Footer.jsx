@@ -17,22 +17,12 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <a
-                  href="https://t.me/NikMer"
+                  href="https://t.me/svaib_lab"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-text-secondary hover:text-primary transition-colors"
                 >
-                  Telegram: @NikMer
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://t.me/osvaivaemsa"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-text-secondary hover:text-primary transition-colors"
-                >
-                  Канал: освAIваемся
+                  Канал проекта: освAIваемся
                 </a>
               </li>
             </ul>

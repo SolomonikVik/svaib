@@ -35,10 +35,11 @@ export default function Architecture() {
     <section className="py-24 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-4xl font-bold text-center mb-4 font-heading">
-          Как работает система
+          Как работает AI-менеджмент
         </h2>
         <p className="text-xl text-text-secondary text-center mb-16 max-w-3xl mx-auto">
-          Интерактивная архитектура AI-системы управления встречами
+          Управляем целями, метриками, задачами, встречами<br />
+          и держим все в AI-памяти.
         </p>
 
         {/* Канвас с блоками */}

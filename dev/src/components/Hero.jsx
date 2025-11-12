@@ -9,7 +9,7 @@ export default function Hero() {
         </h1>
         <p className="text-xl md:text-2xl text-text-secondary mb-8 max-w-3xl mx-auto font-medium">
           Структурированные встречи + AI-ассистент =<br />
-          порядок в управлении с первой недели
+          наведут порядок в управлении за вас
         </p>
         <a
           href="https://t.me/NikMer"
@@ -17,7 +17,7 @@ export default function Hero() {
           rel="noopener noreferrer"
           className="inline-block gradient-cta text-white px-6 py-3 rounded-lg font-semibold text-base shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 hover:scale-105"
         >
-          Обсудить внедрение
+          Обсудить запуск
         </a>
       </div>
     </section>

@@ -5,7 +5,7 @@ export const blocks = [
   {
     id: 'presentation',
     title: 'Презентация',
-    subtitle: 'Google Slides — центр управления встречами',
+    subtitle: 'Центр встреч, где структура появляется сама.',
     icon: 'Presentation',
     category: 'central',
     position: { x: 32, y: 18 },
@@ -25,7 +25,7 @@ export const blocks = [
   {
     id: 'ai-assistant',
     title: 'AI-ассистент',
-    subtitle: 'Web/Telegram — диалог с контекстом компании',
+    subtitle: 'Помнит, что говорили, и напоминает, когда нужно.',
     icon: 'Bot',
     category: 'central',
     position: { x: 68, y: 18 },
@@ -45,7 +45,7 @@ export const blocks = [
   {
     id: 'context',
     title: 'Контекст компании',
-    subtitle: 'Google Docs — память вашего бизнеса',
+    subtitle: 'Вся информация о бизнесе - в Google Docs',
     icon: 'FileText',
     category: 'data',
     position: { x: 20, y: 55 },
@@ -66,7 +66,7 @@ export const blocks = [
   {
     id: 'metrics',
     title: 'Метрики',
-    subtitle: 'Google Sheets — живые данные бизнеса',
+    subtitle: 'Данные обновляются без ручного труда.',
     icon: 'TrendingUp',
     category: 'data',
     position: { x: 40, y: 55 },
@@ -106,7 +106,7 @@ export const blocks = [
   {
     id: 'transcription',
     title: 'Протоколы',
-    subtitle: 'Автоматическая запись, расшифровка, саммаризация встреч',
+    subtitle: 'Встречи превращаются в память компании.',
     icon: 'Mic',
     category: 'data',
     position: { x: 80, y: 55 },
@@ -127,7 +127,7 @@ export const blocks = [
   {
     id: 'ai-layer',
     title: 'AI-слой',
-    subtitle: 'Центральный мозг системы',
+    subtitle: 'Координирует всё — как мозг вашего управления.',
     icon: 'Cpu',
     category: 'processing',
     position: { x: 50, y: 85 },
