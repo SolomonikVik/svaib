@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-background text-text-primary font-body;
+  }
+
+  h1, h2, h3 {
+    @apply font-heading;
+  }
+}
+
+@layer utilities {
+  .gradient-cta {
+    background: linear-gradient(135deg, #00B4A6 0%, #FF4D8D 100%);
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #00B4A6 0%, #FF4D8D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Анимация потока данных для SVG линий */
+  .animate-flow {
+    animation: flow 4s linear infinite;
+  }
+
+  @keyframes flow {
+    0% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: 20;
+    }
+  }
+
+  /* Анимации для модального окна */
+  .animate-in {
+    animation-fill-mode: both;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .zoom-in-95 {
+    animation: zoomIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+}
