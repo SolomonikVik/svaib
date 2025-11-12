@@ -37,13 +37,21 @@ export default function ArchBlock({ block, onClick }) {
 
   return (
     <div
-      className={`absolute ${sizeClasses[block.size]} ${categoryStyles[block.category]} rounded-lg ${padding} cursor-pointer transition-all hover:scale-105 hover:shadow-xl shadow-md`}
+      className={`absolute ${sizeClasses[block.size]} ${categoryStyles[block.category]} rounded-lg ${padding} cursor-pointer transition-all duration-200 hover:scale-105 shadow-md group`}
       style={{
         left: `${block.position.x}%`,
         top: `${block.position.y}%`,
         transform: 'translate(-50%, -50%)',
         zIndex: 10,
         ...centralGradientStyle
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 180, 166, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1)';
+        e.currentTarget.style.transform = 'translate(-50%, -52%) scale(1.05)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = '';
+        e.currentTarget.style.transform = 'translate(-50%, -50%)';
       }}
       onClick={() => onClick(block)}
     >
