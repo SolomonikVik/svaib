@@ -1,6 +1,6 @@
 export default function Hero() {
   return (
-    <section className="relative flex items-center justify-center px-6 py-16 bg-gradient-to-br from-primary-subtle via-white to-accent-light">
+    <section className="relative flex items-center justify-center px-6 pt-28 pb-16 bg-gradient-to-br from-primary-subtle via-white to-accent-light">
       <div className="max-w-5xl mx-auto text-center">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 gradient-text leading-tight">
           AI-система управления,

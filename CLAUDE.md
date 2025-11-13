@@ -25,10 +25,24 @@ svaib/
 │
 ├── dev/           — Development codebase
 │   ├── src/       — ⚠️ DEPLOYED TO VERCEL (current production)
-│   │   ├── index.html — Main landing page with multi-screen navigation
-│   │   ├── app.js — Application logic (state management, screen navigation)
-│   │   ├── data.js — Business data (industries, AI roles, task templates)
-│   │   └── styles.css — Design system styles
+│   │   ├── app/   — Next.js 16 App Router
+│   │   │   ├── page.js — Main landing page
+│   │   │   ├── layout.js — Root layout with fonts
+│   │   │   └── globals.css — Global styles and design tokens
+│   │   ├── components/  — React components
+│   │   │   ├── Header.jsx — Logo svaib (fixed top-right)
+│   │   │   ├── Hero.jsx — Hero section with gradient CTA
+│   │   │   ├── Architecture.jsx — Interactive architecture diagram (desktop) + card list (mobile)
+│   │   │   ├── ArchBlock.jsx — Individual architecture block component
+│   │   │   ├── ConnectionLines.jsx — SVG connections between blocks
+│   │   │   ├── BlockModal.jsx — Modal with detailed block information
+│   │   │   ├── CTA.jsx — Call-to-action section
+│   │   │   └── Footer.jsx — Footer with contacts and links
+│   │   ├── data/  — Data sources
+│   │   │   └── architectureData.js — Architecture blocks and connections
+│   │   ├── archive/  — Old HTML/JS/CSS version (preserved)
+│   │   ├── package.json — Next.js 16.0.1, React 19.2.0
+│   │   └── next.config.js — Next.js configuration
 │   ├── dev_context/
 │   │   └── design-cheatsheet.md — Design system reference (#00B4A6 primary, #FF4D8D accent)
 │   └── prompts/   — Technical prompts (CTO, Dify copilot)
@@ -42,31 +56,52 @@ svaib/
 
 ## Current Application Architecture
 
-**Tech Stack:** Vanilla HTML/JS/CSS (статический сайт)
+**Tech Stack:** Next.js 16.0.1 with App Router, React 19.2.0, Tailwind CSS
 **Deployment:** Vercel auto-deploy from `dev/src/` on push to main
 **Live URL:** https://svaib.com
 
-### Application Flow
+### Application Structure
 
-1. **Landing Screen** (`index.html#landing`) — Hero with CTA
-2. **Industries Screen** — User selects industry (e.g., "Гостиничный бизнес")
-3. **Roles Screen** — User selects AI role (e.g., "AI-помощник руководителя")
-4. **Tasks Screen** — User selects task, gets ready-to-use AI prompt
+Single-page landing with sections:
+1. **Header** - Fixed logo `svaib` (top-right): "sv" and "b" in teal, "ai" in pink
+2. **Hero** - Main heading, subtitle, CTA button to Telegram
+3. **Architecture** - Interactive diagram showing AI-management system:
+   - **Desktop:** Canvas with positioned blocks and SVG connections
+   - **Mobile:** Simple card list (responsive adaptation)
+4. **CTA** - Call-to-action section
+5. **Footer** - Contacts, links, archive access
+
+### Interactive Features
+
+**Architecture Diagram (Desktop):**
+- 7 interactive blocks positioned on canvas (800px height)
+- SVG lines showing data flow between blocks
+- Hover effects: teal shadow + lift animation
+- Click opens modal with detailed information
+- Hint text: "Нажмите на блок, чтобы узнать подробности"
+
+**Mobile Adaptation:**
+- Header logo: smaller (text-2xl vs text-3xl)
+- Architecture: hides canvas, shows simple card list
+- All sections responsive with Tailwind breakpoints
 
 ### State Management
 
-`AppState` object in `app.js` tracks:
-- `currentScreen` — Current active screen
-- `selectedIndustry` — Selected industry from data.js
-- `selectedRole` — Selected AI role
-- `selectedTask` — Selected task template
+React hooks in `Architecture.jsx`:
+- `activeBlock` — Currently selected block for modal
+- `containerSize` — Canvas dimensions (tracked with useRef + useEffect)
+- Modal opens on block click, closes on backdrop/X click
 
 ### Data Structure
 
-`data.js` contains:
-- `APP_DATA.industries[]` — Industry catalog with roles
-- Each role has `tasks[]` with ready-to-use AI prompts
-- Prompt templates include context, instructions, output format
+`architectureData.js` contains:
+- `blocks[]` — Array of 7 architecture blocks:
+  - Presentation, AI-ассистент (central)
+  - Контекст, Метрики, Задачи, Протоколы (data)
+  - AI-слой (processing)
+- Each block: title, subtitle, icon, position, size, category, description, features, etc.
+- `connections[]` — SVG line connections between blocks
+- `blockSizes` — Pixel dimensions for each block type
 
 ## Design System
 
@@ -88,8 +123,8 @@ Full design specs: [dev/dev_context/design-cheatsheet.md](dev/dev_context/design
 
 ### Making Changes
 
-1. Edit files in `dev/src/`
-2. Test locally (use Live Server or `python3 -m http.server 8000`)
+1. Edit files in `dev/src/` (components, data, styles)
+2. Test locally: `cd dev/src && npm run dev` (http://localhost:3000)
 3. Commit changes: `git add . && git commit -m "description"`
 4. Push to GitHub: `git push`
 5. Vercel auto-deploys to https://svaib.com
@@ -98,11 +133,15 @@ Full design specs: [dev/dev_context/design-cheatsheet.md](dev/dev_context/design
 
 ```bash
 cd dev/src
-python3 -m http.server 8000
-# Open http://localhost:8000
+npm install      # First time only
+npm run dev      # Start Next.js dev server
+# Open http://localhost:3000
 ```
 
-Or use VS Code Live Server extension.
+**Important:**
+- Hot reload enabled, changes visible immediately
+- Check both desktop and mobile views (responsive design)
+- Test interactive features (block clicks, modal, hover effects)
 
 ## Slash Commands
 
@@ -119,13 +158,11 @@ Or use VS Code Live Server extension.
    - pub/ — Public materials (separate workflow)
 4. **Open source:** All code will be public on GitHub
 5. **Weekly "Камни недели":** Focus on concrete weekly results
-
-## Planned Migration
-
-**Next.js migration** planned:
-- Create `dev/next-app/` for new Next.js codebase
-- Keep `dev/src/` running until migration complete
-- Parallel deployment strategy (old + new versions)
+6. **Next.js best practices:**
+   - Use 'use client' for interactive components
+   - Keep components small and focused
+   - Test both desktop and mobile (responsive required)
+   - Old HTML/JS/CSS version preserved in `dev/src/archive/`
 
 ## Key Principles
 

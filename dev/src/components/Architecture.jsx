@@ -34,26 +34,26 @@ export default function Architecture() {
   return (
     <section className="py-24 px-6 bg-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-4 font-heading">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 font-heading">
           Как работает AI-менеджмент
         </h2>
-        <p className="text-xl text-text-secondary text-center mb-8 max-w-3xl mx-auto">
+        <p className="text-lg md:text-xl text-text-secondary text-center mb-8 max-w-3xl mx-auto">
           Управляем целями, метриками, задачами, встречами<br />
           и держим все в AI-памяти.
         </p>
 
-        {/* Подсказка */}
-        <div className="flex items-center justify-center gap-2 mb-6 text-sm text-text-secondary">
+        {/* Подсказка - только на десктопе */}
+        <div className="hidden md:flex items-center justify-center gap-2 mb-6 text-sm text-text-secondary">
           <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
           </svg>
           <span>Нажмите на блок, чтобы узнать подробности</span>
         </div>
 
-        {/* Канвас с блоками */}
+        {/* Канвас с блоками - только на десктопе */}
         <div
           ref={containerRef}
-          className="relative w-full h-[800px] bg-background rounded-xl border border-border overflow-hidden"
+          className="hidden md:block relative w-full h-[800px] bg-background rounded-xl border border-border overflow-hidden"
         >
           {/* SVG связи (позади блоков) */}
           <ConnectionLines containerWidth={containerSize.width} containerHeight={containerSize.height} />
@@ -65,6 +65,24 @@ export default function Architecture() {
               block={block}
               onClick={handleBlockClick}
             />
+          ))}
+        </div>
+
+        {/* Мобильная версия - простые карточки */}
+        <div className="md:hidden grid gap-4">
+          {blocks.map((block) => (
+            <div
+              key={block.id}
+              onClick={() => handleBlockClick(block)}
+              className="bg-white border-2 border-primary rounded-lg p-5 cursor-pointer hover:shadow-lg transition-all"
+            >
+              <h3 className="text-xl font-bold mb-2 font-heading text-text-primary">
+                {block.title}
+              </h3>
+              <p className="text-sm text-text-secondary leading-tight">
+                {block.subtitle}
+              </p>
+            </div>
           ))}
         </div>
 
