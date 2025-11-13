@@ -125,9 +125,10 @@ Full design specs: [dev/dev_context/design-cheatsheet.md](dev/dev_context/design
 
 1. Edit files in `dev/src/` (components, data, styles)
 2. Test locally: `cd dev/src && npm run dev` (http://localhost:3000)
-3. Commit changes: `git add . && git commit -m "description"`
-4. Push to GitHub: `git push`
-5. Vercel auto-deploys to https://svaib.com
+3. **ВАЖНО:** Перед деплоем ВСЕГДА показывай изменения пользователю и проси подтверждение
+4. После подтверждения: `git add . && git commit -m "description"`
+5. Push to GitHub: `git push` (только после подтверждения!)
+6. Vercel auto-deploys to https://svaib.com
 
 ### Testing Locally
 
@@ -151,14 +152,15 @@ npm run dev      # Start Next.js dev server
 ## Important Rules
 
 1. **Never break production:** `dev/src/` is live on Vercel, test changes carefully
-2. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
-3. **Context separation:**
+2. **ALWAYS confirm before deploy:** After making changes, show them to user and ask for confirmation before `git commit` and `git push`. Never deploy without explicit approval.
+3. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
+4. **Context separation:**
    - meta/ — Project strategy, documentation (rarely touch during dev)
    - dev/ — Code development (primary work area)
    - pub/ — Public materials (separate workflow)
-4. **Open source:** All code will be public on GitHub
-5. **Weekly "Камни недели":** Focus on concrete weekly results
-6. **Next.js best practices:**
+5. **Open source:** All code will be public on GitHub
+6. **Weekly "Камни недели":** Focus on concrete weekly results
+7. **Next.js best practices:**
    - Use 'use client' for interactive components
    - Keep components small and focused
    - Test both desktop and mobile (responsive required)

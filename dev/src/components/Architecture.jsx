@@ -42,8 +42,8 @@ export default function Architecture() {
           и держим все в AI-памяти.
         </p>
 
-        {/* Подсказка - только на десктопе */}
-        <div className="hidden md:flex items-center justify-center gap-2 mb-6 text-sm text-text-secondary">
+        {/* Подсказка */}
+        <div className="flex items-center justify-center gap-2 mb-6 text-sm text-text-secondary">
           <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
           </svg>
@@ -70,20 +70,29 @@ export default function Architecture() {
 
         {/* Мобильная версия - простые карточки */}
         <div className="md:hidden grid gap-4">
-          {blocks.map((block) => (
-            <div
-              key={block.id}
-              onClick={() => handleBlockClick(block)}
-              className="bg-white border-2 border-primary rounded-lg p-5 cursor-pointer hover:shadow-lg transition-all"
-            >
-              <h3 className="text-xl font-bold mb-2 font-heading text-text-primary">
-                {block.title}
-              </h3>
-              <p className="text-sm text-text-secondary leading-tight">
-                {block.subtitle}
-              </p>
-            </div>
-          ))}
+          {blocks.map((block) => {
+            // Определяем цвет фона в зависимости от категории
+            const bgColor =
+              block.category === 'central' ? '#E0F7F5' :  // Светло-бирюзовый для центральных
+              block.category === 'processing' ? '#FFE5ED' : // Светло-розовый для AI-слоя
+              '#FFFFFF'; // Белый для блоков данных
+
+            return (
+              <div
+                key={block.id}
+                onClick={() => handleBlockClick(block)}
+                className="border-2 border-primary rounded-lg p-5 cursor-pointer hover:shadow-lg transition-all"
+                style={{ backgroundColor: bgColor }}
+              >
+                <h3 className="text-xl font-bold mb-2 font-heading text-text-primary">
+                  {block.title}
+                </h3>
+                <p className="text-sm text-text-secondary leading-tight">
+                  {block.subtitle}
+                </p>
+              </div>
+            );
+          })}
         </div>
 
         {/* Легенда */}
