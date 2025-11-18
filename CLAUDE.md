@@ -19,6 +19,8 @@ svaib/
 │   ├── meta_context/
 │   │   ├── project_overview.md — OKR, strategy, team, MVP stage
 │   │   ├── product_overview.md — Product description (AI meeting assistant)
+│   │   ├── marketing.md — Positioning, messaging, sales strategy
+│   │   ├── monetization.md — Monetization model (pricing, revenue streams)
 │   │   └── technical_infrastructure.md — Tech stack (VS Code, Git, Vercel, Claude Code)
 │   ├── prompts/   — Role-specific prompts (editor, strategist, HRD)
 │   └── research/  — Market research and analysis
@@ -44,6 +46,9 @@ svaib/
 │   │   ├── package.json — Next.js 16.0.1, React 19.2.0
 │   │   └── next.config.js — Next.js configuration
 │   ├── dev_context/
+│   │   ├── product_architecture.md — Product architecture (7 components, connections, tech)
+│   │   ├── product_presentation.md — Detailed presentation structure (slide-by-slide)
+│   │   ├── product_roadmap.md — Product roadmap (stages, vision features)
 │   │   └── design-cheatsheet.md — Design system reference (#00B4A6 primary, #FF4D8D accent)
 │   └── prompts/   — Technical prompts (CTO, Dify copilot)
 │
@@ -155,9 +160,9 @@ npm run dev      # Start Next.js dev server
 2. **ALWAYS confirm before deploy:** After making changes, show them to user and ask for confirmation before `git commit` and `git push`. Never deploy without explicit approval.
 3. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
 4. **Context separation:**
-   - meta/ — Project strategy, documentation (rarely touch during dev)
-   - dev/ — Code development (primary work area)
-   - pub/ — Public materials (separate workflow)
+   - meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
+   - dev/ — Product development, implementation (HOW to build)
+   - pub/ — Public materials (presentations, conference materials)
 5. **Open source:** All code will be public on GitHub
 6. **Weekly "Камни недели":** Focus on concrete weekly results
 7. **Next.js best practices:**
@@ -177,8 +182,13 @@ npm run dev      # Start Next.js dev server
 
 For detailed project context:
 - @meta/meta_context/project_overview.md — Project strategy, OKR, team
-- @meta/meta_context/product_overview.md — Product vision ("Презентажка" methodology)
+- @meta/meta_context/product_overview.md — Product description (what, why, for whom)
+- @meta/meta_context/marketing.md — Positioning, messaging, sales strategy
+- @meta/meta_context/monetization.md — Pricing model, revenue streams
 - @meta/meta_context/technical_infrastructure.md — Infrastructure (Vercel, APIs, VPS)
+- @dev/dev_context/product_architecture.md — Product architecture (7 components, how it's built)
+- @dev/dev_context/product_presentation.md — Presentation structure (slide-by-slide spec)
+- @dev/dev_context/product_roadmap.md — Product roadmap (development stages)
 - @dev/dev_context/design-cheatsheet.md — Complete design system specs
 
 ---

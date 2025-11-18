@@ -1,14 +1,31 @@
 ---
 title: "Правила работы с контекстом проекта SVAIB"
-updated: 2025-11-07
-version: 5
+updated: 2025-11-18
+version: 7
 scope: "always"
 priority: critical
 ---
 
 # Правила работы с контекстом SVAIB
 
+## Структура папок проекта
+
+**Логика разделения:**
+- **meta/** - стратегия проекта и продукта (ЧТО, ЗАЧЕМ, КОГДА, КТО)
+- **dev/** - разработка и реализация (КАК строить продукт)
+- **pub/** - публичные материалы (презентации, выступления, артефакты)
+
+**Команды:**
+- `/svaib-context` → работает с `meta/meta_context/`
+- `/svaib-dev` → работает с `dev/` (читает CTO промпт, видит dev_context/)
+
+**Принцип:** Файлы имеют уникальные имена и могут ссылаться друг на друга независимо от папок. Папки организуют файлы по функциональному назначению.
+
+---
+
 ## Файлы проекта
+
+### meta/meta_context/ - Стратегия проекта
 
 ### Стратегия и управление
 - **!context_rules.md** - правила работы с контекстом, навигация по проекту
@@ -22,11 +39,11 @@ priority: critical
 - **investment_strategy.md** - стратегия привлечения инвестиций
 - **storage_system.md** - система хранения проекта (Git + Google Drive)
 
-### Продукт и клиенты
-- **product_overview.md** - описание продукта svaib (управленческий AI для встреч)
-- **presentation_methodology.md** - методология "Презентажка" (управленческий фреймворк)
+### Продукт и бизнес
+- **product_overview.md** - описание продукта svaib (что, зачем, для кого)
+- **marketing.md** - позиционирование, месседжи, стратегия продаж
+- **monetization.md** - модель монетизации (цены, три потока дохода)
 - **implementation_AI_strategies.md** - стратегии внедрения AI в бизнесе
-- **design-cheatsheet.md** - дизайн-система svaib
 
 ### Внутренняя мастерская
 - **agents_catalog.md** - каталог AI-агентов команды SVAIB
@@ -38,6 +55,15 @@ priority: critical
 ### Публичная активность
 - **osvaivaemsia_meetings.md** - интерактивные встречи с Никитой
 - **svaib_presentation_guide.md** - гайд по стилю презентаций svaib
+
+---
+
+### dev/dev_context/ - Разработка продукта
+
+- **product_architecture.md** - архитектура продукта (7 компонентов, связи, технологии)
+- **product_presentation.md** - детальная структура презентации (слайд за слайдом)
+- **product_roadmap.md** - roadmap развития продукта (этапы, vision-фичи)
+- **design-cheatsheet.md** - дизайн-система svaib (цвета, типографика, компоненты)
 
 ---
 
@@ -59,8 +85,12 @@ priority: critical
 | Инвестиции и финансирование | investment_strategy.md | project_overview.md |
 | Оценка проекта | investment_strategy.md | execution_plan.md |
 | AI-агенты команды | agents_catalog.md | - |
-| Продукт svaib (описание) | product_overview.md | presentation_methodology.md |
-| Методология "Презентажка" | presentation_methodology.md | product_overview.md |
+| Продукт svaib (описание) | product_overview.md | product_architecture.md |
+| Архитектура продукта | product_architecture.md | product_overview.md |
+| Структура презентации | product_presentation.md | product_architecture.md |
+| Roadmap развития продукта | product_roadmap.md | product_overview.md |
+| Позиционирование и маркетинг | marketing.md | product_overview.md |
+| Цены и монетизация | monetization.md | marketing.md |
 | Исследование планерок в МСБ | smb_meetings_research.md | product_overview.md |
 | Стратегии внедрения AI | implementation_AI_strategies.md | - |
 | Задачи для ролей в SMB | smb_roles_tasks_research.md | product_overview.md |
@@ -74,9 +104,9 @@ priority: critical
 ## Принцип работы с контекстом
 
 - **Файлы = постоянные сущности** с уникальными именами
-- **Папки = временная организация** которая может меняться
-- **Ссылки между файлами** - только по именам, не по путям
-- При перемещении файлов между папками - контекст не меняется
+- **Папки = функциональное разделение** (meta/ = стратегия, dev/ = реализация, pub/ = публичное)
+- **Ссылки между файлами** - только по именам, не по путям (файлы могут ссылаться друг на друга независимо от папок)
+- Папки помогают AI понять контекст: `/svaib-context` работает с meta/, `/svaib-dev` работает с dev/
 
 ---
 
