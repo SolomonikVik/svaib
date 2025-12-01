@@ -1,6 +1,7 @@
 ---
 title: "Система хранения проекта SVAIB (Git + Google Drive)"
 updated: 2025-11-27
+version: 1
 scope: "project_organization"
 priority: medium
 ---

@@ -1,6 +1,7 @@
 ---
 title: "Интерактивные встречи ОсвAIваемся вместе"
 updated: 2025-10-16
+version: 1
 scope: "meetings"
 priority: medium
 ---

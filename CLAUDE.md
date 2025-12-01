@@ -17,11 +17,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 svaib/
 ├── meta/          — Project context, strategy, documentation
 │   ├── meta_context/
-│   │   ├── project_overview.md — OKR, strategy, team, MVP stage
-│   │   ├── product_overview.md — Product description (AI meeting assistant)
+│   │   ├── !context_rules.md — Context management rules (this system)
 │   │   ├── marketing.md — Positioning, messaging, sales strategy
 │   │   ├── monetization.md — Monetization model (pricing, revenue streams)
-│   │   └── technical_infrastructure.md — Tech stack (VS Code, Git, Vercel, Claude Code)
+│   │   ├── product_vision.md — Product description (AI meeting assistant)
+│   │   ├── project_overview.md — OKR, strategy, team, MVP stage
+│   │   ├── storage_system.md — Storage structure (Git + Google Drive)
+│   │   └── weekly_progress.md — Weekly progress tracking ("stones of the week")
 │   ├── prompts/   — Role-specific prompts (editor, strategist, HRD)
 │   └── research/  — Market research and analysis
 │
@@ -46,10 +48,11 @@ svaib/
 │   │   ├── package.json — Next.js 16.0.1, React 19.2.0
 │   │   └── next.config.js — Next.js configuration
 │   ├── dev_context/
-│   │   ├── product_architecture.md — Product architecture (7 components, connections, tech)
-│   │   ├── product_presentation.md — Detailed presentation structure (slide-by-slide)
-│   │   ├── product_roadmap.md — Product roadmap (stages, vision features)
-│   │   └── design-cheatsheet.md — Design system reference (#00B4A6 primary, #FF4D8D accent)
+│   │   ├── architecture.md — Product architecture (7 components, connections, tech)
+│   │   ├── design_system.md — Design system reference (#00B4A6 primary, #FF4D8D accent)
+│   │   ├── guide_presentation.md — Presentation structure (slide-by-slide spec)
+│   │   ├── infrastructure.md — Tech infrastructure (VPS, APIs, deployment)
+│   │   └── product_roadmap.md — Product roadmap (stages, vision features)
 │   └── prompts/   — Technical prompts (CTO, Dify copilot)
 │
 └── pub/           — Public materials
@@ -122,7 +125,7 @@ React hooks in `Architecture.jsx`:
 **Spacing:** All spacing multiples of 4px (12px, 16px, 24px, 32px)
 **Border Radius:** 12px (buttons/inputs), 16px (cards)
 
-Full design specs: [dev/dev_context/design-cheatsheet.md](dev/dev_context/design-cheatsheet.md)
+Full design specs: [dev/dev_context/design_system.md](dev/dev_context/design_system.md)
 
 ## Development Workflow
 
@@ -180,16 +183,14 @@ npm run dev      # Start Next.js dev server
 
 ## Getting More Context
 
-For detailed project context:
-- @meta/meta_context/project_overview.md — Project strategy, OKR, team
-- @meta/meta_context/product_overview.md — Product description (what, why, for whom)
-- @meta/meta_context/marketing.md — Positioning, messaging, sales strategy
-- @meta/meta_context/monetization.md — Pricing model, revenue streams
-- @meta/meta_context/technical_infrastructure.md — Infrastructure (Vercel, APIs, VPS)
-- @dev/dev_context/product_architecture.md — Product architecture (7 components, how it's built)
-- @dev/dev_context/product_presentation.md — Presentation structure (slide-by-slide spec)
-- @dev/dev_context/product_roadmap.md — Product roadmap (development stages)
-- @dev/dev_context/design-cheatsheet.md — Complete design system specs
+| When you need | Read this file |
+|---------------|----------------|
+| Project strategy, OKR, team | @meta/meta_context/project_overview.md |
+| Product description (what, why, for whom) | @meta/meta_context/product_vision.md |
+| Positioning, messaging, sales | @meta/meta_context/marketing.md |
+| Product architecture (7 components) | @dev/dev_context/architecture.md |
+| Presentation structure (slide-by-slide) | @dev/dev_context/guide_presentation.md |
+| Design system specs | @dev/dev_context/design_system.md |
 
 ---
 

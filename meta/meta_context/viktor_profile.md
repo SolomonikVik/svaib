@@ -1,6 +1,7 @@
 ---
 title: "Профиль Виктора Соломоника"
 updated: 2025-10-09
+version: 1
 scope: "author_info"
 priority: high
 ---

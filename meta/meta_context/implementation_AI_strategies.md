@@ -1,6 +1,7 @@
 ---
 title: "Стратегии внедрения AI в бизнесе"
 updated: 2025-10-13
+version: 1
 scope: "implementation"
 priority: medium
 ---
