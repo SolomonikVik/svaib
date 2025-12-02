@@ -158,6 +158,15 @@ npm run dev      # Start Next.js dev server
 - `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
 - `/svaib-dev` — Development mode (dev/ folder): CTO role for architecture discussion or Developer role for coding tasks
 
+## Subagents
+
+**context-editor** (`.claude/agents/context-editor.md`)
+- Форматирование файлов контекста (meta/, dev/, pub/)
+- Работает строго по чеклисту: YAML-заголовок, "Кратко", связанные файлы, README
+
+**⚠️ ОБЯЗАТЕЛЬНО:** При создании/обновлении файлов контекста → вызывай субагента `context-editor`.
+Ты — партнёр и координатор, субагент — исполнитель по чеклисту.
+
 ## Important Rules
 
 1. **Never break production:** `dev/src/` is live on Vercel, test changes carefully
