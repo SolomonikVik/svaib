@@ -17,6 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 svaib/
 ├── meta/          — Project context, strategy, documentation
 │   ├── meta_context/
+│   │   ├── !chat_navigation.md — Navigation for Claude Chat/Projects
 │   │   ├── !context_rules.md — Context management rules (this system)
 │   │   ├── marketing.md — Positioning, messaging, sales strategy
 │   │   ├── monetization.md — Monetization model (pricing, revenue streams)
