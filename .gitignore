@@ -64,6 +64,9 @@ build/
 .next/
 out/
 
+# --- Черновики и inbox ---
+_inbox/
+
 # --- Дополнительно ---
 .idea/
 *.swp
