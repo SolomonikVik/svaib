@@ -1,8 +1,8 @@
 ---
 title: "MVP Implementation Roadmap"
-updated: 2025-12-01
-version: 1.2
-scope: "sprint_planning"
+updated: 2025-12-05
+version: 1.4
+scope: "planning"
 priority: critical
 ---
 
@@ -11,6 +11,12 @@ priority: critical
 ## Кратко
 
 Детальный план реализации MVP на 5 недель (дедлайн 27 декабря 2025). Понедельный roadmap с конкретными задачами, чеклистами, AI-Hacks подсказками. Включает тестирование ASR, Google OAuth, pipeline транскрибации, синхронизацию с Sheets, Telegram-бота.
+
+## Связанные файлы
+
+- architecture.md — архитектурный контракт (что строим)
+- infrastructure.md — текущие ресурсы (на чем строим)
+- dev_environment.md — настройка команды (MCP, субагенты)
 
 ---
 
@@ -69,14 +75,14 @@ Google ревьюит 3-5+ рабочих дней. Запускаем в Ден
 | Demo видео | Loom 2-3 мин "как работает svaib" | Неделя 3 (когда будет что показать) |
 | OAuth Consent Screen | Заполнить в Google Cloud Console | 30 мин |
 
-### Чеклист OAuth (День 1):
+### Чеклист OAuth (День 1) — ГОТОВ ✅
 
-- [ ] Создать Google Cloud Project "svaib-production"
-- [ ] Включить APIs: Drive, Sheets, Slides, Calendar
-- [ ] OAuth Consent Screen → External → Testing mode
-- [ ] Заполнить: App name, User support email, Logo
-- [ ] Добавить scopes: drive.file, spreadsheets, presentations
-- [ ] Добавить себя как test user
+- [x] Создать Google Cloud Project "svaib" (создан как "svaib", ID: svaib-app)
+- [x] Включить APIs: Drive, Sheets, Slides, Calendar
+- [x] OAuth Consent Screen → External → Testing mode
+- [x] Заполнить: App name, User support email
+- [x] Добавить scopes: drive.file, spreadsheets, presentations
+- [x] Добавить себя как test user
 - [ ] **Verification отправим позже** (когда будет demo-видео, Неделя 3)
 
 **Если к пилотам verification не пройдёт:** просто добавляем клиентов как test users (до 100 человек). Это нормально.
@@ -89,12 +95,12 @@ Google ревьюит 3-5+ рабочих дней. Запускаем в Ден
 
 ### День 1-2: Инфраструктура
 
-**Google Cloud (2-3 часа):**
-- [ ] Создать проект в Google Cloud Console
-- [ ] Включить APIs (Drive, Sheets, Slides)
-- [ ] Настроить OAuth Consent Screen (см. выше)
-- [ ] Создать OAuth Client ID (Web application)
-- [ ] Сохранить Client ID и Client Secret
+**Google Cloud (2-3 часа) — ГОТОВ ✅**
+- [x] Создать проект в Google Cloud Console
+- [x] Включить APIs (Drive, Sheets, Slides, Calendar)
+- [x] Настроить OAuth Consent Screen (см. выше)
+- [x] Создать OAuth Client ID (Web application)
+- [x] Сохранить Client ID и Client Secret
 
 > **AI-Hack:** Попроси Claude: *"Дай пошаговую инструкцию со скриншотами: как в Google Cloud Console создать проект, включить Drive/Sheets/Slides API и настроить OAuth Consent Screen для внешнего тестирования"*
 
@@ -111,7 +117,7 @@ Google ревьюит 3-5+ рабочих дней. Запускаем в Ден
 - [ ] Настроить RLS политики (client_id изоляция)
 - [ ] Тест: вставить тестовую запись, проверить RLS
 
-> **AI-Hack:** Скинь Claude файл `svaib_architecture_v3.md` (раздел Схема данных) и скажи: *"Напиши полный SQL скрипт для создания всех таблиц с RLS политиками. Хочу просто скопировать в Supabase SQL Editor"*
+> **AI-Hack:** Скинь Claude файл `architecture.md` (раздел Схема данных) и скажи: *"Напиши полный SQL скрипт для создания всех таблиц с RLS политиками. Хочу просто скопировать в Supabase SQL Editor"*
 
 **n8n Cloud (1 час):**
 - [ ] Зарегистрироваться на n8n.cloud (Starter $20/мес)
@@ -162,6 +168,20 @@ Google ревьюит 3-5+ рабочих дней. Запускаем в Ден
 - n8n Cloud подключен
 - **ASR протестирован, выбор сделан, время обработки известно**
 - Privacy/Terms опубликованы
+
+---
+
+## Настройка команды (конец Недели 1 / начало Недели 2)
+
+### MCP-серверы
+- [ ] Создать `.mcp.json` в корне проекта
+- [ ] Добавить n8n-mcp (после создания n8n Cloud)
+- [ ] Добавить supabase-mcp
+- [ ] Context7 — добавить позже, когда понадобится
+
+### Субагенты
+- [ ] Создать `.claude/agents/n8n-expert.md`
+- [ ] Создать `.claude/agents/supabase-expert.md`
 
 ---
 

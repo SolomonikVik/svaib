@@ -67,66 +67,73 @@ svaib/
 
 **Tech Stack:** Next.js 16.0.1 with App Router, React 19.2.0, Tailwind CSS
 **Deployment:** Vercel auto-deploy from `dev/src/` on push to main
-**Live URL:** https://svaib.com
+**Live URL:** [https://svaib.com](https://svaib.com)
 
 ### Application Structure
 
 Single-page landing with sections:
+
 1. **Header** - Fixed logo `svaib` (top-right): "sv" and "b" in teal, "ai" in pink
 2. **Hero** - Main heading, subtitle, CTA button to Telegram
 3. **Architecture** - Interactive diagram showing AI-management system:
-   - **Desktop:** Canvas with positioned blocks and SVG connections
-   - **Mobile:** Simple card list (responsive adaptation)
+   * **Desktop:** Canvas with positioned blocks and SVG connections
+   * **Mobile:** Simple card list (responsive adaptation)
 4. **CTA** - Call-to-action section
 5. **Footer** - Contacts, links, archive access
 
 ### Interactive Features
 
 **Architecture Diagram (Desktop):**
-- 7 interactive blocks positioned on canvas (800px height)
-- SVG lines showing data flow between blocks
-- Hover effects: teal shadow + lift animation
-- Click opens modal with detailed information
-- Hint text: "Нажмите на блок, чтобы узнать подробности"
+
+* 7 interactive blocks positioned on canvas (800px height)
+* SVG lines showing data flow between blocks
+* Hover effects: teal shadow + lift animation
+* Click opens modal with detailed information
+* Hint text: "Нажмите на блок, чтобы узнать подробности"
 
 **Mobile Adaptation:**
-- Header logo: smaller (text-2xl vs text-3xl)
-- Architecture: hides canvas, shows simple card list
-- All sections responsive with Tailwind breakpoints
+
+* Header logo: smaller (text-2xl vs text-3xl)
+* Architecture: hides canvas, shows simple card list
+* All sections responsive with Tailwind breakpoints
 
 ### State Management
 
 React hooks in `Architecture.jsx`:
-- `activeBlock` — Currently selected block for modal
-- `containerSize` — Canvas dimensions (tracked with useRef + useEffect)
-- Modal opens on block click, closes on backdrop/X click
+
+* `activeBlock` — Currently selected block for modal
+* `containerSize` — Canvas dimensions (tracked with useRef + useEffect)
+* Modal opens on block click, closes on backdrop/X click
 
 ### Data Structure
 
 `architectureData.js` contains:
-- `blocks[]` — Array of 7 architecture blocks:
-  - Presentation, AI-ассистент (central)
-  - Контекст, Метрики, Задачи, Протоколы (data)
-  - AI-слой (processing)
-- Each block: title, subtitle, icon, position, size, category, description, features, etc.
-- `connections[]` — SVG line connections between blocks
-- `blockSizes` — Pixel dimensions for each block type
+
+* `blocks[]` — Array of 7 architecture blocks:
+  * Presentation, AI-ассистент (central)
+  * Контекст, Метрики, Задачи, Протоколы (data)
+  * AI-слой (processing)
+* Each block: title, subtitle, icon, position, size, category, description, features, etc.
+* `connections[]` — SVG line connections between blocks
+* `blockSizes` — Pixel dimensions for each block type
 
 ## Design System
 
 **Colors:**
-- Primary (Teal): `#00B4A6` (buttons, interactive elements)
-- Accent (Pink): `#FF4D8D` (gradients, website only)
-- Text: `#1A1A1A` primary, `#6B7280` secondary
+
+* Primary (Teal): `#00B4A6` (buttons, interactive elements)
+* Accent (Pink): `#FF4D8D` (gradients, website only)
+* Text: `#1A1A1A` primary, `#6B7280` secondary
 
 **Typography:**
-- Headings: `Sora` (bold, semibold)
-- Body: `Inter` (regular, medium, semibold)
+
+* Headings: `Sora` (bold, semibold)
+* Body: `Inter` (regular, medium, semibold)
 
 **Spacing:** All spacing multiples of 4px (12px, 16px, 24px, 32px)
 **Border Radius:** 12px (buttons/inputs), 16px (cards)
 
-Full design specs: [dev/dev_context/design_system.md](dev/dev_context/design_system.md)
+Full design specs: [dev/dev\_context/design\_system.md](dev/dev_context/design_system.md)
 
 ## Development Workflow
 
@@ -137,7 +144,7 @@ Full design specs: [dev/dev_context/design_system.md](dev/dev_context/design_sys
 3. **ВАЖНО:** Перед деплоем ВСЕГДА показывай изменения пользователю и проси подтверждение
 4. После подтверждения: `git add . && git commit -m "description"`
 5. Push to GitHub: `git push` (только после подтверждения!)
-6. Vercel auto-deploys to https://svaib.com
+6. Vercel auto-deploys to [https://svaib.com](https://svaib.com)
 
 ### Testing Locally
 
@@ -149,22 +156,24 @@ npm run dev      # Start Next.js dev server
 ```
 
 **Important:**
-- Hot reload enabled, changes visible immediately
-- Check both desktop and mobile views (responsive design)
-- Test interactive features (block clicks, modal, hover effects)
+
+* Hot reload enabled, changes visible immediately
+* Check both desktop and mobile views (responsive design)
+* Test interactive features (block clicks, modal, hover effects)
 
 ## Slash Commands
 
-- `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
-- `/svaib-dev` — Development mode (dev/ folder): CTO role for architecture discussion or Developer role for coding tasks
+* `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
+* `/svaib-dev` — Development mode (dev/ folder): CTO role for architecture discussion or Developer role for coding tasks
 
 ## Subagents
 
 **context-editor** (`.claude/agents/context-editor.md`)
-- Форматирование файлов контекста (meta/, dev/, pub/)
-- Работает строго по чеклисту: YAML-заголовок, "Кратко", связанные файлы, README
 
-**⚠️ ОБЯЗАТЕЛЬНО:** При создании/обновлении файлов контекста → вызывай субагента `context-editor`.
+* Форматирование файлов контекста (meta/, dev/, pub/)
+* Работает строго по чеклисту: YAML-заголовок, "Кратко", связанные файлы, README
+
+**⚠️ ОБЯЗАТЕЛЬНО:** При создании/обновлении файлов контекста и перед git commit (если были правки в контекст) → ОБЯЗАТЕЛЬНО вызывай субагента `context-editor`.
 Ты — партнёр и координатор, субагент — исполнитель по чеклисту.
 
 ## Important Rules
@@ -173,36 +182,36 @@ npm run dev      # Start Next.js dev server
 2. **ALWAYS confirm before deploy:** After making changes, show them to user and ask for confirmation before `git commit` and `git push`. Never deploy without explicit approval.
 3. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
 4. **Context separation:**
-   - meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
-   - dev/ — Product development, implementation (HOW to build)
-   - pub/ — Public materials (presentations, conference materials)
+   * meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
+   * dev/ — Product development, implementation (HOW to build)
+   * pub/ — Public materials (presentations, conference materials)
 5. **Open source:** All code will be public on GitHub
 6. **Weekly "Камни недели":** Focus on concrete weekly results
 7. **Next.js best practices:**
-   - Use 'use client' for interactive components
-   - Keep components small and focused
-   - Test both desktop and mobile (responsive required)
-   - Old HTML/JS/CSS version preserved in `dev/src/archive/`
+   * Use 'use client' for interactive components
+   * Keep components small and focused
+   * Test both desktop and mobile (responsive required)
+   * Old HTML/JS/CSS version preserved in `dev/src/archive/`
 
 ## Key Principles
 
-- **Практичность:** Focus on working solutions, not tech for tech's sake
-- **Честность:** Document failures alongside successes
-- **Легкость:** Approach with humor, self-irony over perfectionism
-- **Weekly releases:** Ship every week, gather feedback
+* **Практичность:** Focus on working solutions, not tech for tech's sake
+* **Честность:** Document failures alongside successes
+* **Легкость:** Approach with humor, self-irony over perfectionism
+* **Weekly releases:** Ship every week, gather feedback
 
 ## Getting More Context
 
-| When you need | Read this file |
-|---------------|----------------|
-| Project strategy, OKR, team | @meta/meta_context/project_overview.md |
-| Product description (what, why, for whom) | @meta/meta_context/product_vision.md |
-| Positioning, messaging, sales | @meta/meta_context/marketing.md |
-| Product architecture (7 components) | @dev/dev_context/architecture.md |
-| Presentation structure (slide-by-slide) | @dev/dev_context/guide_presentation.md |
-| Design system specs | @dev/dev_context/design_system.md |
+| When you need                             | Read this file                           |
+| ----------------------------------------- | ---------------------------------------- |
+| Project strategy, OKR, team               | @meta/meta\_context/project\_overview.md |
+| Product description (what, why, for whom) | @meta/meta\_context/product\_vision.md   |
+| Positioning, messaging, sales             | @meta/meta\_context/marketing.md         |
+| Product architecture (7 components)       | @dev/dev\_context/architecture.md        |
+| Presentation structure (slide-by-slide)   | @dev/dev\_context/guide\_presentation.md |
+| Design system specs                       | @dev/dev\_context/design\_system.md      |
 
----
+***
 
 ## Maintenance: Keeping CLAUDE.md Updated
 
@@ -210,16 +219,17 @@ npm run dev      # Start Next.js dev server
 
 ### When to update CLAUDE.md:
 
-| Change | What to update in CLAUDE.md |
-|--------|----------------------------|
-| Created/deleted slash command in `.claude/commands/` | Update "Slash Commands" section |
-| Changed folder structure (added/removed folders) | Update "Repository Structure" section |
-| Changed tech stack (e.g., migrated to Next.js) | Update "Current Application Architecture" |
-| Changed deployment process (e.g., new Vercel config) | Update "Development Workflow" |
-| Changed design system colors/fonts | Update "Design System" section |
-| Major architectural change | Update relevant sections + "Planned Migration" if needed |
+| Change                                               | What to update in CLAUDE.md                              |
+| ---------------------------------------------------- | -------------------------------------------------------- |
+| Created/deleted slash command in `.claude/commands/` | Update "Slash Commands" section                          |
+| Changed folder structure (added/removed folders)     | Update "Repository Structure" section                    |
+| Changed tech stack (e.g., migrated to Next.js)       | Update "Current Application Architecture"                |
+| Changed deployment process (e.g., new Vercel config) | Update "Development Workflow"                            |
+| Changed design system colors/fonts                   | Update "Design System" section                           |
+| Major architectural change                           | Update relevant sections + "Planned Migration" if needed |
 
 ### Automatic check:
 
 **After making changes to `.claude/commands/`, `dev/`, or `meta/` structure, always ask:**
+
 > "Does CLAUDE.md need updating? Check the maintenance table above."
