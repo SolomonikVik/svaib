@@ -180,14 +180,18 @@ npm run dev      # Start Next.js dev server
 
 1. **Never break production:** `dev/src/` is live on Vercel, test changes carefully
 2. **ALWAYS confirm before deploy:** After making changes, show them to user and ask for confirmation before `git commit` and `git push`. Never deploy without explicit approval.
-3. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
-4. **Context separation:**
+3. **Critical files — confirm before editing:**
+   * **НЕ править без согласования:** architecture.md, product_roadmap.md, product_vision.md
+   * **Можно обновлять по факту:** infrastructure.md (текущее состояние), product_sprint.md (чеклисты)
+   * **Правило:** Перед правкой критичного файла — показать изменения и получить ОК
+4. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
+5. **Context separation:**
    * meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
    * dev/ — Product development, implementation (HOW to build)
    * pub/ — Public materials (presentations, conference materials)
-5. **Open source:** All code will be public on GitHub
-6. **Weekly "Камни недели":** Focus on concrete weekly results
-7. **Next.js best practices:**
+6. **Open source:** All code will be public on GitHub
+7. **Weekly "Камни недели":** Focus on concrete weekly results
+8. **Next.js best practices:**
    * Use 'use client' for interactive components
    * Keep components small and focused
    * Test both desktop and mobile (responsive required)

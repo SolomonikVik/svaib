@@ -1,7 +1,7 @@
 ---
 title: "MVP Implementation Roadmap"
-updated: 2025-12-05
-version: 1.4
+updated: 2025-12-08
+version: 1.5
 scope: "planning"
 priority: critical
 ---
@@ -104,18 +104,13 @@ Google ревьюит 3-5+ рабочих дней. Запускаем в Ден
 
 > **AI-Hack:** Попроси Claude: *"Дай пошаговую инструкцию со скриншотами: как в Google Cloud Console создать проект, включить Drive/Sheets/Slides API и настроить OAuth Consent Screen для внешнего тестирования"*
 
-**Supabase (2-3 часа):**
-- [ ] Создать новый проект (или использовать существующий)
-- [ ] Создать таблицы — попросить Claude написать SQL:
-  - `clients` (id, name, google_folder_id, settings, created_at)
-  - `oauth_tokens` (client_id, access_token, refresh_token, expires_at, scopes)
-  - `meetings` (id, client_id, recall_bot_id, platform, status, started_at, ended_at)
-  - `transcripts` (id, meeting_id, content, speakers, asr_provider)
-  - `tasks` (id, meeting_id, svaib_task_id, title, assignee, deadline, status)
-  - `prompts` (id, role, content, version, is_active, client_id)
-  - `pipeline_runs` (id, pipeline, stage, status, error, started_at, finished_at)
-- [ ] Настроить RLS политики (client_id изоляция)
-- [ ] Тест: вставить тестовую запись, проверить RLS
+**Supabase (2-3 часа) — ГОТОВ ✅:**
+- [x] Создать новый проект на svaib.app@gmail.com (Project ID: cfukwleykhntybwgdltr)
+- [x] Создать таблицы (7 шт):
+  - `clients`, `team_members`, `oauth_tokens`, `meetings`, `transcripts`, `tasks`, `pipeline_runs`
+  - ⚠️ `prompts` и `documents` создадим в Неделю 3 и 5 соответственно
+- [x] Настроить RLS политики (anon/authenticated заблокированы, service_role работает)
+- [x] Тест: тестовая запись вставлена, RLS проверен
 
 > **AI-Hack:** Скинь Claude файл `architecture.md` (раздел Схема данных) и скажи: *"Напиши полный SQL скрипт для создания всех таблиц с RLS политиками. Хочу просто скопировать в Supabase SQL Editor"*
 
@@ -243,6 +238,9 @@ Google ревьюит 3-5+ рабочих дней. Запускаем в Ден
 **Цель:** AI извлекает структурированные задачи из транскрипта.
 
 ### День 1-2: Промпты в Supabase
+
+**⚠️ Сначала создать таблицу `prompts`** (перенесено из Недели 1):
+- [ ] Создать таблицу `prompts` в Supabase (id, role, content, version, is_active, client_id)
 
 **Создать 2 промпта (упрощённый SGR):**
 

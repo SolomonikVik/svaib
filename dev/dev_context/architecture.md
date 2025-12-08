@@ -1,7 +1,7 @@
 ---
 title: "Архитектура MVP svaib"
-updated: 2025-12-01
-version: 3.3
+updated: 2025-12-08
+version: 3.4
 scope: "development"
 priority: critical
 ---
@@ -197,6 +197,7 @@ utility_*              — вспомогательные (cleanup, notification
 | Сущность           | Назначение                                 | Ключевые поля                                                                        |
 | ------------------ | ------------------------------------------ | ------------------------------------------------------------------------------------ |
 | **clients**        | Клиенты системы                            | google\_folder\_id, settings                                                         |
+| **team\_members**  | Сотрудники клиентов                        | name, email, telegram\_username, aliases                                             |
 | **oauth\_tokens**  | Google OAuth (encrypted)                   | access\_token, refresh\_token, expires\_at, scopes                                   |
 | **meetings**       | Встречи                                    | recall\_bot\_id, platform, status, scheduled\_at/started\_at/ended\_at               |
 | **transcripts**    | Транскрипты с диаризацией                  | content, speakers (JSONB), asr\_provider                                             |
@@ -521,6 +522,7 @@ google_sync_*
 
 | Версия | Дата       | Изменения                                                                                                   |
 | ------ | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| 3.4    | 2025-12-08 | Добавлена сущность team\_members в раздел 3.1                                                               |
 | 3.3    | 2025-12-01 | Удалено дублирование (фазы, что входит/не входит, план по неделям → release/sprint), перенумерованы разделы |
 | 3.2    | 2025-11-28 | Добавлен YAML-заголовок, раздел "Кратко", ссылка на infrastructure.md                                       |
 | 3.1    | 2025-11-26 | Добавлен раздел 6.4 (контекст исследования ReasoningBank), таблица feedback в схему данных                  |

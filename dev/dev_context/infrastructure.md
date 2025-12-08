@@ -1,7 +1,7 @@
 ---
 title: "Текущая инфраструктура svaib"
-updated: 2025-12-05
-version: 2.1
+updated: 2025-12-08
+version: 2.2
 scope: "implementation"
 priority: high
 ---
@@ -11,6 +11,20 @@ priority: high
 ## Кратко
 
 Инвентаризация реальных ресурсов проекта: серверы, домены, API-ключи, доступы, Google Cloud OAuth. Только факты — что есть и работает прямо сейчас. Архитектурные решения и целевой стек — см. `architecture.md`.
+
+## Правила именования
+
+**Единое название проекта во всех сервисах:** `svaib-app`
+
+| Сервис | Название | ID/URL |
+|--------|----------|--------|
+| Google Cloud | svaib | Project ID: `svaib-app` |
+| Supabase | svaib-app | Project ID: `cfukwleykhntybwgdltr` |
+| n8n | svaib-app | _(при создании)_ |
+| Recall.ai | svaib-app | _(при регистрации)_ |
+| Soniox | svaib-app | _(при регистрации)_ |
+
+**Проектный аккаунт для всех сервисов:** `svaib.app@gmail.com`
 
 ## Связанные файлы
 
@@ -136,14 +150,18 @@ priority: high
 ### Supabase
 
 * **Organization:** svaib
+* **Project:** svaib-app
+* **Project ID:** cfukwleykhntybwgdltr
+* **URL:** [https://cfukwleykhntybwgdltr.supabase.co](https://cfukwleykhntybwgdltr.supabase.co)
+* **Регион:** EU Central (Frankfurt)
+* **Аккаунт:** [svaib.app@gmail.com](mailto:svaib.app@gmail.com)
 * **Тариф:** Free (планируется Pro для MVP)
-* **Project:** svaib\_vectors
-* **Project ID:** yysxediaamhpqhxpbdko
-* **URL:** [https://yysxediaamhpqhxpbdko.supabase.co](https://yysxediaamhpqhxpbdko.supabase.co)
-* **Регион:** EU West (Frankfurt)
 * **Anon Key:** хранится в KeePass
 * **Service Role Key:** хранится в KeePass
-* **Статус:** зарегистрирован, активно не используется
+* **Database Password:** хранится в KeePass
+* **Статус:** ✅ работает
+* **Таблицы:** clients, team_members, oauth_tokens, meetings, transcripts, tasks, pipeline_runs
+* **RLS:** включен, anon/authenticated заблокированы
 
 ***
 
@@ -188,17 +206,6 @@ priority: high
 * Soniox интеграция
 * Telegram Bot
 * Google OAuth для клиентов
-
-***
-
-## История изменений
-
-| Версия | Дата       | Изменения                                                                          |
-| ------ | ---------- | ---------------------------------------------------------------------------------- |
-| 2.1    | 2025-12-05 | Добавлены детали Google Cloud: проектный аккаунт, OAuth Client ID, enabled APIs |
-| 2.0    | 2025-11-28 | Полная переработка: только факты, убраны архитектурные рассуждения, Dify, гипотезы |
-| 1.0    | 2025-10-15 | Радикальное упрощение: только факты                                                |
-| 0.x    | 2025-09-24 | Первые версии с архитектурными планами                                             |
 
 ***
 
