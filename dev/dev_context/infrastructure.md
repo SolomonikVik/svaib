@@ -1,7 +1,7 @@
 ---
 title: "Текущая инфраструктура svaib"
-updated: 2025-12-08
-version: 2.2
+updated: 2025-12-09
+version: 2.4
 scope: "implementation"
 priority: high
 ---
@@ -20,9 +20,10 @@ priority: high
 |--------|----------|--------|
 | Google Cloud | svaib | Project ID: `svaib-app` |
 | Supabase | svaib-app | Project ID: `cfukwleykhntybwgdltr` |
-| n8n | svaib-app | _(при создании)_ |
-| Recall.ai | svaib-app | _(при регистрации)_ |
-| Soniox | svaib-app | _(при регистрации)_ |
+| n8n | svaib-app | svaib-app.app.n8n.cloud |
+| Cloudflare | svaib.com | DNS + Email Routing |
+| Recall.ai | svaib-app | app@svaib.com |
+| Soniox | svaib-app | console.soniox.com |
 
 **Проектный аккаунт для всех сервисов:** `svaib.app@gmail.com`
 
@@ -40,18 +41,20 @@ priority: high
 * **Домен:** svaib.com
 * **Регистратор:** reg.ru
 * **Срок оплаты до:** 30.05.2026
-* **DNS-серверы:** REG.RU
-* **TTL:** 3600 секунд
+* **DNS-серверы:** Cloudflare (tate.ns.cloudflare.com, vita.ns.cloudflare.com)
+* **DNS-управление:** Cloudflare Dashboard
 
-### DNS записи
+### DNS записи (Cloudflare)
 
-| Запись          | Тип               | Назначение            |
-| --------------- | ----------------- | --------------------- |
-| `svaib.com`     | A → 216.198.79.1  | Vercel (лендинг)      |
-| `www.svaib.com` | CNAME → Vercel    | Редирект на основной  |
-| `n8n.svaib.com` | A → 5.129.237.127 | VPS (зарезервировано) |
-| `api.svaib.com` | A → 5.129.237.127 | VPS (зарезервировано) |
-| `lab.svaib.com` | A → 5.129.237.127 | VPS (зарезервировано) |
+| Запись            | Тип   | Значение          | Назначение            |
+| ----------------- | ----- | ----------------- | --------------------- |
+| `svaib.com`       | A     | 216.198.79.1      | Vercel (лендинг)      |
+| `www.svaib.com`   | CNAME | Vercel            | Редирект на основной  |
+| `api.svaib.com`   | A     | 5.129.237.127     | VPS (зарезервировано) |
+| `n8n.svaib.com`   | A     | 5.129.237.127     | VPS (зарезервировано) |
+| `tools.svaib.com` | A     | 5.129.237.127     | VPS (зарезервировано) |
+| `svaib.com`       | MX    | Cloudflare        | Email Routing         |
+| `svaib.com`       | TXT   | SPF, DKIM         | Email Routing         |
 
 ***
 
@@ -102,6 +105,42 @@ priority: high
 * **Репозиторий:** [https://github.com/SolomonikVik/svaib](https://github.com/SolomonikVik/svaib)
 * **Ветка:** main
 * **Статус:** ✅ подключен к Vercel
+
+***
+
+## Cloudflare
+
+* **Аккаунт:** svaib.app@gmail.com
+* **Тариф:** Free
+* **Статус:** ✅ Active
+
+### Сервисы
+
+| Сервис        | Назначение                                  |
+| ------------- | ------------------------------------------- |
+| DNS           | Управление всеми записями svaib.com         |
+| Email Routing | app@svaib.com → svaib.app@gmail.com         |
+
+***
+
+## Email-инфраструктура
+
+### Текущая схема (MVP)
+
+| Адрес               | Назначение                           | Примечание                                         |
+| ------------------- | ------------------------------------ | -------------------------------------------------- |
+| svaib.app@gmail.com | Основной аккаунт всех сервисов       | Google Cloud, Supabase, n8n, Cloudflare            |
+| app@svaib.com       | Корпоративный адрес для Recall.ai    | Форвард → svaib.app@gmail.com                      |
+
+### Почему две почты
+
+**Проблема:** Recall.ai не принимает регистрацию с @gmail.com — требует корпоративный домен.
+
+**Решение (09.12.2025):** Настроили Cloudflare Email Routing. Адрес `app@svaib.com` пересылает всё на `svaib.app@gmail.com`. Фактически одна почта, технически две.
+
+**Ограничение:** Отправлять письма ОТ app@svaib.com нельзя (только получать). Для Recall.ai достаточно — им важен домен при регистрации.
+
+**При масштабировании:** Переход на Google Workspace с полноценными ящиками.
 
 ***
 
@@ -163,6 +202,30 @@ priority: high
 * **Таблицы:** clients, team_members, oauth_tokens, meetings, transcripts, tasks, pipeline_runs
 * **RLS:** включен, anon/authenticated заблокированы
 
+### n8n Cloud
+
+* **URL:** [https://svaib-app.app.n8n.cloud](https://svaib-app.app.n8n.cloud)
+* **Аккаунт:** svaib.app@gmail.com
+* **Тариф:** Starter ($20/мес)
+* **Статус:** ✅ работает
+* **Credentials:** Supabase, OpenAI подключены
+
+### Recall.ai
+
+* **Аккаунт:** app@svaib.com
+* **API Key:** хранится в KeePass
+* **Статус:** ✅ зарегистрирован
+
+### Soniox
+
+* **Console:** [https://console.soniox.com](https://console.soniox.com)
+* **Аккаунт:** svaib.app@gmail.com
+* **Project ID:** 8be55c77-a65d-43e6-aa0e-69dbb5955a9c
+* **Project Name:** svaib-app
+* **Region:** United States
+* **API Key:** хранится в KeePass
+* **Статус:** ✅ зарегистрирован
+
 ***
 
 ## Среда разработки
@@ -188,12 +251,14 @@ priority: high
 
 | Сервис        | Стоимость/мес | Примечание        |
 | ------------- | ------------- | ----------------- |
-| VPS Timeweb   | ₽1150 (\~$12) | 2 vCore / 4GB RAM |
+| VPS Timeweb   | ₽1150 (~$12)  | 2 vCore / 4GB RAM |
+| n8n Cloud     | $20           | Starter plan      |
 | OpenAI API    | $5-10         | лимит $10         |
 | Google Gemini | $0            | бесплатный тариф  |
 | Supabase      | $0            | Free tier         |
-| Домен         | ~~₽100 (~~$1) | ₽1200/год         |
-| **ИТОГО**     | **\~$23/мес** |                   |
+| Cloudflare    | $0            | Free tier         |
+| Домен         | ~₽100 (~$1)   | ₽1200/год         |
+| **ИТОГО**     | **~$43/мес**  |                   |
 
 ***
 
@@ -201,9 +266,6 @@ priority: high
 
 Следующие компоненты описаны в `architecture.md`, но ещё не развёрнуты:
 
-* n8n (Cloud или self-hosted)
-* Recall.ai интеграция
-* Soniox интеграция
 * Telegram Bot
 * Google OAuth для клиентов
 
