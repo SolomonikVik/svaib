@@ -1,7 +1,7 @@
 ---
 title: "Архитектура MVP svaib"
-updated: 2025-12-10
-version: 3.5
+updated: 2025-12-11
+version: 3.6
 scope: "development"
 priority: critical
 ---
@@ -11,6 +11,12 @@ priority: critical
 ## Кратко
 
 Архитектурный контракт проекта svaib. Описывает целевую архитектуру: три слоя системы, технологический стек, ключевые решения (SGR, ReasoningBank, Google Sync Layer), фазы реализации и критические риски.
+
+## Связанные файлы
+
+- infrastructure.md — текущая инфраструктура (реализация архитектуры)
+- product_sprint.md — MVP roadmap (этапы реализации)
+- product_roadmap.md — фазы развития продукта
 
 ***
 

@@ -32,7 +32,7 @@
 |------|------------|
 | dev/dev_context/architecture.md | Архитектура продукта (компоненты, связи) |
 | dev/dev_context/infrastructure.md | Инфраструктура (VPS, API, деплой) |
-| dev/dev_context/dev_environment.md | Среда разработки (MCP, субагенты, стек) |
+| .claude/claude_code_mechanics.md | Механизмы Claude Code (MCP, субагенты, скиллы) |
 | dev/dev_context/product_roadmap.md | Дорожная карта продукта |
 | dev/dev_context/product_sprint.md | Текущий спринт |
 | meta/meta_context/product_vision.md | Видение продукта (проблема → решение) |

@@ -1,7 +1,7 @@
 ---
 title: "Текущая инфраструктура svaib"
-updated: 2025-12-09
-version: 2.4
+updated: 2025-12-11
+version: 2.5
 scope: "implementation"
 priority: high
 ---
@@ -206,9 +206,10 @@ priority: high
 
 * **URL:** [https://svaib-app.app.n8n.cloud](https://svaib-app.app.n8n.cloud)
 * **Аккаунт:** svaib.app@gmail.com
-* **Тариф:** Starter ($20/мес)
+* **Тариф:** Starter ($24/мес)
 * **Статус:** ✅ работает
 * **Credentials:** Supabase, OpenAI подключены
+* **API Key:** хранится в KeePass (срок: 90 дней, до ~11.03.2026)
 
 ### Recall.ai
 
@@ -238,7 +239,21 @@ priority: high
 ### Claude Code
 
 * **Тип:** VS Code Extension
-* **Авторизация:** через Claude Max подписку
+* **Авторизация:** через Claude Max подписка ($100/мес)
+
+### MCP-серверы (подключены 11.12.2025)
+
+| MCP | Назначение | Токен | Срок действия |
+|-----|------------|-------|---------------|
+| **n8n-mcp** | Создание/редактирование workflow | KeePass | 90 дней (~11.03.2026) |
+| **supabase** | SQL, таблицы, миграции | KeePass | 30 дней (~10.01.2026) |
+
+**Хранение:** MCP конфигурация в `~/.claude.json` (user-level, не в репозитории)
+
+**При истечении токена:**
+1. Создать новый токен в соответствующем сервисе
+2. `claude mcp remove <name> -s local`
+3. `claude mcp add <name> ...` с новым токеном
 
 ### Git
 
@@ -252,13 +267,13 @@ priority: high
 | Сервис        | Стоимость/мес | Примечание        |
 | ------------- | ------------- | ----------------- |
 | VPS Timeweb   | ₽1150 (~$12)  | 2 vCore / 4GB RAM |
-| n8n Cloud     | $20           | Starter plan      |
+| n8n Cloud     | $24           | Starter plan      |
 | OpenAI API    | $5-10         | лимит $10         |
 | Google Gemini | $0            | бесплатный тариф  |
 | Supabase      | $0            | Free tier         |
 | Cloudflare    | $0            | Free tier         |
 | Домен         | ~₽100 (~$1)   | ₽1200/год         |
-| **ИТОГО**     | **~$43/мес**  |                   |
+| **ИТОГО**     | **~$47/мес**  |                   |
 
 ***
 

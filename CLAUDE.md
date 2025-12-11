@@ -15,6 +15,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 svaib/
+├── .claude/       — Claude Code configuration
+│   ├── agents/    — Subagents (context-editor, etc.)
+│   └── claude_code_mechanics.md — MCP servers, subagents, skills reference
+│
 ├── meta/          — Project context, strategy, documentation
 │   ├── meta_context/
 │   │   ├── !chat_navigation.md — Navigation for Claude Chat/Projects
@@ -214,6 +218,7 @@ npm run dev      # Start Next.js dev server
 | Product architecture (7 components)       | @dev/dev\_context/architecture.md        |
 | Presentation structure (slide-by-slide)   | @dev/dev\_context/guide\_presentation.md |
 | Design system specs                       | @dev/dev\_context/design\_system.md      |
+| MCP servers, subagents, tools             | @.claude/claude\_code\_mechanics.md      |
 
 ***
 

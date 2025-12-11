@@ -1,7 +1,7 @@
 ---
 title: "MVP Implementation Roadmap"
-updated: 2025-12-10
-version: 1.8
+updated: 2025-12-11
+version: 1.9
 scope: "planning"
 priority: critical
 ---
@@ -16,7 +16,6 @@ priority: critical
 
 - architecture.md — архитектурный контракт (что строим)
 - infrastructure.md — текущие ресурсы (на чем строим)
-- dev_environment.md — настройка команды (MCP, субагенты)
 
 ---
 
@@ -156,15 +155,16 @@ Google ревьюит 3-5+ рабочих дней. Запускаем в Ден
 
 ## Настройка команды (конец Недели 1 / начало Недели 2)
 
-### MCP-серверы
-- [ ] Создать `.mcp.json` в корне проекта
-- [ ] Добавить n8n-mcp (после создания n8n Cloud)
-- [ ] Добавить supabase-mcp
+### MCP-серверы — ГОТОВО ✅ (11.12.2025)
+- [x] Добавить n8n-mcp (user-level в ~/.claude.json)
+- [x] Добавить supabase-mcp (user-level в ~/.claude.json)
 - [ ] Context7 — добавить позже, когда понадобится
 
-### Субагенты
-- [ ] Создать `.claude/agents/n8n-expert.md`
-- [ ] Создать `.claude/agents/supabase-expert.md`
+**Примечание:** MCP хранятся в user-level (`~/.claude.json`), не в проекте — чтобы API ключи не попали на GitHub.
+
+### Субагенты — отложено
+- [ ] Создать `.claude/agents/n8n-expert.md` — с MCP пока не критично
+- [ ] Создать `.claude/agents/supabase-expert.md` — с MCP пока не критично
 
 ---
 
