@@ -216,9 +216,11 @@ npm run dev      # Start Next.js dev server
 | Product description (what, why, for whom) | @meta/meta\_context/product\_vision.md   |
 | Positioning, messaging, sales             | @meta/meta\_context/marketing.md         |
 | Product architecture (7 components)       | @dev/dev\_context/architecture.md        |
+| Infrastructure, APIs, VPS, deployments    | @dev/dev\_context/infrastructure.md      |
 | Presentation structure (slide-by-slide)   | @dev/dev\_context/guide\_presentation.md |
 | Design system specs                       | @dev/dev\_context/design\_system.md      |
 | MCP servers, subagents, tools             | @.claude/claude\_code\_mechanics.md      |
+| Team workflow (who does what)             | @meta/meta\_context/ai\_team.md          |
 
 ***
 
