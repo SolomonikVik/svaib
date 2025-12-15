@@ -19,6 +19,10 @@ svaib/
 │   ├── agents/    — Subagents (context-editor, etc.)
 │   └── claude_code_mechanics.md — MCP servers, subagents, skills reference
 │
+├── _inbox/        — Входящие на разбор (в .gitignore, но важно знать)
+│   ├── README.md  — Правила работы с inbox
+│   └── todo_*.md  — Идеи и задачи на проработку
+│
 ├── meta/          — Project context, strategy, documentation
 │   ├── meta_context/
 │   │   ├── !chat_navigation.md — Navigation for Claude Chat/Projects
@@ -185,8 +189,8 @@ npm run dev      # Start Next.js dev server
 1. **Never break production:** `dev/src/` is live on Vercel, test changes carefully
 2. **ALWAYS confirm before deploy:** After making changes, show them to user and ask for confirmation before `git commit` and `git push`. Never deploy without explicit approval.
 3. **Critical files — confirm before editing:**
-   * **НЕ править без согласования:** architecture.md, product_roadmap.md, product_vision.md
-   * **Можно обновлять по факту:** infrastructure.md (текущее состояние), product_sprint.md (чеклисты)
+   * **НЕ править без согласования:** architecture.md, product\_roadmap.md, product\_vision.md
+   * **Можно обновлять по факту:** infrastructure.md (текущее состояние), product\_sprint.md (чеклисты)
    * **Правило:** Перед правкой критичного файла — показать изменения и получить ОК
 4. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
 5. **Context separation:**
@@ -200,6 +204,8 @@ npm run dev      # Start Next.js dev server
    * Keep components small and focused
    * Test both desktop and mobile (responsive required)
    * Old HTML/JS/CSS version preserved in `dev/src/archive/`
+9. **Architecture first:** Перед предложением технических изменений — СНАЧАЛА проверь `architecture.md`. Не предлагай "временные решения" или "упрощения", которые противоречат целевой архитектуре. Если что-то запланировано на будущую фазу — так и скажи, не изобретай костыли.
+10. **После согласования плана — исполняй:** Когда план обсуждён и одобрен, переключайся в режим исполнения. Используй MCP (n8n, Supabase) для реализации. Не "можешь начинать" (перекладывание на Виктора), а "начинаю делать" (берёшь ответственность). Спринт — твоя задача, не Виктора.
 
 ## Key Principles
 

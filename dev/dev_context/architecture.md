@@ -1,7 +1,7 @@
 ---
 title: "Архитектура MVP svaib"
-updated: 2025-12-11
-version: 3.6
+updated: 2025-12-14
+version: 3.7
 scope: "development"
 priority: critical
 ---
@@ -277,6 +277,15 @@ utility_*              — вспомогательные (cleanup, notification
 * Дебажится (видно где сломалось)
 * Дешевле (GPT-4o-mini на каждом шаге)
 * Предсказуемо (JSON Schema гарантирует формат)
+
+**Structured Outputs (декабрь 2025):**
+
+Claude API теперь поддерживает гарантированный JSON по схеме (`response_format: json_schema`). Это означает:
+* 100% валидный JSON — без "лечащего" Code Node
+* Меньше retry логики — ответ всегда соответствует схеме
+* Проще промпты — не нужны многословные инструкции про формат
+
+При реализации SGR использовать Structured Outputs для каждого шага цепочки.
 
 ### 4.3 Google Sync Layer
 
