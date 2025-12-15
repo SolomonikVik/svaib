@@ -1,7 +1,7 @@
 ---
 title: "Текущая инфраструктура svaib"
-updated: 2025-12-11
-version: 2.5
+updated: 2025-12-15
+version: 2.6
 scope: "implementation"
 priority: high
 ---
@@ -207,6 +207,7 @@ priority: high
 * **URL:** [https://svaib-app.app.n8n.cloud](https://svaib-app.app.n8n.cloud)
 * **Аккаунт:** svaib.app@gmail.com
 * **Тариф:** Starter ($24/мес)
+* **Версия:** 2.0 (декабрь 2025)
 * **Статус:** ✅ работает
 * **Credentials:** Supabase, OpenAI подключены
 * **API Key:** хранится в KeePass (срок: 90 дней, до ~11.03.2026)
