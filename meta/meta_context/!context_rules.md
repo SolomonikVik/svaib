@@ -215,11 +215,14 @@ priority: critical/high/medium/low
 
 **version** — 1 для нового файла, N+1 для обновления
 
-**scope** — когда файл релевантен:
+**scope** — когда файл релевантен (рекомендуемые значения):
 - Стратегия: `always`, `author_info`, `project_strategy`, `planning`
 - Продукт: `product_development`, `client_relations`, `implementation`
 - Мастерская: `lab_operations`, `agents_management`, `tools`
 - Публикации: `publications`, `community`, `meetings`
+- Другие: `progress_tracking` (трекинг результатов)
+
+*Можно создавать новые scope, если существующие не подходят. При создании нового — добавить сюда.*
 
 **priority** — важность файла:
 | Уровень | Когда | Примеры |
