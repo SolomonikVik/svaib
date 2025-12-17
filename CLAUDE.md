@@ -171,8 +171,9 @@ npm run dev      # Start Next.js dev server
 
 ## Slash Commands
 
-* `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
+* `/svaib-sprint` — Sprint mode: движение по MVP спринту, фокус на product_sprint.md и текущем статусе
 * `/svaib-dev` — Development mode (dev/ folder): CTO role for architecture discussion or Developer role for coding tasks
+* `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
 
 ## Subagents
 
@@ -205,7 +206,29 @@ npm run dev      # Start Next.js dev server
    * Test both desktop and mobile (responsive required)
    * Old HTML/JS/CSS version preserved in `dev/src/archive/`
 9. **Architecture first:** Перед предложением технических изменений — СНАЧАЛА проверь `architecture.md`. Не предлагай "временные решения" или "упрощения", которые противоречат целевой архитектуре. Если что-то запланировано на будущую фазу — так и скажи, не изобретай костыли.
-10. **После согласования плана — исполняй:** Когда план обсуждён и одобрен, переключайся в режим исполнения. Используй MCP (n8n, Supabase) для реализации. Не "можешь начинать" (перекладывание на Виктора), а "начинаю делать" (берёшь ответственность). Спринт — твоя задача, не Виктора.
+10. **Сначала план — потом исполнение:**
+    * Когда Виктор даёт задачу на реализацию — НЕ прыгай сразу в код/workflow
+    * **Шаг 1:** Уточни цель сессии (что конкретно делаем?)
+    * **Шаг 2:** Если новый API/сервис — изучи документацию (см. Documentation Policy в `.claude/claude_code_mechanics.md`)
+    * **Шаг 3:** Составь план из 3-5 шагов, покажи Виктору
+    * **Шаг 4:** Получи одобрение плана
+    * **Шаг 5:** Исполняй по шагам, один шаг = один тест
+    * После одобрения — бери ответственность. Не "можешь начинать", а "начинаю делать".
+11. **GUI-задачи → Claude for Chrome, НЕ инструкции Виктору:**
+    * Любая настройка в браузере (n8n Dashboard, Google Cloud Console, Supabase Dashboard, Telegram Web, другие веб-интерфейсы) → формулируй готовую задачу для Claude for Chrome
+    * **НЕ пиши пошаговые инструкции для Виктора** — он не исполнитель GUI-задач
+    * Виктор только вставляет секреты (пароли, токены из KeePass) — всё остальное делает помощник в браузере
+    * Формат задачи: конкретный URL + что нужно сделать + где Виктор вставит секрет
+12. **Узнал новое — СРАЗУ запиши:**
+    * Техническое ограничение (MCP, API, workflow) → `.claude/claude_code_mechanics.md`
+    * Состояние ресурса (workflow ID, credential, URL) → `dev/dev_context/infrastructure.md`
+    * **НЕ оставляй знания в голове** — следующий чат их не увидит
+    * Это правило важнее любой текущей задачи
+13. **Точная фиксация данных — без обобщений:**
+    * Когда Виктор отправляет списки (события, ID, конфиги, URL) — записывать ДОСЛОВНО
+    * **НЕ обобщать** типа "все bot.* события" — записать каждый элемент
+    * Даже если список длинный — всё равно записать полностью
+    * **Причина:** При compact/summarize обобщения теряют детали. Виктор вынужден искать в чате что уже отправлял — это недопустимо. Точные данные в файлах = источник истины для всех будущих сессий.
 
 ## Key Principles
 
