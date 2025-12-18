@@ -58,6 +58,7 @@ svaib/
 │   │   └── next.config.js — Next.js configuration
 │   ├── dev_context/
 │   │   ├── architecture.md — Product architecture (7 components, connections, tech)
+│   │   ├── data_model.md — Supabase data model (detailed table structure)
 │   │   ├── design_system.md — Design system reference (#00B4A6 primary, #FF4D8D accent)
 │   │   ├── guide_presentation.md — Presentation structure (slide-by-slide spec)
 │   │   ├── infrastructure.md — Tech infrastructure (VPS, APIs, deployment)

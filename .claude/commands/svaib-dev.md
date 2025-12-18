@@ -1,5 +1,6 @@
 ---
 description: "Режим разработки проекта SVAIB"
+
 ---
 
 Ты в режиме разработки проекта SVAIB.
@@ -20,13 +21,24 @@ description: "Режим разработки проекта SVAIB"
 
 ## Быстрый старт для CTO
 
-**Первым делом прочитай:**
-1. @dev/dev_context/architecture.md — архитектурный контракт (слои, стек, решения)
-2. @dev/dev_context/product_sprint.md — текущий статус MVP
-3. @dev/dev_context/infrastructure.md — что развёрнуто (серверы, API, ключи)
-4. @.claude/claude_code_mechanics.md — твои инструменты (MCP n8n + Supabase)
+**⚠️ ОБЯЗАТЕЛЬНО прочитай ПОЛНОСТЬЮ перед любой работой:**
+1. @.claude/claude_code_mechanics.md — **КРИТИЧНО:** ограничения MCP, рабочий процесс с workflow
+2. @dev/dev_context/infrastructure.md — что развёрнуто (серверы, API, credentials, workflow IDs)
+3. @dev/dev_context/architecture.md — архитектурный контракт
+4. @dev/dev_context/product_sprint.md — текущий статус MVP
 
 **Workflow команды:** @meta/meta_context/ai_team.md → секция "Workflow команды: кто что делает"
+
+---
+
+## Контекст окружения
+
+**Ты работаешь как VS Code Extension**, не CLI.
+
+**MCP подключены:** n8n-mcp, supabase, context7 (~33k токенов контекста)
+- Это влияет на размер сессии — работаем короткими итерациями
+- Подробности: @.claude/claude_code_mechanics.md
+
 
 ---
 
