@@ -57,7 +57,14 @@ Paired item data for item from node 'Extract S3 URL' is unavailable
 | **B. Все треки отдельно** | Loop по всем трекам → Soniox → merge транскриптов | Полная запись | Сложнее, дороже, логика merge |
 | **C. Mixed audio** | Использовать `audio_mixed` вместо `audio_separate` | Один файл, Soniox сам диаризует | Возможно хуже качество |
 
-**Статус:** Требует решения перед Неделей 3.
+**Решение:** Выбран вариант C (audio_mixed). ✅ РЕАЛИЗОВАНО (18.12.2025)
+
+**Что изменено:**
+- `meeting_create_bot`: `recording_config.audio_separate_mp3` → `audio_mixed_mp3`
+- `recall_webhook_receiver`: упрощён с 16 до 11 нод, добавлена нода `Extract Mixed Audio`
+- Все Postgres ноды: `.item.json` → `.first().json` для надёжности
+
+Детали в секции "Технические заметки".
 
 ---
 
@@ -111,7 +118,7 @@ Soniox (транскрибация)
 | ID | Название | Нод | Статус | Описание |
 |----|----------|-----|--------|----------|
 | kG4emaP9j50nZoGu | meeting_create_bot | 9 | ✅ | Telegram → Client + Meeting + Recall.ai |
-| 4v1G30AX1eHfRQjF | recall_webhook_receiver | 15 | ✅ | Recall.ai → pipeline_run → Soniox |
+| 4v1G30AX1eHfRQjF | recall_webhook_receiver | 11 | ✅ | Recall.ai → audio_mixed → Soniox |
 | 51ZGGJZp5sINBsQy | soniox_webhook_receiver | 10 | ✅ | Soniox → transcript → Supabase |
 
 **1. meeting_create_bot** ✅ ГОТОВ (17.12.2025)
@@ -473,6 +480,46 @@ Webhook → Is Completed? → Get Transcript → Parse Transcript → Find Pipel
 | Telegram /ask с AI | Это уже ассистент, не MVP |
 | Slides через API | Нативная связка достаточна |
 | task_validator (3-й шаг SGR) | 2 шага дают 80% результата |
+
+---
+
+## Технические заметки (на будущее)
+
+### Recall.ai: audio_separate vs audio_mixed (18.12.2025)
+
+**Контекст:** Изначально использовали `audio_separate` (отдельный трек на каждого участника) для лучшей диаризации. Но это создало проблемы с мульти-участниками.
+
+**Решение для MVP:** Переключились на `audio_mixed` (один файл со всеми участниками, Soniox диаризует сам).
+
+**Почему audio_separate требует сложный путь:**
+
+```
+API /api/v1/audio_separate/?recording_id=...
+    ↓
+Возвращает: "download_url": "https://us-west-2.recall.ai/api/v1/download/audio_separate?token=..."
+    ↓ (это НЕ прямой URL, а API endpoint!)
+Нужен GET на этот URL
+    ↓
+Получаем массив участников с реальными S3 URL
+```
+
+**Почему audio_mixed проще:**
+
+```
+Get Bot Details → recordings[0].media_shortcuts.audio_mixed.data.download_url
+    ↓
+Это УЖЕ прямой S3 URL, никаких дополнительных запросов
+```
+
+**Сохранённый flow для audio_separate (n8n backup):**
+```
+Get Audio URLs → Log Audio Ready → Extract First Track → Fetch Real S3 URL → Extract S3 URL → Soniox
+```
+Ноды отключены в workflow, можно вернуть если понадобится качественная диаризация через раздельные треки.
+
+**Когда вернуться к audio_separate:**
+- Если качество диаризации Soniox на mixed audio окажется недостаточным
+- Если появятся клиенты с 5+ участниками где важно точно различать спикеров
 
 ---
 
