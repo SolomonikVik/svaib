@@ -237,9 +237,9 @@ n8n API не поддерживает создание workflow напрямую
 | ID | Название | Назначение | Статус |
 |----|----------|------------|--------|
 | vO3W2eWVBCMwuLTi | test_supabase_connection | Тест подключения к Supabase | ✅ active |
-| 4v1G30AX1eHfRQjF | recall_webhook_receiver | Webhook Recall.ai → audio_separate.done → Soniox transcribe | ✅ active (12 nodes) |
+| 4v1G30AX1eHfRQjF | recall_webhook_receiver | Webhook Recall.ai → audio_mixed → Soniox transcribe | ✅ active (11 nodes) |
 | kG4emaP9j50nZoGu | meeting_create_bot | Telegram → Client + Meeting → Recall.ai | ✅ active (9 nodes) |
-| 51ZGGJZp5sINBsQy | soniox_webhook_receiver | Webhook Soniox → транскрипт → парсинг по спикерам | ✅ active (6 nodes) |
+| 51ZGGJZp5sINBsQy | soniox_webhook_receiver | Webhook Soniox → транскрипт → Supabase | ✅ active (10 nodes) |
 
 **Soniox Webhook URL:** `https://svaib-app.app.n8n.cloud/webhook/soniox-transcript`
 
@@ -257,7 +257,7 @@ n8n API не поддерживает создание workflow напрямую
 | `audio_separate_raw` | Raw PCM (16kHz, 16-bit, mono, S16LE) | ❌ Не поддерживается |
 | `audio_separate_mp3` | MP3 с заголовками | ✅ Поддерживается |
 
-**✅ Текущая конфигурация:** `audio_separate_mp3` (изменено 16.12.2025)
+**✅ Текущая конфигурация:** `audio_mixed_mp3` (изменено 18.12.2025)
 
 **Raw PCM параметры (если нужна конвертация):**
 - Sample rate: 16 kHz

@@ -215,11 +215,11 @@ npm run dev      # Start Next.js dev server
     * **Шаг 4:** Получи одобрение плана
     * **Шаг 5:** Исполняй по шагам, один шаг = один тест
     * После одобрения — бери ответственность. Не "можешь начинать", а "начинаю делать".
-11. **GUI-задачи → Claude for Chrome, НЕ инструкции Виктору:**
-    * Любая настройка в браузере (n8n Dashboard, Google Cloud Console, Supabase Dashboard, Telegram Web, другие веб-интерфейсы) → формулируй готовую задачу для Claude for Chrome
+11. **GUI-задачи → используй `claude --chrome -p`:**
+    * Любая настройка в браузере (n8n Dashboard, Google Cloud Console, Supabase Dashboard, Telegram Web, другие веб-интерфейсы) — вызывай через `claude --chrome -p "задача"`
     * **НЕ пиши пошаговые инструкции для Виктора** — он не исполнитель GUI-задач
-    * Виктор только вставляет секреты (пароли, токены из KeePass) — всё остальное делает помощник в браузере
-    * Формат задачи: конкретный URL + что нужно сделать + где Виктор вставит секрет
+    * Виктор только вставляет секреты (пароли, токены из KeePass) — всё остальное делает Chrome extension
+    * Выполняется через Bash tool, Chrome extension управляет браузером
 12. **Узнал новое — СРАЗУ запиши:**
     * Техническое ограничение (MCP, API, workflow) → `.claude/claude_code_mechanics.md`
     * Состояние ресурса (workflow ID, credential, URL) → `dev/dev_context/infrastructure.md`

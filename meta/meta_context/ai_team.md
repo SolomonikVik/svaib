@@ -1,7 +1,7 @@
 ---
 title: "AI-команда SVAIB: принципы и агенты"
-updated: 2025-12-11
-version: 9
+updated: 2025-12-22
+version: 10
 scope: "agents_management"
 priority: high
 ---
@@ -38,7 +38,7 @@ AI пишет код как джуниор: быстро, но требует Т
 
 ## Workflow команды: кто что делает
 
-**Обновлено 11.12.2025:** С подключением MCP-серверов Claude Code получил "руки" — теперь сам работает с n8n и Supabase.
+**Обновлено 22.12.2025:** Claude Code теперь управляет Chrome напрямую через `claude --chrome -p`. GUI-задачи не требуют ручной передачи.
 
 ### Распределение задач
 
@@ -46,8 +46,9 @@ AI пишет код как джуниор: быстро, но требует Т
 |--------|------------|------------|
 | Создать/редактировать n8n workflow | Claude | MCP n8n-mcp |
 | SQL запросы, таблицы, миграции | Claude | MCP supabase |
-| Настройки в Google Cloud Console | Claude for Chrome | Браузер |
-| Настройки в Supabase Dashboard (GUI) | Claude for Chrome | Браузер |
+| Настройки в Google Cloud Console | Claude | `claude --chrome -p` |
+| Настройки в Supabase Dashboard (GUI) | Claude | `claude --chrome -p` |
+| Тестирование веб-страниц | Claude | `claude --chrome -p` |
 | API keys, credentials | Виктор | KeePass → env |
 | Production deploy approve | Виктор | Review |
 | Архитектурные решения | Виктор + Claude | Обсуждение |
@@ -64,7 +65,7 @@ Claude: "Готово. Проверь: [ссылка]. Нужен твой appro
 
 1. **API keys / токены** — хранятся в KeePass, Claude не имеет доступа
 2. **Production deploy** — финальное "да" перед релизом
-3. **GUI-задачи** — если Claude Code не может (тогда → Claude for Chrome)
+3. **GUI-задачи с секретами** — если нужен ввод из KeePass
 4. **Архитектурные решения** — обсуждаем вместе
 
 ---
@@ -75,7 +76,7 @@ Claude: "Готово. Проверь: [ссылка]. Нужен твой appro
 |------------|--------------|-------------------|
 | **Claude Chat** | claude.ai | Брейншторм, стратегия, быстрые консультации |
 | **Claude Code** | VS Code | Код, файлы, спринты, MCP, субагенты — всё |
-| **Claude for Chrome** | Браузер | GUI-задачи, автономные действия в вебе |
+| **Claude for Chrome** | Браузер | GUI через `claude --chrome -p` или отдельно |
 
 > **Примечание:** Есть также терминальная версия Claude Code (`claude` в терминале) — функционально идентична VS Code Extension, отличается только интерфейсом.
 

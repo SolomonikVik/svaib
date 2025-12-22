@@ -140,7 +140,23 @@ prompts (системные: client_id IS NULL)
 | aliases | text[] | — | optional | default '{}', альтернативные имена для диаризации |
 | created_at | timestamptz | — | optional | default now() |
 
-### prompts
+---
+
+## Таблицы НЕ созданы (запланированы)
+
+| Таблица | Фаза | Назначение |
+|---------|------|------------|
+| prompts | MVP (Неделя 3) | AI-промпты с версионированием (см. спецификацию ниже) |
+| documents | MVP (Неделя 3) | Текстовый контент: досье, протоколы (см. спецификацию ниже) |
+| files | MVP (Неделя 4-5) | Карта файлов Google Drive для RAG (google_file_id, mime_type, summary, indexed_at) |
+| reasoning_bank_items | Phase 2 | Паттерны команды |
+| feedback | Phase 2 | Обратная связь от клиентов |
+
+---
+
+## Спецификации планируемых таблиц
+
+### prompts (Week 3)
 
 AI-промпты с версионированием. Системные промпты (client_id IS NULL) видны всем, кастомные — только владельцу.
 
@@ -165,7 +181,7 @@ ORDER BY client_id NULLS LAST
 LIMIT 1
 ```
 
-### documents
+### documents (Week 3)
 
 Каноническое хранилище текстового контента проекта: досье, протоколы, цели, roadmap, команда, глоссарий.
 
@@ -190,13 +206,3 @@ LIMIT 1
 - UNIQUE (client_id, doc_type) WHERE meeting_id IS NULL — для "одна на клиента"
 - UNIQUE (meeting_id, doc_type) WHERE meeting_id IS NOT NULL — для протоколов
 - INDEX (client_id, doc_type, created_at DESC) — для выборки истории протоколов
-
----
-
-## Таблицы НЕ созданы (запланированы)
-
-| Таблица | Фаза | Назначение |
-|---------|------|------------|
-| files | MVP (Неделя 4-5) | Карта файлов Google Drive для RAG (google_file_id, mime_type, summary, indexed_at) |
-| reasoning_bank_items | Phase 2 | Паттерны команды |
-| feedback | Phase 2 | Обратная связь от клиентов |
