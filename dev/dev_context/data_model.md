@@ -1,7 +1,7 @@
 ---
 title: "Модель данных Supabase"
-updated: 2025-12-17
-version: 1
+updated: 2025-12-22
+version: 2
 scope: "development"
 priority: high
 ---
@@ -29,11 +29,16 @@ priority: high
 clients
   ├── team_members
   ├── oauth_tokens
+  ├── documents (досье, протоколы)
   ├── meetings
   │     ├── transcripts
   │     ├── tasks
+  │     ├── documents (протоколы)
   │     └── pipeline_runs
   └── pipeline_runs
+
+prompts (системные: client_id IS NULL)
+  └── client_id → clients (кастомные промпты)
 ```
 
 ---
@@ -61,7 +66,7 @@ clients
 | platform | text | — | optional | check: zoom, meet, teams |
 | meeting_url | text | — | optional | |
 | recall_bot_id | text | — | optional | ID бота Recall.ai |
-| status | text | — | optional | default 'scheduled', check: scheduled, recording, recorded, transcribed, processed, failed |
+| status | text | — | optional | default 'scheduled', check: scheduled, recording, recorded, transcribed, **processing**, processed, failed |
 | scheduled_at | timestamptz | — | optional | |
 | started_at | timestamptz | — | optional | |
 | ended_at | timestamptz | — | optional | |
@@ -73,7 +78,8 @@ clients
 |------|-----|-------|----------------|------------|
 | id | uuid | PK | auto | |
 | meeting_id | uuid | FK→meetings | required | |
-| content | text | — | optional | Полный текст транскрипта |
+| content | text | — | optional | Полный текст транскрипта (сырой) |
+| cleaned_content | text | — | optional | Очищенный текст после transcript_cleaner |
 | speakers | jsonb | — | optional | default '[]', массив {speaker, text} |
 | asr_provider | text | — | optional | check: soniox, elevenlabs, other |
 | duration_seconds | integer | — | optional | |
@@ -91,7 +97,7 @@ clients
 | deadline | date | — | optional | |
 | priority | text | — | optional | check: high, medium, low |
 | status | text | — | optional | default 'new', check: new, in_progress, done, cancelled |
-| sheet_row_id | integer | — | optional | Номер строки в Google Sheets |
+| sheet_row_id | integer | — | optional | Reserved for Week 4 Google Sheets sync |
 | created_at | timestamptz | — | optional | default now() |
 
 ### pipeline_runs
@@ -134,13 +140,63 @@ clients
 | aliases | text[] | — | optional | default '{}', альтернативные имена для диаризации |
 | created_at | timestamptz | — | optional | default now() |
 
+### prompts
+
+AI-промпты с версионированием. Системные промпты (client_id IS NULL) видны всем, кастомные — только владельцу.
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | |
+| role | text | — | required | check: transcript_cleaner, meeting_analyst, meeting_critic, docs_editor, task_extractor |
+| content | text | — | required | Текст промпта |
+| version | integer | — | required | default 1 |
+| is_active | boolean | — | required | default true |
+| client_id | uuid | FK→clients | optional | NULL = системный, UUID = кастомный |
+| created_at | timestamptz | — | optional | default now() |
+
+**Constraint:** Одна активная версия на (role, client_id) — через partial unique index или логику в запросе.
+
+**Логика выбора промпта:**
+```sql
+SELECT * FROM prompts
+WHERE role = $1 AND is_active = true
+  AND (client_id = $2 OR client_id IS NULL)
+ORDER BY client_id NULLS LAST
+LIMIT 1
+```
+
+### documents
+
+Каноническое хранилище текстового контента проекта: досье, протоколы, цели, roadmap, команда, глоссарий.
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | |
+| client_id | uuid | FK→clients | required | |
+| meeting_id | uuid | FK→meetings | optional | Для протоколов |
+| doc_type | text | — | required | check: dossier, meeting_protocol, project_goals, project_roadmap, project_team, glossary |
+| title | text | — | optional | Для отображения |
+| content | text | — | required | Markdown |
+| source | text | — | required | check: svaib, client |
+| external_file_id | text | — | optional | Reserved for Google Drive link |
+| created_at | timestamptz | — | optional | default now() |
+| updated_at | timestamptz | — | optional | default now() |
+
+**Правила уникальности:**
+- `dossier`, `project_goals`, `project_roadmap`, `project_team`, `glossary` — одна запись на клиента (UPSERT)
+- `meeting_protocol` — одна запись на встречу (UNIQUE meeting_id + doc_type)
+
+**Индексы:**
+- UNIQUE (client_id, doc_type) WHERE meeting_id IS NULL — для "одна на клиента"
+- UNIQUE (meeting_id, doc_type) WHERE meeting_id IS NOT NULL — для протоколов
+- INDEX (client_id, doc_type, created_at DESC) — для выборки истории протоколов
+
 ---
 
 ## Таблицы НЕ созданы (запланированы)
 
 | Таблица | Фаза | Назначение |
 |---------|------|------------|
-| documents | MVP (Неделя 5) | Карта файлов для RAG |
-| prompts | MVP (Неделя 3) | AI-промпты с версионированием |
+| files | MVP (Неделя 4-5) | Карта файлов Google Drive для RAG (google_file_id, mime_type, summary, indexed_at) |
 | reasoning_bank_items | Phase 2 | Паттерны команды |
 | feedback | Phase 2 | Обратная связь от клиентов |

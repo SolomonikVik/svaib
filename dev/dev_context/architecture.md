@@ -1,7 +1,7 @@
 ---
 title: "Архитектура MVP svaib"
-updated: 2025-12-16
-version: 3.8
+updated: 2025-12-22
+version: 3.9
 scope: "development"
 priority: critical
 ---
@@ -219,10 +219,11 @@ utility_*              — вспомогательные (cleanup, notification
 | **team\_members**  | Сотрудники клиентов                        | name, email, telegram\_username, aliases                                             |
 | **oauth\_tokens**  | Google OAuth (encrypted)                   | access\_token, refresh\_token, expires\_at, scopes                                   |
 | **meetings**       | Встречи                                    | recall\_bot\_id, platform, status, scheduled\_at/started\_at/ended\_at               |
-| **transcripts**    | Транскрипты с диаризацией                  | content, speakers (JSONB), asr\_provider                                             |
-| **tasks**          | Snapshot задач (источник истины в Sheets!) | svaib\_task\_id (идемпотентность), title, assignee, deadline, status, sheet\_row\_id |
-| **documents**      | Карта файлов для RAG                       | google\_file\_id, summary, embedding (vector), indexed\_at                           |
-| **prompts**        | AI-промпты с версионированием              | role, content, version, is\_active                                                   |
+| **transcripts**    | Транскрипты с диаризацией                  | content, cleaned\_content, speakers (JSONB), asr\_provider                           |
+| **tasks**          | Snapshot задач (MVP: в Supabase, Phase 2: Sheets sync) | svaib\_task\_id, title, assignee, deadline, status, sheet\_row\_id              |
+| **documents**      | Текстовый контент проекта                  | doc\_type (dossier/meeting\_protocol/...), content, meeting\_id, external\_file\_id  |
+| **files**          | Карта файлов Google Drive для RAG          | google\_file\_id, mime\_type, summary, indexed\_at (Неделя 4-5)                      |
+| **prompts**        | AI-промпты с версионированием              | role, content, version, is\_active, client\_id                                       |
 | **pipeline\_runs** | Observability                              | pipeline, stage, status, error, started\_at/finished\_at                             |
 
 ### 3.2 Сущности Phase 2
@@ -235,9 +236,9 @@ utility_*              — вспомогательные (cleanup, notification
 ### 3.3 Принципы схемы
 
 * **RLS везде** — client\_id изолирует данные, политика "Users see own data"
-* **Контент не дублируется** — храним метаданные и ссылки, не сам контент
-* **tasks.status — копия** — источник истины в Sheets, в Supabase для аналитики
-* **svaib\_task\_id** — hash для идемпотентности (meeting\_id + текст + assignee)
+* **documents vs files** — documents = текстовый контент (досье, протоколы), files = карта внешних файлов для RAG
+* **tasks в MVP** — хранятся в Supabase, sync в Sheets добавляется в Phase 2
+* **svaib\_task\_id** — hash для идемпотентности (meeting\_id + normalized(title) + assignee)
 * **Промпты** — системные (client\_id IS NULL) видны всем, кастомные — только владельцу
 
 ### 3.4 Детальная структура таблиц
@@ -295,29 +296,33 @@ utility_*              — вспомогательные (cleanup, notification
 
 **Зачем:** LLM "плывут" на сложных задачах. Разбиваем на простые шаги с JSON Schema.
 
-**Реализация в n8n:**
+**Реализация в n8n (5 промптов):**
 
 ```
-Транскрипт (10 страниц)
+Сырой транскрипт
         ↓
-[Node 1] "Найди фрагменты с договорённостями"
-→ JSON: [{speaker, text, timestamp}, ...]
+[transcript_cleaner] Удаление мусора, сжатие 2-3× (gpt-4o-mini)
+→ Чистый транскрипт
         ↓
-[Node 2] "Классифицируй: задача/решение/обсуждение"
-→ JSON: [{fragment_id, type}, ...]
+[meeting_analyst] Анализ + контекст (досье + история) (gpt-4o-mini)
+→ Сырой анализ (всё извлечено)
         ↓
-[Node 3] "Для задач извлеки: кто, что, когда"
-→ JSON: [{assignee, action, deadline}, ...]
+[meeting_critic] Чистка дублей, лимиты ≤5 (gpt-4o-mini)
+→ Чистый протокол (markdown)
         ↓
-[Node 4] "Дедупликация + форматирование"
-→ Финальный список задач
+[docs_editor] Обновление досье (gpt-4o)
+→ Полный текст досье
+        ↓
+[task_extractor] JSON mode (gpt-4o-mini)
+→ JSON: [{title, assignee, deadline, priority}, ...]
 ```
 
 **Преимущества:**
 
 * Дебажится (видно где сломалось)
-* Дешевле (GPT-4o-mini на каждом шаге)
+* Дешевле (gpt-4o-mini на большинстве шагов)
 * Предсказуемо (JSON Schema гарантирует формат)
+* Экономия токенов (cleaner сжимает вход для всех последующих шагов)
 
 **Structured Outputs (декабрь 2025):**
 
