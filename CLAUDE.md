@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **svaib** - AI-мастерская, создающая AI-решения для бизнеса. Миссия: переводчик между сложными AI-технологиями и практическими потребностями бизнеса.
 
 **Current Stage:** MVP development, первые недели работы
-**Team:** Виктор Соломоник (vision, product, strategy) + Никита (sales, marketing)
+**Team:** Виктор Соломоник (vision, product, strategy, development) — solo founder
 
 **User:** Виктор (обращайся по имени)
 
@@ -59,6 +59,7 @@ svaib/
 │   ├── dev_context/
 │   │   ├── architecture.md — Product architecture (7 components, connections, tech)
 │   │   ├── data_model.md — Supabase data model (detailed table structure)
+│   │   ├── data_dictionary.md — Entity reference (prompt roles, document types)
 │   │   ├── design_system.md — Design system reference (#00B4A6 primary, #FF4D8D accent)
 │   │   ├── guide_presentation.md — Presentation structure (slide-by-slide spec)
 │   │   ├── infrastructure.md — Tech infrastructure (VPS, APIs, deployment)
@@ -246,7 +247,10 @@ npm run dev      # Start Next.js dev server
 | Product description (what, why, for whom) | @meta/meta\_context/product\_vision.md   |
 | Positioning, messaging, sales             | @meta/meta\_context/marketing.md         |
 | Product architecture (7 components)       | @dev/dev\_context/architecture.md        |
+| Database schema (tables, fields, FK)      | @dev/dev\_context/data\_model.md         |
+| Entity reference (roles, types, statuses) | @dev/dev\_context/data\_dictionary.md    |
 | Infrastructure, APIs, VPS, deployments    | @dev/dev\_context/infrastructure.md      |
+| Workflows, data flow, prompt contracts    | @dev/dev\_context/workflows.md           |
 | Presentation structure (slide-by-slide)   | @dev/dev\_context/guide\_presentation.md |
 | Design system specs                       | @dev/dev\_context/design\_system.md      |
 | MCP servers, subagents, tools             | @.claude/claude\_code\_mechanics.md      |

@@ -1,7 +1,7 @@
 ---
 title: "Целостное описание проекта SVAIB"
-updated: 2025-12-15
-version: 5
+updated: 2025-12-26
+version: 6
 scope: "project_strategy"
 priority: high
 ---
@@ -122,10 +122,6 @@ MVP в активной разработке. Vision продукта стаби
 
 ## Команда
 
-**Виктор Соломоник** — вижн, продукт, стратегия
+**Виктор Соломоник** — вижн, продукт, стратегия, разработка
 
-**Никита** — продажи, маркетинг, коммерция
-
-Статус: со-фаундеры в тестовом режиме (октябрь-декабрь 2025)
-
-Подробнее см. [viktor_profile.md](viktor_profile.md), [nikita_profile.md](nikita_profile.md)
+Solo-founder. Подробнее см. [viktor_profile.md](viktor_profile.md)
