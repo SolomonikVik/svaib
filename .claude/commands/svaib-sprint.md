@@ -11,10 +11,11 @@ description: "Режим работы по спринту MVP"
 ## В начале сессии — ОБЯЗАТЕЛЬНО прочитай:
 
 1. @dev/dev_context/product_sprint.md — **текущий статус**, чеклисты, где мы сейчас
-2. @dev/dev_context/infrastructure.md — workflow IDs, credentials, что развёрнуто
-3. @dev/dev_context/architecture.md — архитектурный контракт, что строим
-4. @.claude/claude_code_mechanics.md — MCP, ограничения, рабочий процесс
-5. @meta/meta_context/product_vision.md — зачем строим, какие боли решаем
+2. @dev/dev_context/workflows.md — data flow, структура workflows, контракты промптов
+3. @dev/dev_context/infrastructure.md — workflow IDs, credentials, что развёрнуто
+4. @dev/dev_context/architecture.md — архитектурный контракт, что строим
+5. @.claude/claude_code_mechanics.md — MCP, ограничения, рабочий процесс
+6. @meta/meta_context/product_vision.md — зачем строим, какие боли решаем
 
 После прочтения → предложи план на сессию (3-5 шагов) → получи ОК → исполняй.
 

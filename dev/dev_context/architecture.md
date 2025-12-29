@@ -1,7 +1,7 @@
 ---
 title: "Архитектура MVP svaib"
-updated: 2025-12-22
-version: 3.9
+updated: 2025-12-25
+version: 7
 scope: "development"
 priority: critical
 ---
@@ -15,8 +15,11 @@ priority: critical
 ## Связанные файлы
 
 - infrastructure.md — текущая инфраструктура (реализация архитектуры)
+- workflows.md — реализация: data flow, структура workflows, контракты промптов
 - product_sprint.md — MVP roadmap (этапы реализации)
 - product_roadmap.md — фазы развития продукта
+- data_model.md — детальная структура таблиц Supabase
+- data_dictionary.md — справочник сущностей (роли промптов, типы документов)
 
 ***
 
@@ -181,11 +184,11 @@ utility_*              — вспомогательные (cleanup, notification
 
 ### 2.5 LLM API
 
-| Задача                 | Провайдер        | Модель                 |
-| ---------------------- | ---------------- | ---------------------- |
-| Извлечение задач (SGR) | OpenAI           | GPT-4o-mini            |
-| Сложный анализ         | OpenAI/Anthropic | GPT-4o / Claude        |
-| Embeddings             | OpenAI           | text-embedding-3-small |
+| Задача                 | Провайдер        | Модель                        |
+| ---------------------- | ---------------- | ----------------------------- |
+| Простые задачи         | OpenAI           | актуальная дешёвая            |
+| Сложный анализ         | OpenAI/Anthropic | актуальная умная              |
+| Embeddings             | OpenAI           | актуальная embedding          |
 
 ### 2.6 Интерфейсы клиента
 
@@ -221,10 +224,17 @@ utility_*              — вспомогательные (cleanup, notification
 | **meetings**       | Встречи                                    | recall\_bot\_id, platform, status, scheduled\_at/started\_at/ended\_at               |
 | **transcripts**    | Транскрипты с диаризацией                  | content, cleaned\_content, speakers (JSONB), asr\_provider                           |
 | **tasks**          | Snapshot задач (MVP: в Supabase, Phase 2: Sheets sync) | svaib\_task\_id, title, assignee, deadline, status, sheet\_row\_id              |
-| **documents**      | Текстовый контент проекта                  | doc\_type (dossier/meeting\_protocol/...), content, meeting\_id, external\_file\_id  |
+| **documents**      | Текстовый контент проекта                  | doc\_type (FK→document\_types), content, meeting\_id, external\_file\_id             |
 | **files**          | Карта файлов Google Drive для RAG          | google\_file\_id, mime\_type, summary, indexed\_at (Неделя 4-5)                      |
-| **prompts**        | AI-промпты с версионированием              | role, content, version, is\_active, client\_id                                       |
+| **prompts**        | AI-промпты с версионированием              | role (FK→prompt\_roles), content, version, is\_active, client\_id                    |
 | **pipeline\_runs** | Observability                              | pipeline, stage, status, error, started\_at/finished\_at                             |
+
+#### Справочники (служебные таблицы)
+
+| Сущность           | Назначение                                 | Ключевые поля                                                                        |
+| ------------------ | ------------------------------------------ | ------------------------------------------------------------------------------------ |
+| **prompt\_roles**  | Справочник ролей промптов                  | key, title, description, is\_active                                                  |
+| **document\_types**| Справочник типов документов                | key, title, description, is\_unique\_per\_client, is\_unique\_per\_meeting           |
 
 ### 3.2 Сущности Phase 2
 
@@ -244,6 +254,8 @@ utility_*              — вспомогательные (cleanup, notification
 ### 3.4 Детальная структура таблиц
 
 > **См. [data_model.md](data_model.md)** — полная структура всех таблиц (типы, FK, constraints).
+>
+> **См. [data_dictionary.md](data_dictionary.md)** — справочник сущностей (роли промптов, типы документов).
 >
 > Claude Code может получить актуальную схему через MCP: `mcp__supabase__list_tables`
 
@@ -296,31 +308,69 @@ utility_*              — вспомогательные (cleanup, notification
 
 **Зачем:** LLM "плывут" на сложных задачах. Разбиваем на простые шаги с JSON Schema.
 
-**Реализация в n8n (5 промптов):**
+**Реализация в n8n (6 промптов, разветвление после finalizer):**
 
 ```
 Сырой транскрипт
         ↓
-[transcript_cleaner] Удаление мусора, сжатие 2-3× (gpt-4o-mini)
+[meeting_cleaner] Удаление мусора, сжатие 2-3×
 → Чистый транскрипт
         ↓
-[meeting_analyst] Анализ + контекст (досье + история) (gpt-4o-mini)
-→ Сырой анализ (всё извлечено)
+[meeting_analyst] Анализ + контекст (досье)
+→ RAW_ANALYSIS (всё извлечено, с опорами-цитатами)
         ↓
-[meeting_critic] Чистка дублей, лимиты ≤5 (gpt-4o-mini)
-→ Чистый протокол (markdown)
+[meeting_protocol_finalizer] Классификация, фильтрация, проверка повторов
+→ CANONICAL_PROTOCOL (универсальный markdown)
         ↓
-[docs_editor] Обновление досье (gpt-4o)
-→ Полный текст досье
-        ↓
-[task_extractor] JSON mode (gpt-4o-mini)
-→ JSON: [{title, assignee, deadline, priority}, ...]
+┌───────────────────────────────────────────────────┐
+│  [meeting_protocol_telegram] Форматирование       │
+│  → Telegram-сообщение с эмодзи                    │
+│                                                   │
+│  [meeting_docs_editor] Обновление досье           │
+│  → Полный текст досье                             │
+│                                                   │
+│  [meeting_task_extractor] JSON mode               │
+│  → JSON: [{title, assignee, deadline, priority}]  │
+└───────────────────────────────────────────────────┘
 ```
+
+> **Примечание:** Модель выбирается на этапе реализации. Оптимизация моделей — отдельная задача.
+> **Связанные документы:** `_inbox/meeting_protocol_ontology.md`, `_inbox/dossier_structure.md`
+
+**Контекстная матрица (кто что получает):**
+
+| Промпт | Transcript | Dossier | RAW_ANALYSIS | CANONICAL_PROTOCOL |
+|--------|------------|---------|--------------|-------------------|
+| meeting_cleaner | ✅ | ❌ | — | — |
+| meeting_analyst | ✅ (cleaned) | ✅ | — | — |
+| meeting_protocol_finalizer | ❌ | ✅ | ✅ | — |
+| meeting_protocol_telegram | ❌ | ❌ | ❌ | ✅ |
+| meeting_docs_editor | ❌ | ✅ | ❌ | ✅ |
+| meeting_task_extractor | ❌ | ❌ | ❌ | ✅ |
+
+> **Важно:** История протоколов не передаётся. Досье — единственный источник контекста.
+
+**Формат входных данных для meeting_analyst (шаблон):**
+
+```
+## МЕТАДАННЫЕ ВСТРЕЧИ
+Проект: {{project_name}}         ← clients.name
+Дата: {{meeting_date}}           ← meetings.scheduled_at
+Участники: {{participants}}      ← meetings.participants (TODO)
+
+## ДОСЬЕ ПРОЕКТА
+{{dossier}}                      ← documents WHERE doc_type='dossier'
+
+## ТРАНСКРИПЦИЯ
+{{transcript}}                   ← transcripts.cleaned_content (fallback: content)
+```
+
+> **TODO:** Поле `meetings.participants` нужно добавить. Данные доступны из Recall API (`meeting_participants`).
+> **Структура досье:** См. `_inbox/dossier_structure.md`
 
 **Преимущества:**
 
 * Дебажится (видно где сломалось)
-* Дешевле (gpt-4o-mini на большинстве шагов)
 * Предсказуемо (JSON Schema гарантирует формат)
 * Экономия токенов (cleaner сжимает вход для всех последующих шагов)
 

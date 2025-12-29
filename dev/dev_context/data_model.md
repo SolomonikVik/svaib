@@ -1,7 +1,7 @@
 ---
 title: "Модель данных Supabase"
-updated: 2025-12-22
-version: 2
+updated: 2025-12-25
+version: 5
 scope: "development"
 priority: high
 ---
@@ -15,6 +15,8 @@ priority: high
 ## Связанные файлы
 
 - architecture.md — архитектурный контракт (концептуальное описание схемы)
+- workflows.md — реализация: data flow, структура workflows, контракты промптов
+- data_dictionary.md — справочник сущностей (роли промптов, типы документов)
 - infrastructure.md — credentials и подключения к Supabase
 
 ---
@@ -26,20 +28,65 @@ priority: high
 ## Диаграмма связей
 
 ```
+┌─ Справочники ─────────────────────────────┐
+│                                           │
+│  prompt_roles ◄──── prompts.role          │
+│  document_types ◄── documents.doc_type    │
+│                                           │
+└───────────────────────────────────────────┘
+
 clients
   ├── team_members
   ├── oauth_tokens
+  ├── prompts (кастомные, client_id NOT NULL)
   ├── documents (досье, протоколы)
   ├── meetings
   │     ├── transcripts
   │     ├── tasks
-  │     ├── documents (протоколы)
+  │     ├── documents (протоколы встреч)
   │     └── pipeline_runs
   └── pipeline_runs
 
 prompts (системные: client_id IS NULL)
   └── client_id → clients (кастомные промпты)
 ```
+
+---
+
+## Справочники
+
+### prompt_roles
+
+Справочник ролей AI-промптов в пайплайне обработки встреч.
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| key | text | PK | required | Уникальный ключ роли (snake_case) |
+| title | text | — | required | Название на русском |
+| description | text | — | optional | Описание роли |
+| is_active | boolean | — | required | default true |
+| created_at | timestamptz | — | optional | default now() |
+| updated_at | timestamptz | — | optional | default now() |
+
+**Значения:** meeting_cleaner, meeting_analyst, meeting_protocol_finalizer, meeting_protocol_telegram, meeting_docs_editor, meeting_task_extractor
+
+### document_types
+
+Справочник типов документов в системе.
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| key | text | PK | required | Уникальный ключ типа (snake_case) |
+| title | text | — | required | Название на русском |
+| description | text | — | optional | Описание типа |
+| template_md | text | — | optional | Шаблон документа (TODO Phase 2) |
+| is_unique_per_client | boolean | — | required | default false |
+| is_unique_per_meeting | boolean | — | required | default false |
+| is_active | boolean | — | required | default true |
+| created_at | timestamptz | — | optional | default now() |
+| updated_at | timestamptz | — | optional | default now() |
+
+**Значения:** dossier, meeting_protocol, project_goals, project_roadmap, project_team, glossary
 
 ---
 
@@ -52,7 +99,7 @@ prompts (системные: client_id IS NULL)
 | id | uuid | PK | auto | uuid_generate_v4() |
 | name | text | — | required | |
 | google_folder_id | text | — | optional | |
-| telegram_chat_id | text | — | optional | |
+| telegram_chat_id | text | — | optional | UNIQUE |
 | settings | jsonb | — | optional | default '{}' |
 | created_at | timestamptz | — | optional | default now() |
 
@@ -66,7 +113,7 @@ prompts (системные: client_id IS NULL)
 | platform | text | — | optional | check: zoom, meet, teams |
 | meeting_url | text | — | optional | |
 | recall_bot_id | text | — | optional | ID бота Recall.ai |
-| status | text | — | optional | default 'scheduled', check: scheduled, recording, recorded, transcribed, **processing**, processed, failed |
+| status | text | — | optional | default 'scheduled', check: scheduled, recording, recorded, transcribed, processing, processed, failed |
 | scheduled_at | timestamptz | — | optional | |
 | started_at | timestamptz | — | optional | |
 | ended_at | timestamptz | — | optional | |
@@ -79,11 +126,58 @@ prompts (системные: client_id IS NULL)
 | id | uuid | PK | auto | |
 | meeting_id | uuid | FK→meetings | required | |
 | content | text | — | optional | Полный текст транскрипта (сырой) |
-| cleaned_content | text | — | optional | Очищенный текст после transcript_cleaner |
+| cleaned_content | text | — | optional | Очищенный текст после meeting_cleaner |
 | speakers | jsonb | — | optional | default '[]', массив {speaker, text} |
 | asr_provider | text | — | optional | check: soniox, elevenlabs, other |
 | duration_seconds | integer | — | optional | |
 | created_at | timestamptz | — | optional | default now() |
+
+### prompts
+
+AI-промпты с версионированием. Системные промпты (client_id IS NULL) видны всем, кастомные — только владельцу.
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | |
+| role | text | FK→prompt_roles | required | Роль промпта |
+| content | text | — | required | Текст промпта |
+| version | integer | — | required | default 1 |
+| is_active | boolean | — | required | default true |
+| client_id | uuid | FK→clients | optional | NULL = системный, UUID = кастомный |
+| created_at | timestamptz | — | optional | default now() |
+
+**Constraint:** Одна активная версия на (role, client_id) — partial unique index.
+
+**Логика выбора промпта:**
+```sql
+SELECT * FROM prompts
+WHERE role = $1 AND is_active = true
+  AND (client_id = $2 OR client_id IS NULL)
+ORDER BY client_id NULLS LAST
+LIMIT 1
+```
+
+### documents
+
+Текстовый контент проекта: досье, протоколы, цели, roadmap, команда, глоссарий.
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | |
+| client_id | uuid | FK→clients | required | |
+| meeting_id | uuid | FK→meetings | optional | Для протоколов |
+| doc_type | text | FK→document_types | required | Тип документа |
+| title | text | — | optional | Для отображения |
+| content | text | — | required | Markdown |
+| source | text | — | required | check: svaib, client |
+| external_file_id | text | — | optional | Reserved for Google Drive link |
+| created_at | timestamptz | — | optional | default now() |
+| updated_at | timestamptz | — | optional | default now() |
+
+**Индексы:**
+- UNIQUE (client_id, doc_type) WHERE meeting_id IS NULL — для "одна на клиента"
+- UNIQUE (meeting_id, doc_type) WHERE meeting_id IS NOT NULL — для протоколов
+- INDEX (client_id, doc_type, created_at DESC) — для выборки истории протоколов
 
 ### tasks
 
@@ -146,63 +240,6 @@ prompts (системные: client_id IS NULL)
 
 | Таблица | Фаза | Назначение |
 |---------|------|------------|
-| prompts | MVP (Неделя 3) | AI-промпты с версионированием (см. спецификацию ниже) |
-| documents | MVP (Неделя 3) | Текстовый контент: досье, протоколы (см. спецификацию ниже) |
 | files | MVP (Неделя 4-5) | Карта файлов Google Drive для RAG (google_file_id, mime_type, summary, indexed_at) |
 | reasoning_bank_items | Phase 2 | Паттерны команды |
 | feedback | Phase 2 | Обратная связь от клиентов |
-
----
-
-## Спецификации планируемых таблиц
-
-### prompts (Week 3)
-
-AI-промпты с версионированием. Системные промпты (client_id IS NULL) видны всем, кастомные — только владельцу.
-
-| Поле | Тип | Связь | Обязательность | Примечание |
-|------|-----|-------|----------------|------------|
-| id | uuid | PK | auto | |
-| role | text | — | required | check: transcript_cleaner, meeting_analyst, meeting_critic, docs_editor, task_extractor |
-| content | text | — | required | Текст промпта |
-| version | integer | — | required | default 1 |
-| is_active | boolean | — | required | default true |
-| client_id | uuid | FK→clients | optional | NULL = системный, UUID = кастомный |
-| created_at | timestamptz | — | optional | default now() |
-
-**Constraint:** Одна активная версия на (role, client_id) — через partial unique index или логику в запросе.
-
-**Логика выбора промпта:**
-```sql
-SELECT * FROM prompts
-WHERE role = $1 AND is_active = true
-  AND (client_id = $2 OR client_id IS NULL)
-ORDER BY client_id NULLS LAST
-LIMIT 1
-```
-
-### documents (Week 3)
-
-Каноническое хранилище текстового контента проекта: досье, протоколы, цели, roadmap, команда, глоссарий.
-
-| Поле | Тип | Связь | Обязательность | Примечание |
-|------|-----|-------|----------------|------------|
-| id | uuid | PK | auto | |
-| client_id | uuid | FK→clients | required | |
-| meeting_id | uuid | FK→meetings | optional | Для протоколов |
-| doc_type | text | — | required | check: dossier, meeting_protocol, project_goals, project_roadmap, project_team, glossary |
-| title | text | — | optional | Для отображения |
-| content | text | — | required | Markdown |
-| source | text | — | required | check: svaib, client |
-| external_file_id | text | — | optional | Reserved for Google Drive link |
-| created_at | timestamptz | — | optional | default now() |
-| updated_at | timestamptz | — | optional | default now() |
-
-**Правила уникальности:**
-- `dossier`, `project_goals`, `project_roadmap`, `project_team`, `glossary` — одна запись на клиента (UPSERT)
-- `meeting_protocol` — одна запись на встречу (UNIQUE meeting_id + doc_type)
-
-**Индексы:**
-- UNIQUE (client_id, doc_type) WHERE meeting_id IS NULL — для "одна на клиента"
-- UNIQUE (meeting_id, doc_type) WHERE meeting_id IS NOT NULL — для протоколов
-- INDEX (client_id, doc_type, created_at DESC) — для выборки истории протоколов

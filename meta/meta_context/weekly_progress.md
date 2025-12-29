@@ -1,7 +1,7 @@
 ---
 title: "Еженедельный прогресс SVAIB"
-updated: 2025-12-26
-version: 4
+updated: 2025-12-29
+version: 6
 scope: "progress_tracking"
 priority: high
 ---
@@ -24,12 +24,21 @@ priority: high
 ### Достижения
 
 **svaib-dev**
+- ✅ **Неделя 3 MVP завершена:** AI Pipeline работает end-to-end
+- `meeting_process_transcript` workflow (20 нод): cleaner → analyst → finalizer → telegram
+- Полный цикл: Telegram → Recall.ai → Soniox → AI-протокол → Telegram
+- Найдены и задокументированы ограничения n8n MCP (IF isNotEmpty, splitInBatches outputs, Postgres 0 rows)
+- **GPT-5 модели заработали:** workaround найден (пустые options)
 - Финальная встреча с Никитой — закрыт тестовый период со-фаундерства
+
+**svaib-lab**
+- Обновлён claude_code_mechanics.md: типичные грабли n8n через MCP + GPT-5 workaround
 
 ### Ключевые инсайты
 - Никита выходит из роли со-фаундера (проект не приносит деньги в обозримой перспективе, фокус сместился на другие проекты)
 - Расстались на хороших условиях: Никита готов оставаться в контексте, быть первым тестером, помочь с клиентами (Дима Мордасов и др.) и продажами — но без обязательств
 - SVAIB переходит в режим solo-founder
+- n8n MCP требует много отладки: выученные ограничения критичны для следующих workflow
 
 ### Пивоты стратегии
 

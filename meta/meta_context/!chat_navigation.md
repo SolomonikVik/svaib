@@ -1,7 +1,7 @@
 ---
 title: "Навигация для Claude Chat/Projects"
-updated: 2025-12-02
-version: 3
+updated: 2025-12-23
+version: 4
 scope: "always"
 priority: critical
 ---
@@ -45,6 +45,8 @@ priority: critical
 | Стратегию, OKR, команду | `project_overview.md` |
 | Продукт, проблему, решение | `product_vision.md` |
 | Архитектуру MVP | `architecture.md` |
+| Схему БД (таблицы, поля, FK) | `data_model.md` |
+| Сущности (роли промптов, типы документов, статусы) | `data_dictionary.md` |
 | План спринта (5 недель) | `product_sprint.md` |
 | Roadmap развития | `product_roadmap.md` |
 | Позиционирование, продажи | `marketing.md` |

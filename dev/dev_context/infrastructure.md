@@ -1,7 +1,7 @@
 ---
 title: "Текущая инфраструктура svaib"
-updated: 2025-12-17
-version: 2.12
+updated: 2025-12-29
+version: 2.14
 scope: "implementation"
 priority: high
 ---
@@ -30,6 +30,7 @@ priority: high
 ## Связанные файлы
 
 - architecture.md — архитектурный контракт (целевая архитектура)
+- workflows.md — реализация: data flow, структура workflows, контракты промптов
 - data_model.md — модель данных Supabase (структура таблиц БД)
 - product_sprint.md — текущий спринт MVP (использует эти ресурсы)
 
@@ -218,7 +219,7 @@ n8n API не поддерживает создание workflow напрямую
 |------------|-----|-----|--------|
 | Supabase account | Supabase API | `9AoqdQKbnc7fRFVq` | ✅ |
 | Supabase Postgres | PostgreSQL | `hsHQlDm7rm2EsEGu` | ✅ |
-| OpenAi account | OpenAI API | — | ✅ |
+| OpenAi account | OpenAI API | `5QtuGFTAdv2v9S7V` | ✅ |
 | Recall.ai | Header Auth | `5KV81RaV9Gn79hUo` | ✅ |
 | Soniox | Header Auth | `UlRllRLpPr7ylsXa` | ✅ |
 | Telegram svaib | Telegram API | `thIFX3ToFrZky7ka` | ✅ |
@@ -232,14 +233,17 @@ n8n API не поддерживает создание workflow напрямую
 
 **Примечание:** ID нужны для создания нод через MCP API. Брать из этой таблицы, не выдумывать.
 
-#### Workflows (обновлено 17.12.2025)
+#### Workflows (обновлено 29.12.2025)
+
+> **Детали реализации:** См. [workflows.md](workflows.md)
 
 | ID | Название | Назначение | Статус |
 |----|----------|------------|--------|
-| vO3W2eWVBCMwuLTi | test_supabase_connection | Тест подключения к Supabase | ✅ active |
-| 4v1G30AX1eHfRQjF | recall_webhook_receiver | Webhook Recall.ai → audio_mixed → Soniox transcribe | ✅ active (11 nodes) |
 | kG4emaP9j50nZoGu | meeting_create_bot | Telegram → Client + Meeting → Recall.ai | ✅ active (9 nodes) |
-| 51ZGGJZp5sINBsQy | soniox_webhook_receiver | Webhook Soniox → транскрипт → Supabase | ✅ active (10 nodes) |
+| 4v1G30AX1eHfRQjF | recall_webhook_receiver | Webhook Recall.ai → audio_mixed → Soniox transcribe | ✅ active (11 nodes) |
+| 51ZGGJZp5sINBsQy | soniox_webhook_receiver | Webhook Soniox → транскрипт → Supabase → trigger process | ✅ active (11 nodes) |
+| uZpjaRlzrSb4mBtV | meeting_process_transcript | AI Pipeline: 4 промпта → протокол → Telegram | ✅ active (20 nodes) |
+| vO3W2eWVBCMwuLTi | test_supabase_connection | Тест подключения к Supabase | ✅ active |
 
 **Soniox Webhook URL:** `https://svaib-app.app.n8n.cloud/webhook/soniox-transcript`
 
