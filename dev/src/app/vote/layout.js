@@ -17,7 +17,6 @@ export default function VoteLayout({ children }) {
           <nav className="flex gap-4 text-sm">
             <a href="/vote" className="text-gray-600 hover:text-[#00B4A6]">Голосование</a>
             <a href="/vote/results" className="text-gray-600 hover:text-[#00B4A6]">Результаты</a>
-            <a href="/vote/admin" className="text-gray-600 hover:text-[#00B4A6]">Админ</a>
           </nav>
         </div>
       </header>

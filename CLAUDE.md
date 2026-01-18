@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Current Stage:** MVP development, первые недели работы
 **Team:** Виктор Соломоник (vision, product, strategy, development) — solo founder
 
-**User:** Виктор (обращайся по имени)
+**User:** Виктор (обращайся по имени всегда)
 
 ## Repository Structure
 
