@@ -1,7 +1,7 @@
 ---
 title: "Текущая инфраструктура svaib"
-updated: 2025-12-29
-version: 2.14
+updated: 2026-01-18
+version: 2.15
 scope: "implementation"
 priority: high
 ---
@@ -194,7 +194,8 @@ priority: high
 * **Service Role Key:** хранится в KeePass
 * **Database Password:** хранится в KeePass
 * **Статус:** ✅ работает
-* **Таблицы:** clients, team_members, oauth_tokens, meetings, transcripts, tasks, pipeline_runs
+* **Таблицы (основная схема):** clients, team_members, oauth_tokens, meetings, transcripts, tasks, documents, prompts, pipeline_runs, prompt_roles, document_types
+* **Таблицы (vote module):** vote_sessions, vote_participants, vote_projects, vote_ballots
 * **RLS:** включен, anon/authenticated заблокированы
 * **Миграции (17.12.2025):** `clients_telegram_chat_id_unique` — UNIQUE constraint на telegram_chat_id
 

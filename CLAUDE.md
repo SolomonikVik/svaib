@@ -41,7 +41,12 @@ svaib/
 │   │   ├── app/   — Next.js 16 App Router
 │   │   │   ├── page.js — Main landing page
 │   │   │   ├── layout.js — Root layout with fonts
-│   │   │   └── globals.css — Global styles and design tokens
+│   │   │   ├── globals.css — Global styles and design tokens
+│   │   │   └── vote/ — Vote Module (internal lab tool, isolated)
+│   │   │       ├── page.jsx — Voting interface
+│   │   │       ├── admin/ — Session/project/participant management
+│   │   │       └── results/ — Voting results page
+│   │   ├── api/vote/  — 5 API routes (sessions, participants, projects, cast, results)
 │   │   ├── components/  — React components
 │   │   │   ├── Header.jsx — Logo svaib (fixed top-right)
 │   │   │   ├── Hero.jsx — Hero section with gradient CTA
@@ -53,6 +58,8 @@ svaib/
 │   │   │   └── Footer.jsx — Footer with contacts and links
 │   │   ├── data/  — Data sources
 │   │   │   └── architectureData.js — Architecture blocks and connections
+│   │   ├── lib/  — Utilities
+│   │   │   └── supabase.js — Supabase client
 │   │   ├── archive/  — Old HTML/JS/CSS version (preserved)
 │   │   ├── package.json — Next.js 16.0.1, React 19.2.0
 │   │   └── next.config.js — Next.js configuration

@@ -236,6 +236,87 @@ LIMIT 1
 
 ---
 
+## Vote Module (Internal Tool)
+
+Изолированный модуль для взвешенного голосования на стратсессиях. Не связан с основной схемой — все таблицы с префиксом `vote_`.
+
+### Диаграмма связей
+
+```
+vote_sessions
+  ├── vote_participants (session_id FK)
+  ├── vote_projects (session_id FK)
+  └── vote_ballots (через participant_id)
+        └── vote_participants.id FK
+        └── vote_projects.id FK
+```
+
+### vote_sessions
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | uuid_generate_v4() |
+| name | text | — | required | Название сессии |
+| status | text | — | required | default 'draft', check: draft, voting, completed |
+| created_at | timestamptz | — | optional | default now() |
+| completed_at | timestamptz | — | optional | Когда завершено голосование |
+
+### vote_participants
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | |
+| session_id | uuid | FK→vote_sessions | required | ON DELETE CASCADE |
+| name | text | — | required | Имя участника |
+| position | text | — | required | check: CEO, C-1, C-2, Специалист |
+| weight | integer | — | required | check: 1, 2, 3, 5 (вес голоса) |
+| has_voted | boolean | — | required | default false |
+| created_at | timestamptz | — | optional | default now() |
+
+**Constraint:** UNIQUE (session_id, name)
+
+**Весовая система:**
+| Position | Weight |
+|----------|--------|
+| CEO | 5 |
+| C-1 (CTO, CFO...) | 3 |
+| C-2 (Directors) | 2 |
+| Специалист | 1 |
+
+### vote_projects
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | |
+| session_id | uuid | FK→vote_sessions | required | ON DELETE CASCADE |
+| name | text | — | required | Название проекта |
+| description | text | — | optional | Комментарий |
+| order_index | integer | — | required | default 0, для сортировки |
+| created_at | timestamptz | — | optional | default now() |
+
+**Constraint:** UNIQUE (session_id, name)
+
+### vote_ballots
+
+Закрытое голосование — RLS блокирует чтение для anon. Результаты доступны только через API после завершения.
+
+| Поле | Тип | Связь | Обязательность | Примечание |
+|------|-----|-------|----------------|------------|
+| id | uuid | PK | auto | |
+| participant_id | uuid | FK→vote_participants | required | ON DELETE CASCADE |
+| project_id | uuid | FK→vote_projects | required | ON DELETE CASCADE |
+| votes_given | integer | — | required | check: 1 или 2 |
+| created_at | timestamptz | — | optional | default now() |
+
+**Constraint:** UNIQUE (participant_id, project_id)
+
+**Правила голосования:**
+- Количество голосов на участника = ceil(количество_проектов / 2)
+- За один проект: 0, 1 или 2 голоса
+- Итоговый балл = Σ(votes_given × participant.weight)
+
+---
+
 ## Таблицы НЕ созданы (запланированы)
 
 | Таблица | Фаза | Назначение |
