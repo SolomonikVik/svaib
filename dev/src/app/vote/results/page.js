@@ -112,7 +112,7 @@ export default function ResultsPage() {
             <thead>
               <tr className="bg-gray-50">
                 <th className="px-4 py-3 text-left font-medium text-gray-600 border-b sticky left-0 bg-gray-50 z-10 min-w-[40px]">#</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600 border-b sticky left-[40px] bg-gray-50 z-10 min-w-[150px]">Проект</th>
+                <th className="px-4 py-3 text-left font-medium text-gray-600 border-b sticky left-[40px] bg-gray-50 z-10 min-w-[150px]">Название</th>
                 {participants.map(p => (
                   <th key={p.id} className="px-3 py-3 text-center border-b min-w-[80px]">
                     <div className="font-medium text-gray-800 text-sm">{p.name}</div>

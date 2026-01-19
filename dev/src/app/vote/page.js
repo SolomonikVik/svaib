@@ -229,7 +229,7 @@ export default function VotePage() {
             : 'bg-gray-200 text-gray-400 cursor-not-allowed'
         }`}
       >
-        {submitting ? 'Отправка...' : 'Завершить голосование'}
+        {submitting ? 'Отправка...' : 'Проголосовать'}
       </button>
     </div>
   );

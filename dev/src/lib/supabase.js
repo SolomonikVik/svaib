@@ -23,7 +23,7 @@ export const POSITIONS = [
   { value: 'CEO', label: 'CEO', weight: 5 },
   { value: 'C-1', label: 'C-1 (CTO, CFO...)', weight: 3 },
   { value: 'C-2', label: 'C-2 (Directors)', weight: 2 },
-  { value: 'Специалист', label: 'Специалист', weight: 1 },
+  { value: 'Expert', label: 'Expert', weight: 1 },
 ];
 
 export function getWeightByPosition(position) {

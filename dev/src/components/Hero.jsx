@@ -12,7 +12,7 @@ export default function Hero() {
           наведут порядок в управлении за вас
         </p>
         <a
-          href="https://t.me/NikMer"
+          href="https://t.me/solomonikvik"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block gradient-cta text-white px-6 py-3 rounded-lg font-semibold text-base shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 hover:scale-105"

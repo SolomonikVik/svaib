@@ -9,7 +9,7 @@ export default function CTA() {
           Обсудим ваш хаос и подскажем, как построить систему регулярного AI-менеджмента
         </p>
         <a
-          href="https://t.me/NikMer"
+          href="https://t.me/solomonikvik"
           target="_blank"
           rel="noopener noreferrer"
           className="inline-block gradient-cta text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all hover:shadow-xl hover:scale-105"
