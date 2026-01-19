@@ -134,6 +134,25 @@ React hooks in `Architecture.jsx`:
 * `connections[]` — SVG line connections between blocks
 * `blockSizes` — Pixel dimensions for each block type
 
+## Vote Module (Internal Lab Tool)
+
+Изолированный модуль для взвешенного голосования на стратсессиях. Не связан с основным продуктом — лабораторный подпроект.
+
+**URLs:**
+- `/vote` — Страница голосования (публичная)
+- `/vote/results` — Результаты (публичные после завершения)
+- `/vote/admin` — Админка (скрыта из меню, доступ по прямой ссылке)
+
+**Логика:**
+- Участники имеют вес по должности: CEO=5, C-1=3, C-2=2, Expert=1
+- Количество голосов = ceil(проекты / 2)
+- За один проект: 0, 1 или 2 голоса
+- Итоговый балл = Σ(голоса × вес участника)
+
+**Таблицы Supabase:** vote_sessions, vote_participants, vote_projects, vote_ballots (см. data_model.md)
+
+**Код:** `dev/src/app/vote/`, `dev/src/app/api/vote/`, `dev/src/lib/supabase.js` (POSITIONS)
+
 ## Design System
 
 **Colors:**
