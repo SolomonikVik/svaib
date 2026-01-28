@@ -73,6 +73,8 @@ svaib/
 │   │   └── product_roadmap.md — Product roadmap (stages, vision features)
 │   └── prompts/   — Technical prompts (CTO, Dify copilot)
 │
+├── knowledge/     — External knowledge base (AI tools, methods, practices)
+│
 └── pub/           — Public materials
     ├── pub_context/
     │   └── svaib_presentation_guide.md — Presentation style guide
@@ -202,6 +204,7 @@ npm run dev      # Start Next.js dev server
 * `/svaib-sprint` — Sprint mode: движение по MVP спринту, фокус на product_sprint.md и текущем статусе
 * `/svaib-dev` — Development mode (dev/ folder): CTO role for architecture discussion or Developer role for coding tasks
 * `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
+* `/svaib-knowledge` — Knowledge base (knowledge/ folder): add, search, review external AI knowledge
 
 ## Subagents
 
@@ -225,6 +228,7 @@ npm run dev      # Start Next.js dev server
 5. **Context separation:**
    * meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
    * dev/ — Product development, implementation (HOW to build)
+   * knowledge/ — External AI knowledge, tools, methods (not tied to svaib)
    * pub/ — Public materials (presentations, conference materials)
 6. **Open source:** All code will be public on GitHub
 7. **Weekly "Камни недели":** Focus on concrete weekly results
@@ -284,6 +288,7 @@ npm run dev      # Start Next.js dev server
 | Design system specs                       | @dev/dev\_context/design\_system.md      |
 | MCP servers, subagents, tools             | @.claude/claude\_code\_mechanics.md      |
 | Team workflow (who does what)             | @meta/meta\_context/ai\_team.md          |
+| External AI knowledge (tools, methods)    | @knowledge/README.md                     |
 
 ***
 
