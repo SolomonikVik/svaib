@@ -1,0 +1,782 @@
+{
+    "updatedAt": "2025-12-29T04:38:01.820Z",
+    "createdAt": "2025-12-16T11:30:05.228Z",
+    "id": "51ZGGJZp5sINBsQy",
+    "name": "soniox_webhook_receiver",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "id": "68bba00f-7028-480a-af43-3dbcce01cce2",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                0,
+                0
+            ],
+            "webhookId": "4b879a7f-6df7-4944-82a4-c3d173854636",
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "soniox-transcript",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "onError": "continueRegularOutput"
+        },
+        {
+            "id": "is-completed",
+            "name": "Is Completed?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.1,
+            "position": [
+                220,
+                0
+            ],
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "version": 2,
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "combinator": "and",
+                    "conditions": [
+                        {
+                            "id": "cond-completed",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            },
+                            "leftValue": "={{ $json.body.status }}",
+                            "rightValue": "completed"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "get-transcript",
+            "name": "Get Transcript",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                440,
+                -100
+            ],
+            "parameters": {
+                "method": "GET",
+                "url": "=https://api.soniox.com/v1/transcriptions/{{ $json.body.id }}/transcript",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "options": {}
+            },
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "UlRllRLpPr7ylsXa",
+                    "name": "Soniox"
+                }
+            }
+        },
+        {
+            "id": "parse-transcript",
+            "name": "Parse Transcript",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                660,
+                -100
+            ],
+            "parameters": {
+                "jsCode": "// Parse Soniox transcript for Supabase\nconst transcript = $input.first().json;\nconst tokens = transcript.tokens || [];\nlet currentSpeaker = null;\nlet segments = [];\nlet currentSegment = { speaker: null, text: '' };\n\nfor (const token of tokens) {\n  if (token.speaker !== currentSpeaker) {\n    if (currentSegment.text) segments.push(currentSegment);\n    currentSpeaker = token.speaker;\n    currentSegment = { speaker: token.speaker, text: token.text };\n  } else {\n    currentSegment.text += token.text;\n  }\n}\nif (currentSegment.text) segments.push(currentSegment);\n\nreturn [{ json: { transcription_id: transcript.id, full_text: transcript.text, speakers: segments, token_count: tokens.length, processed_at: new Date().toISOString() } }];"
+            }
+        },
+        {
+            "id": "respond-ok",
+            "name": "Respond OK",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                880,
+                -100
+            ],
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ JSON.stringify({ status: 'ok' }) }}"
+            }
+        },
+        {
+            "id": "respond-ignored",
+            "name": "Respond Ignored",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                440,
+                100
+            ],
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ JSON.stringify({ status: 'ignored', reason: $json.body.status }) }}"
+            }
+        },
+        {
+            "id": "find-pipeline-run",
+            "name": "Find Pipeline Run",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                880,
+                -300
+            ],
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT pr.id, pr.meeting_id, m.client_id FROM pipeline_runs pr JOIN meetings m ON m.id = pr.meeting_id WHERE pr.metadata->>'soniox_job_id' = $1",
+                "options": {
+                    "queryReplacement": "={{ $json.transcription_id }}"
+                }
+            },
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "id": "save-transcript",
+            "name": "Save Transcript",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1100,
+                -300
+            ],
+            "parameters": {
+                "operation": "insert",
+                "schema": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "public"
+                },
+                "table": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "transcripts"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "meeting_id": "={{ $('Find Pipeline Run').item.json.meeting_id }}",
+                        "content": "={{ $('Parse Transcript').item.json.full_text }}",
+                        "speakers": "={{ JSON.stringify($('Parse Transcript').item.json.speakers) }}",
+                        "asr_provider": "soniox"
+                    }
+                }
+            },
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "id": "update-meeting-transcribed",
+            "name": "Update Meeting Transcribed",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1320,
+                -300
+            ],
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "UPDATE meetings SET status = 'transcribed' WHERE id = $1::uuid",
+                "options": {
+                    "queryReplacement": "={{ $('Find Pipeline Run').item.json.meeting_id }}"
+                }
+            },
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "id": "update-pipeline-completed",
+            "name": "Update Pipeline Completed",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1540,
+                -300
+            ],
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "UPDATE pipeline_runs SET status = 'completed', finished_at = now() WHERE id = $1::uuid",
+                "options": {
+                    "queryReplacement": "={{ $('Find Pipeline Run').item.json.id }}"
+                }
+            },
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "id": "execute-process-transcript",
+            "name": "Execute Process Transcript",
+            "type": "n8n-nodes-base.executeWorkflow",
+            "typeVersion": 1.2,
+            "position": [
+                1540,
+                -100
+            ],
+            "parameters": {
+                "workflowId": {
+                    "__rl": true,
+                    "mode": "id",
+                    "value": "uZpjaRlzrSb4mBtV"
+                },
+                "mode": "each",
+                "waitForSubWorkflow": false,
+                "workflowInputs": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "meeting_id": "={{ $('Find Pipeline Run').item.json.meeting_id }}",
+                        "client_id": "={{ $('Find Pipeline Run').item.json.client_id }}",
+                        "transcript_id": "={{ $('Save Transcript').item.json.id }}"
+                    }
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Is Completed?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Is Completed?": {
+            "main": [
+                [
+                    {
+                        "node": "Get Transcript",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond Ignored",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Transcript": {
+            "main": [
+                [
+                    {
+                        "node": "Parse Transcript",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse Transcript": {
+            "main": [
+                [
+                    {
+                        "node": "Find Pipeline Run",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Find Pipeline Run": {
+            "main": [
+                [
+                    {
+                        "node": "Save Transcript",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save Transcript": {
+            "main": [
+                [
+                    {
+                        "node": "Update Meeting Transcribed",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Meeting Transcribed": {
+            "main": [
+                [
+                    {
+                        "node": "Update Pipeline Completed",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Execute Process Transcript",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Pipeline Completed": {
+            "main": [
+                [
+                    {
+                        "node": "Respond OK",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1",
+        "callerPolicy": "workflowsFromSameOwner",
+        "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": {},
+    "versionId": "33f56479-9f70-4b04-beb9-18faa87b0081",
+    "activeVersionId": "33f56479-9f70-4b04-beb9-18faa87b0081",
+    "versionCounter": 35,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2025-12-16T11:30:05.233Z",
+            "createdAt": "2025-12-16T11:30:05.233Z",
+            "role": "workflow:owner",
+            "workflowId": "51ZGGJZp5sINBsQy",
+            "projectId": "9JhFwkoFVBxpUd8P",
+            "project": {
+                "updatedAt": "2025-12-09T10:05:00.000Z",
+                "createdAt": "2025-12-09T10:03:20.962Z",
+                "id": "9JhFwkoFVBxpUd8P",
+                "name": "svaib-app",
+                "type": "team",
+                "icon": {
+                    "type": "icon",
+                    "value": "triangle"
+                },
+                "description": "",
+                "projectRelations": [
+                    {
+                        "updatedAt": "2025-12-09T10:03:20.967Z",
+                        "createdAt": "2025-12-09T10:03:20.967Z",
+                        "userId": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                        "projectId": "9JhFwkoFVBxpUd8P",
+                        "user": {
+                            "updatedAt": "2026-02-10T09:34:51.000Z",
+                            "createdAt": "2025-12-09T09:55:41.947Z",
+                            "id": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                            "email": "svaib.app@gmail.com",
+                            "firstName": "svaib",
+                            "lastName": " ",
+                            "personalizationAnswers": null,
+                            "settings": {
+                                "userActivated": true,
+                                "firstSuccessfulWorkflowId": "VxHx6kkAiZsGxO6O",
+                                "userActivatedAt": 1766982571814
+                            },
+                            "disabled": false,
+                            "mfaEnabled": false,
+                            "lastActiveAt": "2026-02-09",
+                            "isPending": false
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2025-12-29T04:38:01.821Z",
+        "createdAt": "2025-12-29T04:38:01.821Z",
+        "versionId": "33f56479-9f70-4b04-beb9-18faa87b0081",
+        "workflowId": "51ZGGJZp5sINBsQy",
+        "nodes": [
+            {
+                "id": "68bba00f-7028-480a-af43-3dbcce01cce2",
+                "name": "Webhook",
+                "type": "n8n-nodes-base.webhook",
+                "typeVersion": 2.1,
+                "position": [
+                    0,
+                    0
+                ],
+                "webhookId": "4b879a7f-6df7-4944-82a4-c3d173854636",
+                "parameters": {
+                    "httpMethod": "POST",
+                    "path": "soniox-transcript",
+                    "responseMode": "responseNode",
+                    "options": {}
+                },
+                "onError": "continueRegularOutput"
+            },
+            {
+                "id": "is-completed",
+                "name": "Is Completed?",
+                "type": "n8n-nodes-base.if",
+                "typeVersion": 2.1,
+                "position": [
+                    220,
+                    0
+                ],
+                "parameters": {
+                    "conditions": {
+                        "options": {
+                            "version": 2,
+                            "caseSensitive": true,
+                            "leftValue": "",
+                            "typeValidation": "strict"
+                        },
+                        "combinator": "and",
+                        "conditions": [
+                            {
+                                "id": "cond-completed",
+                                "operator": {
+                                    "type": "string",
+                                    "operation": "equals"
+                                },
+                                "leftValue": "={{ $json.body.status }}",
+                                "rightValue": "completed"
+                            }
+                        ]
+                    }
+                }
+            },
+            {
+                "id": "get-transcript",
+                "name": "Get Transcript",
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    440,
+                    -100
+                ],
+                "parameters": {
+                    "method": "GET",
+                    "url": "=https://api.soniox.com/v1/transcriptions/{{ $json.body.id }}/transcript",
+                    "authentication": "genericCredentialType",
+                    "genericAuthType": "httpHeaderAuth",
+                    "options": {}
+                },
+                "credentials": {
+                    "httpHeaderAuth": {
+                        "id": "UlRllRLpPr7ylsXa",
+                        "name": "Soniox"
+                    }
+                }
+            },
+            {
+                "id": "parse-transcript",
+                "name": "Parse Transcript",
+                "type": "n8n-nodes-base.code",
+                "typeVersion": 2,
+                "position": [
+                    660,
+                    -100
+                ],
+                "parameters": {
+                    "jsCode": "// Parse Soniox transcript for Supabase\nconst transcript = $input.first().json;\nconst tokens = transcript.tokens || [];\nlet currentSpeaker = null;\nlet segments = [];\nlet currentSegment = { speaker: null, text: '' };\n\nfor (const token of tokens) {\n  if (token.speaker !== currentSpeaker) {\n    if (currentSegment.text) segments.push(currentSegment);\n    currentSpeaker = token.speaker;\n    currentSegment = { speaker: token.speaker, text: token.text };\n  } else {\n    currentSegment.text += token.text;\n  }\n}\nif (currentSegment.text) segments.push(currentSegment);\n\nreturn [{ json: { transcription_id: transcript.id, full_text: transcript.text, speakers: segments, token_count: tokens.length, processed_at: new Date().toISOString() } }];"
+                }
+            },
+            {
+                "id": "respond-ok",
+                "name": "Respond OK",
+                "type": "n8n-nodes-base.respondToWebhook",
+                "typeVersion": 1.1,
+                "position": [
+                    880,
+                    -100
+                ],
+                "parameters": {
+                    "respondWith": "json",
+                    "responseBody": "={{ JSON.stringify({ status: 'ok' }) }}"
+                }
+            },
+            {
+                "id": "respond-ignored",
+                "name": "Respond Ignored",
+                "type": "n8n-nodes-base.respondToWebhook",
+                "typeVersion": 1.1,
+                "position": [
+                    440,
+                    100
+                ],
+                "parameters": {
+                    "respondWith": "json",
+                    "responseBody": "={{ JSON.stringify({ status: 'ignored', reason: $json.body.status }) }}"
+                }
+            },
+            {
+                "id": "find-pipeline-run",
+                "name": "Find Pipeline Run",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    880,
+                    -300
+                ],
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "SELECT pr.id, pr.meeting_id, m.client_id FROM pipeline_runs pr JOIN meetings m ON m.id = pr.meeting_id WHERE pr.metadata->>'soniox_job_id' = $1",
+                    "options": {
+                        "queryReplacement": "={{ $json.transcription_id }}"
+                    }
+                },
+                "credentials": {
+                    "postgres": {
+                        "id": "hsHQlDm7rm2EsEGu",
+                        "name": "Supabase Postgres"
+                    }
+                }
+            },
+            {
+                "id": "save-transcript",
+                "name": "Save Transcript",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    1100,
+                    -300
+                ],
+                "parameters": {
+                    "operation": "insert",
+                    "schema": {
+                        "__rl": true,
+                        "mode": "list",
+                        "value": "public"
+                    },
+                    "table": {
+                        "__rl": true,
+                        "mode": "list",
+                        "value": "transcripts"
+                    },
+                    "columns": {
+                        "mappingMode": "defineBelow",
+                        "value": {
+                            "meeting_id": "={{ $('Find Pipeline Run').item.json.meeting_id }}",
+                            "content": "={{ $('Parse Transcript').item.json.full_text }}",
+                            "speakers": "={{ JSON.stringify($('Parse Transcript').item.json.speakers) }}",
+                            "asr_provider": "soniox"
+                        }
+                    }
+                },
+                "credentials": {
+                    "postgres": {
+                        "id": "hsHQlDm7rm2EsEGu",
+                        "name": "Supabase Postgres"
+                    }
+                }
+            },
+            {
+                "id": "update-meeting-transcribed",
+                "name": "Update Meeting Transcribed",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    1320,
+                    -300
+                ],
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "UPDATE meetings SET status = 'transcribed' WHERE id = $1::uuid",
+                    "options": {
+                        "queryReplacement": "={{ $('Find Pipeline Run').item.json.meeting_id }}"
+                    }
+                },
+                "credentials": {
+                    "postgres": {
+                        "id": "hsHQlDm7rm2EsEGu",
+                        "name": "Supabase Postgres"
+                    }
+                }
+            },
+            {
+                "id": "update-pipeline-completed",
+                "name": "Update Pipeline Completed",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    1540,
+                    -300
+                ],
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "UPDATE pipeline_runs SET status = 'completed', finished_at = now() WHERE id = $1::uuid",
+                    "options": {
+                        "queryReplacement": "={{ $('Find Pipeline Run').item.json.id }}"
+                    }
+                },
+                "credentials": {
+                    "postgres": {
+                        "id": "hsHQlDm7rm2EsEGu",
+                        "name": "Supabase Postgres"
+                    }
+                }
+            },
+            {
+                "id": "execute-process-transcript",
+                "name": "Execute Process Transcript",
+                "type": "n8n-nodes-base.executeWorkflow",
+                "typeVersion": 1.2,
+                "position": [
+                    1540,
+                    -100
+                ],
+                "parameters": {
+                    "workflowId": {
+                        "__rl": true,
+                        "mode": "id",
+                        "value": "uZpjaRlzrSb4mBtV"
+                    },
+                    "mode": "each",
+                    "waitForSubWorkflow": false,
+                    "workflowInputs": {
+                        "mappingMode": "defineBelow",
+                        "value": {
+                            "meeting_id": "={{ $('Find Pipeline Run').item.json.meeting_id }}",
+                            "client_id": "={{ $('Find Pipeline Run').item.json.client_id }}",
+                            "transcript_id": "={{ $('Save Transcript').item.json.id }}"
+                        }
+                    }
+                }
+            }
+        ],
+        "connections": {
+            "Webhook": {
+                "main": [
+                    [
+                        {
+                            "node": "Is Completed?",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Is Completed?": {
+                "main": [
+                    [
+                        {
+                            "node": "Get Transcript",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ],
+                    [
+                        {
+                            "node": "Respond Ignored",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Get Transcript": {
+                "main": [
+                    [
+                        {
+                            "node": "Parse Transcript",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Parse Transcript": {
+                "main": [
+                    [
+                        {
+                            "node": "Find Pipeline Run",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Find Pipeline Run": {
+                "main": [
+                    [
+                        {
+                            "node": "Save Transcript",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Save Transcript": {
+                "main": [
+                    [
+                        {
+                            "node": "Update Meeting Transcribed",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Update Meeting Transcribed": {
+                "main": [
+                    [
+                        {
+                            "node": "Update Pipeline Completed",
+                            "type": "main",
+                            "index": 0
+                        },
+                        {
+                            "node": "Execute Process Transcript",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Update Pipeline Completed": {
+                "main": [
+                    [
+                        {
+                            "node": "Respond OK",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "svaib  ",
+        "name": null,
+        "description": null
+    }
+}

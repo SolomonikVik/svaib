@@ -1,0 +1,778 @@
+{
+    "updatedAt": "2025-12-29T10:21:58.222Z",
+    "createdAt": "2025-12-25T04:58:38.977Z",
+    "id": "uZpjaRlzrSb4mBtV",
+    "name": "meeting_process_transcript",
+    "description": null,
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+        {
+            "parameters": {
+                "workflowInputs": {
+                    "values": [
+                        {
+                            "name": "meeting_id"
+                        },
+                        {
+                            "name": "client_id"
+                        },
+                        {
+                            "name": "transcript_id"
+                        }
+                    ]
+                }
+            },
+            "type": "n8n-nodes-base.executeWorkflowTrigger",
+            "typeVersion": 1.1,
+            "position": [
+                0,
+                0
+            ],
+            "id": "19f859c4-d945-461d-8f57-7f7e1ad4383a",
+            "name": "When Executed by Another Workflow"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "UPDATE meetings SET status = 'processing' WHERE id = $1 AND status = 'transcribed' RETURNING id, client_id, title",
+                "options": {
+                    "queryReplacement": "={{ $json.meeting_id }}"
+                }
+            },
+            "id": "lock-meeting",
+            "name": "Lock Meeting",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                224,
+                0
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, COALESCE(cleaned_content, content) as transcript_text FROM transcripts WHERE meeting_id = $1 ORDER BY created_at DESC LIMIT 1",
+                "options": {
+                    "queryReplacement": "={{ $('Lock Meeting').item.json.id }}"
+                }
+            },
+            "id": "load-transcript",
+            "name": "Load Transcript",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                672,
+                0
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT content FROM documents WHERE client_id = $1 AND doc_type = 'dossier' LIMIT 1",
+                "options": {
+                    "queryReplacement": "={{ $('Lock Meeting').item.json.client_id }}"
+                }
+            },
+            "id": "load-dossier",
+            "name": "Load Dossier",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                880,
+                0
+            ],
+            "alwaysOutputData": true,
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT content FROM prompts WHERE role = 'meeting_cleaner' AND is_active = true LIMIT 1",
+                "options": {}
+            },
+            "id": "load-prompt-cleaner",
+            "name": "Load Prompt Cleaner",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1104,
+                0
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "resource": "chat",
+                "chatModel": "gpt-5-mini-2025-08-07",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "={{ $('Load Prompt Cleaner').item.json.content }}"
+                        },
+                        {
+                            "content": "={{ $('Load Transcript').item.json.transcript_text }}"
+                        }
+                    ]
+                },
+                "options": {},
+                "requestOptions": {}
+            },
+            "id": "run-cleaner",
+            "name": "Run Cleaner",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1.1,
+            "position": [
+                1328,
+                0
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "5QtuGFTAdv2v9S7V",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT content FROM prompts WHERE role = 'meeting_analyst' AND is_active = true LIMIT 1",
+                "options": {}
+            },
+            "id": "load-prompt-analyst",
+            "name": "Load Prompt Analyst",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1552,
+                0
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const transcript = $('Run Cleaner').item.json.message.content;\nconst dossier = $('Load Dossier').item.json.content || '\u0414\u043e\u0441\u044c\u0435 \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442';\nconst meeting = $('Lock Meeting').item.json;\n\nconst input = `## \u041c\u0415\u0422\u0410\u0414\u0410\u041d\u041d\u042b\u0415 \u0412\u0421\u0422\u0420\u0415\u0427\u0418\n\u041f\u0440\u043e\u0435\u043a\u0442: ${meeting.title || '\u0411\u0435\u0437 \u043d\u0430\u0437\u0432\u0430\u043d\u0438\u044f'}\n\u0414\u0430\u0442\u0430: ${new Date().toISOString().split('T')[0]}\n\u0423\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0438: unknown\n\n## \u0414\u041e\u0421\u042c\u0415 \u041f\u0420\u041e\u0415\u041a\u0422\u0410\n${dossier}\n\n## \u0422\u0420\u0410\u041d\u0421\u041a\u0420\u0418\u041f\u0426\u0418\u042f\n${transcript}`;\n\nreturn { analyst_input: input };"
+            },
+            "id": "prepare-analyst-input",
+            "name": "Prepare Analyst Input",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1760,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "chat",
+                "chatModel": "gpt-5.2-2025-12-11",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "={{ $('Load Prompt Analyst').item.json.content }}"
+                        },
+                        {
+                            "content": "={{ $json.analyst_input }}"
+                        }
+                    ]
+                },
+                "options": {},
+                "requestOptions": {}
+            },
+            "id": "run-analyst",
+            "name": "Run Analyst",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1.1,
+            "position": [
+                1984,
+                0
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "5QtuGFTAdv2v9S7V",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT content FROM prompts WHERE role = 'meeting_protocol_finalizer' AND is_active = true LIMIT 1",
+                "options": {}
+            },
+            "id": "1d4440ca-f26e-4e95-bde9-3e679daa2790",
+            "name": "Load Prompt Finalizer",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1904,
+                304
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT content FROM prompts WHERE role = 'meeting_protocol_telegram' AND is_active = true LIMIT 1",
+                "options": {}
+            },
+            "id": "214b3759-1b3f-4cd0-82fb-7434f668c93b",
+            "name": "Load Prompt Telegram",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2304,
+                304
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT telegram_chat_id FROM clients WHERE id = $1 LIMIT 1",
+                "options": {
+                    "queryReplacement": "={{ $('Lock Meeting').item.json.client_id }}"
+                }
+            },
+            "id": "53a53ae5-0295-4b94-b2ce-0cc9e9ae8917",
+            "name": "Load Client",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2704,
+                304
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "const text = $('Run Telegram Format').item.json.message.content;\nconst chatId = $('Load Client').item.json.telegram_chat_id;\nconst MAX_LEN = 3800;\n\nif (text.length <= MAX_LEN) {\n  return [{ json: { message: text, chat_id: chatId } }];\n}\n\n// \u0420\u0435\u0436\u0435\u043c \u043f\u043e \u0441\u0435\u043a\u0446\u0438\u044f\u043c (---)\nconst sections = text.split('\\n---\\n');\nconst messages = [];\nlet current = '';\n\nfor (const section of sections) {\n  if ((current + '\\n---\\n' + section).length > MAX_LEN) {\n    if (current) messages.push(current);\n    current = section;\n  } else {\n    current = current ? current + '\\n---\\n' + section : section;\n  }\n}\nif (current) messages.push(current);\n\n// \u0414\u043e\u0431\u0430\u0432\u043b\u044f\u0435\u043c (1/N), (2/N)\nconst total = messages.length;\nreturn messages.map((m, i) => ({\n  json: {\n    message: m + `\\n\\n(${i+1}/${total})`,\n    chat_id: chatId\n  }\n}));"
+            },
+            "id": "91d21bff-d5d9-4bcf-b95f-e7ad533cafa2",
+            "name": "Split Messages",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2912,
+                304
+            ]
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "id": "cf8a433a-8660-4dfc-8ab7-29a1c198add8",
+            "name": "Loop Over Messages",
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 3,
+            "position": [
+                3104,
+                304
+            ]
+        },
+        {
+            "parameters": {
+                "chatId": "={{ $json.chat_id }}",
+                "text": "={{ $json.message }}",
+                "additionalFields": {}
+            },
+            "id": "f97bee25-f836-4728-82d4-7dcfc0319570",
+            "name": "Send Telegram",
+            "type": "n8n-nodes-base.telegram",
+            "typeVersion": 1.2,
+            "position": [
+                3312,
+                304
+            ],
+            "webhookId": "92f0d3ea-8faa-4b33-a672-791c19604095",
+            "credentials": {
+                "telegramApi": {
+                    "id": "thIFX3ToFrZky7ka",
+                    "name": "Telegram svaib"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "schema": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "public"
+                },
+                "table": {
+                    "__rl": true,
+                    "mode": "list",
+                    "value": "documents"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "meeting_id": "={{ $('Lock Meeting').item.json.id }}",
+                        "client_id": "={{ $('Lock Meeting').item.json.client_id }}",
+                        "doc_type": "meeting_protocol",
+                        "content": "={{ $('Run Finalizer').item.json.message.content }}"
+                    }
+                },
+                "options": {}
+            },
+            "id": "36441304-b41b-45f0-a434-9d4b19eb2c06",
+            "name": "Save Protocol",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                3312,
+                512
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "UPDATE meetings SET status = 'processed' WHERE id = $1",
+                "options": {
+                    "queryReplacement": "={{ $('Lock Meeting').item.json.id }}"
+                }
+            },
+            "id": "7c1201e2-fcef-4d9f-9f21-72b1b721c504",
+            "name": "Update Meeting Status",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                3504,
+                512
+            ],
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "version": 2,
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "combinator": "and",
+                    "conditions": [
+                        {
+                            "id": "cond-has-id",
+                            "operator": {
+                                "type": "string",
+                                "operation": "notEquals"
+                            },
+                            "leftValue": "={{ $json.id }}",
+                            "rightValue": ""
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "check-lock",
+            "name": "Check Lock",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.1,
+            "position": [
+                448,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "chat",
+                "chatModel": "gpt-5.2-2025-12-11",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "={{ $('Load Prompt Finalizer').item.json.content }}"
+                        },
+                        {
+                            "content": "={{ $('Run Analyst').item.json.message.content }}\n\n---\n\u0414\u041e\u0421\u042c\u0415 \u041f\u0420\u041e\u0415\u041a\u0422\u0410:\n{{ $('Load Dossier').item.json.content || '\u0414\u043e\u0441\u044c\u0435 \u043e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442' }}"
+                        }
+                    ]
+                },
+                "options": {},
+                "requestOptions": {}
+            },
+            "id": "run-finalizer",
+            "name": "Run Finalizer",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1.1,
+            "position": [
+                2112,
+                304
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "5QtuGFTAdv2v9S7V",
+                    "name": "OpenAi account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "resource": "chat",
+                "chatModel": "gpt-5-mini-2025-08-07",
+                "prompt": {
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "={{ $('Load Prompt Telegram').item.json.content }}"
+                        },
+                        {
+                            "content": "={{ $('Run Finalizer').item.json.message.content }}"
+                        }
+                    ]
+                },
+                "options": {},
+                "requestOptions": {}
+            },
+            "id": "run-telegram-format",
+            "name": "Run Telegram Format",
+            "type": "n8n-nodes-base.openAi",
+            "typeVersion": 1.1,
+            "position": [
+                2512,
+                304
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "5QtuGFTAdv2v9S7V",
+                    "name": "OpenAi account"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "When Executed by Another Workflow": {
+            "main": [
+                [
+                    {
+                        "node": "Lock Meeting",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Transcript": {
+            "main": [
+                [
+                    {
+                        "node": "Load Dossier",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Dossier": {
+            "main": [
+                [
+                    {
+                        "node": "Load Prompt Cleaner",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Prompt Cleaner": {
+            "main": [
+                [
+                    {
+                        "node": "Run Cleaner",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Run Cleaner": {
+            "main": [
+                [
+                    {
+                        "node": "Load Prompt Analyst",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Prompt Analyst": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Analyst Input",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Analyst Input": {
+            "main": [
+                [
+                    {
+                        "node": "Run Analyst",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Run Analyst": {
+            "main": [
+                [
+                    {
+                        "node": "Load Prompt Finalizer",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Client": {
+            "main": [
+                [
+                    {
+                        "node": "Split Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Split Messages": {
+            "main": [
+                [
+                    {
+                        "node": "Loop Over Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send Telegram": {
+            "main": [
+                [
+                    {
+                        "node": "Loop Over Messages",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save Protocol": {
+            "main": [
+                [
+                    {
+                        "node": "Update Meeting Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Lock Meeting": {
+            "main": [
+                [
+                    {
+                        "node": "Check Lock",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Check Lock": {
+            "main": [
+                [
+                    {
+                        "node": "Load Transcript",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Prompt Finalizer": {
+            "main": [
+                [
+                    {
+                        "node": "Run Finalizer",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Run Finalizer": {
+            "main": [
+                [
+                    {
+                        "node": "Load Prompt Telegram",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Save Protocol",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Load Prompt Telegram": {
+            "main": [
+                [
+                    {
+                        "node": "Run Telegram Format",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Run Telegram Format": {
+            "main": [
+                [
+                    {
+                        "node": "Load Client",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Loop Over Messages": {
+            "main": [
+                [],
+                [
+                    {
+                        "node": "Send Telegram",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1",
+        "callerPolicy": "workflowsFromSameOwner",
+        "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": {},
+    "versionId": "a932b80c-f175-45bc-983d-f1e765efa42f",
+    "activeVersionId": null,
+    "versionCounter": 25,
+    "triggerCount": 0,
+    "shared": [
+        {
+            "updatedAt": "2025-12-25T04:58:38.986Z",
+            "createdAt": "2025-12-25T04:58:38.986Z",
+            "role": "workflow:owner",
+            "workflowId": "uZpjaRlzrSb4mBtV",
+            "projectId": "9JhFwkoFVBxpUd8P",
+            "project": {
+                "updatedAt": "2025-12-09T10:05:00.000Z",
+                "createdAt": "2025-12-09T10:03:20.962Z",
+                "id": "9JhFwkoFVBxpUd8P",
+                "name": "svaib-app",
+                "type": "team",
+                "icon": {
+                    "type": "icon",
+                    "value": "triangle"
+                },
+                "description": "",
+                "projectRelations": [
+                    {
+                        "updatedAt": "2025-12-09T10:03:20.967Z",
+                        "createdAt": "2025-12-09T10:03:20.967Z",
+                        "userId": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                        "projectId": "9JhFwkoFVBxpUd8P",
+                        "user": {
+                            "updatedAt": "2026-02-10T09:34:51.000Z",
+                            "createdAt": "2025-12-09T09:55:41.947Z",
+                            "id": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                            "email": "svaib.app@gmail.com",
+                            "firstName": "svaib",
+                            "lastName": " ",
+                            "personalizationAnswers": null,
+                            "settings": {
+                                "userActivated": true,
+                                "firstSuccessfulWorkflowId": "VxHx6kkAiZsGxO6O",
+                                "userActivatedAt": 1766982571814
+                            },
+                            "disabled": false,
+                            "mfaEnabled": false,
+                            "lastActiveAt": "2026-02-09",
+                            "isPending": false
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": null
+}

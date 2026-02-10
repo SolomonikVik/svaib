@@ -1,0 +1,116 @@
+{
+    "updatedAt": "2025-12-16T13:02:42.950Z",
+    "createdAt": "2025-12-16T12:58:23.280Z",
+    "id": "ID9vwr73POqy7nZ7",
+    "name": "test_audio_separate_api",
+    "description": null,
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+        {
+            "parameters": {},
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                0,
+                0
+            ],
+            "id": "fd020a30-6671-4093-8680-d38dd5e2bdae",
+            "name": "When clicking \u2018Execute workflow\u2019"
+        },
+        {
+            "parameters": {
+                "url": "https://us-west-2.recall.ai/api/v1/audio_separate/?recording_id=822c2e0c-31c3-40c8-9dfb-cdbd126cbce6",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.3,
+            "position": [
+                208,
+                0
+            ],
+            "id": "6993a0b3-166f-49ed-8146-55c41b1196c9",
+            "name": "HTTP Request",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "5KV81RaV9Gn79hUo",
+                    "name": "Recall.ai"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "When clicking \u2018Execute workflow\u2019": {
+            "main": [
+                [
+                    {
+                        "node": "HTTP Request",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": {},
+    "versionId": "fb9208ed-1a71-4698-820a-7f81faf7b88e",
+    "activeVersionId": null,
+    "versionCounter": 2,
+    "triggerCount": 0,
+    "shared": [
+        {
+            "updatedAt": "2025-12-16T12:58:23.284Z",
+            "createdAt": "2025-12-16T12:58:23.284Z",
+            "role": "workflow:owner",
+            "workflowId": "ID9vwr73POqy7nZ7",
+            "projectId": "9JhFwkoFVBxpUd8P",
+            "project": {
+                "updatedAt": "2025-12-09T10:05:00.000Z",
+                "createdAt": "2025-12-09T10:03:20.962Z",
+                "id": "9JhFwkoFVBxpUd8P",
+                "name": "svaib-app",
+                "type": "team",
+                "icon": {
+                    "type": "icon",
+                    "value": "triangle"
+                },
+                "description": "",
+                "projectRelations": [
+                    {
+                        "updatedAt": "2025-12-09T10:03:20.967Z",
+                        "createdAt": "2025-12-09T10:03:20.967Z",
+                        "userId": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                        "projectId": "9JhFwkoFVBxpUd8P",
+                        "user": {
+                            "updatedAt": "2026-02-10T09:34:51.000Z",
+                            "createdAt": "2025-12-09T09:55:41.947Z",
+                            "id": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                            "email": "svaib.app@gmail.com",
+                            "firstName": "svaib",
+                            "lastName": " ",
+                            "personalizationAnswers": null,
+                            "settings": {
+                                "userActivated": true,
+                                "firstSuccessfulWorkflowId": "VxHx6kkAiZsGxO6O",
+                                "userActivatedAt": 1766982571814
+                            },
+                            "disabled": false,
+                            "mfaEnabled": false,
+                            "lastActiveAt": "2026-02-09",
+                            "isPending": false
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": null
+}

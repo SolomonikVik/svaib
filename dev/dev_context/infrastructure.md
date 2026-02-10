@@ -1,7 +1,7 @@
 ---
 title: "Текущая инфраструктура svaib"
-updated: 2026-01-18
-version: 2.15
+updated: 2026-02-10
+version: 18
 scope: "implementation"
 priority: high
 ---
@@ -20,7 +20,7 @@ priority: high
 |--------|----------|--------|
 | Google Cloud | svaib | Project ID: `svaib-app` |
 | Supabase | svaib-app | Project ID: `cfukwleykhntybwgdltr` |
-| n8n | svaib-app | svaib-app.app.n8n.cloud |
+| n8n | svaib-app | ⏸️ отключён 10.02.2026 |
 | Cloudflare | svaib.com | DNS + Email Routing |
 | Recall.ai | svaib-app | app@svaib.com |
 | Soniox | svaib-app | console.soniox.com |
@@ -201,52 +201,31 @@ priority: high
 
 ### n8n Cloud
 
-* **URL:** [https://svaib-app.app.n8n.cloud](https://svaib-app.app.n8n.cloud)
+#### Статус: ⏸️ ОТКЛЮЧЕН (10.02.2026)
+
+**Причина:** Не используется, экономия $24/мес.
+
+**Backup workflows:** `dev/n8n_backup/` (7 JSON-файлов, экспорт через API 10.02.2026)
+
+| Файл | Назначение |
+|------|-----------|
+| meeting_create_bot.json | Telegram → Client + Meeting → Recall.ai |
+| recall_webhook_receiver.json | Webhook Recall.ai → audio → Soniox |
+| soniox_webhook_receiver.json | Webhook Soniox → транскрипт → Supabase |
+| meeting_process_transcript.json | AI Pipeline: промпты → протокол → Telegram |
+| test_supabase_connection.json | Тест подключения к Supabase |
+| recall_webhook_receiver_copy_separate_audio.json | Тестовая копия (inactive) |
+| test_audio_separate_api.json | Тест API (inactive) |
+
+**Восстановление:** Self-hosted n8n (Community Edition, бесплатно) → импорт JSON → ввести credentials заново (ключи в KeePass).
+
+**Детали реализации workflows:** См. [workflows.md](workflows.md)
+
+**Последняя конфигурация (для справки):**
+* **URL:** svaib-app.app.n8n.cloud
 * **Аккаунт:** svaib.app@gmail.com
 * **Тариф:** Starter ($24/мес)
-* **Версия:** 2.0 (декабрь 2025)
-* **Статус:** ✅ работает
-* **API Key:** хранится в KeePass (срок: 90 дней, до ~11.03.2026)
-* **Project ID:** `9JhFwkoFVBxpUd8P` (проект svaib-app)
-
-#### MCP-ограничение
-
-n8n API не поддерживает создание workflow напрямую в проекте — только в personal.
-**Рабочий процесс:** MCP создаёт workflow → Виктор переносит в проект через UI → MCP редактирует по ID.
-
-#### Credentials (обновлено 17.12.2025)
-
-| Credential | Тип | ID | Статус |
-|------------|-----|-----|--------|
-| Supabase account | Supabase API | `9AoqdQKbnc7fRFVq` | ✅ |
-| Supabase Postgres | PostgreSQL | `hsHQlDm7rm2EsEGu` | ✅ |
-| OpenAi account | OpenAI API | `5QtuGFTAdv2v9S7V` | ✅ |
-| Recall.ai | Header Auth | `5KV81RaV9Gn79hUo` | ✅ |
-| Soniox | Header Auth | `UlRllRLpPr7ylsXa` | ✅ |
-| Telegram svaib | Telegram API | `thIFX3ToFrZky7ka` | ✅ |
-
-**Supabase Postgres (Session Pooler):**
-- Host: `aws-1-eu-central-1.pooler.supabase.com`
-- Port: `5432`
-- Database: `postgres`
-- User: `postgres.cfukwleykhntybwgdltr`
-- SSL: Disable (для Session Pooler)
-
-**Примечание:** ID нужны для создания нод через MCP API. Брать из этой таблицы, не выдумывать.
-
-#### Workflows (обновлено 29.12.2025)
-
-> **Детали реализации:** См. [workflows.md](workflows.md)
-
-| ID | Название | Назначение | Статус |
-|----|----------|------------|--------|
-| kG4emaP9j50nZoGu | meeting_create_bot | Telegram → Client + Meeting → Recall.ai | ✅ active (9 nodes) |
-| 4v1G30AX1eHfRQjF | recall_webhook_receiver | Webhook Recall.ai → audio_mixed → Soniox transcribe | ✅ active (11 nodes) |
-| 51ZGGJZp5sINBsQy | soniox_webhook_receiver | Webhook Soniox → транскрипт → Supabase → trigger process | ✅ active (11 nodes) |
-| uZpjaRlzrSb4mBtV | meeting_process_transcript | AI Pipeline: 4 промпта → протокол → Telegram | ✅ active (20 nodes) |
-| vO3W2eWVBCMwuLTi | test_supabase_connection | Тест подключения к Supabase | ✅ active |
-
-**Soniox Webhook URL:** `https://svaib-app.app.n8n.cloud/webhook/soniox-transcript`
+* **Project ID:** `9JhFwkoFVBxpUd8P`
 
 ### Recall.ai
 
@@ -343,20 +322,19 @@ n8n API не поддерживает создание workflow напрямую
 * **Тип:** VS Code Extension
 * **Авторизация:** через Claude Max подписка ($100/мес)
 
-### MCP-серверы (подключены 11.12.2025, обновлено 15.12.2025)
+### MCP-серверы (обновлено 10.02.2026)
 
-| MCP | Назначение | Токен | Срок действия |
-|-----|------------|-------|---------------|
-| **n8n-mcp** | Создание/редактирование workflow | KeePass | 90 дней (~11.03.2026) |
-| **supabase** | SQL, таблицы, миграции | KeePass | 30 дней (~10.01.2026) |
-| **context7** | Документация (Recall.ai, Soniox, n8n) | — | Бессрочно |
+| MCP | Назначение | Статус |
+|-----|------------|--------|
+| **context7** | Документация библиотек | ✅ Активен |
+| **n8n-mcp** | Создание/редактирование workflow | ⏸️ Отключён (n8n Cloud отменён) |
+| **supabase** | SQL, таблицы, миграции | ⏸️ Отключён (токен истёк ~10.01.2026) |
 
-**Хранение:** MCP конфигурация в `~/.claude.json` (user-level, не в репозитории)
+**Хранение:** `.mcp.json` в корне проекта (gitignored, API-ключи прямо в файле)
 
-**При истечении токена:**
-1. Создать новый токен в соответствующем сервисе
-2. `claude mcp remove <name> -s local`
-3. `claude mcp add <name> ...` с новым токеном
+**Отключение/включение:** `disabledMcpjsonServers` в `.claude/settings.local.json` (см. `claude_code_mechanics.md`)
+
+**При истечении токена:** Создать новый токен → обновить `.mcp.json`
 
 ### Git
 
@@ -369,13 +347,14 @@ n8n API не поддерживает создание workflow напрямую
 
 | Сервис        | Стоимость/мес | Примечание        |
 | ------------- | ------------- | ----------------- |
-| n8n Cloud     | $24           | Starter plan      |
+| Claude Max    | $100          | AI-ассистент (Claude Code) |
+| n8n Cloud     | $0            | ⏸️ Отключён 10.02.2026 |
 | OpenAI API    | $5-10         | лимит $10         |
 | Google Gemini | $0            | бесплатный тариф  |
 | Supabase      | $0            | Free tier         |
 | Cloudflare    | $0            | Free tier         |
 | Домен         | ~₽100 (~$1)   | ₽1200/год         |
-| **ИТОГО**     | **~$35/мес**  |                   |
+| **ИТОГО**     | **~$111/мес** |                   |
 
 *VPS Timeweb отключен 17.12.2025 — экономия ~$12/мес*
 

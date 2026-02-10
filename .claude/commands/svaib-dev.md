@@ -35,10 +35,12 @@ description: "Режим разработки проекта SVAIB"
 
 **Ты работаешь как VS Code Extension**, не CLI.
 
-**MCP подключены:** n8n-mcp, supabase, context7 (~33k токенов контекста)
-- Это влияет на размер сессии — работаем короткими итерациями
+**MCP подключены:** context7 (n8n-mcp и supabase отключены, см. claude_code_mechanics.md)
 - Подробности: @.claude/claude_code_mechanics.md
 
+**⚠️ Проверь MCP при старте:** Если нет инструментов `mcp__n8n-mcp__*` — MCP отключены.
+Включить: в `.claude/settings.local.json` поставить `"disabledMcpjsonServers": []`, перезапустить сессию.
+Конфиг MCP: `.mcp.json` в корне проекта (gitignored).
 
 ---
 

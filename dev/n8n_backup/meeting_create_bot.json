@@ -1,0 +1,686 @@
+{
+    "updatedAt": "2025-12-18T05:38:33.442Z",
+    "createdAt": "2025-12-16T08:42:39.532Z",
+    "id": "kG4emaP9j50nZoGu",
+    "name": "meeting_create_bot",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "parameters": {
+                "updates": [
+                    "message"
+                ],
+                "additionalFields": {}
+            },
+            "type": "n8n-nodes-base.telegramTrigger",
+            "typeVersion": 1.2,
+            "position": [
+                0,
+                0
+            ],
+            "id": "ec2aae68-454e-4f3b-83fd-9ca193b1b53e",
+            "name": "Telegram Trigger",
+            "webhookId": "cb3db7d3-5702-4491-8291-eb08142fac97",
+            "credentials": {
+                "telegramApi": {
+                    "id": "thIFX3ToFrZky7ka",
+                    "name": "Telegram svaib"
+                }
+            }
+        },
+        {
+            "id": "cdc32082-6f47-448e-b2a1-c83c7b7c7ab0",
+            "name": "Parse Command",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                220,
+                0
+            ],
+            "parameters": {
+                "jsCode": "// \u041f\u0430\u0440\u0441\u0438\u043c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0438\u0437 Telegram\nconst message = $input.first().json.message;\nconst text = message?.text || '';\nconst chatId = message?.chat?.id;\nconst userId = message?.from?.id;\nconst username = message?.from?.username || message?.from?.first_name || 'Unknown';\n\n// \u0418\u0449\u0435\u043c \u043a\u043e\u043c\u0430\u043d\u0434\u0443 /meet \u0438 URL\nconst meetMatch = text.match(/\\/meet\\s+(https?:\\/\\/[^\\s]+)/i);\nconst directUrlMatch = text.match(/(https?:\\/\\/[^\\s]*(zoom|meet\\.google|teams\\.microsoft)[^\\s]*)/i);\n\nlet meetingUrl = null;\nlet isValidCommand = false;\n\nif (meetMatch) {\n  meetingUrl = meetMatch[1];\n  isValidCommand = true;\n} else if (directUrlMatch && text.toLowerCase().includes('\u0437\u0430\u043f\u0438\u0448\u0438')) {\n  meetingUrl = directUrlMatch[1];\n  isValidCommand = true;\n}\n\nreturn {\n  json: {\n    chatId,\n    userId,\n    username,\n    originalText: text,\n    meetingUrl,\n    isValidCommand,\n    timestamp: new Date().toISOString()\n  }\n};"
+            }
+        },
+        {
+            "id": "8d45d7b7-c571-4bd2-a73e-caf7899f2517",
+            "name": "Has Valid URL?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                440,
+                0
+            ],
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "condition-url",
+                            "leftValue": "={{ $json.isValidCommand }}",
+                            "rightValue": true,
+                            "operator": {
+                                "type": "boolean",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                }
+            }
+        },
+        {
+            "id": "cc954717-1bd9-4639-a463-de4075ec262b",
+            "name": "Recall.ai Create Bot",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1000,
+                -100
+            ],
+            "parameters": {
+                "method": "POST",
+                "url": "https://us-west-2.recall.ai/api/v1/bot/",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={\n  \"meeting_url\": \"{{ $('Parse Command').item.json.meetingUrl }}\",\n  \"bot_name\": \"svaib\",\n  \"recording_config\": {\n    \"audio_mixed_mp3\": {},\n    \"meeting_metadata\": {},\n    \"participant_events\": {}\n  }\n}"
+            },
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "5KV81RaV9Gn79hUo",
+                    "name": "Recall.ai"
+                }
+            }
+        },
+        {
+            "id": "01ea4741-d9ed-4853-9bfa-bb5141ce4723",
+            "name": "Reply Success",
+            "type": "n8n-nodes-base.telegram",
+            "typeVersion": 1.2,
+            "position": [
+                1400,
+                -100
+            ],
+            "parameters": {
+                "operation": "sendMessage",
+                "chatId": "={{ $('Parse Command').item.json.chatId }}",
+                "text": "=\u2705 \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u044e\u0441\u044c \u043a \u0432\u0441\u0442\u0440\u0435\u0447\u0435!\n\n\u0411\u043e\u0442 svaib \u043f\u0440\u0438\u0441\u043e\u0435\u0434\u0438\u043d\u0438\u0442\u0441\u044f \u0447\u0435\u0440\u0435\u0437 10-30 \u0441\u0435\u043a\u0443\u043d\u0434.\nID \u0431\u043e\u0442\u0430: {{ $json.id }}"
+            },
+            "credentials": {
+                "telegramApi": {
+                    "id": "thIFX3ToFrZky7ka",
+                    "name": "Telegram svaib"
+                }
+            }
+        },
+        {
+            "id": "fea6aa98-b6f1-4984-861d-8218590ce3cf",
+            "name": "Reply Error Format",
+            "type": "n8n-nodes-base.telegram",
+            "typeVersion": 1.2,
+            "position": [
+                600,
+                100
+            ],
+            "parameters": {
+                "operation": "sendMessage",
+                "chatId": "={{ $json.chatId }}",
+                "text": "\u2753 \u0427\u0442\u043e\u0431\u044b \u0437\u0430\u043f\u0438\u0441\u0430\u0442\u044c \u0432\u0441\u0442\u0440\u0435\u0447\u0443, \u043e\u0442\u043f\u0440\u0430\u0432\u044c \u043a\u043e\u043c\u0430\u043d\u0434\u0443:\n\n/meet [\u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0432\u0441\u0442\u0440\u0435\u0447\u0443]\n\n\u041f\u0440\u0438\u043c\u0435\u0440:\n/meet https://zoom.us/j/123456789"
+            },
+            "credentials": {
+                "telegramApi": {
+                    "id": "thIFX3ToFrZky7ka",
+                    "name": "Telegram svaib"
+                }
+            }
+        },
+        {
+            "id": "95fa963f-3be4-433e-aa8c-3980cc8e58f0",
+            "name": "Create Meeting",
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                800,
+                -100
+            ],
+            "parameters": {
+                "resource": "row",
+                "operation": "create",
+                "tableId": "meetings",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "client_id",
+                            "fieldValue": "={{ $json.id }}"
+                        },
+                        {
+                            "fieldId": "meeting_url",
+                            "fieldValue": "={{ $('Parse Command').item.json.meetingUrl }}"
+                        },
+                        {
+                            "fieldId": "status",
+                            "fieldValue": "scheduled"
+                        },
+                        {
+                            "fieldId": "platform",
+                            "fieldValue": "={{ $('Parse Command').item.json.meetingUrl.includes('zoom') ? 'zoom' : $('Parse Command').item.json.meetingUrl.includes('meet.google') ? 'meet' : $('Parse Command').item.json.meetingUrl.includes('teams') ? 'teams' : 'other' }}"
+                        }
+                    ]
+                }
+            },
+            "credentials": {
+                "supabaseApi": {
+                    "id": "9AoqdQKbnc7fRFVq",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "id": "724a1768-3048-4f26-8ede-fdcc2220477a",
+            "name": "Update Meeting",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                1200,
+                -100
+            ],
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "UPDATE meetings\nSET recall_bot_id = '{{ $json.id }}'\nWHERE id = '{{ $(\"Create Meeting\").item.json.id }}'\nRETURNING *;"
+            },
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        },
+        {
+            "id": "f4acd178-fe0c-466f-bce2-e14e3b634e2f",
+            "name": "Upsert Client",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                600,
+                -100
+            ],
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO clients (telegram_chat_id, name)\nVALUES ('{{ $('Parse Command').item.json.chatId }}', '{{ $('Telegram Trigger').item.json.message.chat.title || ($('Telegram Trigger').item.json.message.chat.first_name + \" \" + ($('Telegram Trigger').item.json.message.chat.last_name || \"\")).trim() }}')\nON CONFLICT (telegram_chat_id)\nDO UPDATE SET name = EXCLUDED.name\nRETURNING *;"
+            },
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Telegram Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "Parse Command",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse Command": {
+            "main": [
+                [
+                    {
+                        "node": "Has Valid URL?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Has Valid URL?": {
+            "main": [
+                [
+                    {
+                        "node": "Upsert Client",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Reply Error Format",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create Meeting": {
+            "main": [
+                [
+                    {
+                        "node": "Recall.ai Create Bot",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Recall.ai Create Bot": {
+            "main": [
+                [
+                    {
+                        "node": "Update Meeting",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Meeting": {
+            "main": [
+                [
+                    {
+                        "node": "Reply Success",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Upsert Client": {
+            "main": [
+                [
+                    {
+                        "node": "Create Meeting",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1",
+        "callerPolicy": "workflowsFromSameOwner",
+        "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+        "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "5102042b-6775-4238-84e9-24b95f484f1e",
+    "activeVersionId": "5102042b-6775-4238-84e9-24b95f484f1e",
+    "versionCounter": 49,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2025-12-16T08:42:39.535Z",
+            "createdAt": "2025-12-16T08:42:39.535Z",
+            "role": "workflow:owner",
+            "workflowId": "kG4emaP9j50nZoGu",
+            "projectId": "9JhFwkoFVBxpUd8P",
+            "project": {
+                "updatedAt": "2025-12-09T10:05:00.000Z",
+                "createdAt": "2025-12-09T10:03:20.962Z",
+                "id": "9JhFwkoFVBxpUd8P",
+                "name": "svaib-app",
+                "type": "team",
+                "icon": {
+                    "type": "icon",
+                    "value": "triangle"
+                },
+                "description": "",
+                "projectRelations": [
+                    {
+                        "updatedAt": "2025-12-09T10:03:20.967Z",
+                        "createdAt": "2025-12-09T10:03:20.967Z",
+                        "userId": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                        "projectId": "9JhFwkoFVBxpUd8P",
+                        "user": {
+                            "updatedAt": "2026-02-10T09:34:51.000Z",
+                            "createdAt": "2025-12-09T09:55:41.947Z",
+                            "id": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                            "email": "svaib.app@gmail.com",
+                            "firstName": "svaib",
+                            "lastName": " ",
+                            "personalizationAnswers": null,
+                            "settings": {
+                                "userActivated": true,
+                                "firstSuccessfulWorkflowId": "VxHx6kkAiZsGxO6O",
+                                "userActivatedAt": 1766982571814
+                            },
+                            "disabled": false,
+                            "mfaEnabled": false,
+                            "lastActiveAt": "2026-02-09",
+                            "isPending": false
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2025-12-18T05:38:33.443Z",
+        "createdAt": "2025-12-18T05:38:33.443Z",
+        "versionId": "5102042b-6775-4238-84e9-24b95f484f1e",
+        "workflowId": "kG4emaP9j50nZoGu",
+        "nodes": [
+            {
+                "parameters": {
+                    "updates": [
+                        "message"
+                    ],
+                    "additionalFields": {}
+                },
+                "type": "n8n-nodes-base.telegramTrigger",
+                "typeVersion": 1.2,
+                "position": [
+                    0,
+                    0
+                ],
+                "id": "ec2aae68-454e-4f3b-83fd-9ca193b1b53e",
+                "name": "Telegram Trigger",
+                "webhookId": "cb3db7d3-5702-4491-8291-eb08142fac97",
+                "credentials": {
+                    "telegramApi": {
+                        "id": "thIFX3ToFrZky7ka",
+                        "name": "Telegram svaib"
+                    }
+                }
+            },
+            {
+                "id": "cdc32082-6f47-448e-b2a1-c83c7b7c7ab0",
+                "name": "Parse Command",
+                "type": "n8n-nodes-base.code",
+                "typeVersion": 2,
+                "position": [
+                    220,
+                    0
+                ],
+                "parameters": {
+                    "jsCode": "// \u041f\u0430\u0440\u0441\u0438\u043c \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435 \u0438\u0437 Telegram\nconst message = $input.first().json.message;\nconst text = message?.text || '';\nconst chatId = message?.chat?.id;\nconst userId = message?.from?.id;\nconst username = message?.from?.username || message?.from?.first_name || 'Unknown';\n\n// \u0418\u0449\u0435\u043c \u043a\u043e\u043c\u0430\u043d\u0434\u0443 /meet \u0438 URL\nconst meetMatch = text.match(/\\/meet\\s+(https?:\\/\\/[^\\s]+)/i);\nconst directUrlMatch = text.match(/(https?:\\/\\/[^\\s]*(zoom|meet\\.google|teams\\.microsoft)[^\\s]*)/i);\n\nlet meetingUrl = null;\nlet isValidCommand = false;\n\nif (meetMatch) {\n  meetingUrl = meetMatch[1];\n  isValidCommand = true;\n} else if (directUrlMatch && text.toLowerCase().includes('\u0437\u0430\u043f\u0438\u0448\u0438')) {\n  meetingUrl = directUrlMatch[1];\n  isValidCommand = true;\n}\n\nreturn {\n  json: {\n    chatId,\n    userId,\n    username,\n    originalText: text,\n    meetingUrl,\n    isValidCommand,\n    timestamp: new Date().toISOString()\n  }\n};"
+                }
+            },
+            {
+                "id": "8d45d7b7-c571-4bd2-a73e-caf7899f2517",
+                "name": "Has Valid URL?",
+                "type": "n8n-nodes-base.if",
+                "typeVersion": 2,
+                "position": [
+                    440,
+                    0
+                ],
+                "parameters": {
+                    "conditions": {
+                        "options": {
+                            "caseSensitive": true,
+                            "leftValue": "",
+                            "typeValidation": "strict"
+                        },
+                        "conditions": [
+                            {
+                                "id": "condition-url",
+                                "leftValue": "={{ $json.isValidCommand }}",
+                                "rightValue": true,
+                                "operator": {
+                                    "type": "boolean",
+                                    "operation": "equals"
+                                }
+                            }
+                        ],
+                        "combinator": "and"
+                    }
+                }
+            },
+            {
+                "id": "cc954717-1bd9-4639-a463-de4075ec262b",
+                "name": "Recall.ai Create Bot",
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    1000,
+                    -100
+                ],
+                "parameters": {
+                    "method": "POST",
+                    "url": "https://us-west-2.recall.ai/api/v1/bot/",
+                    "authentication": "genericCredentialType",
+                    "genericAuthType": "httpHeaderAuth",
+                    "sendBody": true,
+                    "specifyBody": "json",
+                    "jsonBody": "={\n  \"meeting_url\": \"{{ $('Parse Command').item.json.meetingUrl }}\",\n  \"bot_name\": \"svaib\",\n  \"recording_config\": {\n    \"audio_mixed_mp3\": {},\n    \"meeting_metadata\": {},\n    \"participant_events\": {}\n  }\n}"
+                },
+                "credentials": {
+                    "httpHeaderAuth": {
+                        "id": "5KV81RaV9Gn79hUo",
+                        "name": "Recall.ai"
+                    }
+                }
+            },
+            {
+                "id": "01ea4741-d9ed-4853-9bfa-bb5141ce4723",
+                "name": "Reply Success",
+                "type": "n8n-nodes-base.telegram",
+                "typeVersion": 1.2,
+                "position": [
+                    1400,
+                    -100
+                ],
+                "parameters": {
+                    "operation": "sendMessage",
+                    "chatId": "={{ $('Parse Command').item.json.chatId }}",
+                    "text": "=\u2705 \u041f\u043e\u0434\u043a\u043b\u044e\u0447\u0430\u044e\u0441\u044c \u043a \u0432\u0441\u0442\u0440\u0435\u0447\u0435!\n\n\u0411\u043e\u0442 svaib \u043f\u0440\u0438\u0441\u043e\u0435\u0434\u0438\u043d\u0438\u0442\u0441\u044f \u0447\u0435\u0440\u0435\u0437 10-30 \u0441\u0435\u043a\u0443\u043d\u0434.\nID \u0431\u043e\u0442\u0430: {{ $json.id }}"
+                },
+                "credentials": {
+                    "telegramApi": {
+                        "id": "thIFX3ToFrZky7ka",
+                        "name": "Telegram svaib"
+                    }
+                }
+            },
+            {
+                "id": "fea6aa98-b6f1-4984-861d-8218590ce3cf",
+                "name": "Reply Error Format",
+                "type": "n8n-nodes-base.telegram",
+                "typeVersion": 1.2,
+                "position": [
+                    600,
+                    100
+                ],
+                "parameters": {
+                    "operation": "sendMessage",
+                    "chatId": "={{ $json.chatId }}",
+                    "text": "\u2753 \u0427\u0442\u043e\u0431\u044b \u0437\u0430\u043f\u0438\u0441\u0430\u0442\u044c \u0432\u0441\u0442\u0440\u0435\u0447\u0443, \u043e\u0442\u043f\u0440\u0430\u0432\u044c \u043a\u043e\u043c\u0430\u043d\u0434\u0443:\n\n/meet [\u0441\u0441\u044b\u043b\u043a\u0430 \u043d\u0430 \u0432\u0441\u0442\u0440\u0435\u0447\u0443]\n\n\u041f\u0440\u0438\u043c\u0435\u0440:\n/meet https://zoom.us/j/123456789"
+                },
+                "credentials": {
+                    "telegramApi": {
+                        "id": "thIFX3ToFrZky7ka",
+                        "name": "Telegram svaib"
+                    }
+                }
+            },
+            {
+                "id": "95fa963f-3be4-433e-aa8c-3980cc8e58f0",
+                "name": "Create Meeting",
+                "type": "n8n-nodes-base.supabase",
+                "typeVersion": 1,
+                "position": [
+                    800,
+                    -100
+                ],
+                "parameters": {
+                    "resource": "row",
+                    "operation": "create",
+                    "tableId": "meetings",
+                    "fieldsUi": {
+                        "fieldValues": [
+                            {
+                                "fieldId": "client_id",
+                                "fieldValue": "={{ $json.id }}"
+                            },
+                            {
+                                "fieldId": "meeting_url",
+                                "fieldValue": "={{ $('Parse Command').item.json.meetingUrl }}"
+                            },
+                            {
+                                "fieldId": "status",
+                                "fieldValue": "scheduled"
+                            },
+                            {
+                                "fieldId": "platform",
+                                "fieldValue": "={{ $('Parse Command').item.json.meetingUrl.includes('zoom') ? 'zoom' : $('Parse Command').item.json.meetingUrl.includes('meet.google') ? 'meet' : $('Parse Command').item.json.meetingUrl.includes('teams') ? 'teams' : 'other' }}"
+                            }
+                        ]
+                    }
+                },
+                "credentials": {
+                    "supabaseApi": {
+                        "id": "9AoqdQKbnc7fRFVq",
+                        "name": "Supabase account"
+                    }
+                }
+            },
+            {
+                "id": "724a1768-3048-4f26-8ede-fdcc2220477a",
+                "name": "Update Meeting",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    1200,
+                    -100
+                ],
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "UPDATE meetings\nSET recall_bot_id = '{{ $json.id }}'\nWHERE id = '{{ $(\"Create Meeting\").item.json.id }}'\nRETURNING *;"
+                },
+                "credentials": {
+                    "postgres": {
+                        "id": "hsHQlDm7rm2EsEGu",
+                        "name": "Supabase Postgres"
+                    }
+                }
+            },
+            {
+                "id": "f4acd178-fe0c-466f-bce2-e14e3b634e2f",
+                "name": "Upsert Client",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    600,
+                    -100
+                ],
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "INSERT INTO clients (telegram_chat_id, name)\nVALUES ('{{ $('Parse Command').item.json.chatId }}', '{{ $('Telegram Trigger').item.json.message.chat.title || ($('Telegram Trigger').item.json.message.chat.first_name + \" \" + ($('Telegram Trigger').item.json.message.chat.last_name || \"\")).trim() }}')\nON CONFLICT (telegram_chat_id)\nDO UPDATE SET name = EXCLUDED.name\nRETURNING *;"
+                },
+                "credentials": {
+                    "postgres": {
+                        "id": "hsHQlDm7rm2EsEGu",
+                        "name": "Supabase Postgres"
+                    }
+                }
+            }
+        ],
+        "connections": {
+            "Telegram Trigger": {
+                "main": [
+                    [
+                        {
+                            "node": "Parse Command",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Parse Command": {
+                "main": [
+                    [
+                        {
+                            "node": "Has Valid URL?",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Has Valid URL?": {
+                "main": [
+                    [
+                        {
+                            "node": "Upsert Client",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ],
+                    [
+                        {
+                            "node": "Reply Error Format",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Create Meeting": {
+                "main": [
+                    [
+                        {
+                            "node": "Recall.ai Create Bot",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Recall.ai Create Bot": {
+                "main": [
+                    [
+                        {
+                            "node": "Update Meeting",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Update Meeting": {
+                "main": [
+                    [
+                        {
+                            "node": "Reply Success",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Upsert Client": {
+                "main": [
+                    [
+                        {
+                            "node": "Create Meeting",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "svaib  ",
+        "name": null,
+        "description": null
+    }
+}

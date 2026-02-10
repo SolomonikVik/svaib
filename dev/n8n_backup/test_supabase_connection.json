@@ -1,0 +1,252 @@
+{
+    "updatedAt": "2025-12-17T09:16:14.836Z",
+    "createdAt": "2025-12-09T10:22:15.822Z",
+    "id": "vO3W2eWVBCMwuLTi",
+    "name": "test_supabase_connection",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "parameters": {
+                "path": "41433f10-3edf-4011-b086-d0e518d06468",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                0,
+                0
+            ],
+            "id": "d1149e95-fca6-4d38-b6a6-4256f24337b4",
+            "name": "Webhook",
+            "webhookId": "41433f10-3edf-4011-b086-d0e518d06468"
+        },
+        {
+            "parameters": {
+                "tableId": "clients",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "name",
+                            "fieldValue": "Test from n8n"
+                        },
+                        {
+                            "fieldId": "settings",
+                            "fieldValue": "{}"
+                        }
+                    ]
+                }
+            },
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                208,
+                0
+            ],
+            "id": "c3bd1629-f1f1-4a4f-a1af-7b08e6f49805",
+            "name": "Create a row",
+            "credentials": {
+                "supabaseApi": {
+                    "id": "9AoqdQKbnc7fRFVq",
+                    "name": "Supabase account"
+                }
+            }
+        },
+        {
+            "id": "821abd57-8c89-40a9-935b-607dcc694d9b",
+            "name": "Test Postgres",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                400,
+                0
+            ],
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, name, telegram_chat_id FROM clients LIMIT 3;"
+            },
+            "credentials": {
+                "postgres": {
+                    "id": "hsHQlDm7rm2EsEGu",
+                    "name": "Supabase Postgres"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Create a row",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Test Postgres",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1",
+        "callerPolicy": "workflowsFromSameOwner",
+        "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": {
+        "templateCredsSetupCompleted": true
+    },
+    "pinData": {},
+    "versionId": "4b2c6b79-78f3-43ba-b88f-f64c3669954c",
+    "activeVersionId": "4b2c6b79-78f3-43ba-b88f-f64c3669954c",
+    "versionCounter": 9,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2025-12-09T10:22:15.825Z",
+            "createdAt": "2025-12-09T10:22:15.825Z",
+            "role": "workflow:owner",
+            "workflowId": "vO3W2eWVBCMwuLTi",
+            "projectId": "9JhFwkoFVBxpUd8P",
+            "project": {
+                "updatedAt": "2025-12-09T10:05:00.000Z",
+                "createdAt": "2025-12-09T10:03:20.962Z",
+                "id": "9JhFwkoFVBxpUd8P",
+                "name": "svaib-app",
+                "type": "team",
+                "icon": {
+                    "type": "icon",
+                    "value": "triangle"
+                },
+                "description": "",
+                "projectRelations": [
+                    {
+                        "updatedAt": "2025-12-09T10:03:20.967Z",
+                        "createdAt": "2025-12-09T10:03:20.967Z",
+                        "userId": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                        "projectId": "9JhFwkoFVBxpUd8P",
+                        "user": {
+                            "updatedAt": "2026-02-10T09:34:51.000Z",
+                            "createdAt": "2025-12-09T09:55:41.947Z",
+                            "id": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                            "email": "svaib.app@gmail.com",
+                            "firstName": "svaib",
+                            "lastName": " ",
+                            "personalizationAnswers": null,
+                            "settings": {
+                                "userActivated": true,
+                                "firstSuccessfulWorkflowId": "VxHx6kkAiZsGxO6O",
+                                "userActivatedAt": 1766982571814
+                            },
+                            "disabled": false,
+                            "mfaEnabled": false,
+                            "lastActiveAt": "2026-02-09",
+                            "isPending": false
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2025-12-17T09:16:14.838Z",
+        "createdAt": "2025-12-17T09:16:14.838Z",
+        "versionId": "4b2c6b79-78f3-43ba-b88f-f64c3669954c",
+        "workflowId": "vO3W2eWVBCMwuLTi",
+        "nodes": [
+            {
+                "parameters": {
+                    "path": "41433f10-3edf-4011-b086-d0e518d06468",
+                    "options": {}
+                },
+                "type": "n8n-nodes-base.webhook",
+                "typeVersion": 2.1,
+                "position": [
+                    0,
+                    0
+                ],
+                "id": "d1149e95-fca6-4d38-b6a6-4256f24337b4",
+                "name": "Webhook",
+                "webhookId": "41433f10-3edf-4011-b086-d0e518d06468"
+            },
+            {
+                "parameters": {
+                    "tableId": "clients",
+                    "fieldsUi": {
+                        "fieldValues": [
+                            {
+                                "fieldId": "name",
+                                "fieldValue": "Test from n8n"
+                            },
+                            {
+                                "fieldId": "settings",
+                                "fieldValue": "{}"
+                            }
+                        ]
+                    }
+                },
+                "type": "n8n-nodes-base.supabase",
+                "typeVersion": 1,
+                "position": [
+                    208,
+                    0
+                ],
+                "id": "c3bd1629-f1f1-4a4f-a1af-7b08e6f49805",
+                "name": "Create a row",
+                "credentials": {
+                    "supabaseApi": {
+                        "id": "9AoqdQKbnc7fRFVq",
+                        "name": "Supabase account"
+                    }
+                }
+            },
+            {
+                "id": "821abd57-8c89-40a9-935b-607dcc694d9b",
+                "name": "Test Postgres",
+                "type": "n8n-nodes-base.postgres",
+                "typeVersion": 2.5,
+                "position": [
+                    400,
+                    0
+                ],
+                "parameters": {
+                    "operation": "executeQuery",
+                    "query": "SELECT id, name, telegram_chat_id FROM clients LIMIT 3;"
+                },
+                "credentials": {
+                    "postgres": {
+                        "id": "hsHQlDm7rm2EsEGu",
+                        "name": "Supabase Postgres"
+                    }
+                }
+            }
+        ],
+        "connections": {
+            "Webhook": {
+                "main": [
+                    [
+                        {
+                            "node": "Create a row",
+                            "type": "main",
+                            "index": 0
+                        },
+                        {
+                            "node": "Test Postgres",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "svaib  ",
+        "name": null,
+        "description": null
+    }
+}

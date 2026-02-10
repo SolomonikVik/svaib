@@ -1,0 +1,495 @@
+{
+    "updatedAt": "2025-12-18T05:37:34.927Z",
+    "createdAt": "2025-12-18T05:36:03.599Z",
+    "id": "IlKgWW38YkaCf38x",
+    "name": "recall_webhook_receiver copy (separate audio)",
+    "description": "\u0421\u0434\u0435\u043b\u0430\u043d \u043d\u0430 \u0432\u0441\u044f\u043a\u0438\u0439 \u0441\u043b\u0443\u0447\u0430\u0439. \u0417\u0434\u0435\u0441\u044c \u043f\u043e\u043b\u043d\u044b\u0439 \u043f\u0443\u0442\u044c. \u0415\u0441\u043b\u0438 \u0431\u044b\u043b\u043e Separate Audio, \u0442\u043e \u043d\u0443\u0436\u043d\u043e \u0431\u044b\u043b\u043e \u043e\u0442\u0434\u0435\u043b\u044c\u043d\u043e \u0432\u044b\u0442\u0430\u0441\u043a\u0438\u0432\u0430\u0442\u044c URL \u0434\u043e\u043f\u043e\u043b\u043d\u0438\u0442\u0435\u043b\u044c\u043d\u043e.",
+    "active": false,
+    "isArchived": false,
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "ff1c43ce-b7fd-4003-9bca-c21c719aea8c",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "ce700f85-378c-4ece-a0c8-7bb89b496950",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                0,
+                0
+            ],
+            "webhookId": "ff1c43ce-b7fd-4003-9bca-c21c719aea8c",
+            "onError": "continueRegularOutput"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Parse Recall.ai webhook event\nconst body = $input.first().json.body || $input.first().json;\n\nconst event = body.event || 'unknown';\nconst data = body.data || {};\nconst botId = data.bot_id || data.bot?.id || null;\nconst status = data.status?.code || data.status || null;\nconst recordingId = data.recording_id || null;\n\nreturn [{\n  json: {\n    event_type: event,\n    bot_id: botId,\n    recording_id: recordingId,\n    status: status,\n    raw_data: body,\n    received_at: new Date().toISOString()\n  }\n}];"
+            },
+            "id": "6b620228-a1ab-403d-a938-92c6553e6f58",
+            "name": "Parse Recall Event",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                304,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "version": 2,
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "combinator": "or",
+                    "conditions": [
+                        {
+                            "id": "cond-audio-separate",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            },
+                            "leftValue": "={{ $json.event_type }}",
+                            "rightValue": "audio_separate.done"
+                        },
+                        {
+                            "id": "cond-bot-done",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            },
+                            "leftValue": "={{ $json.event_type }}",
+                            "rightValue": "bot.done"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "828ac1f0-136c-4b20-9ec5-10d711096b11",
+            "name": "Is Bot Done?",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.1,
+            "position": [
+                560,
+                0
+            ]
+        },
+        {
+            "parameters": {
+                "url": "=https://us-west-2.recall.ai/api/v1/bot/{{ $json.bot_id }}/",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "options": {}
+            },
+            "id": "c40798c9-eb68-4e39-b263-12a370b6f611",
+            "name": "Get Bot Details",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                800,
+                -96
+            ],
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "UlRllRLpPr7ylsXa",
+                    "name": "Soniox"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "url": "=https://us-west-2.recall.ai/api/v1/audio_separate/?recording_id={{ $json.recordings[0].id }}",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "options": {}
+            },
+            "id": "ad542d3e-1790-40e1-b8c9-82ab0972d336",
+            "name": "Get Audio URLs",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1056,
+                -96
+            ],
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "UlRllRLpPr7ylsXa",
+                    "name": "Soniox"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Log audio ready event with URLs\nconst audioData = $input.first().json;\n\nconsole.log('Audio separate ready!');\nconsole.log('Participants:', audioData.results?.length || 0);\n\nreturn [{\n  json: {\n    status: 'audio_ready',\n    participant_count: audioData.results?.length || 0,\n    audio_tracks: audioData.results || [],\n    processed_at: new Date().toISOString()\n  }\n}];"
+            },
+            "id": "808093c8-bbd0-4a10-bb8d-32ce3e8c2c47",
+            "name": "Log Audio Ready",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1312,
+                -96
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Extract first audio track for Soniox transcription\nconst data = $input.first().json;\nconst tracks = data.audio_tracks || [];\n\nif (tracks.length === 0) {\n  throw new Error('No audio tracks found');\n}\n\nconst firstTrack = tracks[0];\n\n// Path is firstTrack.data.download_url, not firstTrack.download_url\nconst audioUrl = firstTrack.data?.download_url || firstTrack.download_url;\n\nif (!audioUrl) {\n  throw new Error('No download_url found in first track');\n}\n\nreturn [{\n  json: {\n    api_download_url: audioUrl,\n    participant_id: firstTrack.id,\n    all_tracks_count: tracks.length\n  }\n}];"
+            },
+            "id": "d0e85ed3-51f5-442c-ba55-8ee4ae4666c6",
+            "name": "Extract First Track",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1552,
+                -96
+            ]
+        },
+        {
+            "parameters": {
+                "url": "={{ $json.api_download_url }}",
+                "options": {}
+            },
+            "id": "23952626-6689-4510-abfd-2e6f44e7da95",
+            "name": "Fetch Real S3 URL",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                1808,
+                -96
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// Extract real S3 download URL from Recall API response\nconst response = $input.first().json;\n\n// Response is array of participants, take first one\nconst participants = Array.isArray(response) ? response : [response];\n\nif (participants.length === 0) {\n  throw new Error('No participants in download response');\n}\n\nconst firstParticipant = participants[0];\nconst s3Url = firstParticipant.download_url;\n\nif (!s3Url) {\n  throw new Error('No download_url found in participant data');\n}\n\nreturn [{\n  json: {\n    audio_url: s3Url,\n    participant_name: firstParticipant.participant?.name || 'Unknown',\n    duration: firstParticipant.duration || 0\n  }\n}];"
+            },
+            "id": "18ad3f4b-88ed-40c9-8af3-63add5c5b249",
+            "name": "Extract S3 URL",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2064,
+                -96
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.soniox.com/v1/transcriptions",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={{ JSON.stringify({ model: 'stt-async-v3', audio_url: $json.audio_url, enable_speaker_diarization: true, webhook_url: 'https://svaib-app.app.n8n.cloud/webhook/soniox-transcript' }) }}",
+                "options": {}
+            },
+            "id": "b7305829-a11a-4a66-a61f-517f0635bae2",
+            "name": "Soniox Transcribe",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                2304,
+                -96
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ JSON.stringify({ status: 'transcription_started', soniox_job_id: $json.job_id || $json.id, soniox_status: $json.status }) }}",
+                "options": {}
+            },
+            "id": "a2c559bf-635b-47bd-a397-fefceaf1bcab",
+            "name": "Respond Audio OK",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                2560,
+                -96
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { \"status\": \"received\", \"event\": $('Parse Recall Event').item.json.event_type } }}",
+                "options": {}
+            },
+            "id": "545ed12c-5a5c-46e5-af7f-b3a0f1024358",
+            "name": "Respond OK",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                800,
+                112
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "SELECT id, client_id FROM meetings WHERE recall_bot_id = $1",
+                "options": {
+                    "queryReplacement": "={{ $('Parse Recall Event').item.json.bot_id }}"
+                }
+            },
+            "id": "98e044d6-8573-43eb-bb13-3230fd5e3e10",
+            "name": "Find Meeting",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2560,
+                -304
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "INSERT INTO pipeline_runs (client_id, meeting_id, pipeline, stage, status, metadata) VALUES ($1::uuid, $2::uuid, 'meeting_recording', 'soniox_transcription', 'started', $3::jsonb) RETURNING id",
+                "options": {
+                    "queryReplacement": "={{ $('Find Meeting').item.json.client_id }}, {{ $('Find Meeting').item.json.id }}, {{ JSON.stringify({ soniox_job_id: $('Soniox Transcribe').item.json.id }) }}"
+                }
+            },
+            "id": "5b646056-e1c4-4f4c-b7ef-0a091f463a10",
+            "name": "Create Pipeline Run",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                2800,
+                -304
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "UPDATE meetings SET status = 'recorded' WHERE id = $1::uuid",
+                "options": {
+                    "queryReplacement": "={{ $('Find Meeting').item.json.id }}"
+                }
+            },
+            "id": "f69fceff-89f4-4a42-b4c1-d69d8d2dfabd",
+            "name": "Update Meeting Status",
+            "type": "n8n-nodes-base.postgres",
+            "typeVersion": 2.5,
+            "position": [
+                3056,
+                -304
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Parse Recall Event",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Parse Recall Event": {
+            "main": [
+                [
+                    {
+                        "node": "Is Bot Done?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Is Bot Done?": {
+            "main": [
+                [
+                    {
+                        "node": "Get Bot Details",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond OK",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Bot Details": {
+            "main": [
+                [
+                    {
+                        "node": "Get Audio URLs",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Get Audio URLs": {
+            "main": [
+                [
+                    {
+                        "node": "Log Audio Ready",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Log Audio Ready": {
+            "main": [
+                [
+                    {
+                        "node": "Extract First Track",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract First Track": {
+            "main": [
+                [
+                    {
+                        "node": "Fetch Real S3 URL",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Fetch Real S3 URL": {
+            "main": [
+                [
+                    {
+                        "node": "Extract S3 URL",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract S3 URL": {
+            "main": [
+                [
+                    {
+                        "node": "Soniox Transcribe",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Soniox Transcribe": {
+            "main": [
+                [
+                    {
+                        "node": "Find Meeting",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Find Meeting": {
+            "main": [
+                [
+                    {
+                        "node": "Create Pipeline Run",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Create Pipeline Run": {
+            "main": [
+                [
+                    {
+                        "node": "Update Meeting Status",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Update Meeting Status": {
+            "main": [
+                [
+                    {
+                        "node": "Respond Audio OK",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1",
+        "callerPolicy": "workflowsFromSameOwner",
+        "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": {},
+    "versionId": "78bd646f-8d18-496c-b865-8d29375203e8",
+    "activeVersionId": null,
+    "versionCounter": 64,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2025-12-18T05:36:03.603Z",
+            "createdAt": "2025-12-18T05:36:03.603Z",
+            "role": "workflow:owner",
+            "workflowId": "IlKgWW38YkaCf38x",
+            "projectId": "9JhFwkoFVBxpUd8P",
+            "project": {
+                "updatedAt": "2025-12-09T10:05:00.000Z",
+                "createdAt": "2025-12-09T10:03:20.962Z",
+                "id": "9JhFwkoFVBxpUd8P",
+                "name": "svaib-app",
+                "type": "team",
+                "icon": {
+                    "type": "icon",
+                    "value": "triangle"
+                },
+                "description": "",
+                "projectRelations": [
+                    {
+                        "updatedAt": "2025-12-09T10:03:20.967Z",
+                        "createdAt": "2025-12-09T10:03:20.967Z",
+                        "userId": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                        "projectId": "9JhFwkoFVBxpUd8P",
+                        "user": {
+                            "updatedAt": "2026-02-10T09:34:51.000Z",
+                            "createdAt": "2025-12-09T09:55:41.947Z",
+                            "id": "0d313cb8-611e-4083-9f64-b37496c386b6",
+                            "email": "svaib.app@gmail.com",
+                            "firstName": "svaib",
+                            "lastName": " ",
+                            "personalizationAnswers": null,
+                            "settings": {
+                                "userActivated": true,
+                                "firstSuccessfulWorkflowId": "VxHx6kkAiZsGxO6O",
+                                "userActivatedAt": 1766982571814
+                            },
+                            "disabled": false,
+                            "mfaEnabled": false,
+                            "lastActiveAt": "2026-02-09",
+                            "isPending": false
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": null
+}
