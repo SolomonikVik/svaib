@@ -1,7 +1,7 @@
 ---
 title: "Правила работы с контекстом проекта SVAIB"
-updated: 2025-12-02
-version: 15
+updated: 2026-02-06
+version: 16
 scope: "always"
 priority: critical
 ---
@@ -213,11 +213,11 @@ priority: critical/high/medium/low
 
 **updated** — дата последнего обновления
 
-**version** — 1 для нового файла, N+1 для обновления
+**version** — целое число (1, 2, 3...). Для нового файла = 1, при обновлении = N+1. Без точек (не 1.0, не 2.15)
 
 **scope** — когда файл релевантен (рекомендуемые значения):
 - Стратегия: `always`, `author_info`, `project_strategy`, `planning`
-- Продукт: `product_development`, `client_relations`, `implementation`
+- Продукт: `product_development`, `client_relations`, `clients`, `implementation`
 - Мастерская: `lab_operations`, `agents_management`, `tools`
 - Публикации: `publications`, `community`, `meetings`
 - Другие: `progress_tracking` (трекинг результатов)
@@ -274,6 +274,10 @@ Google Sync Layer, схему данных. Для 3-5 пилотных клие
 - При поиске "транскрибация" — тоже найдётся
 
 **Секция "Связанные файлы"** — граф связей с описанием. Помогает AI понять контекст.
+
+### 8.4. Размер файла
+
+Файлы контекста <300 строк (CLAUDE.md, SKILL.md <500). Если больше → сократить → разбить на отдельные файлы → добавить `## Contents` (буллет-лист секций в начале).
 
 ---
 

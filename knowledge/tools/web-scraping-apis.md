@@ -4,10 +4,11 @@ source: "https://scrape.do"
 source_type: docs
 status: raw
 added: 2026-02-01
+updated: 2026-02-07
 review_by: 2026-05-01
 tags: [tools, scraping, proxy, api, firecrawl, mcp]
 publish: false
-version: 1
+version: 2
 ---
 
 # Web Scraping APIs
@@ -97,4 +98,4 @@ curl 'https://api.scrape.do/?token=TOKEN&url=URL&render=true'
 ## Связанные материалы
 
 - [coding/!coding.md](../coding/!coding.md) — AI-кодинг, субагенты, Task tool (используются для оркестрации скрапинга)
-- [coding/swarm-mode.md](../coding/swarm-mode.md) — multi-agent паттерны (параллельный скрапинг через команду агентов)
+- [coding/agent-teams.md](../coding/agent-teams.md) — Agent Teams: multi-agent паттерны (параллельный скрапинг через команду агентов)

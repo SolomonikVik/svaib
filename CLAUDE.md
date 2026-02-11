@@ -75,6 +75,9 @@ svaib/
 │
 ├── knowledge/     — External knowledge base (AI tools, methods, practices)
 │
+├── clients/       — Client profiles and meeting prep materials
+│   └── {name}/    — Client folder (profile.md, notes, proposals)
+│
 └── pub/           — Public materials
     ├── pub_context/
     │   └── svaib_presentation_guide.md — Presentation style guide
@@ -229,6 +232,7 @@ npm run dev      # Start Next.js dev server
    * meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
    * dev/ — Product development, implementation (HOW to build)
    * knowledge/ — External AI knowledge, tools, methods (not tied to svaib)
+   * clients/ — Client profiles, meeting prep, proposals
    * pub/ — Public materials (presentations, conference materials)
 6. **Open source:** All code will be public on GitHub
 7. **Weekly "Камни недели":** Focus on concrete weekly results
@@ -264,6 +268,9 @@ npm run dev      # Start Next.js dev server
 14. **AI-модели — не брать из памяти:**
     * Модели в памяти устарели. НЕ подставлять GPT-4o, GPT-4o-mini и т.п.
     * **Спросить Виктора** какую модель использовать, или **сделать веб-поиск** актуальных моделей.
+15. **Файлы контекста — пиши для AI, не для человека:**
+    * Файлы в meta/, dev/, knowledge/ читает в первую очередь AI. Пиши максимально сжато: факт + источник, без обоснований и объяснений.
+    * Если информация нужна человеку — уточни у Виктора формат.
 
 ## Key Principles
 
@@ -289,6 +296,7 @@ npm run dev      # Start Next.js dev server
 | MCP servers, subagents, tools             | @.claude/claude\_code\_mechanics.md      |
 | Team workflow (who does what)             | @meta/meta\_context/ai\_team.md          |
 | External AI knowledge (tools, methods)    | @knowledge/README.md                     |
+| Client profile, meeting prep              | @clients/{name}/profile.md               |
 
 ***
 

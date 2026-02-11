@@ -8,8 +8,13 @@ description: "Режим работы по спринту MVP"
 
 ---
 
-## В начале сессии — ОБЯЗАТЕЛЬНО прочитай:
+## В начале сессии — ОБЯЗАТЕЛЬНО:
 
+**1. Проверь MCP:** Для спринта нужны n8n-mcp, supabase, context7.
+Если нет инструментов `mcp__n8n-mcp__*` — MCP отключены.
+Включить: в `.claude/settings.local.json` поставить `"disabledMcpjsonServers": []`, перезапустить сессию.
+
+**2. Прочитай контекст:**
 1. @dev/dev_context/product_sprint.md — **текущий статус**, чеклисты, где мы сейчас
 2. @dev/dev_context/workflows.md — data flow, структура workflows, контракты промптов
 3. @dev/dev_context/infrastructure.md — workflow IDs, credentials, что развёрнуто

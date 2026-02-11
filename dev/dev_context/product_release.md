@@ -1,7 +1,7 @@
 ---
 title: "Product Release"
 updated: 2025-12-01
-version: 3.3
+version: 6
 scope: "product_release"
 priority: high
 ---

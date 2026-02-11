@@ -4,10 +4,11 @@ source: "https://claude.com/blog/cowork-research-preview"
 source_type: docs
 status: raw
 added: 2026-02-01
+updated: 2026-02-07
 review_by: 2026-05-01
 tags: [cowork, anthropic, plugins, knowledge-work, agents, svaib-product]
 publish: false
-version: 2
+version: 3
 ---
 
 # Cowork — агентная платформа для knowledge workers
@@ -156,4 +157,4 @@ Cowork Plugins — техническая реализация этой моде
 
 - [coding/claude-code.md](../coding/claude-code.md) — Claude Code: формат плагинов (идентичен Cowork), маркетплейсы, система расширения
 - [skills/!skills.md](../skills/!skills.md) — Skills как формат: проектирование, экосистема, активация
-- [coding/swarm-mode.md](../coding/swarm-mode.md) — Multi-agent оркестрация (TeammateTool) — следующий уровень после субагентов
+- [coding/agent-teams.md](../coding/agent-teams.md) — Agent Teams: координация команды AI-агентов в Claude Code (leader + teammates, общий task list, delegation mode)

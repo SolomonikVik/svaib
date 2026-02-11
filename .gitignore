@@ -36,6 +36,7 @@ env/
 *.env
 
 # --- API ключи и секреты ---
+.mcp.json
 **/secrets/
 **/config/secrets.json
 credentials.json
@@ -66,6 +67,9 @@ out/
 
 # --- Черновики и inbox ---
 _inbox/
+
+# --- Клиенты (приватные данные) ---
+clients/
 
 # --- Архив (локально) ---
 meta/z_archive/

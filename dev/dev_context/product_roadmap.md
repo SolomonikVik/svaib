@@ -1,7 +1,7 @@
 ---
 title: "Product Roadmap"
 updated: 2025-12-24
-version: 1.2
+version: 3
 scope: "product_roadmap"
 priority: high
 ---

@@ -1,7 +1,7 @@
 ---
 title: "Guide: Паттерны команды"
 updated: 2025-12-01
-version: 1.0
+version: 1
 scope: "guide"
 priority: medium
 ---

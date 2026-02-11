@@ -1,7 +1,7 @@
 ---
 title: "Детальная структура презентации для встреч"
 updated: 2025-11-17
-version: 1.0
+version: 1
 scope: "product_presentation"
 priority: high
 ---
