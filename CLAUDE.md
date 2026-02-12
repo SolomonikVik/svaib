@@ -75,8 +75,9 @@ svaib/
 │
 ├── knowledge/     — External knowledge base (AI tools, methods, practices)
 │
-├── clients/       — Client profiles and meeting prep materials
-│   └── {name}/    — Client folder (profile.md, notes, proposals)
+├── clients/       — Client projects and consulting methodology
+│   ├── _playbook/ — Methodology (product model, offers, onboarding)
+│   └── {name}/    — Client folder (profile.md, project.md, tracking.md, meetings/)
 │
 └── pub/           — Public materials
     ├── pub_context/
@@ -208,6 +209,7 @@ npm run dev      # Start Next.js dev server
 * `/svaib-dev` — Development mode (dev/ folder): CTO role for architecture discussion or Developer role for coding tasks
 * `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
 * `/svaib-knowledge` — Knowledge base (knowledge/ folder): add, search, review external AI knowledge
+* `/svaib-clients` — Client work (clients/ folder): methodology, client prep, meeting notes, proposals
 
 ## Subagents
 
@@ -232,7 +234,7 @@ npm run dev      # Start Next.js dev server
    * meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
    * dev/ — Product development, implementation (HOW to build)
    * knowledge/ — External AI knowledge, tools, methods (not tied to svaib)
-   * clients/ — Client profiles, meeting prep, proposals
+   * clients/ — Client projects, methodology (_playbook/), profiles, meetings
    * pub/ — Public materials (presentations, conference materials)
 6. **Open source:** All code will be public on GitHub
 7. **Weekly "Камни недели":** Focus on concrete weekly results
@@ -297,6 +299,9 @@ npm run dev      # Start Next.js dev server
 | Team workflow (who does what)             | @meta/meta\_context/ai\_team.md          |
 | External AI knowledge (tools, methods)    | @knowledge/README.md                     |
 | Client profile, meeting prep              | @clients/{name}/profile.md               |
+| Client project (deal, decisions)          | @clients/{name}/project.md               |
+| Client training progress, blocks          | @clients/{name}/tracking.md              |
+| Client methodology, offers, onboarding    | @clients/\_playbook/README.md             |
 
 ***
 
