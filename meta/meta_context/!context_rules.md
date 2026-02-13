@@ -1,7 +1,7 @@
 ---
 title: "Правила работы с контекстом проекта SVAIB"
-updated: 2026-02-06
-version: 16
+updated: 2026-02-13
+version: 17
 scope: "always"
 priority: critical
 ---
@@ -217,7 +217,7 @@ priority: critical/high/medium/low
 
 **scope** — когда файл релевантен (рекомендуемые значения):
 - Стратегия: `always`, `author_info`, `project_strategy`, `planning`
-- Продукт: `product_development`, `client_relations`, `clients`, `implementation`
+- Продукт: `product_development`, `product_core`, `product_vision`, `client_relations`, `clients`, `implementation`
 - Мастерская: `lab_operations`, `agents_management`, `tools`
 - Публикации: `publications`, `community`, `meetings`
 - Другие: `progress_tracking` (трекинг результатов)

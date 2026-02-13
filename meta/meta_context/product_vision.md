@@ -16,7 +16,8 @@ priority: high
 
 - marketing.md — позиционирование и стратегия продаж
 - product_vision_old.md — предыдущий vision (AI-помощник по встречам, архив)
-- ../../clients/_playbook/model.md — модель продукта для презентации клиентам
+- ../../framework/ — ядро продукта (онтология, методология, scaffold, plugin)
+- ../../framework/model.md — модель продукта для презентации клиентам
 - ../../clients/ — клиентские проекты
 
 ---

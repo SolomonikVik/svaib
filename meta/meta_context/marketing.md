@@ -1,7 +1,7 @@
 ---
 title: "Маркетинг и позиционирование"
-updated: 2026-02-04
-version: 3
+updated: 2026-02-13
+version: 4
 scope: "marketing"
 priority: high
 ---
@@ -15,6 +15,7 @@ priority: high
 ## Связанные файлы
 
 - product_vision.md — видение продукта (что продаём)
+- ../../framework/model.md — модель продукта для презентации клиентам
 - ../../clients/ — профайлы клиентов для персонализации презентации
 
 ---

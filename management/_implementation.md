@@ -1,32 +1,25 @@
 ---
 title: "План реализации системы управления"
-updated: 2026-02-10
-version: 2
+updated: 2026-02-13
+version: 3
 scope: "planning"
 priority: high
 ---
 
 # План реализации системы управления
 
-Рабочий документ. Спецификация системы — в [ontology.md](ontology.md) (Онтология v0.5).
+Рабочий документ. Спецификация системы — в [framework/ontology/](../framework/ontology/) + [framework/methodology/](../framework/methodology/).
+
+Готовый каркас — в [framework/scaffold/](../framework/scaffold/). Скелет плагина — в [framework/plugin/](../framework/plugin/).
 
 ## Статус: в процессе
 
 ---
 
-## Слой 1: Инфраструктура
+## Слой 1: Инфраструктура ✅
 
-Создать файлы ядра в management/ по спецификации из онтологии.
-
-- [ ] 01_vision.md (шаблон)
-- [ ] 02_goal.md (шаблон)
-- [ ] 03_plan.md (шаблон)
-- [ ] 04_weekly_progress_2026.md (шаблон)
-- [ ] 05_timeline.md (шаблон)
-- [ ] ideas.md (шаблон)
-- [ ] decisions.md (шаблон)
-- [ ] reflections.md (шаблон)
-- [ ] Скилл для Claude Code (.claude/skills/) — ритуалы, протокол чтения, работа с файлами
+Шаблоны файлов ядра реализованы в [framework/scaffold/](../framework/scaffold/).
+Скилл для Claude Code — запланирован в [framework/plugin/skills/](../framework/plugin/skills/).
 
 ## Слой 2: Наполнение
 

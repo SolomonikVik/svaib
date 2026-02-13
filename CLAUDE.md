@@ -73,10 +73,17 @@ svaib/
 │   │   └── product_roadmap.md — Product roadmap (stages, vision features)
 │   └── prompts/   — Technical prompts (CTO, Dify copilot)
 │
+├── framework/     — Product core: Second AI Brain methodology & automation
+│   ├── ontology/      — Entities, relationships, structure
+│   ├── methodology/   — Principles, rituals, decision frames
+│   ├── model.md       — Product model for client presentations
+│   ├── scaffold/      — Ready-made template (management/, knowledge/, _inbox/, archive/)
+│   └── plugin/        — Deployable package skeleton (skills, agents, hooks)
+│
 ├── knowledge/     — External knowledge base (AI tools, methods, practices)
 │
 ├── clients/       — Client projects and consulting methodology
-│   ├── _playbook/ — Methodology (product model, offers, onboarding)
+│   ├── _playbook/ — Sales process (offers, onboarding)
 │   └── {name}/    — Client folder (profile.md, project.md, tracking.md, meetings/)
 │
 └── pub/           — Public materials
@@ -233,8 +240,9 @@ npm run dev      # Start Next.js dev server
 5. **Context separation:**
    * meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
    * dev/ — Product development, implementation (HOW to build)
+   * framework/ — Product core: Second AI Brain methodology, ontology, scaffold, plugin
    * knowledge/ — External AI knowledge, tools, methods (not tied to svaib)
-   * clients/ — Client projects, methodology (_playbook/), profiles, meetings
+   * clients/ — Client projects, sales process (_playbook/), profiles, meetings
    * pub/ — Public materials (presentations, conference materials)
 6. **Open source:** All code will be public on GitHub
 7. **Weekly "Камни недели":** Focus on concrete weekly results
@@ -298,6 +306,9 @@ npm run dev      # Start Next.js dev server
 | MCP servers, subagents, tools             | @.claude/claude\_code\_mechanics.md      |
 | Team workflow (who does what)             | @meta/meta\_context/ai\_team.md          |
 | External AI knowledge (tools, methods)    | @knowledge/README.md                     |
+| Product methodology (ontology, rituals)   | @framework/README.md                     |
+| Product scaffold (templates)              | @framework/scaffold/                     |
+| Product model (client presentation)       | @framework/model.md                      |
 | Client profile, meeting prep              | @clients/{name}/profile.md               |
 | Client project (deal, decisions)          | @clients/{name}/project.md               |
 | Client training progress, blocks          | @clients/{name}/tracking.md              |

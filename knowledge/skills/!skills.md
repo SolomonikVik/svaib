@@ -242,7 +242,8 @@ Reference-файлы >100 строк → `## Contents` (буллет-лист с
 
 - [Agent Skills with Anthropic](https://learn.deeplearning.ai/courses/agent-skills-with-anthropic) — Официальный курс от Anthropic и DeepLearning.AI (Elie Schoppik, Andrew Ng). Выпущен 28 января 2026. Охватывает создание и применение скиллов в Claude AI, API, Code и SDK.
 
-## Связанные папки
+## Связанные файлы
 
+- [../plugins/!plugins.md](../plugins/!plugins.md) — Плагины: зонтичный формат, объединяющий Skills + Commands + Agents + Hooks + MCP + LSP
 - [../agents/subagents.md](../agents/subagents.md) — Субагенты: когда Skill недостаточно и нужна изоляция контекста
 - [../agents/!agents.md](../agents/!agents.md) — Сводка по агентным системам (Skills как компонент)

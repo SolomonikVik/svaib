@@ -155,6 +155,7 @@ Cowork Plugins — техническая реализация этой моде
 
 ## Связанные материалы
 
-- [coding/claude-code.md](../coding/claude-code.md) — Claude Code: формат плагинов (идентичен Cowork), маркетплейсы, система расширения
+- [plugins/!plugins.md](../plugins/!plugins.md) — Плагины: формат, спецификация, маркетплейсы, экосистема, best practices
+- [coding/claude-code.md](../coding/claude-code.md) — Claude Code: рабочая среда, система расширения
 - [skills/!skills.md](../skills/!skills.md) — Skills как формат: проектирование, экосистема, активация
 - [coding/agent-teams.md](../coding/agent-teams.md) — Agent Teams: координация команды AI-агентов в Claude Code (leader + teammates, общий task list, delegation mode)
