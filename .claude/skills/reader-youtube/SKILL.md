@@ -1,5 +1,5 @@
 ---
-name: youtube-transcript
+name: reader-youtube
 description: "Use when the user provides a YouTube URL (youtube.com, youtu.be, shorts, embed) or asks to get a transcript, subtitles, or captions from a YouTube video. Also trigger when: (1) user shares a YouTube link and wants to know what's in it, (2) user says 'посмотри видео', 'что в этом видео', 'достань транскрипт', (3) a YouTube video needs to be analyzed or summarized. Extracts transcript text and video metadata (title, channel)."
 ---
 

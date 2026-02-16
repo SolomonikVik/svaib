@@ -56,7 +56,7 @@ description: "Use when the user shares a link, topic, tool name, or material tha
 | Ссылка на статью/docs | WebFetch → прочитай полностью |
 | GitHub-репо | Изучи README, структуру, ключевые файлы. Оцени масштаб и активность (но НЕ записывай точные stars — они устаревают за недели) |
 | Краткое упоминание/тема | WebSearch → найди первоисточник и контекст |
-| YouTube-видео | Скилл `youtube-transcript`: `uv run .claude/skills/youtube-transcript/scripts/get_transcript.py "URL"`. Получи транскрипт → изучи как текстовый источник |
+| YouTube-видео | Скилл `reader-youtube`: `uv run .claude/skills/reader-youtube/scripts/get_transcript.py "URL"`. Получи транскрипт → изучи как текстовый источник |
 | Видео/подкаст (не YouTube) | WebSearch → найди текстовые обзоры, транскрипты, ключевые тезисы |
 
 **Сверь с тем что уже есть.** Если в knowledge/ нашлись файлы по теме — сравни с тем что нашёл в вебе. Три сценария:
