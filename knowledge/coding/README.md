@@ -11,3 +11,4 @@
 - [agent-teams.md](agent-teams.md) — Agent Teams в Claude Code: multi-agent разработка
 - [vscode-agents.md](vscode-agents.md) — VS Code Agent Sessions: unified workspace для агентов
 - [ui-design.md](ui-design.md) — UI-дизайн с AI: workflow, генераторы, инструменты
+- [engineering-harness.md](engineering-harness.md) — Engineering Harness: проектирование среды для AI-агентов (Mitchell Hashimoto + OpenAI)

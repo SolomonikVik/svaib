@@ -4,11 +4,11 @@ source: "https://t.me/polyakov_ai"
 source_type: thread
 status: raw
 added: 2026-02-01
-updated: 2026-02-07
+updated: 2026-02-16
 review_by: 2026-05-07
 tags: [ui, design, lovable, v0, bolt, figma, mobbin, workflow, cowork, claude-code, frontend-design]
 publish: false
-version: 3
+version: 4
 ---
 
 # UI-дизайн
@@ -43,6 +43,24 @@ version: 3
 | **Mobbin** | 500K+ скриншотов реальных приложений, фильтрация по паттернам | Free (ограниченно) + подписка | mobbin.com |
 | **Dribbble** | Дизайн-портфолио, менее структурированно чем Mobbin | Бесплатно | dribbble.com |
 
+### Дизайн-токены и кастомизация
+
+| Инструмент | Суть | Сайт |
+|-----------|------|------|
+| **UI Colors** | Генерация полных палитр (50-950) из одного цвета | uicolors.app |
+| **TweakCN** | Визуальный редактор ShadCN тем, экспорт CSS-переменных | tweakcn.com |
+| **Tailwind Color Generator** | HSL-совместимые палитры для Tailwind | — |
+| **Fontjoy** | Автоматический подбор шрифтовой пары через ML | fontjoy.com |
+| **Font Combinations** | Проверенные комбинации шрифтов | — |
+
+### Компонентные библиотеки (Tailwind / ShadCN)
+
+| Библиотека | Суть | Сайт |
+|-----------|------|------|
+| **Magic UI** | Премиум компоненты с анимациями | magicui.design |
+| **Aceternity UI** | Сложные интерактивные элементы | ui.aceternity.com |
+| **Awesome ShadCN** | Кастомные компоненты, ресурсы, хелперы | github.com (awesome-shadcn) |
+
 ### Claude Code / Cowork как дизайн-инструмент
 
 **Подход:** Дизайн прямо в Claude, без внешних генераторов. Два варианта:
@@ -66,11 +84,51 @@ version: 3
 
 AI-генераторы (включая Claude) выдают узнаваемо похожие дизайны: двухколоночные сравнения, одинаковые hero-секции, стандартные card-лейауты. Пользователи и клиенты уже распознают "AI-сделанное".
 
+**Корень проблемы:** Дефолтный Tailwind + ShadCN + промпты без дизайн-требований. "Сделай красиво" не работает — нужна структурированная конкретика.
+
 **Приёмы против:**
 - Скилл `frontend-design` — заточен на дизайнерское качество, не generic
-- Промпт "be a human designer so it doesn't look like AI, with design taste" — заставляет модель избегать клише
-- Скриншоты-референсы (Mobbin) — конкретный визуальный якорь лучше текста
+- Reverse-дизайн: скриншоты → AI agent → дизайн-токены (референсы > текстовых описаний)
+- Своя цветовая схема через CSS-переменные (UI Colors, TweakCN — см. инструменты выше)
+- Кастомная типографика (Fontjoy для подбора шрифтовых пар)
 - Итерация после первого прохода — первый результат почти всегда generic, ценность в доработке
+
+**Парадокс насмотренности:** Чем меньше дизайн-навыков, тем больше стоит полагаться на готовые качественные блоки и шаблоны (Magic UI, Aceternity UI) — они часто лучше AI-дефолта, потому что делались профессиональными дизайнерами. С хорошей насмотренностью — кастомизируй глубже через дизайн-токены.
+
+**Промпт-шаблоны** (вместо "сделай красиво"):
+
+```
+// типографика
+Design clear typography hierarchy using modern sans-serif font.
+Large heading, medium subheading, readable body text.
+Ensure good line spacing and visual rhythm throughout the page.
+
+// UI-компоненты
+Create card components with contemporary styling - subtle shadows,
+rounded corners, clean white background. Add hover effects
+and make them feel interactive and polished.
+
+// цвета
+Use professional color palette - primary brand color, neutral grays,
+success/error states. Ensure good contrast for accessibility
+and maintain consistent color usage across all components.
+```
+
+**Design Principles для CLAUDE.md / Cursor Rules:**
+
+```
+## Design Principles
+- Generous spacing: Use plenty of whitespace, avoid cramped layouts
+- Cards: Subtle elevation, consistent padding, avoid heavy borders
+- Modern aesthetics: Subtle shadows, rounded corners, clean typography
+- Interactive states: Smooth hover effects, button feedback, loading states
+- Visual hierarchy: Clear information structure with proper heading levels
+- Accessibility: Good color contrast, readable fonts, proper focus states
+- Consistent system: Reusable components, unified spacing scale
+- Use consistent spacing units (8px, 16px, 24px, 32px)
+- Test colors in both light and dark modes
+- Implement consistent iconography from a single icon family
+```
 
 ---
 
@@ -101,3 +159,4 @@ AI-генераторы (включая Claude) выдают узнаваемо 
 - Параллельный запуск нескольких генераторов — результаты непредсказуемы, один попадёт
 - Интеграция отдельно от генерации — не генерируй прямо в рабочем проекте
 - С бэкендом из генераторов хорошо справляется только Antigravity (наблюдение Полякова)
+- Готовые компонентные библиотеки (Magic UI, Aceternity UI) > AI-дефолт для тех, кто не дизайнер (@nobilix)

@@ -4,11 +4,11 @@ source: "https://platform.claude.com/docs/en/agent-sdk/overview"
 source_type: docs
 status: processed
 added: 2026-02-05
-updated: 2026-02-07
-review_by: 2026-05-05
-tags: [subagents, multi-agent, agent-sdk, orchestration, patterns]
+updated: 2026-02-16
+review_by: 2026-05-16
+tags: [subagents, multi-agent, agent-sdk, orchestration, patterns, hosting, deployment]
 publish: false
-version: 2
+version: 3
 ---
 
 # Субагенты и мульти-агентные архитектуры
@@ -62,7 +62,12 @@ options = ClaudeAgentOptions(
 - Тот же агентный цикл что Claude Code: gather context → take action → verify work → repeat
 - Skills, Commands, CLAUDE.md — файловая конфигурация через `setting_sources=["project"]`
 
-**Docs:** platform.claude.com/docs/en/agent-sdk/overview
+**Hosting & Deployment:** Agent SDK — long-running процесс (не stateless API), требует контейнерной изоляции. 4 паттерна деплоя: Ephemeral (контейнер на задачу → уничтожил), Long-Running (постоянный контейнер, несколько SDK-процессов), Hybrid (поднял → гидратировал историей → отработал → спустил), Single Container (несколько агентов в одном). Системные требования: 1GiB RAM, 5GiB disk, 1 CPU на инстанс. Стоимость контейнера ~5¢/час, основной cost — токены. Провайдеры сандбоксов: Modal, Cloudflare Sandboxes, Daytona, E2B, Fly Machines, Vercel Sandbox.
+
+**Docs:**
+- Overview: platform.claude.com/docs/en/agent-sdk/overview
+- Hosting: platform.claude.com/docs/en/agent-sdk/hosting
+- Secure Deployment: platform.claude.com/docs/en/agent-sdk/secure-deployment
 
 ### OpenAI Agents SDK
 

@@ -5,8 +5,8 @@ added: 2026-01-30
 review_by: 2026-04-30
 tags: [tools, automation, platforms, index]
 publish: false
-version: 7
-updated: 2026-02-11
+version: 8
+updated: 2026-02-16
 ---
 
 # Tools — AI-инструменты и платформы
@@ -34,3 +34,7 @@ Agent platform Anthropic для не-разработчиков. Формат п
 ### Запись и транскрибация встреч
 
 Конкурентный ландшафт и технологический стек для продукта SVAIB. Коммерческие (Granola, Bluedot, Otter, Fireflies) и open-source (Hyprnote, Sherpa-ONNX, T-one). → [meeting-transcription.md](meeting-transcription.md)
+
+### Презентации с AI
+
+Два подхода: markdown-first (Slidev — Git, Agent Skill, hackable) и визуальные AI-генераторы (Lovable, Slider AI — быстрый результат без дизайн-навыков). Slidev вписывается в file-first философию продукта. → [presentations.md](presentations.md)

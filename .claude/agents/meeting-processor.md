@@ -2,7 +2,7 @@
 name: meeting-processor
 description: "Обработка транскрипта клиентской встречи: чистка → анализ → протокол → дельта для profile/project. Вход: имя клиента. Читает транскрипт из clients/{name}/meetings/_transcript.md"
 tools: Read, Write, Edit, Glob, Grep
-model: sonnet
+model: opus
 ---
 
 ## Роль

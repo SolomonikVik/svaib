@@ -1,12 +1,12 @@
 ---
 title: "Агентные системы — сводка знаний"
 status: processed
-updated: 2026-02-11
+updated: 2026-02-16
 added: 2026-01-30
-review_by: 2026-05-05
-tags: [agents, subagents, mcp, multi-agent, patterns]
+review_by: 2026-05-16
+tags: [agents, subagents, mcp, multi-agent, patterns, hosting]
 publish: false
-version: 4
+version: 6
 ---
 
 # Agents — Агентные системы
@@ -33,7 +33,7 @@ AI-системы, способные автономно принимать ре
 | **Claude Agent SDK** | Anthropic | Python, TypeScript | Встроенные инструменты (Read, Write, Bash), субагенты через Task tool, Skills/CLAUDE.md |
 | **OpenAI Agents SDK** | OpenAI | Python, TypeScript | Handoffs (peer-to-peer передача управления), provider-agnostic, Realtime Agents |
 
-Оба SDK поддерживают MCP-серверы как инструменты.
+Оба SDK поддерживают MCP-серверы как инструменты. Claude Agent SDK — long-running процесс, деплоится в контейнерах (4 паттерна: ephemeral, long-running, hybrid, single). Провайдеры: Modal, Cloudflare, Daytona, E2B, Fly Machines, Vercel. Подробнее → subagents.md.
 
 ### Оркестрационные (community)
 
@@ -57,7 +57,7 @@ AI-системы, способные автономно принимать ре
 | **Closed Feedback Loop** | Agent → Eval → Analyzer → Evolver → Agent (next gen). Автономная эволюция промпта/кода через замкнутый цикл с измеримой обратной связью | Оптимизация метрики, прохождение тестов, prompt engineering at scale. Подробнее → [feedback-loop-evolution.md](feedback-loop-evolution.md) |
 
 ### Gateway-Agent-Skills-Memory
-Архитектура из проекта OpenClaw (см. openclaw.md). Gateway абстрагирует канал доставки, Agent — reasoning, Skills — модульные действия, Memory — персистентный контекст на Markdown. Подтверждает: Skills как плагины + Memory на файлах + проактивность агента — рабочая комбинация для self-hosted AI-ассистентов.
+Архитектура из проекта OpenClaw (см. openclaw.md). Gateway абстрагирует канал доставки, Agent — reasoning, Skills — модульные действия, Memory — персистентный контекст на Markdown. Подтверждает: Skills как плагины + Memory на файлах + проактивность агента — рабочая комбинация для self-hosted AI-ассистентов. В феврале 2026 Sam Altman переманил автора (Peter Steinberger) в OpenAI — проект теперь развивается под крылом OpenAI, что подтверждает стратегическое значение паттерна персональных AI-агентов.
 
 ## Практика: когда что использовать
 
@@ -75,4 +75,4 @@ AI-системы, способные автономно принимать ре
 - **../skills/** — Skills как модуль агентных систем: формат SKILL.md, библиотеки, активация
 - **../coding/** — Claude Code как агентная платформа: субагенты, MCP, Swarm Mode
 - **../tools/** — Инструменты автоматизации (n8n, Dify) — потенциальные MCP-серверы
-- **../context/** — Context Engineering — ключевой компонент эффективности агентов
+- **../context/** — Context Engineering, Memory — ключевой компонент эффективности агентов. Карта архитектур памяти агентов → [../context/agent-memory.md](../context/agent-memory.md)

@@ -7,5 +7,10 @@
 ## Файлы
 
 - [!context.md](!context.md) — сводка знаний
-- [temporal-graphs.md](temporal-graphs.md) — Temporal Knowledge Graphs: Graphiti, Hindsight, bi-temporal model, память агентов с пониманием времени
+- [agent-memory.md](agent-memory.md) — обзорная карта: 5 архитектур хранения, 9 стратегий поиска, бенчмарки (survey arxiv 2602.05665)
+- [temporal-graphs.md](temporal-graphs.md) — deep dive: Graphiti, Hindsight, bi-temporal model
 - [temporal-graphs-doronin.md](temporal-graphs-doronin.md) — Graphiti на практике: метрики, кейсы, оптимизация (опыт @kdoronin_blog)
+
+- [context-graphs.md](context-graphs.md) — Context Graphs: decision traces, траектории агентов, институциональная память (Foundation Capital)
+
+**Как файлы связаны:** agent-memory.md — широкая карта всех подходов к памяти агентов. temporal-graphs.md — глубокое погружение в один конкретный подход (Temporal Graph). temporal-graphs-doronin.md — практика работы с Graphiti. context-graphs.md — бизнес-концепция: зачем организации нужна память решений, открытый вопрос темпоральности решается через temporal-graphs.

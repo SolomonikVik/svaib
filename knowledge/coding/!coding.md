@@ -2,11 +2,11 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: raw
 added: 2026-01-30
-updated: 2026-02-11
+updated: 2026-02-16
 review_by: 2026-04-30
 tags: [coding, ai-coding, ide, claude-code, index]
 publish: false
-version: 9
+version: 10
 ---
 
 # Coding — AI-кодинг и разработка
@@ -34,6 +34,10 @@ version: 9
 ## UI-дизайн
 
 Всё про создание интерфейсов с AI: workflow, инструменты, кейсы, фишки. Проверенный подход: референсы (Mobbin) → описание текущего состояния → параллельный запуск генераторов (Lovable, v0, Bolt) → выбор лучшего → интеграция через Claude Code. Скриншоты работают лучше текстовых описаний. Детали: [ui-design.md](ui-design.md).
+
+## Engineering Harness — проектирование среды для агентов
+
+Сдвиг роли инженера: от "писать код" к "проектировать среду, в которой агенты пишут код надёжно". Термин Mitchell Hashimoto (создатель Terraform, Ghostty). Две формы: (1) implicit prompting — AGENTS.md с правилами, предотвращающими ошибки; (2) programmed tools — скрипты верификации. OpenAI подтвердила: команда за 5 месяцев через Codex — ~1M строк, 1500 PR, 0 строк вручную, 1/10 времени. Парадигма: "Humans steer. Agents execute." Детали 6-шагового пути AI-адопции Hashimoto и практика OpenAI: [engineering-harness.md](engineering-harness.md).
 
 ## Связанные материалы
 
