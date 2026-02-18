@@ -217,6 +217,7 @@ npm run dev      # Start Next.js dev server
 * `/svaib-context` — Work with project context (meta/ folder): format files, update structure, check collisions
 * `/svaib-knowledge` — Knowledge base (knowledge/ folder): add, search, review external AI knowledge
 * `/svaib-clients` — Client work (clients/ folder): methodology, client prep, meeting notes, proposals
+* `/svaib-framework` — Framework expert (framework/ folder): развитие онтологии, методологии, scaffold, plugin Second AI Brain
 
 ## Subagents
 
@@ -281,6 +282,12 @@ npm run dev      # Start Next.js dev server
 15. **Файлы контекста — пиши для AI, не для человека:**
     * Файлы в meta/, dev/, knowledge/ читает в первую очередь AI. Пиши максимально сжато: факт + источник, без обоснований и объяснений.
     * Если информация нужна человеку — уточни у Виктора формат.
+16. **Разбор ошибок — только инженерный анализ:**
+    * **Где сбой:** шаг, файл, инструкция
+    * **Почему:** что отсутствует/неточно в скилле, хуке или процессе
+    * **Фикс:** что изменить и где
+    * Если причину не удаётся привязать к конкретному месту — предложить гипотезы и обсудить с Виктором
+    * **НЕ использовать:** "не вдумался", "поторопился", "поверхностно подошёл" — антропоморфные объяснения не анализ
 
 ## Key Principles
 

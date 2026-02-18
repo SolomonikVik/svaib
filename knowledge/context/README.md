@@ -12,5 +12,7 @@
 - [temporal-graphs-doronin.md](temporal-graphs-doronin.md) — Graphiti на практике: метрики, кейсы, оптимизация (опыт @kdoronin_blog)
 
 - [context-graphs.md](context-graphs.md) — Context Graphs: decision traces, траектории агентов, институциональная память (Foundation Capital)
+- [markdown-for-llm.md](markdown-for-llm.md) — Анатомия Markdown-файла для человека + LLM + RAG: YAML, структура, чанкинг, связи (консолидация 3 исследований)
+- [search-mechanics.md](search-mechanics.md) — Как Claude Code, Cursor, Claude Projects и ChatGPT Projects ищут файлы: механики поиска, уровни доступа, практические выводы
 
-**Как файлы связаны:** agent-memory.md — широкая карта всех подходов к памяти агентов. temporal-graphs.md — глубокое погружение в один конкретный подход (Temporal Graph). temporal-graphs-doronin.md — практика работы с Graphiti. context-graphs.md — бизнес-концепция: зачем организации нужна память решений, открытый вопрос темпоральности решается через temporal-graphs.
+**Как файлы связаны:** agent-memory.md — широкая карта всех подходов к памяти агентов. temporal-graphs.md — глубокое погружение в один конкретный подход (Temporal Graph). temporal-graphs-doronin.md — практика работы с Graphiti. context-graphs.md — бизнес-концепция: зачем организации нужна память решений, открытый вопрос темпоральности решается через temporal-graphs. markdown-for-llm.md и search-mechanics.md — пара: первый про КАК писать файлы, второй про КАК их находят AI-инструменты.

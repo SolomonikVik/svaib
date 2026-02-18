@@ -44,7 +44,8 @@ framework/
 │
 ├── ontology/                    ← сущности, связи, определения
 │   ├── README.md
-│   └── ontology.md
+│   ├── ontology.md
+│   └── file_spec.md             ← спецификация файла (формат, YAML, связи)
 │
 ├── methodology/                 ← принципы, ритуалы, decision frames
 │   ├── README.md

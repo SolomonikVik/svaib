@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-02-16
-review_by: 2026-05-11
+updated: 2026-02-18
+review_by: 2026-05-18
 tags: [context-engineering, rag, memory, temporal-graphs, index]
 publish: false
-version: 6
+version: 10
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -16,6 +16,8 @@ version: 6
 Дисциплина управления информацией, которую получает AI. Context Engineering — эволюция промптинга: не просто "как спросить", а "какой набор информации даст нужный результат". Включает: RAG (Retrieval-Augmented Generation — подтягивание релевантных документов), управление памятью, работу с контекстным окном, стратегии против "context rot" (деградация качества при перегрузке контекста). Ключевой принцип: контекстное окно — ограниченный ресурс, каждый токен должен быть полезен.
 
 Знания о context engineering, RAG и memory — рабочий материал для продукта SVAIB (см. product_vision.md).
+
+**Профайл:** Методологическая карта — концепции, архитектуры, принципы. Сюда: теория и классификации (что такое RAG, какие бывают архитектуры памяти, что такое context rot). Как это реализовано в конкретных продуктах (Claude Code, Cursor, Projects, ChatGPT) → [search-mechanics.md](search-mechanics.md).
 
 ## Ключевые направления
 
@@ -42,6 +44,18 @@ version: 6
 
 Концепция Foundation Capital (Ashu Garg, январь 2026): context graph = живая карта того, КАК организация принимает решения. "Decision traces" — записи reasoning за решениями (какие исключения, какой прецедент, кто одобрил). Модели commoditize, а decision traces — компаундящий proprietary актив. Агенты создают traces автоматически: траектория агента по системам = decision trace. Со временем из траекторий возникает мировая модель организации. Открытые вопросы: темпоральность (→ решается через [temporal-graphs.md](temporal-graphs.md)), governance, где хранить граф. Для SVAIB: наш framework/ontology — по сути context graph для CEO. Подробнее → [context-graphs.md](context-graphs.md).
 
+### Реализация в приложениях
+
+Теория выше описывает механизмы (RAG, temporal graphs, file-based memory). Как это реализовано в конкретных AI-инструментах (Claude Code, Cursor, Claude Projects, ChatGPT Projects) — механики поиска, уровни доступа, практические выводы для организации файлов → [search-mechanics.md](search-mechanics.md).
+
+### Оптимизация Markdown-файлов для LLM и RAG
+
+Консолидированное исследование (3 модели, февраль 2026) выявило ключевые принципы написания файлов, которые одинаково хорошо работают для человека, LLM и RAG-систем. Семь главных находок (все — консенсус или подтверждены бенчмарками): `description` в YAML — самое ценное одиночное улучшение для discovery; "summary first" из-за Lost in the Middle (-20%+ точности в середине контекста); каждая H2-секция — автономный чанк с повторением субъекта (-35% ошибок поиска, Anthropic Contextual Retrieval); структурный чанкинг по заголовкам превосходит семантический (70.5% vs 63.8%); YAML обрабатывается LLM как текст, не как структурированные данные; <300 строк, таблицы <20 строк, вложенность ≤2. Подробнее → [markdown-for-llm.md](markdown-for-llm.md).
+
+### Механики поиска AI-инструментов
+
+Консолидированное исследование (3 модели, февраль 2026) по тому, как три основных инструмента технически находят файлы. Claude Code — агентный grep без индекса (Boris Cherny: "outperformed everything else by a lot"). Cursor — облачный semantic index (tree-sitter → Turbopuffer). Claude Projects — full context (<200K) или автоматический RAG (>200K, предположительно Contextual Retrieval). Главный вывод: имя файла — единственная оптимизация, работающая везде; Claude Code "ходит" по ссылкам, Cursor "сканирует" по смыслу. Оптимизировать файлы нужно под grep И embedding одновременно. Подробнее → [search-mechanics.md](search-mechanics.md).
+
 ### Context Window Management
 Управление ограниченным контекстным окном: что включить, что опустить, когда сжимать. Стратегии: progressive summarization, context rotation, priority-based selection.
 
@@ -56,3 +70,5 @@ version: 6
 - [../agents/!agents.md](../agents/!agents.md) — агентные системы (Memory как компонент)
 - [context-graphs.md](context-graphs.md) — Context Graphs: decision traces, траектории агентов (Foundation Capital)
 - [../agents/openclaw.md](../agents/openclaw.md) — пример архитектуры с Memory-компонентом (слабая темпоральность)
+- [markdown-for-llm.md](markdown-for-llm.md) — анатомия Markdown-файла для человека + LLM + RAG (YAML, структура, чанкинг, связи)
+- [search-mechanics.md](search-mechanics.md) — как Claude Code, Cursor, Claude Projects и ChatGPT ищут файлы (механики поиска, уровни доступа)

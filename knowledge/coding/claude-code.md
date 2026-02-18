@@ -358,6 +358,7 @@ Effort и thinking budget — независимые параметры. High ef
 - **agents/** — Субагенты Claude Code. См. [!agents.md](../agents/!agents.md)
 - **Superpowers** — крупнейший плагин, эталонный пример. См. [skills/superpowers.md](../skills/superpowers.md)
 - **Cowork** — Anthropic перенёс ту же plugin-архитектуру в GUI для knowledge workers (sales, legal, finance). Формат плагинов идентичен. См. [tools/cowork.md](../tools/cowork.md)
+- **Механика поиска Claude Code** — как Claude Code ищет файлы (агентный grep без индекса, двухмодельная архитектура, сравнение с Cursor и Claude Projects). См. [context/search-mechanics.md](../context/search-mechanics.md)
 
 ## Источники
 
