@@ -26,29 +26,36 @@ Stamp and signature PNGs stored outside any repo:
 
 ## Workflow
 
-1. Run script with PDF path and preset (if known):
+### Calibrated preset (invoice, etc.) — ONE step, no confirmations
+
+If the document type has a calibrated preset, run sign + open in a single Bash call.
+Do NOT ask for intermediate confirmations — presets are already tuned.
+
 ```bash
-python3 .claude/skills/sign-pdf/scripts/sign_pdf.py "path/to/doc.pdf" --preset invoice
+python3 .claude/skills/sign-pdf/scripts/sign_pdf.py "path/to/doc.pdf" --preset invoice && open "path/to/doc (подписан).pdf"
 ```
 
-2. Preview result:
-```bash
-pdftoppm -png -r 150 "path/to/doc (подписан).pdf" /tmp/signed_preview
-```
-Show preview to user via Read tool.
+Tell user the file is ready and opened in Preview. Done.
 
-3. If user wants adjustment — convert cm to points (1 cm = 28.35 pt), rerun with offsets:
+### New/unknown document — iterative calibration
+
+1. Run script with best-guess positioning:
 ```bash
-python3 .claude/skills/sign-pdf/scripts/sign_pdf.py "doc.pdf" --preset invoice --sign-dy -28.35 --stamp-dx 85
+python3 .claude/skills/sign-pdf/scripts/sign_pdf.py "path/to/doc.pdf" && open "path/to/doc (подписан).pdf"
 ```
 
-4. Repeat until user approves.
+2. If user wants adjustment — convert cm to points (1 cm = 28.35 pt), rerun with offsets:
+```bash
+python3 .claude/skills/sign-pdf/scripts/sign_pdf.py "doc.pdf" --sign-dy -28.35 --stamp-dx 85 && open "doc (подписан).pdf"
+```
+
+3. Repeat until user approves, then save as new preset in `PRESETS` dict.
 
 ## Presets
 
 | Preset | `--preset` | Description |
 |--------|-----------|-------------|
-| Счёт-фактура | `invoice` | 4.5 cm, bottom-left ИП area, all pages |
+| Счёт-фактура | `invoice` | 4.5 cm, печать + подпись ИП (left) + подпись бухгалтера (right), all pages |
 | Default | (none) | 4.5 cm, bottom-left, all pages |
 
 New presets: add to `PRESETS` dict in `scripts/sign_pdf.py`.
@@ -63,6 +70,7 @@ New presets: add to `PRESETS` dict in `scripts/sign_pdf.py`.
 | `--size` | 4.5 | Image size in cm |
 | `--sign-dx/dy` | 0 | Signature offset (points, +right/+up) |
 | `--stamp-dx/dy` | 0 | Stamp offset (points) |
+| `--sign2-dx/dy` | 0 | 2nd signature offset (points, for presets with sign2) |
 | `--stamp` | auto | Override stamp path |
 | `--signature` | auto | Override signature path |
 | `--output` | auto | Output path (default: original + " (подписан)") |

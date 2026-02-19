@@ -26,12 +26,14 @@ SEAL_DIR = Path.home() / "Projects" / "_secrets" / "seal"
 # Coordinates in PDF points, visual space (origin = bottom-left of displayed page)
 PRESETS = {
     "invoice": {
-        "description": "Счёт-фактура — ИП area, bottom-left, all pages",
+        "description": "Счёт-фактура — ИП area + бухгалтер, all pages",
         "size_cm": 4.5,
         "sign_x": 168.0,
-        "sign_y": 24.0,
+        "sign_y": 35.3,
         "stamp_x": 67.0,
         "stamp_y": 34.0,
+        "sign2_x": 443.0,
+        "sign2_y": 29.6,
         "pages": None,  # all
     },
 }
@@ -67,7 +69,8 @@ def img_to_buf(img):
 
 
 def create_overlay(page_w, page_h, stamp_buf, sign_buf, img_size,
-                   sign_x, sign_y, stamp_x, stamp_y):
+                   sign_x, sign_y, stamp_x, stamp_y,
+                   sign2_x=None, sign2_y=None):
     buf = io.BytesIO()
     c = canvas.Canvas(buf, pagesize=(page_w, page_h))
     stamp_buf.seek(0)
@@ -76,6 +79,10 @@ def create_overlay(page_w, page_h, stamp_buf, sign_buf, img_size,
                 width=img_size, height=img_size, mask="auto")
     c.drawImage(ImageReader(sign_buf), sign_x, sign_y,
                 width=img_size, height=img_size, mask="auto")
+    if sign2_x is not None and sign2_y is not None:
+        sign_buf.seek(0)
+        c.drawImage(ImageReader(sign_buf), sign2_x, sign2_y,
+                    width=img_size, height=img_size, mask="auto")
     c.save()
     buf.seek(0)
     return PdfReader(buf).pages[0]
@@ -83,6 +90,7 @@ def create_overlay(page_w, page_h, stamp_buf, sign_buf, img_size,
 
 def sign_pdf(pdf_path, output_path=None, preset_name=None, pages=None,
              size_cm=None, sign_dx=0, sign_dy=0, stamp_dx=0, stamp_dy=0,
+             sign2_dx=0, sign2_dy=0,
              stamp_path=None, signature_path=None):
 
     # Resolve preset
@@ -109,6 +117,13 @@ def sign_pdf(pdf_path, output_path=None, preset_name=None, pages=None,
     stamp_y = preset["stamp_y"] + stamp_dy
     target_pages = pages or preset.get("pages")
 
+    # Second signature (optional, from preset)
+    sign2_x = None
+    sign2_y = None
+    if "sign2_x" in preset and "sign2_y" in preset:
+        sign2_x = preset["sign2_x"] + sign2_dx
+        sign2_y = preset["sign2_y"] + sign2_dy
+
     # Process images
     stamp_buf = img_to_buf(make_white_transparent(stamp_file))
     sign_buf = img_to_buf(make_white_transparent(sign_file))
@@ -132,9 +147,11 @@ def sign_pdf(pdf_path, output_path=None, preset_name=None, pages=None,
             stamp_buf.seek(0)
             sign_buf.seek(0)
             overlay = create_overlay(eff_w, eff_h, stamp_buf, sign_buf,
-                                     img_size, sign_x, sign_y, stamp_x, stamp_y)
+                                     img_size, sign_x, sign_y, stamp_x, stamp_y,
+                                     sign2_x=sign2_x, sign2_y=sign2_y)
             page.merge_page(overlay)
-            print(f"Page {i + 1}: signed ({eff_w:.0f}x{eff_h:.0f})")
+            extra = " + sign2" if sign2_x is not None else ""
+            print(f"Page {i + 1}: signed ({eff_w:.0f}x{eff_h:.0f}){extra}")
         else:
             print(f"Page {i + 1}: skipped")
         writer.add_page(page)
@@ -159,6 +176,8 @@ def main():
     parser.add_argument("--sign-dy", type=float, default=0, help="Signature Y offset (pt)")
     parser.add_argument("--stamp-dx", type=float, default=0, help="Stamp X offset (pt)")
     parser.add_argument("--stamp-dy", type=float, default=0, help="Stamp Y offset (pt)")
+    parser.add_argument("--sign2-dx", type=float, default=0, help="2nd signature X offset (pt)")
+    parser.add_argument("--sign2-dy", type=float, default=0, help="2nd signature Y offset (pt)")
     parser.add_argument("--stamp", default=None, help="Override stamp path")
     parser.add_argument("--signature", default=None, help="Override signature path")
     parser.add_argument("--output", default=None, help="Output path")
@@ -169,6 +188,7 @@ def main():
         pages=args.pages, size_cm=args.size,
         sign_dx=args.sign_dx, sign_dy=args.sign_dy,
         stamp_dx=args.stamp_dx, stamp_dy=args.stamp_dy,
+        sign2_dx=args.sign2_dx, sign2_dy=args.sign2_dy,
         stamp_path=args.stamp, signature_path=args.signature,
     )
 

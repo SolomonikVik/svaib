@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(python3 *sign_pdf.py*)",
+      "Bash(open *подписан*)",
+      "Bash(pdftoppm *)"
+    ]
+  },
   "hooks": {
     "Stop": [
       {
