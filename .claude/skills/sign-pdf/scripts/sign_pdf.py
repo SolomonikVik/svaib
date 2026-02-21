@@ -36,6 +36,15 @@ PRESETS = {
         "sign2_y": 29.6,
         "pages": None,  # all
     },
+    "contract": {
+        "description": "Договор — печать и подпись Исполнителя (правая колонка), last page",
+        "size_cm": 4.5,
+        "sign_x": 282.0,   # 168 + 114
+        "sign_y": 62.0,    # 24 + 38
+        "stamp_x": 408.0,  # 67 + 341
+        "stamp_y": 76.0,   # 34 + 42
+        "pages": "last",
+    },
 }
 
 DEFAULT_PRESET = {
@@ -132,11 +141,12 @@ def sign_pdf(pdf_path, output_path=None, preset_name=None, pages=None,
     reader = PdfReader(pdf_path)
     writer = PdfWriter()
 
-    pages_to_sign = (
-        set(range(len(reader.pages)))
-        if target_pages is None
-        else {p - 1 for p in target_pages}
-    )
+    if target_pages is None:
+        pages_to_sign = set(range(len(reader.pages)))
+    elif target_pages == "last":
+        pages_to_sign = {len(reader.pages) - 1}
+    else:
+        pages_to_sign = {p - 1 for p in target_pages}
 
     for i, page in enumerate(reader.pages):
         if i in pages_to_sign:

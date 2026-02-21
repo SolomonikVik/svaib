@@ -138,7 +138,7 @@ agent = Agent(
 **Реализации:**
 - Claude Code Task tool — координатор спавнит субагентов, получает результат
 - CrewAI hierarchical process — manager координирует workers
-- OpenClaw supervisor-specialist (см. openclaw.md)
+- OpenClaw supervisor-specialist (см. [../tools/openclaw.md](../tools/openclaw.md))
 
 **Когда:** Нужна единая точка контроля, простая отладка, предсказуемость.
 
@@ -300,7 +300,7 @@ Claude Code Agent Teams:
 ## Связанные файлы
 
 - [mcp.md](mcp.md) — протокол подключения к инструментам (комплементарен субагентам)
-- [openclaw.md](openclaw.md) — OpenClaw: Gateway-Agent-Skills-Memory архитектура
+- [../tools/openclaw.md](../tools/openclaw.md) — OpenClaw: Gateway-Agent-Skills-Memory архитектура
 - [../skills/!skills.md](../skills/!skills.md) — Skills vs Subagents: когда что использовать
 - [../skills/superpowers.md](../skills/superpowers.md) — субагентные скиллы (subagent-driven-development, dispatching-parallel-agents)
 - [../skills/skill-activation.md](../skills/skill-activation.md) — надёжность активации

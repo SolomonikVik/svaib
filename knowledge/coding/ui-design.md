@@ -4,11 +4,11 @@ source: "https://t.me/polyakov_ai"
 source_type: thread
 status: raw
 added: 2026-02-01
-updated: 2026-02-16
+updated: 2026-02-21
 review_by: 2026-05-07
-tags: [ui, design, lovable, v0, bolt, figma, mobbin, workflow, cowork, claude-code, frontend-design]
+tags: [ui, design, lovable, v0, bolt, figma, pencil, mobbin, workflow, cowork, claude-code, frontend-design]
 publish: false
-version: 4
+version: 5
 ---
 
 # UI-дизайн
@@ -33,8 +33,31 @@ version: 4
 
 | Инструмент | Суть | Когда использовать | Сайт |
 |-----------|------|-------------------|------|
+| **Pencil.dev** | Бесконечный canvas прямо в IDE (VS Code, Cursor, Claude Code). .pen файлы (JSON) в git. Код через MCP — точные вектора, не скриншоты | Design-in-IDE: дизайн и код в одном месте, версионируются вместе | pencil.dev |
 | **Figma Make** | AI-генератор внутри Figma: промпт/скриншот → прототип | Нужен макет, не код. Или референс для генератора | figma.com/make |
 | **Figma MCP** | Figma-контекст доступен в Claude Code, Cursor | Design-to-code: AI видит дизайн и генерирует по нему | — |
+
+### Pencil.dev — design-in-IDE (новая категория)
+
+**Что это:** Бесконечный canvas (как Figma) встроенный прямо в IDE. Не design-to-code (дизайн отдельно → экспорт → код), а design = code — дизайн живёт в репозитории.
+
+**Как работает:**
+- Рисуешь на холсте в IDE (или говоришь AI "нарисуй экран")
+- Результат — `.pen` файл (JSON с точными координатами, размерами, дизайн-токенами)
+- .pen лежит в git → бранчится, мёржится, версионируется вместе с кодом
+- Claude Code читает .pen через **MCP** → генерирует React/HTML/CSS по точным данным (не по скриншоту)
+
+**Ключевое отличие от Figma MCP:** Figma MCP передаёт контекст из внешнего инструмента. Pencil — это сам дизайн-инструмент внутри IDE, файлы нативно в git. Нет handoff.
+
+**MCP-точность:** `padding-left: 1rem` в .pen → AI пишет `p-4` в Tailwind. Без угадывания по пикселям.
+
+**Что ещё:** Параллельные AI-агенты (несколько экранов одновременно), подключение баз данных и API к холсту, импорт из Figma (copy-paste, слои и Auto Layout сохраняются).
+
+**Цена:** Pencil бесплатный (early access, февраль 2026). Платишь за AI-подписку (Claude, Cursor).
+
+**Ограничения:** Mac — полноценное приложение. Windows — только VS Code extension. Early access — возможны баги.
+
+**Принципы для качественного результата:** семантические имена слоёв (`pricing-card-container`, не `Frame 42`), Auto Layout вместо абсолютного позиционирования, spacing кратно 4-8px, dual-frame для responsive (390px mobile + 1440px desktop).
 
 ### Библиотеки референсов
 

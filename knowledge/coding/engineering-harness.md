@@ -1,21 +1,21 @@
 ---
 title: "Engineering Harness — проектирование среды для AI-агентов вместо написания кода"
-source: "https://mitchellh.com/writing/my-ai-adoption-journey"
+source: "multiple (см. Источники)"
 source_type: article
 status: processed
 added: 2026-02-16
-updated: 2026-02-16
-review_by: 2026-05-16
-tags: [ai-coding, agents, harness, engineering-practices, codex, mitchell-hashimoto]
+updated: 2026-02-21
+review_by: 2026-05-21
+tags: [ai-coding, agents, harness, engineering-practices, codex, mitchell-hashimoto, openai, anthropic, llm-under-hood]
 publish: false
-version: 1
+version: 4
 ---
 
 # Engineering Harness
 
 ## Кратко
 
-Сдвиг роли инженера: от "писать код" к "проектировать среду, в которой агенты пишут код надёжно". Термин ввёл Mitchell Hashimoto (создатель Terraform, Vagrant, Ghostty). Два направления: (1) implicit prompting — AGENTS.md с правилами, предотвращающими повторение ошибок; (2) programmed tools — скрипты для скриншотов, фильтрованных тестов, верификации. OpenAI подтвердила концепцию: команда за 5 месяцев через Codex написала ~1M строк кода (1500 PR, 0 строк вручную), оценка — 1/10 времени ручной разработки.
+Engineering Harness — проектирование среды, в которой AI-агенты пишут код надёжно. Роль инженера сдвигается от написания кода к созданию инфраструктуры для агентов: правила (AGENTS.md), инструменты верификации, граф документации, agent runtime mode. Когда агент ошибается — инженерь решение, чтобы ошибка не повторилась. Источники: Hashimoto (6 шагов адопции), OpenAI (1M строк / 0 вручную), Anthropic (данные продуктивности), практика @llm_under_hood.
 
 ---
 
@@ -61,7 +61,7 @@ Hashimoto отмечает: это контрбаланс к проблеме sk
 
 **Implicit prompting (AGENTS.md):** Для простых ошибок — обновляй AGENTS.md (или эквивалент). Каждая строка = предотвращённая ошибка. Пример: [Ghostty AGENTS.md](https://github.com/ghostty-org/ghostty/blob/ca07f8c3f775fe437d46722db80a755c2b6e6399/src/inspector/AGENTS.md).
 
-**Programmed tools:** Скрипты для скриншотов, фильтрованных тестов, проверки результатов. Парится с AGENTS.md — агент должен знать о существовании инструмента.
+**Programmed tools (verification tools):** Скрипты для скриншотов, фильтрованных тестов, проверки результатов. Тесты, linters, скриншоты, multi-agent review — всё это инструменты верификации, часть harness. Парится с AGENTS.md — агент должен знать о существовании инструмента.
 
 ### Шаг 6: Всегда держи агента запущенным
 
@@ -87,6 +87,100 @@ OpenAI применила концепцию на практике в внутр
 
 Также: [Unlocking the Codex harness: how we built the App Server](https://openai.com/index/unlocking-the-codex-harness/) — технические детали Codex harness (agent loop + JSON-RPC API).
 
+**Критика:** Böckeler (ThoughtWorks, [martinfowler.com](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html), 17 февраля 2026) отмечает: OpenAI фокусируется на structural linters, мало говорит о functional/behavioral testing. Harness без behavioral tests рискует ловить только стилистические проблемы, пропуская логические ошибки.
+
+**Архитектура репо для агентов:**
+- Строгие слои: Types → Config → Repo → Service → Runtime → UI
+- Custom linters + structural tests для enforcement правил
+- Репозиторий оптимизирован под legibility для модели, не для человека
+- "Golden principles" закодированы в репо с recurring cleanup
+- **Garbage Collection:** фоновые Codex-задачи сканируют код на отклонения от golden principles, обновляют quality grades и открывают PR с рефакторингом. Проактивный подход — не ждёт ошибок, а поддерживает гигиену кодовой базы непрерывно. См. принцип 3 (Harness Engineering) в [ai-dev-practices.md](ai-dev-practices.md)
+- Документация — оглавление (table of contents), знания в структурированной docs/
+
+---
+
+## OpenAI — 7-фазная трансформация SDLC
+
+Источник: [Building an AI-Native Engineering Team](https://developers.openai.com/codex/guides/build-ai-native-engineering-team/)
+
+OpenAI описывает трансформацию всего цикла разработки. На каждой фазе — чёткое разделение ответственности:
+
+| Фаза | Агент | Инженер |
+|------|-------|---------|
+| **Planning** | Читает спеки, трейсит код, разбивает на подзадачи | Приоритизация, продуктовое направление |
+| **Design** | Скаффолдинг, конвертация макетов, accessibility | Архитектурные паттерны, UX-флоу |
+| **Build** | Генерация фич end-to-end (модели, API, UI, тесты) | Уточнение поведения, ревью архитектуры |
+| **Testing** | Генерация тест-кейсов, edge cases, синхронизация | Определение качественных тестов, adversarial thinking |
+| **Code Review** | Трейсинг логики, поиск P0/P1 багов | Архитектурное соответствие, merge-ответственность |
+| **Documentation** | Суммаризация, диаграммы (Mermaid), release notes | Структура, стратегический контекст |
+| **Deploy** | Парсинг логов, аномалии, предложение hotfixes | Валидация root cause, превентивные меры |
+
+**Фреймворк делегирования (Delegate / Review / Own):**
+- **Delegate** — механическое, повторяемое, хорошо специфицированное
+- **Review** — AI делает, человек валидирует перед деплоем
+- **Own** — стратегия, неоднозначные решения, финальная ответственность
+
+**Данные о росте:** Сложность задач агентов удваивается каждые 7 месяцев. На август 2025 — 2ч17мин непрерывной работы с ~50% accuracy.
+
+---
+
+## Anthropic — внутренние данные
+
+Источник: [How AI is transforming work at Anthropic](https://www.anthropic.com/research/how-ai-is-transforming-work-at-anthropic) (февраль 2026)
+
+Подтверждение концепции harness engineering данными:
+- Использование Claude: 28% → 59% рабочего времени за год
+- Продуктивность: +20% → +50%
+- +67% merged PRs на инженера в день
+- 27% работы — задачи, которые вообще бы не делались без AI
+- Автономность Claude Code удвоилась: 10 → 20 последовательных действий
+
+**Паттерны делегирования:** легко проверяемое, вне экспертизы, рутинное, self-contained, low-stakes. Большинство могут "fully delegate" только 0-20%.
+
+**Побочный эффект:** бэкенд-инженеры стали "full-stack" — фронт, дизайн, незнакомые области. Но тревога про atrophy навыков (перекликается с шагом 4 Hashimoto).
+
+---
+
+## Практика: опыт @llm_under_hood
+
+Источник: [Инсайты из разработки продуктов с AI Agents](https://t.me/llm_under_hood/755) (Ренат Зиннатуллин, Telegram, февраль 2026)
+
+Ренат — один из лидеров русскоязычного AI-сообщества. Разрабатывает несколько проектов параллельно, максимально используя AI-агентов. Его инсайты подтверждают и дополняют концепции из OpenAI и Hashimoto.
+
+### Agent mode — третий runtime-режим
+
+Помимо dev/prod появляется режим `agent`, оптимизированный для самопроверки агентом:
+- Логов минимум (не замусоривать контекст)
+- Любая ошибка роняет приложение целиком (fail fast — агент сразу видит проблему)
+- Авторизация отключена или упрощена (агент сразу залогинен с нужной ролью)
+- Single-request mode — приложение закрывается после первого вызова
+
+Пример: `go run . -single-request -agent-login "reader@test"` — агент через curl дёргает страницу, получает результат, приложение закрывается. Минимум шума, максимум сигнала.
+
+**Почему это важно:** OpenAI описывает "made the app bootable per git worktree" и Chrome DevTools Protocol — но agent mode как выделенный runtime с конкретными оптимизациями — отдельный паттерн. Не про доступ к приложению, а про то, чтобы приложение само помогало агенту верифицировать работу.
+
+### docs/ как граф контекстов с lazy-загрузкой
+
+Проекты обрастают не монолитным AGENTS.md, а ветвистой структурой docs/ — граф контекстов, где агент подгружает только релевантные узлы. Структуру поддерживают сами агенты (Codex/Claude Code). Совпадает с OpenAI: "AGENTS.md как оглавление, docs/ как система знаний".
+
+Мелкие инструменты и скрипты встраиваются в узлы графа docs/ — расширяют возможности агентов, задают рельсы и экономят контекст.
+
+### Ранний разбор tech debt ускоряет разработку
+
+Чуть больше времени на поддержание проекта в чистоте → быстрее разработка в итоге. Совпадает с OpenAI "garbage collection": непрерывное погашение debt дешевле, чем накопление и болезненные bursts.
+
+### Миграция: от монолита к графу за 30 минут
+
+Конкретный workflow перехода со старого формата (толстый AGENTS.md + README + заглушка CLAUDE.md) на новый:
+
+1. Переключить на мощную модель (GPT-5.2-High)
+2. Скормить выжимку из OpenAI Engineering Harness
+3. Агент просматривает весь код и доки, задаёт вопросы
+4. 10 мин голосовое интервью (ответы на вопросы агента)
+5. 20 мин интеграция + ручная подчистка графа
+
+Результат: качество работы агентов сразу возрастает. Ренат заметил деградацию именно когда переключился на проект со старым форматом — Codex Desktop "тупил даже с High reasoning".
+
 ---
 
 ## Связь с практиками SVAIB
@@ -97,6 +191,7 @@ OpenAI применила концепцию на практике в внутр
 
 ## Связанные файлы
 
+- [ai-dev-practices.md](ai-dev-practices.md) — синтез всех принципов AI-разработки (включая harness engineering)
 - [!coding.md](!coding.md) — сводка по AI-кодингу
 - [claude-code.md](claude-code.md) — Claude Code как основная среда разработки
 - [agent-teams.md](agent-teams.md) — multi-agent разработка (шаг 6 Hashimoto масштабируется через Agent Teams)

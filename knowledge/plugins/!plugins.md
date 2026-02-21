@@ -2,11 +2,11 @@
 title: "Plugins — система расширения AI-агентов: формат, экосистема, best practices"
 status: processed
 added: 2026-02-13
-updated: 2026-02-13
-review_by: 2026-05-13
-tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product]
+updated: 2026-02-21
+review_by: 2026-05-21
+tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
-version: 1
+version: 2
 ---
 
 # Plugins — система расширения AI-агентов
@@ -372,6 +372,10 @@ Product vision описывает модель подписки: клиент п
 
 Крупнейшая авторская библиотека. 14 скиллов: TDD, debugging, planning, code review, субагенты, git workflow. Использует все 4 механизма (Skills + Commands + Agents + Hooks). Подробнее: [skills/superpowers.md](../skills/superpowers.md).
 
+### arscontexta — персональный Second Brain
+
+От Heinrich (@arscontexta). Через conversational derivation engine генерирует персональную knowledge system (skill graph) из разговора. 249 связанных markdown-файлов, three-space model (self/notes/ops), 6Rs processing pipeline, 10 skills, subagent orchestration. Первая публичная реализация паттерна [Skill Graphs](../skills/skill-graphs.md). 6.7K лайков, 2.3M просмотров. MIT. Подробный разбор: [cases/arscontexta.md](../cases/arscontexta.md).
+
 ### Claude-mem — постоянная память
 
 От thedotmack. Lifecycle hooks захватывают наблюдения, сжимают через AI, инжектят в будущие сессии. SQLite + Chroma vector DB. 3-слойный progressive disclosure. ~10x экономия токенов. AGPL-3.0.
@@ -398,3 +402,4 @@ Product vision описывает модель подписки: клиент п
 - [coding/claude-code.md](../coding/claude-code.md) — Claude Code: рабочая среда, в которой плагины работают
 - [tools/cowork.md](../tools/cowork.md) — Cowork: GUI-платформа с той же plugin-архитектурой
 - [tools/ai-workspaces.md](../tools/ai-workspaces.md) — Обзор AI-рабочих сред
+- [cases/arscontexta.md](../cases/arscontexta.md) — arscontexta: кейс Second Brain как Claude Code плагин

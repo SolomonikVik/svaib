@@ -169,5 +169,5 @@ npm install @vectorize-io/hindsight-client
 - [temporal-graphs-doronin.md](temporal-graphs-doronin.md) — Graphiti на практике: метрики, кейсы, оптимизация (опыт @kdoronin_blog)
 - [!context.md](!context.md) — сводка по Context Engineering, RAG, Memory
 - [../agents/!agents.md](../agents/!agents.md) — агентные системы (Memory как компонент)
-- [../agents/openclaw.md](../agents/openclaw.md) — отсутствие темпоральности как слабость
+- [../tools/openclaw.md](../tools/openclaw.md) — отсутствие темпоральности как слабость
 - [context-graphs.md](context-graphs.md) — Context Graphs (Foundation Capital): темпоральность решений как открытый вопрос → решается через temporal graphs

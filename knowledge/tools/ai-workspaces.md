@@ -3,11 +3,11 @@ title: "AI-оболочки — среды для работы с AI (катал
 source_type: docs
 status: raw
 added: 2026-02-11
-updated: 2026-02-11
-review_by: 2026-05-11
+updated: 2026-02-21
+review_by: 2026-05-21
 tags: [tools, ai-workspace, shells, catalog]
 publish: false
-version: 2
+version: 3
 ---
 
 # AI-оболочки — где работать с AI
@@ -76,6 +76,18 @@ version: 2
 
 ---
 
+### ValeDesk
+
+**Что:** Десктопное AI-приложение (Tauri + React), фокус на приватность и закрытый контур. Данные не покидают машину. Позиционируется как локальная альтернатива облачным AI-инструментам.
+**Платформы:** macOS, Windows, Linux.
+**Модели:** Любой OpenAI-совместимый API, OpenRouter, Z.AI, локальные (Ollama, vLLM, LM Studio).
+**Ключевое:** Чтение PDF/DOCX (встроенное, без зависимостей). Выполнение кода (JS, Python, Bash/PowerShell). Веб-поиск (Tavily, Z.AI) и рендеринг страниц через Chromium. Маркетплейс скиллов. Sandbox-файловые операции. SQLite-сессии. Scheduled tasks с нативными уведомлениями.
+**Лицензия:** Бесплатно для физлиц и компаний с выручкой до $1M. Коммерческая лицензия для крупных.
+**GitHub:** https://github.com/vakovalskii/ValeDesk
+**Сообщество:** https://t.me/neuraldeep
+
+---
+
 ### VS Code
 
 **Что:** IDE от Microsoft, с v1.109 (февраль 2026) — полноценная multi-agent платформа.
@@ -94,8 +106,9 @@ version: 2
 | Разработчик, терминал | Claude Code, OpenCode |
 | Разработчик, IDE | VS Code + расширения, Codex |
 | Руководитель, маркетолог, не-разработчик | Cowork, Kojori |
-| Нужна мультимодельность (разные провайдеры) | OpenCode, Kojori |
+| Нужна мультимодельность (разные провайдеры) | OpenCode, Kojori, ValeDesk |
 | Нужны автоматизации по расписанию | Codex |
+| Закрытый контур, данные не покидают машину | ValeDesk + локальные модели |
 
 ## Связь с продуктом SVAIB
 
@@ -106,6 +119,7 @@ version: 2
 ─────────────────────────          ─────────────────────
 Claude Code / Cowork / Kojori     Skills + Agents + Онтология
 OpenCode / Codex / VS Code        (подписка, см. product_vision.md)
+ValeDesk (закрытый контур)
 ```
 
 Подробнее о модели подписки "Плагин": [cowork.md](cowork.md), секция "Связь с продуктом SVAIB".

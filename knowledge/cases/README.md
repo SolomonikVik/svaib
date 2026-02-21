@@ -7,3 +7,4 @@
 ## Файлы
 
 - [!cases.md](!cases.md) — сводка знаний
+- [arscontexta.md](arscontexta.md) — arscontexta: Claude Code плагин для генерации персональных knowledge systems (конкурент/коллега SVAIB)

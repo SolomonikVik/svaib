@@ -4,11 +4,11 @@ source: "consolidated research (Claude Opus 4.6, Gemini 3.0, GPT 5.2)"
 source_type: article
 status: processed
 added: 2026-02-17
-updated: 2026-02-18
-review_by: 2026-05-17
-tags: [markdown, llm, rag, yaml, chunking, context-engineering]
+updated: 2026-02-21
+review_by: 2026-05-21
+tags: [markdown, llm, rag, yaml, chunking, context-engineering, wikilinks]
 publish: false
-version: 2
+version: 3
 ---
 
 # Анатомия идеального Markdown-файла для человека + LLM + RAG
@@ -185,7 +185,7 @@ Anthropic Contextual Retrieval (2024): инъекция контекста в ч
 
 ### 4.1 Как LLM видит ссылки
 
-LLM не может переходить по ссылкам (`[[wikilinks]]` или `[markdown](file.md)`). Видит их только как семантические сигналы: "этот файл связан с X". Для перехода нужен tool use.
+LLM не может переходить по ссылкам (`[[wikilinks]]` или `[markdown](file.md)`). Видит их только как семантические сигналы: "этот файл связан с X". Для перехода нужен tool use. Однако при agentic use (Claude Code, Cursor) агент может следовать ссылкам через инструменты — это основа паттерна Skill Graphs, где wikilinks в прозе служат семантически богатой навигацией (→ [../skills/skill-graphs.md](../skills/skill-graphs.md)).
 
 ### 4.2 Типизированные связи
 

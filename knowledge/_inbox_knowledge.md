@@ -72,3 +72,9 @@ Search the web for:
 
 Return a concise summary (max 15 lines): what's Claude-only, what's portable, what's unclear. Include sources.
 И заметь — агенты вернули мне ~40 строк каждый, использовав в сумме ~54K токенов в своих контекстах. Мой контекст получил только выжимку.
+
+---
+
+от кстати нашел и пробую применять систему для настройки AI проектов.  https://github.com/lee-to/ai-factory  Там в комплекте и куча полезных скилов идет.
+
+https://github.com/lee-to/ai-factory?tab=readme-ov-file

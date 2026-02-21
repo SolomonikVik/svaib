@@ -7,5 +7,6 @@
 ## Файлы
 
 - [!skills.md](!skills.md) — сводка знаний (формат, принципы, экосистема)
+- [skill-graphs.md](skill-graphs.md) — Skill Graphs: сети связанных скиллов для глубокой экспертизы (wikilinks, MOCs, progressive disclosure)
 - [superpowers.md](superpowers.md) — Superpowers: крупнейшая авторская библиотека скиллов
 - [skill-activation.md](skill-activation.md) — Механика активации: надёжность, hooks, стратегии

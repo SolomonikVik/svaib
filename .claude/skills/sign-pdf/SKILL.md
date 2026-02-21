@@ -56,6 +56,7 @@ python3 .claude/skills/sign-pdf/scripts/sign_pdf.py "doc.pdf" --sign-dy -28.35 -
 | Preset | `--preset` | Description |
 |--------|-----------|-------------|
 | Счёт-фактура | `invoice` | 4.5 cm, печать + подпись ИП (left) + подпись бухгалтера (right), all pages |
+| Договор | `contract` | 4.5 cm, печать + подпись Исполнителя (правая колонка), last page |
 | Default | (none) | 4.5 cm, bottom-left, all pages |
 
 New presets: add to `PRESETS` dict in `scripts/sign_pdf.py`.

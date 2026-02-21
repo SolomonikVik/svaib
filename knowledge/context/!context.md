@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-02-18
-review_by: 2026-05-18
-tags: [context-engineering, rag, memory, temporal-graphs, index]
+updated: 2026-02-20
+review_by: 2026-05-20
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, index]
 publish: false
-version: 10
+version: 11
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -28,6 +28,12 @@ version: 10
 ### RAG (Retrieval-Augmented Generation)
 Подтягивание релевантных документов в контекст AI перед генерацией ответа. Базовый подход: vector store + embeddings + similarity search. Ограничение: не понимает время — все chunks равнозначны. В таксономии памяти агентов RAG — это similarity-based retrieval, простейшая из девяти стратегий поиска (→ [agent-memory.md](agent-memory.md)).
 
+### Extraction — извлечение сущностей из текста
+
+Шаг extraction в жизненном цикле памяти: unstructured text → structured entities. Задача: взять документ (протокол, заметку, отчёт) и вытащить конкретные сущности (цели, решения, люди, задачи) в структурированном формате.
+
+**[langextract](https://github.com/google/langextract)** (Google, Apache 2.0) — Python-библиотека для LLM-based extraction. Chunking + параллельная обработка + multi-pass для длинных документов. Source grounding — каждый извлечённый факт привязан к позиции в тексте. Адаптация под домен через few-shot примеры, без fine-tuning. Поддержка: Gemini (основной), OpenAI, Ollama. Устанавливается через pip, можно интегрировать в скилл или субагент. Для SVAIB: кандидат на extraction-слой при массовой обработке документов клиента по онтологии.
+
 ### Temporal Knowledge Graphs — память с пониманием времени
 Одна из пяти архитектур хранения памяти агентов (→ [agent-memory.md](agent-memory.md)). Решает ключевое ограничение обычного RAG — отсутствие темпоральности. Каждый факт/отношение имеет временные метки, конфликты разрешаются через invalidation. Bi-temporal model различает "когда произошло" и "когда узнали". Критично для продукта SVAIB: решения на встречах обновляются, AI должен знать что актуально сейчас. Два живых фреймворка: Graphiti (Zep, Neo4j, MCP-сервер) и Hindsight (Vectorize.io, PostgreSQL, биомиметическая память). Подробнее → [temporal-graphs.md](temporal-graphs.md). Практический опыт работы с Graphiti (метрики, кейсы, оптимизация) → [temporal-graphs-doronin.md](temporal-graphs-doronin.md)
 
@@ -38,7 +44,7 @@ version: 10
 **Плюсы:** Прозрачность (можно открыть и прочитать), редактируемость, Git-friendly, не требует инфраструктуры.
 **Минусы:** Растёт линейно → рост токенов → рост стоимости. Нет темпоральности (старые факты не "протухают"). Нет приоритизации — всё вставляется целиком.
 
-Подход близок к тому, как устроены CLAUDE.md и memory в Claude Code. По сути наш framework/scaffold/ — это тот же паттерн, но структурированный через онтологию. → [../agents/openclaw.md](../agents/openclaw.md)
+Подход близок к тому, как устроены CLAUDE.md и memory в Claude Code. По сути наш framework/scaffold/ — это тот же паттерн, но структурированный через онтологию. → [../tools/openclaw.md](../tools/openclaw.md)
 
 ### Context Graphs — институциональная память решений
 
@@ -69,6 +75,6 @@ version: 10
 - [temporal-graphs-doronin.md](temporal-graphs-doronin.md) — Graphiti на практике (опыт @kdoronin_blog)
 - [../agents/!agents.md](../agents/!agents.md) — агентные системы (Memory как компонент)
 - [context-graphs.md](context-graphs.md) — Context Graphs: decision traces, траектории агентов (Foundation Capital)
-- [../agents/openclaw.md](../agents/openclaw.md) — пример архитектуры с Memory-компонентом (слабая темпоральность)
+- [../tools/openclaw.md](../tools/openclaw.md) — пример архитектуры с Memory-компонентом (слабая темпоральность)
 - [markdown-for-llm.md](markdown-for-llm.md) — анатомия Markdown-файла для человека + LLM + RAG (YAML, структура, чанкинг, связи)
 - [search-mechanics.md](search-mechanics.md) — как Claude Code, Cursor, Claude Projects и ChatGPT ищут файлы (механики поиска, уровни доступа)
