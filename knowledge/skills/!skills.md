@@ -2,205 +2,264 @@
 title: "Skills — исполняемые инструкции для AI — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-02-21
-review_by: 2026-05-21
-tags: [skills, index, marketplace, ecosystem, skill-graph]
+updated: 2026-02-24
+review_by: 2026-05-24
+tags: [skills, index, marketplace, ecosystem, skill-graph, patterns]
 publish: false
-version: 11
+version: 12
 ---
 
 # Skills — Исполняемые инструкции для AI
 
 ## Кратко
 
-Skills — структурированные промпт-инструкции, которые AI загружает по необходимости. Папки с SKILL.md файлами, содержащими инструкции, шаблоны, примеры. НЕ код — это "учебники", которые AI читает и следует им. Пример: skill для TDD объясняет агенту, как писать тесты перед кодом. Skills делают AI специалистом в конкретной области без повторения инструкций каждый раз. В декабре 2025 Anthropic опубликовал Agent Skills как открытый стандарт — его приняли OpenAI, Vercel и другие. Вокруг стандарта выросла экосистема: официальный репозиторий Anthropic, CLI-инструмент Vercel (`npx skills`), агрегаторы (SkillsMP). **Важно:** автоматическая активация скиллов ненадёжна (~20% базовая успешность), требует forced eval hooks для стабильной работы. Детали: [skill-activation.md](skill-activation.md).
+Skills — структурированные инструкции в формате SKILL.md, которые AI загружает по необходимости и следует им. Не код — "учебники" для AI. Делают AI специалистом в конкретной области без повторения инструкций каждый раз. Открытый стандарт Anthropic (декабрь 2025), принятый OpenAI, Vercel и 40+ AI-агентами. Экосистема: официальный репо Anthropic, CLI `npx skills`, агрегаторы. Автоматическая активация ненадёжна (~20%), детали: [skill-activation.md](skill-activation.md). Знания о Skills — рабочий материал для продукта SVAIB (см. product_vision.md).
 
-Знания о создании и организации Skills — рабочий материал для продукта SVAIB (см. product_vision.md).
+---
 
-## Что такое Skill
+## Формат
 
-Skill — это папка с файлом `SKILL.md` внутри. AI читает этот файл и следует инструкциям. Не код, не конфиг — текст на естественном языке, написанный для AI.
+### YAML-заголовок
 
-**Простой скилл** = одна папка, один SKILL.md.
-**Сложный скилл** = SKILL.md + bundled resources. Официальная структура (Anthropic):
+**Обязательные поля:**
+
+```yaml
+---
+name: skill-name-in-kebab-case
+description: "What it does. Use when [trigger phrases]."
+---
+```
+
+`name` — kebab-case, без пробелов, заглавных и underscore (`_`), совпадает с именем папки. `description` — до 1024 символов. Должен содержать ЧТО делает и КОГДА использовать (trigger phrases). Это единственный вход для LLM при решении об активации.
+
+**Дополнительные поля:**
+
+```yaml
+allowed-tools: "Bash(python:*) Bash(npm:*) WebFetch"  # Ограничение доступных инструментов
+license: MIT                                            # Для open-source
+compatibility: "Requires network access, Python 3.10+"  # 1-500 символов, требования среды
+metadata:
+  author: Company Name
+  version: 1.0.0
+  mcp-server: server-name                               # Связь с MCP-сервером
+  category: productivity
+  tags: [project-management, automation]
+```
+
+**Ограничения безопасности:**
+- Запрещены XML-теги (`< >`) — frontmatter попадает в system prompt, возможна инъекция
+- Имена с "claude" или "anthropic" зарезервированы
+- `SKILL.md` — регистрозависимо (не SKILL.MD, не skill.md)
+
+### Структура SKILL.md
+
+Типичные секции (не обязательно все, но Iron Law и Core Process — обязательны):
+
+1. **Overview** — суть в 1-2 предложения
+2. **The Iron Law** — одно нерушимое правило
+3. **When to Use** — конкретные триггерные условия
+4. **Core Process** — фазы пошагово
+5. **Red Flags** — признаки нарушения скилла
+6. **Common Rationalizations** — таблица "отговорка AI → почему неправильно"
+7. **Quick Reference** — сводная таблица фаз
+8. **Related Skills** — cross-ссылки
+
+**Skill vs Command vs Agent:**
+
+| | Skill | Command | Agent |
+|---|-------|---------|-------|
+| **Кто активирует** | AI автоматически (по триггеру) | Пользователь (`/name`) | Основной AI для подзадачи |
+| **Scope** | Конкретная задача | Режим на сессию | Изолированная подзадача |
+| **Контекст** | Читает SKILL.md | Загружает @file | Свой отдельный контекст |
+| **Когда** | Повторяющаяся задача, нужен процесс | Роль/режим работы | Нужна изоляция |
+
+Plugin — пакет, объединяющий Skills + Commands + Agents + Hooks. На практике они работают вместе: Command `/brainstorm` → Skill brainstorming → Agent code-reviewer.
+
+### Bundled resources
 
 ```
 skill-name/
 ├── SKILL.md          # Обязательно. До 500 строк — если больше, выносить в references
-├── scripts/          # Исполняемый код (Python/Bash). Важно: в SKILL.md явно указать — execute или read as reference
-├── references/       # Документация по необходимости. Файлы >100 строк → table of contents сверху
-└── assets/           # Файлы для вывода, не для контекста (шаблоны, логотипы, схемы, boilerplate)
+├── scripts/          # Исполняемый код (Python/Bash). В SKILL.md указать: execute или read as reference
+├── references/       # Документация. Файлы >100 строк → Table of Contents сверху
+└── assets/           # Файлы для вывода (шаблоны, логотипы, boilerplate), не для контекста
 ```
 
-Пример: systematic-debugging в Superpowers содержит 11 файлов. Пример из Anthropic: pdf-skill хранит `scripts/rotate_pdf.py` чтобы не переписывать код каждый раз.
+Примеры: systematic-debugging в Superpowers содержит 11 файлов. Anthropic pdf-skill хранит `scripts/rotate_pdf.py` чтобы не переписывать код каждый раз.
 
-**Что НЕ включать:** README.md, CHANGELOG.md, INSTALLATION_GUIDE.md — скилл содержит только то, что нужно AI для работы. Никакой вспомогательной документации.
+**Как ссылаться на resources из SKILL.md:** `"Before writing queries, consult references/api-patterns.md for: rate limiting guidance, pagination patterns, error codes and handling."`
 
-Skill НЕ путать с:
-- **Command** (слэш-команда) — вызывается пользователем вручную (`/brainstorm`). Задаёт режим работы на всю сессию.
-- **Agent** (субагент) — изолированный AI для подзадачи. Имеет свой контекст и инструменты.
-- **Plugin** — пакет, который может включать Skills + Commands + Agents + Hooks вместе.
+**Что НЕ включать:** README.md, CHANGELOG.md — скилл содержит только то, что нужно AI. При распространении через GitHub — repo-level README отдельно от skill folder.
 
-## Формат SKILL.md
+Много маленьких скиллов лучше одного большого. Системы обрабатывают 100+ скиллов. Один скилл — одна задача. Когда домен глубже — Skill Graph (→ [skill-graphs.md](skill-graphs.md)).
 
-### YAML-заголовок
+Три паттерна организации ресурсов:
+- **High-level guide + references** — SKILL.md содержит quick start, ссылки на отдельные файлы
+- **Domain-specific** — references разбиты по доменам, загружается только нужный
+- **Conditional details** — базовое в SKILL.md, продвинутое — в отдельных файлах по ссылке
 
-```yaml
 ---
-name: skill-name-in-lowercase
-description: "Use when [триггер]. [Что происходит]."
+
+## Проектирование
+
+Три источника: официальный Anthropic guide, skill-creator, анализ Superpowers (14 скиллов, [superpowers.md](superpowers.md)).
+
+### Принципы
+
+**Iron Law — один скилл = одно нерушимое правило.** Каждый скилл строится вокруг ОДНОГО правила — якорь, который не даёт AI "уплыть" под давлением. AI рационализирует нарушение правил при давлении ("давай быстрее") — одно чёткое правило сложнее обойти, чем десять размытых. Примеры: TDD — "No production code without a failing test first." Debugging — "No fixes without root cause investigation first." Code review — "Verify before implementing."
+
+**Concise is Key — контекст как общий ресурс.** Контекстное окно делится между системным промптом, историей, метаданными всех скиллов. "Claude уже умный — добавляй только то, чего он не знает." Каждый абзац оправдывает стоимость в токенах. SKILL.md — до 5000 слов. Лаконичные примеры лучше многословных объяснений.
+
+**Degrees of Freedom — детализация зависит от хрупкости.** High freedom (текст) — несколько подходов валидны. Medium (псевдокод) — предпочтительный паттерн, но вариации допустимы. Low (конкретные скрипты) — операции хрупкие, консистентность критична. Метафора: узкий мост → жёсткие перила, открытое поле → много маршрутов. Для критичных валидаций — bundled scripts (код детерминирован, язык — нет).
+
+**Trigger-based description — скилл активируется по ситуации.** Description описывает КОГДА, не ЧТО. Скиллы — не инструменты по запросу, а правила, применяемые автоматически: "If a skill applies to your task, you do not have a choice. You must use it." (Superpowers). Структура: `[What it does] + [When to use it] + [Key capabilities]`.
+
+Хорошо: `"Analyzes Figma design files and generates handoff documentation. Use when user uploads .fig files, asks for 'design specs' or 'design-to-code handoff'."`
+
+Плохо: `"Helps with projects."` / `"Creates sophisticated multi-page documentation systems."` — нет триггеров.
+
+**Activation reality:** автоматическая активация — чистый LLM reasoning (~20% базовая надёжность). Forced eval hook → ~84%. Это архитектурное ограничение. Механика, стратегии, hooks: [skill-activation.md](skill-activation.md).
+
+**Self-contained — каждый файл понятен автономно.** AI может загрузить только один скилл без контекста проекта. В skill graphs: каждый узел самодостаточен, но wikilinks подсказывают когда перейти.
+
+**Cross-references — скиллы ссылаются друг на друга.** Секция "Related Skills" создаёт связную методологию. Пример: systematic-debugging → test-driven-development (написание теста, предотвращающего повторение бага). Skill graphs расширяют: wikilinks в прозе вместо списков.
+
+**Progressive Disclosure — три уровня.** 1) Metadata (name + description) — всегда в контексте (~100 слов). 2) SKILL.md body — при активации (<5k слов). 3) Bundled resources — по необходимости (скрипты исполняются без чтения в контекст). Skill graphs расширяют до пяти уровней. Подробнее: [skill-graphs.md](skill-graphs.md).
+
+**Composability — скилл работает рядом с другими.** Claude загружает несколько скиллов одновременно. Скилл не должен предполагать, что он единственный. Аналогия Anthropic: MCP — профессиональная кухня (инструменты, ингредиенты). Skills — рецепты (как приготовить). Вместе — пользователь получает результат без знания каждого шага. Пример: один скилл получает данные через MCP, другой задаёт brand guidelines с assets/, третий генерирует презентацию.
+
+**Problem-first vs Tool-first.** Два подхода к проектированию. Problem-first: "мне нужно настроить проект" → скилл оркестрирует нужные вызовы, пользователь описывает результат. Tool-first: "у меня подключён Notion MCP" → скилл учит лучшим практикам, пользователь имеет доступ. Большинство скиллов тяготеют к одному подходу. Понимание какой — помогает выбрать паттерн workflow.
+
+### Паттерны workflow
+
+Пять паттернов из Anthropic guide. Типовые подходы для разных задач, не жёсткие шаблоны.
+
+**1. Sequential workflow** — многошаговый процесс в определённом порядке. Явная последовательность, зависимости между шагами, валидация на каждом этапе, rollback при ошибках. Пример: онбординг клиента (create account → setup payment → create subscription → send welcome email).
+
+**2. Multi-MCP coordination** — workflow охватывает несколько сервисов. Фазы привязаны к разным MCP-серверам, данные передаются между фазами, валидация перед переходом. Best practice: в SKILL.md явно указывать имя MCP-сервера и конкретного инструмента — AI должен знать через что получать данные. Пример: design handoff (Figma export → Drive upload → Linear tasks → Slack notification).
+
+**3. Iterative refinement** — качество улучшается с итерацией. Initial draft → quality check (validation script) → refinement loop → finalization. Явные критерии качества, знание когда остановить итерации. Пример: генерация отчётов с `scripts/check_report.py`.
+
+**4. Context-aware tool selection** — один результат, разные инструменты в зависимости от контекста. Decision tree → execute → explain choice. Прозрачность выбора, fallback-опции. Пример: файловое хранилище (>10MB → cloud, docs → Notion, code → GitHub, temporary → local).
+
+**5. Domain-specific intelligence** — специализированные знания поверх доступа к инструментам. Доменная экспертиза встроена в логику, compliance before action, audit trail. Пример: платёжная обработка с compliance-проверками (sanctions, jurisdiction, risk level → process или flag for review).
+
+### Три категории скиллов
+
+| Категория | Что делает | Пример |
+|-----------|-----------|--------|
+| **Document & Asset Creation** | Консистентный output: документы, презентации, код, дизайн. Без внешних инструментов | frontend-design, docx, pptx |
+| **Workflow Automation** | Многошаговые процессы с валидацией и итерацией | skill-creator |
+| **MCP Enhancement** | Workflow guidance поверх инструментального доступа MCP | sentry-code-review |
+
 ---
+
+## Создание и тестирование
+
+### Процесс создания
+
+Два подхода — дополняют друг друга. Anthropic даёт структуру (как организовать файлы), Superpowers даёт методологию контента (как написать устойчивые инструкции).
+
+**Anthropic (skill-creator, 6 шагов):** Определить 2-3 use cases → Спланировать ресурсы → Инициализировать структуру → Написать инструкции → Упаковать → Итерировать. Фокус на bundled resources и progressive disclosure. Pro tip: итерируй на одной сложной задаче до успеха, потом извлекай подход в скилл.
+
+**Формат определения use case (до начала работы):**
+```
+Use Case: [название]
+Trigger: [что говорит/делает пользователь]
+Steps: 1. [действие] 2. [действие] ...
+Result: [что получает пользователь]
 ```
 
-Всего два поля. `description` до 1024 символов. Критически важно: description отвечает на **"КОГДА использовать"**, а не "что делает". AI активирует скилл по триггерной ситуации, не по запросу пользователя.
+**Superpowers (TDD, 3 фазы):** RED (наблюдай провал без скилла) → GREEN (минимальный скилл, решающий проблему) → REFACTOR (pressure-тесты, закрытие лазеек). Фокус на Iron Law и устойчивости к давлению.
 
-Пример хорошего description: "Use when debugging a failing test or unexpected behavior. Guides through root cause investigation before attempting fixes."
+**Evaluation:** skill-creator можно использовать для ревью существующих скиллов — оценка с рекомендациями по best practices. В Claude Code — через субагентов параллельно.
 
-Пример плохого: "A debugging methodology with 4 phases that helps find bugs." — не говорит когда применять.
+### Тестирование
 
-### Типичная структура содержания
+Три уровня ригор: manual в Claude.ai (быстрая итерация), scripted в Claude Code (повторяемость), programmatic через Skills API (систематическая оценка). Выбирай по масштабу аудитории.
 
-1. **Overview** — суть в 1-2 предложения
-2. **The Iron Law** — одно нерушимое правило (см. ниже)
-3. **When to Use** — конкретные триггерные условия
-4. **Core Process** — фазы пошагово
-5. **Red Flags** — признаки того, что AI нарушает скилл
-6. **Common Rationalizations** — таблица "отговорка AI → почему это неправильно"
-7. **Quick Reference** — сводная таблица фаз
-8. **Related Skills** — cross-ссылки на другие скиллы
+**Triggering tests:** Скилл загружается на очевидных задачах ✅, на перефразированных ✅, НЕ загружается на нерелевантных ❌. Определи 5-10 should-trigger и 5 should-NOT-trigger запросов.
 
-Не обязательно все секции. Но Iron Law и Core Process — обязательны.
+**Functional tests:** Валидные выходы, API-вызовы успешны, error handling работает, edge cases покрыты. Формат: Given → When → Then для каждого сценария.
 
-## Ключевые принципы проектирования
+**Performance comparison:** Одна задача с и без скилла. Сравни: количество сообщений, failed API calls, потреблённые токены, нужда в user correction.
 
-Два источника: официальный skill-creator от Anthropic и анализ Superpowers (14 скиллов, [superpowers.md](superpowers.md)).
+**Pressure-тесты (Superpowers):** Файлы `test-pressure-*.md` моделируют ситуации, где AI искушают нарушить правила: пользователь торопит, кажется что можно пропустить, предыдущий контекст давит. TDD для документации.
 
-### Concise is Key — контекст как общественное благо
+### Success metrics
 
-Официальный принцип Anthropic: контекстное окно — общий ресурс. Скиллы делят его с системным промптом, историей диалога, метаданными других скиллов.
+Ориентиры из Anthropic guide, не точные пороги:
 
-**"Claude уже очень умный. Добавляй только то, чего он не знает."** Каждый абзац должен оправдывать свою стоимость в токенах. Лаконичные примеры лучше многословных объяснений.
+**Количественные:** Триггерится на 90% релевантных запросов (измерить: 10-20 test queries). Workflow завершается за X tool calls (сравнить с/без). 0 failed API calls (мониторить логи MCP).
 
-### Degrees of Freedom — степени свободы инструкций
+**Качественные:** Пользователю не нужно подсказывать следующий шаг. Workflow завершается без user correction. Консистентные результаты между сессиями (3-5 повторов одного запроса).
 
-Уровень детализации инструкций зависит от хрупкости задачи:
+### Итерация по фидбеку
 
-- **High freedom** (текстовые инструкции) — несколько подходов валидны, решения зависят от контекста
-- **Medium freedom** (псевдокод, скрипты с параметрами) — есть предпочтительный паттерн, но вариации допустимы
-- **Low freedom** (конкретные скрипты, мало параметров) — операции хрупкие, консистентность критична
+**Undertriggering** (скилл не загружается): добавить detail и keywords в description, включая технические термины.
 
-Метафора Anthropic: узкий мост с обрывами → жёсткие перила (low freedom). Открытое поле → много маршрутов (high freedom).
+**Overtriggering** (грузится на нерелевантное): добавить negative triggers (`"Do NOT use for..."`), быть специфичнее, уточнить scope.
 
-### Iron Law — один скилл = одно нерушимое правило
+**Execution issues** (загрузился, работает плохо): улучшить инструкции, добавить error handling, проверить tool names.
 
-Каждый скилл строится вокруг ОДНОГО нерушимого правила. Не десяти, не пяти — одного. Это якорь, который не даёт AI "уплыть" под давлением пользователя.
+### Troubleshooting
 
-Примеры:
-- TDD: "No production code without a failing test first."
-- Debugging: "No fixes without root cause investigation first."
-- Code review: "Verify before implementing."
+**Скилл не загружается (upload error)**
+Symptom: "Could not find SKILL.md" или "Invalid frontmatter"
+Cause: Имя файла не точно `SKILL.md` (регистрозависимо), незакрытые кавычки в YAML, отсутствуют `---` разделители, пробелы/заглавные в name
+Solution: `ls -la` → проверить SKILL.md. YAML: `---` сверху и снизу, кавычки закрыты, name в kebab-case.
 
-Почему одно: AI под давлением ("давай быстрее", "пропусти тесты") начинает рационализировать нарушение правил. Одно чёткое правило сложнее обойти, чем десять размытых.
+**Скилл не триггерится**
+Symptom: Никогда не загружается автоматически
+Cause: Description слишком общий, нет trigger phrases, нет file types
+Solution: Добавить конкретные фразы пользователей. **Debugging technique:** спросить Claude "When would you use the [skill name] skill?" — он процитирует description, видно что не хватает.
 
-### Trigger-based activation — скилл активируется по ситуации
+**Скилл триггерится лишнее**
+Symptom: Загружается на нерелевантные запросы
+Solution: 1) Negative triggers: `"Do NOT use for simple exploration (use data-viz instead)."` 2) Специфичнее: `"PDF legal documents for contract review"` вместо `"Processes documents."` 3) Уточнить scope: `"specifically for online payment workflows, not general financial queries."`
 
-Description в YAML описывает КОГДА применять, не ЧТО скилл делает. Мета-скилл using-superpowers в Superpowers формулирует это жёстко: "If a skill applies to your task, you do not have a choice. You must use it." AI обязан проверять список скиллов перед каждым ответом.
+**Инструкции не выполняются**
+Symptom: Скилл загружен, но Claude не следует инструкциям
+Causes и solutions:
+- **Verbose** → bullet points, numbered lists, детали в references/
+- **Критичное buried** → важное вверх, `## Critical` headers, повторить ключевые точки
+- **Ambiguous** → конкретика: `"CRITICAL: Before calling create_project, verify: name non-empty, team member assigned, start date not in past"` вместо `"validate properly"`
+- **Model "laziness"** → `"Take your time. Quality > speed. Do not skip validation steps."` (эффективнее в user prompt, чем в SKILL.md)
+- **Large context** → SKILL.md до 5000 слов, >20-50 скиллов одновременно → деградация, выносить в references/
 
-Идея: скиллы — не "инструменты по запросу", а **правила, которые AI применяет автоматически** когда ситуация подходит.
+### Quick Checklist
 
-**Реальность:** Автоматическая активация работает через LLM reasoning (не алгоритмический роутинг) с базовой надёжностью ~20%. Для стабильной работы нужны forced eval hooks (~84%) или явный вызов пользователем. Подробности механики загрузки и стратегии повышения надёжности: [skill-activation.md](skill-activation.md).
+**Before:**
+- [ ] 2-3 use cases определены (Trigger → Steps → Result)
+- [ ] Инструменты определены (built-in или MCP)
+- [ ] Структура папки спланирована
 
-### Pressure-тесты — TDD для документации
+**During:**
+- [ ] Папка в kebab-case, файл точно `SKILL.md`
+- [ ] YAML: `---` разделители, name kebab-case, description содержит WHAT + WHEN
+- [ ] Нет XML-тегов (`< >`) в frontmatter
+- [ ] Инструкции конкретны и actionable
+- [ ] Error handling включён
+- [ ] Примеры использования есть
+- [ ] References чётко указаны в тексте
 
-Скиллы тестируются сценариями, в которых AI искушают нарушить правила. Файлы `test-pressure-*.md` моделируют ситуации:
-- Пользователь торопит ("просто исправь, без тестов")
-- Кажется что можно пропустить ("это мелкий баг, не нужен root cause analysis")
-- Предыдущий контекст давит ("мы уже потратили час, давай закоммитим что есть")
+**Before upload:**
+- [ ] Triggering tests: очевидные ✅, перефразированные ✅, нерелевантные ❌
+- [ ] Functional tests пройдены
+- [ ] Работа с MCP проверена (если применимо)
 
-### Много маленьких скиллов лучше одного большого
+**After upload:**
+- [ ] Тест в реальных разговорах
+- [ ] Мониторинг under/overtriggering
+- [ ] Итерация по фидбеку
 
-Системы обрабатывают 100+ скиллов. Лучше разбить сложный workflow на несколько узких скиллов с понятными именами, чем делать один монолитный. Каждый скилл — одна задача. Когда глубина домена требует больше, чем набор отдельных файлов — следующий шаг: Skill Graph (→ ниже).
+---
 
-### Self-contained — каждый файл понятен без контекста
+## Экосистема
 
-Скилл должен быть полностью понятен AI без чтения других файлов. Это важно потому что AI может загрузить только один скилл, без контекста проекта или других скиллов. В skill graphs этот принцип сохраняется: каждый узел графа — самодостаточен, но wikilinks в прозе подсказывают агенту *когда* стоит перейти к связанному файлу.
+### Стандарт и установка
 
-### Cross-references — скиллы ссылаются друг на друга
-
-Связанные скиллы указывают друг на друга в секции "Related Skills". Это создаёт связную методологию, а не набор изолированных инструкций. Пример: systematic-debugging ссылается на test-driven-development для финальной фазы (написание теста, предотвращающего повторение бага). Skill graphs расширяют этот принцип: вместо списка "Related Skills" — wikilinks внутри прозы, несущие семантику ("когда и зачем переходить").
-
-### Progressive Disclosure — три уровня загрузки
-
-Скиллы используют трёхуровневую систему для экономии контекста:
-
-1. **Metadata** (name + description) — всегда в контексте (~100 слов)
-2. **SKILL.md body** — загружается при активации (<5k слов, до 500 строк)
-3. **Bundled resources** — по необходимости (без лимита, скрипты исполняются без чтения в контекст)
-
-Skill graphs расширяют до пяти уровней: index → YAML descriptions → wikilinks в прозе → секции файла → полное содержание. Большинство решений принимается до чтения хотя бы одного полного файла. Подробнее: [skill-graphs.md](skill-graphs.md).
-
-Три паттерна организации (из Anthropic skill-creator):
-
-- **High-level guide + references** — SKILL.md содержит quick start, ссылается на отдельные файлы для продвинутых тем
-- **Domain-specific** — references разбиты по доменам (finance.md, sales.md, product.md), загружается только нужный
-- **Conditional details** — базовое в SKILL.md, продвинутое (tracked changes, OOXML) — в отдельных файлах по ссылке
-
-Подробнее о механике загрузки и надёжности активации: [skill-activation.md](skill-activation.md).
-
-### Skill Graphs — масштабирование скиллов до предметных областей
-
-Когда домен слишком глубок для одного файла (терапия, трейдинг, юриспруденция, корпоративные знания) — скиллы организуются в **skill graph**: сеть файлов, связанных wikilinks. Каждый файл — одна законченная мысль/техника. Четыре примитива: wikilinks в прозе (несут семантику), YAML frontmatter (scan без чтения), MOCs (Maps of Content — навигация по кластерам), рекурсивные ссылки (граф идёт так глубоко, как нужно). Index-файл — точка входа, не lookup-таблица. Агент навигирует, а не загружает всё целиком. Подробнее: [skill-graphs.md](skill-graphs.md).
-
-### Table of Contents для reference-файлов
-
-Reference-файлы >100 строк → `## Contents` (буллет-лист секций) в начале файла. Claude может читать вложенные файлы частично (`head -100`), ToC даёт карту при partial read. Формат: простые буллеты, без ссылок и номеров. Источник: [Anthropic Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
-
-## Процесс создания скилла
-
-Два подхода: от Anthropic (официальный, 6 шагов) и от Superpowers (TDD-подход, 3 фазы).
-
-**Anthropic (skill-creator):** Понять юзкейсы → Спланировать ресурсы → Инициализировать → Написать → Упаковать → Итерировать. Фокус на bundled resources и progressive disclosure. Полный процесс: установленный скилл `skill-creator`.
-
-**Superpowers (writing-skills):** RED (наблюдай провал без скилла) → GREEN (минимальный скилл) → REFACTOR (pressure-тесты, закрытие лазеек). Фокус на Iron Law и устойчивости к давлению.
-
-Подходы не противоречат — дополняют. Anthropic даёт структуру и инфраструктуру (как организовать файлы), Superpowers даёт методологию контента (как написать устойчивые инструкции).
-
-### Evaluation и тестирование скиллов
-
-**Evaluation через skill-creator:** skill-creator можно использовать не только для создания, но и для ревью существующих скиллов. Прогоняешь скилл — получаешь оценку (9/10, 10/10) с конкретными рекомендациями по best practices. В Claude Code — через субагентов параллельно для нескольких скиллов.
-
-**Unit testing скиллов:** Скиллы тестируются как софт. Определяешь test queries → expected behavior (порядок шагов, форматы, какие скрипты запускаются) → проверяешь output (структура файлов, корректность). Финальные шаги: human feedback + тест на разных моделях.
-
-### Skills + MCP: комбинирование скиллов с внешними данными
-
-Скилл может опираться на MCP-сервер как источник данных. Best practice от Anthropic: в SKILL.md явно указывать имя MCP-сервера и конкретного инструмента, чтобы AI знал через что получать данные. Пример: скилл анализа маркетинга указывает `bigquery` MCP-сервер и таблицу со схемой, вместо ожидания CSV-загрузки от пользователя.
-
-Это позволяет комбинировать несколько скиллов в одном разговоре: один скилл получает данные через MCP, другой задаёт brand guidelines с логотипами из assets/, третий (встроенный PowerPoint) генерирует презентацию. Каждый скилл отвечает за своё, вместе — полный workflow.
-
-Подробнее о MCP: [../agents/mcp.md](../agents/mcp.md).
-
-## Skill vs Command vs Agent
-
-| | Skill | Command | Agent |
-|---|-------|---------|-------|
-| **Кто активирует** | AI автоматически (по триггеру) | Пользователь вручную (`/name`) | Основной AI вызывает для подзадачи |
-| **Scope** | Конкретная задача | Режим на всю сессию | Изолированная подзадача |
-| **Контекст** | Читает SKILL.md | Загружает @file ссылки | Получает свой отдельный контекст |
-| **Пример** | "Сейчас делай TDD" | "Ты — партнёр по research" | "Проверь code quality этого PR" |
-| **Формат** | SKILL.md + supporting files | Свободный markdown | Markdown с инструкциями |
-| **Когда нужен** | Повторяющаяся задача, AI должен следовать процессу | Роль/режим работы | Задача требует изоляции |
-
-На практике они работают вместе. В Superpowers: Command `/brainstorm` запускает Skill brainstorming, который может вызвать Agent code-reviewer.
-
-## Экосистема и распространение
-
-### Agent Skills как открытый стандарт
-
-В декабре 2025 Anthropic опубликовал спецификацию Agent Skills — открытый стандарт формата SKILL.md. Стандарт принят OpenAI (Codex CLI использует тот же формат) и поддерживается 40+ AI-агентами. Это значит: скилл, написанный для Claude Code, работает в Cursor, Copilot, Cline и других без изменений.
-
-Спецификация: [github.com/anthropics/skills/spec](https://github.com/anthropics/skills/tree/main/spec)
-
-### Уровни установки скиллов
+Открытый стандарт Agent Skills (декабрь 2025). Принят OpenAI (Codex CLI), поддерживается 40+ AI-агентами. Скилл для Claude Code работает в Cursor, Copilot, Cline без изменений. Org-level deployment (декабрь 2025) — админы разворачивают workspace-wide с авто-обновлением. Спецификация: [github.com/anthropics/skills/spec](https://github.com/anthropics/skills/tree/main/spec)
 
 | Уровень | Путь | Область действия |
 |---------|------|-----------------|
@@ -211,48 +270,41 @@ Reference-файлы >100 строк → `## Contents` (буллет-лист с
 
 При конфликте имён — побеждает более высокий уровень.
 
-### Как устанавливать скиллы
-
-**Вручную:** скопировать папку со SKILL.md в `~/.claude/skills/` (все проекты) или `.claude/skills/` (этот проект).
-
-**Через CLI (Vercel):** `npx skills add owner/repo` — устанавливает скилл из GitHub-репо. Поддерживает 40+ агентов, создаёт симлинки для каждого. Команды: `add`, `list`, `find`, `update`, `init`.
-
-**Через плагин-систему Claude Code:** `/plugin marketplace add anthropics/skills` → `/plugin install skill-name@anthropic-agent-skills`.
-
-## Использование с Claude API
-
-Работает. Для работы скиллов через Claude Messages API требуется Code Execution Tool + Files API. При разработке через API необходимо вручную настраивать контейнер для выполнения кода и загрузку файлов. 
+**Установка:** Вручную (скопировать папку), CLI `npx skills add owner/repo` (Vercel, 40+ агентов), плагин-система Claude Code (`/plugin marketplace add`).
 
 ### Где найти скиллы
 
 | Ресурс | Что это | Как использовать |
 |--------|---------|-----------------|
-| **[anthropics/skills](https://github.com/anthropics/skills)** | Официальный репо Anthropic. Reference implementation стандарта. Скиллы для документов (docx, pdf, pptx, xlsx), creative, enterprise. Apache 2.0 | `/plugin marketplace add anthropics/skills` → `/plugin install skill-name` |
-| **[Superpowers](https://github.com/obra/superpowers)** | Крупнейшая авторская библиотека. 14 скиллов: TDD, debugging, planning, code review, субагенты, git workflow. Автор: Jesse Vincent (@obra). [Детали](superpowers.md) | Устанавливается как плагин Claude Code |
-| **[skills.sh](https://skills.sh) / npx skills** | CLI + каталог (Vercel Labs). Установка скиллов из любого GitHub-репо. 40+ агентов. Лидерборд, trending | `npx skills add owner/repo`, `npx skills find keyword` |
-| **[SkillsMP](https://skillsmp.com)** | Веб-агрегатор (независимый). Индексирует GitHub-репо со SKILL.md. Десятки тысяч скиллов. Фильтрация по качеству, категории, поиск | Найти на сайте → клонировать репо с GitHub |
-| **[HashiCorp](https://github.com/hashicorp/agent-skills)** | Отраслевой репо. Скиллы для Terraform, Packer, инфраструктуры | `npx skills add hashicorp/agent-skills` |
-| **[antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills)** | Курированная коллекция 883+ скиллов. 9 категорий: Architecture, Business, Data & AI, Development, Infrastructure, Security, Testing, Workflow, General. MIT | `npx antigravity-awesome-skills` |
+| **[anthropics/skills](https://github.com/anthropics/skills)** | Официальный репо. Documents, creative, enterprise. Apache 2.0 | `/plugin marketplace add anthropics/skills` |
+| **[Superpowers](https://github.com/obra/superpowers)** | Крупнейшая авторская библиотека. 14 скиллов: TDD, debugging, planning, code review. [Детали](superpowers.md) | Плагин Claude Code |
+| **[skills.sh](https://skills.sh) / npx skills** | CLI + каталог (Vercel Labs). 40+ агентов, лидерборд | `npx skills add owner/repo` |
+| **[SkillsMP](https://skillsmp.com)** | Веб-агрегатор. Десятки тысяч скиллов, фильтрация | Найти → клонировать с GitHub |
+| **[HashiCorp](https://github.com/hashicorp/agent-skills)** | Terraform, Packer, инфраструктура | `npx skills add hashicorp/agent-skills` |
+| **[antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills)** | Курированная коллекция 883+ скиллов, 9 категорий | `npx antigravity-awesome-skills` |
 
-Также существуют: [add-skill.org](https://add-skill.org) (альтернативный CLI), openskills (npm-пакет, универсальный загрузчик), [SkillHub](https://www.skillhub.club/).
+Также: [add-skill.org](https://add-skill.org), openskills, [SkillHub](https://www.skillhub.club/).
 
-### Качество и безопасность
+**Качество и безопасность:** Экосистема open source — качество варьируется. Перед установкой: прочитать SKILL.md, проверить скрипты, оценить репо.
 
-Экосистема open source — качество варьируется. Перед установкой стороннего скилла рекомендуется:
-- Прочитать SKILL.md (что скилл просит AI делать)
-- Проверить supporting files (скрипты, хуки)
-- Оценить репо (активность, автор)
+### API
 
-Официальный `anthropics/skills` — наиболее безопасный источник, но содержит мало скиллов.
+Skills API: endpoint `/v1/skills`, параметр `container.skills` в Messages API, интеграция с Claude Agent SDK. Требует Code Execution Tool beta. Use cases: production deployments, automated pipelines, agent systems. Для ручного тестирования — Claude.ai / Claude Code.
+
+---
 
 ## Источники
 
-- [Agent Skills with Anthropic](https://learn.deeplearning.ai/courses/agent-skills-with-anthropic) — Официальный курс от Anthropic и DeepLearning.AI (Elie Schoppik, Andrew Ng). Выпущен 28 января 2026. Охватывает создание и применение скиллов в Claude AI, API, Code и SDK.
+- [The Complete Guide to Building Skills for Claude](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) — Официальный PDF-гайд Anthropic (33 стр., 6 глав). Паттерны, troubleshooting, best practices. Полный текст: [_inbox/anthropic-skills-guide-text.md](../../_inbox/anthropic-skills-guide-text.md)
+- [Agent Skills with Anthropic](https://learn.deeplearning.ai/courses/agent-skills-with-anthropic) — Курс Anthropic + DeepLearning.AI (Elie Schoppik, Andrew Ng, январь 2026)
 
 ## Связанные файлы
 
-- [skill-graphs.md](skill-graphs.md) — Skill Graphs: сети связанных скиллов для глубокой экспертизы (wikilinks, MOCs, progressive disclosure)
-- [../plugins/!plugins.md](../plugins/!plugins.md) — Плагины: зонтичный формат, объединяющий Skills + Commands + Agents + Hooks + MCP + LSP
-- [../agents/subagents.md](../agents/subagents.md) — Субагенты: когда Skill недостаточно и нужна изоляция контекста
-- [../agents/!agents.md](../agents/!agents.md) — Сводка по агентным системам (Skills как компонент)
-- [../context/markdown-for-llm.md](../context/markdown-for-llm.md) — Как LLM видит wikilinks и YAML (технические основы навигации skill graphs)
+- [skill-graphs.md](skill-graphs.md) — Skill Graphs: сети связанных скиллов для глубокой экспертизы
+- [skill-activation.md](skill-activation.md) — Механика активации: надёжность, hooks, стратегии
+- [superpowers.md](superpowers.md) — Superpowers: крупнейшая библиотека скиллов
+- [../plugins/!plugins.md](../plugins/!plugins.md) — Плагины: Skills + Commands + Agents + Hooks + MCP + LSP
+- [../agents/subagents.md](../agents/subagents.md) — Субагенты: когда Skill недостаточно
+- [../agents/!agents.md](../agents/!agents.md) — Сводка по агентным системам
+- [../agents/mcp.md](../agents/mcp.md) — MCP: Skills + MCP комбинация
+- [../context/markdown-for-llm.md](../context/markdown-for-llm.md) — Как LLM видит wikilinks и YAML
