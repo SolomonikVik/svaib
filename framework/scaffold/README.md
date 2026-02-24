@@ -34,7 +34,14 @@
 │   ├── 05_timeline.md       ← история проекта
 │   ├── ideas.md             ← идеи, гипотезы
 │   ├── decisions.md         ← принятые решения
-│   └── reflections.md       ← размышления
+│   ├── reflections.md       ← размышления
+│   └── meetings/            ← протоколы встреч
+│
+├── product/                 ← продукт: стратегия, описания, прайс, specs
+│   └── README.md
+│
+├── processes/               ← бизнес-процессы, регламенты, SOP
+│   └── README.md
 │
 ├── knowledge/               ← персональная база знаний
 │   └── README.md

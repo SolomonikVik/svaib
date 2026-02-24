@@ -1,7 +1,7 @@
 ---
 title: "Методология Second AI Brain — принципы, ритуалы, decision frames"
-updated: 2026-02-23
-version: 4
+updated: 2026-02-24
+version: 5
 scope: "product_core"
 priority: high
 ---
@@ -186,7 +186,7 @@ README → my_profile → 01_vision → 02_goal → 03_plan
 - Metrics расширяется (CEO отслеживает больше метрик)
 - Strategy может выноситься в отдельный файл
 - Подпроекты для ключевых направлений
-- Протоколы встреч — в большой рамке (Процессы), не в management/
+- Протоколы встреч — в management/meetings/ (питают weekly_progress)
 
 **Принцип:** система не усложняется для клиента. CEO не должен вести больше файлов, чем соло-предприниматель. Разница — в глубине наполнения, не в количестве.
 
@@ -195,3 +195,4 @@ README → my_profile → 01_vision → 02_goal → 03_plan
 *Источник: management/_ontology.md v0.5 (10 февраля 2026), management/_implementation.md*
 *v1 — 13 февраля 2026*
 *v2 — 18 февраля 2026 (добавлен MyProfile в протокол чтения и ритуалы)*
+*v5 — 24 февраля 2026 (meetings/ перенесены в management/)*
