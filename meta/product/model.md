@@ -1,7 +1,7 @@
 ---
 title: "Модель продукта Second AI Brain для презентации клиентам"
-updated: 2026-02-11
-version: 1
+updated: 2026-02-24
+version: 2
 scope: "implementation"
 priority: high
 ---
@@ -14,13 +14,13 @@ priority: high
 
 ## Связанные файлы
 
-- README.md — обзор фреймворка
-- ontology.md — сущности и связи
-- methodology.md — принципы и ритуалы
-- ../clients/_playbook/offers.md — варианты офферов
-- ../clients/_playbook/onboarding.md — процесс первых встреч
-- ../meta/meta_context/product_vision.md — полный vision продукта
-- ../meta/meta_context/marketing.md — позиционирование и стратегия продаж
+- ../../framework/README.md — обзор фреймворка
+- ../../framework/architecture.md — архитектура продукта (слои, компоненты, связи)
+- ../../framework/ontology/ontology.md — сущности и связи
+- ../../framework/methodology/methodology.md — принципы и ритуалы
+- product_vision.md — видение продукта
+- ../../clients/_playbook/offers.md — варианты офферов
+- ../../clients/_playbook/onboarding.md — процесс первых встреч
 
 ---
 
@@ -78,16 +78,6 @@ Markdown-файлы + Онтология
 - Любой интерфейс (Cowork, VS Code, Kojori...)
 - Любая модель (Claude, GPT, DeepSeek...)
 - Данные у клиента, не привязан к вендору
-
----
-
-## Фреймворк "3 уровня работы с AI"
-
-Показываем клиенту где он сейчас и куда двигаемся:
-
-1. **Чаты** — общаешься, иногда кидаешь файл, каждый чат с чистого листа
-2. **Файловая система + проекты** — структура файлов, AI получает контекст
-3. **Агенты + интеграция** — субагенты под задачи, работа с файлами напрямую
 
 ---
 

@@ -12,7 +12,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 @framework/methodology/methodology.md
 
 **Контекст продукта:**
-@meta/meta_context/product_vision.md
+@meta/product/product_vision.md
 
 ---
 
@@ -72,7 +72,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 2. **Ссылки** — указывай откуда взял (файл + раздел)
 3. **Компактность** — фреймворк не должен раздуваться. Лучше расширить существующую сущность, чем плодить новые
 4. **Versioning** — при изменении файла обнови `updated` и `version` в YAML
-5. **Критичные файлы** — ontology.md, methodology.md, model.md — показать изменения Виктору перед записью
+5. **Критичные файлы** — ontology.md, methodology.md, architecture.md — показать изменения Виктору перед записью
 6. **Scaffold = зеркало онтологии** — шаблон должен точно отражать то, что описано в онтологии. Расхождение = баг
 
 ---
@@ -80,7 +80,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 ## Дополнительный контекст (читать по запросу)
 
 **Файлы фреймворка:**
-- `framework/model.md` — модель продукта для клиентов
+- `framework/architecture.md` — архитектура продукта (слои, компоненты, связи)
 - `framework/scaffold/` — шаблоны (SKILL.md, README.md, management/, knowledge/)
 - `framework/plugin/` — скелет плагина (skills/, agents/, hooks/)
 - `clients/_playbook/` — как фреймворк применяется к клиентам

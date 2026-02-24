@@ -4,185 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**svaib** - AI-мастерская, создающая AI-решения для бизнеса. Миссия: переводчик между сложными AI-технологиями и практическими потребностями бизнеса.
+**svaib** — Second AI Brain: персональная AI-инфраструктура для руководителя (база знаний + навыки + агенты). Консалтинг + подписка на методологический "плагин".
 
-**Current Stage:** MVP development, первые недели работы
 **Team:** Виктор Соломоник (vision, product, strategy, development) — solo founder
 
 **User:** Виктор (обращайся по имени всегда)
 
 ## Repository Structure
 
-```
-svaib/
-├── .claude/       — Claude Code configuration
-│   ├── agents/    — Subagents (context-editor, etc.)
-│   └── claude_code_mechanics.md — MCP servers, subagents, skills reference
-│
-├── _inbox/        — Входящие на разбор (в .gitignore, но важно знать)
-│   ├── README.md  — Правила работы с inbox
-│   └── todo_*.md  — Идеи и задачи на проработку
-│
-├── meta/          — Project context, strategy, documentation
-│   ├── meta_context/
-│   │   ├── !chat_navigation.md — Navigation for Claude Chat/Projects
-│   │   ├── !context_rules.md — Context management rules (this system)
-│   │   ├── marketing.md — Positioning, messaging, sales strategy
-│   │   ├── monetization.md — Monetization model (pricing, revenue streams)
-│   │   ├── product_vision.md — Product description (AI meeting assistant)
-│   │   ├── project_overview.md — OKR, strategy, team, MVP stage
-│   │   ├── storage_system.md — Storage structure (Git + Google Drive)
-│   │   └── weekly_progress.md — Weekly progress tracking ("stones of the week")
-│   ├── prompts/   — Role-specific prompts (editor, strategist, HRD)
-│   └── research/  — Market research and analysis
-│
-├── dev/           — Development codebase
-│   ├── src/       — ⚠️ DEPLOYED TO VERCEL (current production)
-│   │   ├── app/   — Next.js 16 App Router
-│   │   │   ├── page.js — Main landing page
-│   │   │   ├── layout.js — Root layout with fonts
-│   │   │   ├── globals.css — Global styles and design tokens
-│   │   │   └── vote/ — Vote Module (internal lab tool, isolated)
-│   │   │       ├── page.jsx — Voting interface
-│   │   │       ├── admin/ — Session/project/participant management
-│   │   │       └── results/ — Voting results page
-│   │   ├── api/vote/  — 5 API routes (sessions, participants, projects, cast, results)
-│   │   ├── components/  — React components
-│   │   │   ├── Header.jsx — Logo svaib (fixed top-right)
-│   │   │   ├── Hero.jsx — Hero section with gradient CTA
-│   │   │   ├── Architecture.jsx — Interactive architecture diagram (desktop) + card list (mobile)
-│   │   │   ├── ArchBlock.jsx — Individual architecture block component
-│   │   │   ├── ConnectionLines.jsx — SVG connections between blocks
-│   │   │   ├── BlockModal.jsx — Modal with detailed block information
-│   │   │   ├── CTA.jsx — Call-to-action section
-│   │   │   └── Footer.jsx — Footer with contacts and links
-│   │   ├── data/  — Data sources
-│   │   │   └── architectureData.js — Architecture blocks and connections
-│   │   ├── lib/  — Utilities
-│   │   │   └── supabase.js — Supabase client
-│   │   ├── archive/  — Old HTML/JS/CSS version (preserved)
-│   │   ├── package.json — Next.js 16.0.1, React 19.2.0
-│   │   └── next.config.js — Next.js configuration
-│   ├── dev_context/
-│   │   ├── architecture.md — Product architecture (7 components, connections, tech)
-│   │   ├── data_model.md — Supabase data model (detailed table structure)
-│   │   ├── data_dictionary.md — Entity reference (prompt roles, document types)
-│   │   ├── design_system.md — Design system reference (#00B4A6 primary, #FF4D8D accent)
-│   │   ├── guide_presentation.md — Presentation structure (slide-by-slide spec)
-│   │   ├── infrastructure.md — Tech infrastructure (VPS, APIs, deployment)
-│   │   └── product_roadmap.md — Product roadmap (stages, vision features)
-│   └── prompts/   — Technical prompts (CTO, Dify copilot)
-│
-├── framework/     — Product core: Second AI Brain methodology & automation
-│   ├── ontology/      — Entities, relationships, structure
-│   ├── methodology/   — Principles, rituals, decision frames
-│   ├── model.md       — Product model for client presentations
-│   ├── scaffold/      — Ready-made template (management/, knowledge/, _inbox/, archive/)
-│   └── plugin/        — Deployable package skeleton (skills, agents, hooks)
-│
-├── knowledge/     — External knowledge base (AI tools, methods, practices)
-│
-├── clients/       — Client projects and consulting methodology
-│   ├── _playbook/ — Sales process (offers, onboarding)
-│   └── {name}/    — Client folder (profile.md, project.md, tracking.md, meetings/)
-│
-└── pub/           — Public materials
-    ├── pub_context/
-    │   └── svaib_presentation_guide.md — Presentation style guide
-    ├── prompts/   — Public-facing role prompts
-    └── Liga_2025/ — Conference materials
-```
+> **Миграция в процессе** (см. `_migration.md`). Ниже — актуальная верхнеуровневая структура.
+
+| Папка | Назначение |
+|-------|-----------|
+| `framework/` | Продукт Second AI Brain: онтология, методология, scaffold, plugin |
+| `knowledge/` | Внешние знания об AI (open source, 8 категорий) |
+| `dev/` | Сайт svaib.com (`dev/src/` → Vercel) + dev_context/ |
+| `meta/` | Проект svaib: management/, marketing/, product/, _old/ (разбираем), z_archive/ |
+| `clients/` | Клиенты (в .gitignore): _playbook/, {name}/ |
+| `.claude/` | Config: agents/, commands/, prompts/, mechanics |
+| `_inbox/` | Входящие на разбор (в .gitignore) |
 
 ## Current Application Architecture
 
 **Tech Stack:** Next.js 16.0.1 with App Router, React 19.2.0, Tailwind CSS
 **Deployment:** Vercel auto-deploy from `dev/src/` on push to main
 **Live URL:** [https://svaib.com](https://svaib.com)
+**Design:** Teal `#00B4A6` + Pink `#FF4D8D`, Sora/Inter, подробности в `dev/dev_context/design_system.md`
 
-### Application Structure
-
-Single-page landing with sections:
-
-1. **Header** - Fixed logo `svaib` (top-right): "sv" and "b" in teal, "ai" in pink
-2. **Hero** - Main heading, subtitle, CTA button to Telegram
-3. **Architecture** - Interactive diagram showing AI-management system:
-   * **Desktop:** Canvas with positioned blocks and SVG connections
-   * **Mobile:** Simple card list (responsive adaptation)
-4. **CTA** - Call-to-action section
-5. **Footer** - Contacts, links, archive access
-
-### Interactive Features
-
-**Architecture Diagram (Desktop):**
-
-* 7 interactive blocks positioned on canvas (800px height)
-* SVG lines showing data flow between blocks
-* Hover effects: teal shadow + lift animation
-* Click opens modal with detailed information
-* Hint text: "Нажмите на блок, чтобы узнать подробности"
-
-**Mobile Adaptation:**
-
-* Header logo: smaller (text-2xl vs text-3xl)
-* Architecture: hides canvas, shows simple card list
-* All sections responsive with Tailwind breakpoints
-
-### State Management
-
-React hooks in `Architecture.jsx`:
-
-* `activeBlock` — Currently selected block for modal
-* `containerSize` — Canvas dimensions (tracked with useRef + useEffect)
-* Modal opens on block click, closes on backdrop/X click
-
-### Data Structure
-
-`architectureData.js` contains:
-
-* `blocks[]` — Array of 7 architecture blocks:
-  * Presentation, AI-ассистент (central)
-  * Контекст, Метрики, Задачи, Протоколы (data)
-  * AI-слой (processing)
-* Each block: title, subtitle, icon, position, size, category, description, features, etc.
-* `connections[]` — SVG line connections between blocks
-* `blockSizes` — Pixel dimensions for each block type
-
-## Vote Module (Internal Lab Tool)
-
-Изолированный модуль для взвешенного голосования на стратсессиях. Не связан с основным продуктом — лабораторный подпроект.
-
-**URLs:**
-- `/vote` — Страница голосования (публичная)
-- `/vote/results` — Результаты (публичные после завершения)
-- `/vote/admin` — Админка (скрыта из меню, доступ по прямой ссылке)
-
-**Логика:**
-- Участники имеют вес по должности: CEO=5, C-1=3, C-2=2, Специалист=1
-- Количество голосов = ceil(проекты / 2)
-- За один проект: 0, 1 или 2 голоса
-- Итоговый балл = Σ(голоса × вес участника)
-
-**Таблицы Supabase:** vote_sessions, vote_participants, vote_projects, vote_ballots (см. data_model.md)
-
-**Код:** `dev/src/app/vote/`, `dev/src/app/api/vote/`, `dev/src/lib/supabase.js` (POSITIONS)
-
-## Design System
-
-**Colors:**
-
-* Primary (Teal): `#00B4A6` (buttons, interactive elements)
-* Accent (Pink): `#FF4D8D` (gradients, website only)
-* Text: `#1A1A1A` primary, `#6B7280` secondary
-
-**Typography:**
-
-* Headings: `Sora` (bold, semibold)
-* Body: `Inter` (regular, medium, semibold)
-
-**Spacing:** All spacing multiples of 4px (12px, 16px, 24px, 32px)
-**Border Radius:** 12px (buttons/inputs), 16px (cards)
-
-Full design specs: [dev/dev\_context/design\_system.md](dev/dev_context/design_system.md)
+Лендинг + Vote Module (изолированный лабораторный инструмент). Детали компонентов и архитектуры — в `dev/src/` и `dev/dev_context/`.
 
 ## Development Workflow
 
@@ -239,12 +88,11 @@ npm run dev      # Start Next.js dev server
    * **Правило:** Перед правкой критичного файла — показать изменения и получить ОК
 4. **Design system compliance:** Use colors/spacing from design-cheatsheet.md
 5. **Context separation:**
-   * meta/ — Project strategy, product strategy (WHAT, WHY, WHEN, WHO)
-   * dev/ — Product development, implementation (HOW to build)
-   * framework/ — Product core: Second AI Brain methodology, ontology, scaffold, plugin
-   * knowledge/ — External AI knowledge, tools, methods (not tied to svaib)
-   * clients/ — Client projects, sales process (_playbook/), profiles, meetings
-   * pub/ — Public materials (presentations, conference materials)
+   * meta/ — Проект svaib: management/ (цели, план, прогресс), marketing/ (каналы, бренд), product/ (продуктовая стратегия)
+   * dev/ — Сайт и разработка (HOW to build)
+   * framework/ — Продукт Second AI Brain: онтология, методология, scaffold, plugin
+   * knowledge/ — Внешние знания об AI (не привязаны к svaib)
+   * clients/ — Клиенты: _playbook/, профили, встречи
 6. **Open source:** All code will be public on GitHub
 7. **Weekly "Камни недели":** Focus on concrete weekly results
 8. **Next.js best practices:**
@@ -298,48 +146,25 @@ npm run dev      # Start Next.js dev server
 
 ## Getting More Context
 
-| When you need                             | Read this file                           |
-| ----------------------------------------- | ---------------------------------------- |
-| Project strategy, OKR, team               | @meta/meta\_context/project\_overview.md |
-| Product description (what, why, for whom) | @meta/meta\_context/product\_vision.md   |
-| Positioning, messaging, sales             | @meta/meta\_context/marketing.md         |
-| Product architecture (7 components)       | @dev/dev\_context/architecture.md        |
-| Database schema (tables, fields, FK)      | @dev/dev\_context/data\_model.md         |
-| Entity reference (roles, types, statuses) | @dev/dev\_context/data\_dictionary.md    |
-| Infrastructure, APIs, VPS, deployments    | @dev/dev\_context/infrastructure.md      |
-| Workflows, data flow, prompt contracts    | @dev/dev\_context/workflows.md           |
-| Presentation structure (slide-by-slide)   | @dev/dev\_context/guide\_presentation.md |
-| Design system specs                       | @dev/dev\_context/design\_system.md      |
-| MCP servers, subagents, tools             | @.claude/claude\_code\_mechanics.md      |
-| Team workflow (who does what)             | @meta/meta\_context/ai\_team.md          |
-| External AI knowledge (tools, methods)    | @knowledge/README.md                     |
-| Product methodology (ontology, rituals)   | @framework/README.md                     |
-| Product scaffold (templates)              | @framework/scaffold/                     |
-| Product model (client presentation)       | @framework/model.md                      |
-| Client profile, meeting prep              | @clients/{name}/profile.md               |
-| Client project (deal, decisions)          | @clients/{name}/project.md               |
-| Client training progress, blocks          | @clients/{name}/tracking.md              |
-| Client methodology, offers, onboarding    | @clients/\_playbook/README.md             |
+> Пути обновляются по ходу миграции (см. `_migration.md`)
+
+| When you need | Read this file |
+|---------------|---------------|
+| **Миграция** (состояние, решения) | `_migration.md` |
+| Vision, goals, plan, progress | `meta/management/` (scaffold-структура) |
+| Marketing, brand, каналы | `meta/marketing/` |
+| Site architecture (svaib.com) | `dev/dev_context/architecture.md` |
+| Database schema | `dev/dev_context/data_model.md` |
+| Infrastructure, APIs | `dev/dev_context/infrastructure.md` |
+| Design system | `dev/dev_context/design_system.md` |
+| MCP, subagents, tools | `.claude/claude_code_mechanics.md` |
+| AI knowledge (tools, methods) | `knowledge/README.md` |
+| Framework (ontology, methodology) | `framework/README.md` |
+| Second AI Brain architecture | `framework/architecture.md` |
+| Product model (for clients) | `meta/product/model.md` |
+| Client work | `clients/_playbook/README.md`, `clients/{name}/` |
+| **Old context** (being migrated) | `meta/_old/meta_context/` |
 
 ***
 
-## Maintenance: Keeping CLAUDE.md Updated
-
-**This file is the single source of truth. After making changes, always check if CLAUDE.md needs updating.**
-
-### When to update CLAUDE.md:
-
-| Change                                               | What to update in CLAUDE.md                              |
-| ---------------------------------------------------- | -------------------------------------------------------- |
-| Created/deleted slash command in `.claude/commands/` | Update "Slash Commands" section                          |
-| Changed folder structure (added/removed folders)     | Update "Repository Structure" section                    |
-| Changed tech stack (e.g., migrated to Next.js)       | Update "Current Application Architecture"                |
-| Changed deployment process (e.g., new Vercel config) | Update "Development Workflow"                            |
-| Changed design system colors/fonts                   | Update "Design System" section                           |
-| Major architectural change                           | Update relevant sections + "Planned Migration" if needed |
-
-### Automatic check:
-
-**After making changes to `.claude/commands/`, `dev/`, or `meta/` structure, always ask:**
-
-> "Does CLAUDE.md need updating? Check the maintenance table above."
+> **CLAUDE.md будет полностью переработан в конце миграции** (см. `_migration.md`, Фаза 2). Сейчас — рабочий минимум.
