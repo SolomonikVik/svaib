@@ -384,7 +384,7 @@ Product vision описывает модель подписки: клиент п
 
 ## Источники
 
-- [Create Plugins — Claude Code Docs](https://code.claude.com/docs/en/plugins)
+- [Create Plugins — Claude Code Docs](https://code.claude.com/docs/ru/plugins)
 - [Plugins Reference](https://code.claude.com/docs/en/plugins-reference)
 - [Discover and Install Plugins](https://code.claude.com/docs/en/discover-plugins)
 - [Plugin Marketplaces](https://code.claude.com/docs/en/plugin-marketplaces)

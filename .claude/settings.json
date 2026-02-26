@@ -1,10 +1,22 @@
 {
   "permissions": {
     "allow": [
-      "Bash"
+      "Bash(git *)",
+      "Bash(ls *)", "Bash(find *)",
+      "Bash(mkdir *)", "Bash(mv *)", "Bash(cp *)",
+      "Bash(npm *)", "Bash(npx *)",
+      "Bash(python3 *)",
+      "Bash(echo *)", "Bash(cat *)",
+      "Bash(curl *)", "Bash(which *)",
+      "Bash(cd *)", "Bash(pwd)",
+      "Bash(chmod *)", "Bash(touch *)",
+      "Bash(gh *)"
     ],
     "ask": [
-      "Bash(git push*)"
+      "Bash(git push*)",
+      "Bash(git reset*)",
+      "Bash(git checkout -- *)",
+      "Bash(rm *)"
     ]
   },
   "hooks": {
