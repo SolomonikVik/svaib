@@ -4,11 +4,11 @@ source: "https://code.claude.com/docs"
 source_type: docs
 status: processed
 added: 2026-01-30
-updated: 2026-02-16
-review_by: 2026-05-16
-tags: [claude-code, tools, plugins, mcp, hooks, agents, anthropic, permissions, sandbox]
+updated: 2026-02-28
+review_by: 2026-05-28
+tags: [claude-code, tools, plugins, mcp, hooks, agents, anthropic, permissions, sandbox, remote-control]
 publish: false
-version: 11
+version: 12
 ---
 
 # Claude Code — AI-ассистент для разработки
@@ -307,15 +307,9 @@ Effort и thinking budget — независимые параметры. High ef
 
 Координация нескольких независимых сессий Claude Code как команды: leader + teammates, общий task list, прямая коммуникация между агентами. В отличие от субагентов — полностью отдельные сессии со своими контекстными окнами. Delegation mode (Shift+Tab) — лидер только координирует, не кодит. Plan approval — teammate планирует, лидер одобряет. Включение: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: "1"` в settings.json. Детали: [agent-teams.md](agent-teams.md). [Офиц. доки](https://code.claude.com/docs/en/agent-teams).
 
-## Хронология
+## Remote Control (февраль 2026)
 
-| Дата | Событие |
-|------|---------|
-| Октябрь 2025 | Public beta плагинов, 36+ плагинов в официальном маркетплейсе |
-| Октябрь-декабрь 2025 | Добавлены: поиск плагинов, SHA-пиннинг, авто-обновление, output styles, поддержка веток/тегов |
-| Декабрь 2025 | v4.0 Superpowers, LSP-серверы в плагинах |
-| Январь 2026 | 53 плагина в официальном маркетплейсе, v2.1.x Claude Code |
-| Февраль 2026 | Agent Teams (experimental) |
+Продолжение локальной сессии с любого устройства (телефон, браузер) через claude.ai/code. Сессия работает на твоей машине, удалённый клиент — окно в неё. Замена ngrok/sshd-костылям. Sandboxing выключен по умолчанию (`--sandbox` флаг). [Документация](https://code.claude.com/docs/en/remote-control).
 
 ## Примечательные плагины
 
@@ -359,6 +353,7 @@ Effort и thinking budget — независимые параметры. High ef
 - **Superpowers** — крупнейший плагин, эталонный пример. См. [skills/superpowers.md](../skills/superpowers.md)
 - **Cowork** — Anthropic перенёс ту же plugin-архитектуру в GUI для knowledge workers (sales, legal, finance). Формат плагинов идентичен. См. [tools/cowork.md](../tools/cowork.md)
 - **Механика поиска Claude Code** — как Claude Code ищет файлы (агентный grep без индекса, двухмодельная архитектура, сравнение с Cursor и Claude Projects). См. [context/search-mechanics.md](../context/search-mechanics.md)
+- **AI System Files** — CLAUDE.md в контексте ландшафта (AGENTS.md, GEMINI.md, soul.md), кросс-чтение, стандартизация AAIF, best practices и лимиты. См. [context/ai-system-files.md](../context/ai-system-files.md)
 
 ## Источники
 

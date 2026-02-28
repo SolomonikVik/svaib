@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-02-20
-review_by: 2026-05-20
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, index]
+updated: 2026-02-28
+review_by: 2026-05-28
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index]
 publish: false
-version: 11
+version: 12
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -37,14 +37,15 @@ version: 11
 ### Temporal Knowledge Graphs — память с пониманием времени
 Одна из пяти архитектур хранения памяти агентов (→ [agent-memory.md](agent-memory.md)). Решает ключевое ограничение обычного RAG — отсутствие темпоральности. Каждый факт/отношение имеет временные метки, конфликты разрешаются через invalidation. Bi-temporal model различает "когда произошло" и "когда узнали". Критично для продукта SVAIB: решения на встречах обновляются, AI должен знать что актуально сейчас. Два живых фреймворка: Graphiti (Zep, Neo4j, MCP-сервер) и Hindsight (Vectorize.io, PostgreSQL, биомиметическая память). Подробнее → [temporal-graphs.md](temporal-graphs.md). Практический опыт работы с Graphiti (метрики, кейсы, оптимизация) → [temporal-graphs-doronin.md](temporal-graphs-doronin.md)
 
+### AI System Files — конфигурационные файлы для AI-ассистентов
+
+Каждый AI coding-ассистент использует конфигурационные файлы двух типов: **инструкции** (CLAUDE.md, AGENTS.md, GEMINI.md — "как работать с проектом") и **персона/память** (soul.md, identity.md, memory.md — "кто ты и что помнишь"). Все сходятся на Markdown и иерархической загрузке по директориям. AGENTS.md движется к кросс-платформенному стандарту через AAIF (Linux Foundation, основатели: Anthropic, OpenAI, Block). Подробная карта 13 инструментов, кросс-чтение файлов, best practices, anti-patterns и лимиты → [ai-system-files.md](ai-system-files.md).
+
 ### File-based Memory (MD-файлы как память)
 
-Простейший подход к персистентной памяти агента: набор Markdown-файлов с разными ролями. Паттерн из OpenClaw (Clawdbot): user.md (факты о человеке), identity.md (характер бота), soul.md (системный промпт), memory.md (динамические факты + таски), bootstrap.md (онбординг, самоудаляется). Файлы вставляются в каждый запрос к LLM.
+Файлы — «нулевой уровень» памяти агента (аудируемость, git-diff, ручная правка). Спектр уровней: 0 — статические инструкции (CLAUDE.md) → 1 — авто-память (MEMORY.md) → 2 — файлы + семантический поиск (OpenClaw memsearch) → 3 — внешние API (Mem0) → 4 — темпоральные графы (Graphiti/Zep). Индексация и графы — надстройки, но source of truth остаётся в редактируемых файлах. Подробнее о спектре → [ai-system-files.md](ai-system-files.md).
 
-**Плюсы:** Прозрачность (можно открыть и прочитать), редактируемость, Git-friendly, не требует инфраструктуры.
-**Минусы:** Растёт линейно → рост токенов → рост стоимости. Нет темпоральности (старые факты не "протухают"). Нет приоритизации — всё вставляется целиком.
-
-Подход близок к тому, как устроены CLAUDE.md и memory в Claude Code. По сути наш framework/scaffold/ — это тот же паттерн, но структурированный через онтологию. → [../tools/openclaw.md](../tools/openclaw.md)
+Паттерн персоны из OpenClaw: soul.md (ядро личности), identity.md (внешняя подача), user.md (контекст пользователя), memory.md (накопленные факты). Разделение «кто агент» от «что агент делает» — архитектурный паттерн, позволяющий ревьюить изменения в «душе» отдельно от «памяти». → [../tools/openclaw.md](../tools/openclaw.md)
 
 ### Context Graphs — институциональная память решений
 
@@ -78,3 +79,4 @@ version: 11
 - [../tools/openclaw.md](../tools/openclaw.md) — пример архитектуры с Memory-компонентом (слабая темпоральность)
 - [markdown-for-llm.md](markdown-for-llm.md) — анатомия Markdown-файла для человека + LLM + RAG (YAML, структура, чанкинг, связи)
 - [search-mechanics.md](search-mechanics.md) — как Claude Code, Cursor, Claude Projects и ChatGPT ищут файлы (механики поиска, уровни доступа)
+- [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов для AI-ассистентов: 13 инструментов, AGENTS.md стандарт, паттерн персоны, best practices

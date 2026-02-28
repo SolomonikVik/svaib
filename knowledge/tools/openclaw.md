@@ -160,3 +160,4 @@ Node ≥22, pnpm рекомендуется. macOS, Linux, Windows (WSL2). Ви�
 - [../agents/subagents.md](../agents/subagents.md) — субагентные паттерны (supervisor-specialist из OpenClaw)
 - [../agents/!agents.md](../agents/!agents.md) — сводка по агентным системам
 - [../context/context-graphs.md](../context/context-graphs.md) — Context Graphs (Foundation Capital): decision traces и траектории агентов — связь с Memory-компонентом OpenClaw
+- [../context/ai-system-files.md](../context/ai-system-files.md) — AI System Files: карта dotfiles для AI — OpenClaw как источник паттерна персоны (soul.md/identity.md)
