@@ -2,11 +2,11 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: processed
 added: 2026-01-30
-updated: 2026-02-21
-review_by: 2026-05-21
-tags: [coding, ai-coding, ide, claude-code, index, methodology]
+updated: 2026-02-28
+review_by: 2026-05-28
+tags: [coding, ai-coding, ide, claude-code, index, methodology, testing]
 publish: false
-version: 16
+version: 17
 ---
 
 # Coding — AI-кодинг и разработка
@@ -68,6 +68,16 @@ version: 16
 Плюс практические заметки: corrections > waiting (OpenAI), парадокс надзора (Anthropic), делегирование D/R/O (OpenAI), end-of-day agents (Hashimoto).
 
 Индустриальные данные: OpenAI (1M строк, 0 вручную), Anthropic (+67% PRs, автономность ×2), Spotify (no code since Dec 2025). Полный синтез с источниками: [ai-dev-practices.md](ai-dev-practices.md).
+
+## Тестирование AI-generated кода
+
+Тестирование кода от AI-агентов требует особых подходов: AI-код имеет предсказуемые failure modes (control-flow omissions, context blindness, plausible-but-wrong). Для соло-разработчика тест-система — единственный "напарник по code review".
+
+Ключевые подходы: TDD + AI (тест = точный промпт, снижает hallucination), Property-Based Testing (свойства вместо примеров — ловит edge cases), Mutation Testing (coverage ≠ качество, mutation score показывает реальную эффективность тестов), Multi-layer verification (deterministic → security → agentic).
+
+Философия @ai_driven: тест-система — primary quality guarantor. Каждый баг на проде = баг тест-системы. Каждый баг-фикс = два фикса (код + тест-система).
+
+Детали: [testing.md](testing.md).
 
 ## Связанные материалы
 

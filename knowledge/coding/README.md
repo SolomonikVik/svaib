@@ -14,6 +14,10 @@
   - [engineering-harness.md](engineering-harness.md) — детали принципа "Harness Engineering" (Hashimoto 6 шагов, OpenAI 7-phase SDLC, Anthropic данные)
   - [spec-driven-dev.md](spec-driven-dev.md) — детали принципа "Spec First": SDD как парадигма, инструменты (Spec Kit, Kiro, Tessl), критика
 
+### Тестирование
+
+- [testing.md](testing.md) — тестирование AI-generated кода: failure modes, TDD+AI, property-based testing, mutation testing, multi-layer verification, инструменты
+
 ### Среды и инструменты
 
 - [claude-code.md](claude-code.md) — Claude Code: CLI, расширения, плагины, система расширения

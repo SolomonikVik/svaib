@@ -4,11 +4,11 @@ source: "multiple (см. Источники)"
 source_type: article
 status: processed
 added: 2026-02-16
-updated: 2026-02-21
-review_by: 2026-05-21
+updated: 2026-02-28
+review_by: 2026-05-28
 tags: [ai-coding, agents, harness, engineering-practices, codex, mitchell-hashimoto, openai, anthropic, llm-under-hood]
 publish: false
-version: 4
+version: 5
 ---
 
 # Engineering Harness
@@ -192,6 +192,7 @@ OpenAI описывает трансформацию всего цикла ра�
 ## Связанные файлы
 
 - [ai-dev-practices.md](ai-dev-practices.md) — синтез всех принципов AI-разработки (включая harness engineering)
+- [testing.md](testing.md) — тестирование AI-generated кода: стратегии, подходы, инструменты. Детализация verification tools из harness
 - [!coding.md](!coding.md) — сводка по AI-кодингу
 - [claude-code.md](claude-code.md) — Claude Code как основная среда разработки
 - [agent-teams.md](agent-teams.md) — multi-agent разработка (шаг 6 Hashimoto масштабируется через Agent Teams)

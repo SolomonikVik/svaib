@@ -4,11 +4,11 @@ source: "multiple (см. Источники)"
 source_type: research
 status: processed
 added: 2026-02-21
-updated: 2026-02-21
-review_by: 2026-05-21
+updated: 2026-02-28
+review_by: 2026-05-28
 tags: [ai-coding, methodology, spec-driven, sdd, specification, agents, engineering]
 publish: false
-version: 1
+version: 2
 ---
 
 # Spec-Driven Development
@@ -84,6 +84,7 @@ Böckeler (на martinfowler.com) провела детальный анализ
 
 - [ai-dev-practices.md](ai-dev-practices.md) — синтез 3 принципов проектирования среды для AI-разработки (SDD = принцип 1 "Spec First")
 - [engineering-harness.md](engineering-harness.md) — Harness Engineering (комплементарный подход)
+- [testing.md](testing.md) — тестирование AI-generated кода. SDD и тестирование пересекаются: specs → acceptance criteria → tests
 - [!coding.md](!coding.md) — сводка по AI-кодингу
 
 ## Источники

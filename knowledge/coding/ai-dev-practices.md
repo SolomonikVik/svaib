@@ -4,11 +4,11 @@ source: "multiple (см. Первоисточники)"
 source_type: article
 status: processed
 added: 2026-02-21
-updated: 2026-02-21
-review_by: 2026-05-21
+updated: 2026-02-28
+review_by: 2026-05-28
 tags: [ai-coding, methodology, best-practices, spec-driven, harness, delegation, engineering]
 publish: false
-version: 4
+version: 5
 ---
 
 # AI Development Practices
@@ -151,6 +151,7 @@ OpenAI описывает как AI меняет каждую фазу цикл�
 
 - [spec-driven-dev.md](spec-driven-dev.md) — детали принципа 1 "Spec First": SDD как парадигма, первоисточник (Ostroff/Paige 2004), инструменты, критика
 - [engineering-harness.md](engineering-harness.md) — детали принципа 3 "Harness Engineering" (Hashimoto + OpenAI)
+- [testing.md](testing.md) — тестирование AI-generated кода: failure modes, TDD+AI, mutation testing, multi-layer verification. Углубляет фазу Testing из SDLC и критику Böckeler
 - [!coding.md](!coding.md) — сводка по AI-кодингу
 - [../agents/!agents.md](../agents/!agents.md) — агентные паттерны
 - [../skills/superpowers.md](../skills/superpowers.md) — библиотека скиллов (TDD, debugging, subagent patterns)
