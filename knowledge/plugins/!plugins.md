@@ -6,14 +6,14 @@ updated: 2026-02-21
 review_by: 2026-05-21
 tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
-version: 2
+version: 3
 ---
 
 # Plugins — система расширения AI-агентов
 
 ## Кратко
 
-Плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Всё файловое (Markdown + JSON), zero code, zero build steps. Единый формат для Claude Code (CLI, разработчики) и Cowork (GUI, knowledge workers). Public beta с октября 2025. Экосистема: 28 плагинов в official marketplace, 11 knowledge-work плагинов для Cowork, community-маркетплейсы. Cross-platform: совместим с Factory Droid, OpenAI Codex, 40+ агентов через Agent Skills стандарт. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
+Плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Всё файловое (Markdown + JSON), zero code, zero build steps. Единый формат для Claude Code (CLI, разработчики) и Cowork (GUI, knowledge workers). Public beta с октября 2025. Экосистема: 28 плагинов в official marketplace, 15+4 knowledge-work плагинов для Cowork, community-маркетплейсы. Cross-platform: совместим с Factory Droid, OpenAI Codex, 40+ агентов через Agent Skills стандарт. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
 
 ---
 
@@ -219,9 +219,9 @@ claude plugin install <name> --scope project
 
 **Другое:** playground (интерактивные HTML-интерфейсы), ralph-loop, output styles (explanatory, learning).
 
-### anthropics/knowledge-work-plugins (11 плагинов для Cowork)
+### anthropics/knowledge-work-plugins (15 плагинов + 4 partner-built)
 
-Все Apache-2.0. Для knowledge workers.
+Все Apache-2.0. Для knowledge workers. Работают и в Cowork, и в Claude Code.
 
 | Плагин | Назначение | Коннекторы |
 |--------|-----------|------------|
@@ -235,7 +235,13 @@ claude plugin install <name> --scope project
 | **data** | SQL, визуализация, дашборды | Snowflake, Databricks, BigQuery, Hex, Amplitude |
 | **enterprise-search** | Поиск по email, chat, docs, wikis | Slack, Notion, Guru, Jira, Asana |
 | **bio-research** | Литература, геномика | PubMed, bioRxiv, ClinicalTrials.gov, ChEMBL |
+| **design** | UI/UX дизайн | Figma и др. |
+| **engineering** | Разработка | — |
+| **human-resources** | HR-процессы | — |
+| **operations** | Операционное управление | — |
 | **cowork-plugin-management** | Создание и кастомизация плагинов | — |
+
+**Partner-built:** apollo, brand-voice, common-room, slack — плагины от партнёров Anthropic.
 
 ### Сторонние маркетплейсы и community
 
@@ -341,7 +347,7 @@ claude plugin install <name> --scope project
 | Октябрь-декабрь 2025 | SHA-пиннинг, авто-обновление, output styles, ветки/теги |
 | Декабрь 2025 | Agent Skills как открытый стандарт. v4.0 Superpowers. LSP в плагинах |
 | Январь 2026 | Cowork launch (12 янв). Cowork Plugins (30 янв). 28 плагинов в official |
-| Февраль 2026 | Agent Teams (experimental). Community 87+ плагинов. Factory Droid совместим |
+| Февраль 2026 | Agent Teams (experimental). Community 87+ плагинов. Factory Droid совместим. knowledge-work-plugins выросли до 15+4 (добавлены design, engineering, HR, operations, partner-built) |
 
 ---
 

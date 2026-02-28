@@ -13,6 +13,7 @@
 - [ai-dev-practices.md](ai-dev-practices.md) — **синтез принципов** AI-first разработки (hub-файл: 3 принципа проектирования среды из OpenAI, Anthropic, Hashimoto)
   - [engineering-harness.md](engineering-harness.md) — детали принципа "Harness Engineering" (Hashimoto 6 шагов, OpenAI 7-phase SDLC, Anthropic данные)
   - [spec-driven-dev.md](spec-driven-dev.md) — детали принципа "Spec First": SDD как парадигма, инструменты (Spec Kit, Kiro, Tessl), критика
+- [ai-ready-architecture.md](ai-ready-architecture.md) — **структура кода** под AI-агентов: sinks vs pipes, честные интерфейсы, progressive disclosure в коде (Ian Bull)
 
 ### Тестирование
 

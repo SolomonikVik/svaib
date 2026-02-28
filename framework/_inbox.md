@@ -1,6 +1,6 @@
 ---
 title: "Framework — входящие инсайты на разбор"
-updated: 2026-02-27
+updated: 2026-02-28
 version: 1
 type: log
 ---
@@ -51,3 +51,20 @@ type: log
 **Практический вывод:** В methodology/ стоит добавить принцип: "пиши файлы так, как хочешь чтобы AI с тобой разговаривал".
 
 → Куда: methodology/ (принцип), scaffold/ (примеры в шаблонах)
+
+---
+
+## 2026-02-28 — Anthropic knowledge-work-plugins как референс для блока "помощники"
+
+**Контекст:** Anthropic выложили open source репо [knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins) — 15 first-party + 4 partner-built плагинов для knowledge work ролей: productivity, sales, customer-support, product-management, marketing, legal, finance, data, enterprise-search, bio-research, design, engineering, HR, operations + partner (apollo, brand-voice, common-room, slack). Каждый плагин = набор skills (команды) + .mcp.json (коннекторы к внешним сервисам). Работают в Cowork и Claude Code. Пост в Telegram (ProductsAndStartups): автор попробовал data-плагин на статистике Telegram-канала — 6 команд (/explore-data, /analyze, /write-query, /create-viz, /build-dashboard, /validate), за 2 минуты получил интерактивный дашборд.
+
+**Инсайт 1 — Паттерн "одна роль = один набор скиллов + коннекторы":**
+Anthropic фактически стандартизировали паттерн ролевого помощника: роль определяется через набор domain-specific команд + подключения к данным через MCP. Это тот же паттерн, который Second AI Brain закладывает в слой 3 "Помощники" (architecture.md): skills по методологии + коннекторы к данным клиента. Разница: у Anthropic роли generic (для любого маркетолога), у нас — роли привязаны к scaffold-структуре и методологии конкретного руководителя.
+
+**Инсайт 2 — Идея помощника "Data Scientist для аналитики":**
+Data-плагин показывает реальный use case: сырые данные (CSV, SQL, API) → профилирование → вопросы → визуализация → дашборд. Для клиентов Second AI Brain это может быть помощник "по запросу", который анализирует бизнес-метрики: SEO, маркетинговая воронка, engagement, unit economics. Не нужен штатный аналитик — руководитель загружает данные, помощник строит картину. Добавить в каталог будущих помощников plugin/.
+
+**Инсайт 3 — Каталог ролей как ориентир:**
+15 ролей Anthropic — готовый чеклист: какие помощники бывают в knowledge work. Не все релевантны для Second AI Brain (bio-research — нет), но несколько прямо ложатся: productivity (задачи, ритуалы), product-management (roadmap, specs), operations (процессы). Полезно как input при проектировании каталога помощников в plugin/.
+
+→ Куда: architecture.md (валидация паттерна "помощники"), plugin/ (каталог ролей, идея data-помощника)

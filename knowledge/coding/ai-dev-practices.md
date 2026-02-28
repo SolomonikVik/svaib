@@ -8,7 +8,7 @@ updated: 2026-02-28
 review_by: 2026-05-28
 tags: [ai-coding, methodology, best-practices, spec-driven, harness, delegation, engineering]
 publish: false
-version: 5
+version: 6
 ---
 
 # AI Development Practices
@@ -149,6 +149,7 @@ OpenAI описывает как AI меняет каждую фазу цикл�
 
 ## Связанные файлы
 
+- [ai-ready-architecture.md](ai-ready-architecture.md) — **структура кода** под AI-агентов (sinks vs pipes, честные интерфейсы, progressive disclosure). Этот файл — про процесс, ai-ready-architecture — про структуру самого кода. Взаимодополняют
 - [spec-driven-dev.md](spec-driven-dev.md) — детали принципа 1 "Spec First": SDD как парадигма, первоисточник (Ostroff/Paige 2004), инструменты, критика
 - [engineering-harness.md](engineering-harness.md) — детали принципа 3 "Harness Engineering" (Hashimoto + OpenAI)
 - [testing.md](testing.md) — тестирование AI-generated кода: failure modes, TDD+AI, mutation testing, multi-layer verification. Углубляет фазу Testing из SDLC и критику Böckeler
