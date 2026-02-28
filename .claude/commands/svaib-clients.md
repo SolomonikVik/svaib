@@ -43,7 +43,7 @@ description: "Режим работы с клиентами SVAIB"
 1. Прочитай `clients/README.md` — список клиентов и структура
 2. Прочитай `clients/_playbook/` — методология (model, offers, onboarding, custdev_insights)
 3. Спроси Виктора: **с каким клиентом работаем?**
-4. Загрузи папку клиента: `clients/{name}/profile.md` + `clients/{name}/project.md`
+4. Загрузи папку клиента: `clients/{name}/profile.md` + `clients/{name}/company.md` + `clients/{name}/project.md`
 5. Если есть встречи — прочитай последние из `clients/{name}/meetings/`
 
 ---
@@ -65,7 +65,7 @@ description: "Режим работы с клиентами SVAIB"
 - **Не использовать примеры** не из контекста конкретного клиента
 - **Не путать роли** (CEO ≠ руководитель отдела)
 - **Не создавать новые секции** в клиентских файлах — сначала проверить существующую структуру файла
-- **Не путать scope файлов** — перед записью проверить: это profile (кто), project (сделка) или tracking (операционка)? См. таблицу разграничения в clients/README.md
+- **Не путать scope файлов** — перед записью проверить: это profile (кто), company (бизнес), project (сделка) или tracking (операционка)? См. таблицу разграничения в clients/README.md
 
 ---
 

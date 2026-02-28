@@ -1,0 +1,15 @@
+# Rescue Log — история диагностированных сбоев
+# Читается rescue-агентом при каждом вызове для проверки известных паттернов
+# Записи добавляются координатором после диагноза rescue
+
+- date: 2026-02-27
+  session: "svaib-lab: построение rescue v1"
+  category: planning
+  type: process-step-skip
+  module: planning
+  where: "svaib-lab.md → процесс, шаг 2 (Исследовать)"
+  root_cause: "Координатор не выполнил собственный шаг — не заглянул в knowledge/, не использовал knowledge-research, сразу перешёл к построению"
+  fix: "Переписан rescue → v2 на основе индустриальных паттернов"
+  preventive: "В svaib-lab.md добавлен чеклист промпта и guardrail на шаг Исследовать"
+  pattern: "Process Step Skip — пропуск собственного задокументированного процесса"
+  resolved: true
