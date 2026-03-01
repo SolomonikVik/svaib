@@ -2,18 +2,18 @@
 title: "Plugins — система расширения AI-агентов: формат, экосистема, best practices"
 status: processed
 added: 2026-02-13
-updated: 2026-02-21
-review_by: 2026-05-21
+updated: 2026-03-01
+review_by: 2026-06-01
 tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
-version: 3
+version: 4
 ---
 
 # Plugins — система расширения AI-агентов
 
 ## Кратко
 
-Плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Всё файловое (Markdown + JSON), zero code, zero build steps. Единый формат для Claude Code (CLI, разработчики) и Cowork (GUI, knowledge workers). Public beta с октября 2025. Экосистема: 28 плагинов в official marketplace, 15+4 knowledge-work плагинов для Cowork, community-маркетплейсы. Cross-platform: совместим с Factory Droid, OpenAI Codex, 40+ агентов через Agent Skills стандарт. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
+Плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Всё файловое (Markdown + JSON), zero code, zero build steps. Единый формат для Claude Code (CLI, разработчики) и Cowork (GUI, knowledge workers). Public beta с октября 2025. Экосистема: official marketplace (dev-плагины + LSP + интеграции), knowledge-work плагины для Cowork (отраслевые), растущие community-маркетплейсы. Cross-platform: совместим с Factory Droid, OpenAI Codex и др. через Agent Skills стандарт. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
 
 ---
 
@@ -207,51 +207,33 @@ claude plugin install <name> --scope project
 
 ## Официальные маркетплейсы
 
-### anthropics/claude-plugins-official (28 плагинов)
+### anthropics/claude-plugins-official
 
-Встроен по умолчанию. Категории:
+Встроен по умолчанию. Актуальный каталог: [GitHub](https://github.com/anthropics/claude-plugins-official). Категории:
 
-**Code intelligence (11 LSP):** clangd, csharp, gopls, jdtls, kotlin, lua, php, pyright, rust-analyzer, swift, typescript. Дают Claude real-time диагностику + навигацию по коду. Требуют бинарник language server на машине.
+- **Code intelligence (LSP):** языковые серверы (pyright, gopls, rust-analyzer, typescript и др.) — real-time диагностика + навигация
+- **Внешние интеграции (MCP):** GitHub, GitLab, Atlassian, Asana, Linear, Notion, Figma, Vercel, Firebase, Supabase, Slack, Sentry и др.
+- **Dev workflows:** code-review, pr-review-toolkit, plugin-dev, feature-dev, security-guidance, hookify и др.
+- **Другое:** playground (интерактивные HTML-интерфейсы), output styles
 
-**Внешние интеграции (MCP):** github, gitlab, atlassian (Jira/Confluence), asana, linear, notion, figma, vercel, firebase, supabase, slack, sentry.
+### anthropics/knowledge-work-plugins
 
-**Dev workflows:** commit-commands, pr-review-toolkit, agent-sdk-dev, plugin-dev, feature-dev, code-review, code-simplifier, claude-code-setup, claude-md-management, security-guidance, hookify.
+Для knowledge workers (Cowork + Claude Code). Все Apache-2.0. Покрывают отрасли: productivity, sales, customer support, product management, marketing, legal, finance, data, enterprise search, bio-research, design, engineering, HR, operations + partner-built плагины. Актуальный каталог: [GitHub](https://github.com/anthropics/knowledge-work-plugins).
 
-**Другое:** playground (интерактивные HTML-интерфейсы), ralph-loop, output styles (explanatory, learning).
-
-### anthropics/knowledge-work-plugins (15 плагинов + 4 partner-built)
-
-Все Apache-2.0. Для knowledge workers. Работают и в Cowork, и в Claude Code.
-
-| Плагин | Назначение | Коннекторы |
-|--------|-----------|------------|
-| **productivity** | Задачи, календари, workflows | Slack, Notion, Asana, Linear, Jira, Monday, ClickUp, Microsoft 365 |
-| **sales** | Prospect research, call prep, pipeline | Slack, HubSpot, Close, Clay, ZoomInfo, Fireflies |
-| **customer-support** | Тикеты, эскалации, KB | Slack, Intercom, HubSpot, Guru, Jira |
-| **product-management** | Спеки, roadmaps, research | Slack, Linear, Asana, Figma, Amplitude, Pendo |
-| **marketing** | Контент, кампании, brand voice | Slack, Canva, Figma, HubSpot, Ahrefs, Klaviyo |
-| **legal** | Контракты, NDA, compliance | Slack, Box, Egnyte, Jira |
-| **finance** | Journal entries, reconciliation | Snowflake, Databricks, BigQuery |
-| **data** | SQL, визуализация, дашборды | Snowflake, Databricks, BigQuery, Hex, Amplitude |
-| **enterprise-search** | Поиск по email, chat, docs, wikis | Slack, Notion, Guru, Jira, Asana |
-| **bio-research** | Литература, геномика | PubMed, bioRxiv, ClinicalTrials.gov, ChEMBL |
-| **design** | UI/UX дизайн | Figma и др. |
-| **engineering** | Разработка | — |
-| **human-resources** | HR-процессы | — |
-| **operations** | Операционное управление | — |
-| **cowork-plugin-management** | Создание и кастомизация плагинов | — |
-
-**Partner-built:** apollo, brand-voice, common-room, slack — плагины от партнёров Anthropic.
+Примечательные:
+- **productivity** — задачи, календари, workflows (Slack, Notion, Asana, Linear, Jira, Microsoft 365)
+- **sales** — prospect research, pipeline (HubSpot, Close, Clay, ZoomInfo)
+- **data** — SQL, визуализация (Snowflake, Databricks, BigQuery, Hex)
+- **enterprise-search** — поиск по email, chat, docs, wikis
+- **cowork-plugin-management** — создание плагинов изнутри Cowork
 
 ### Сторонние маркетплейсы и community
 
-| Ресурс | Что это |
-|--------|---------|
-| **[awesome-claude-plugins](https://github.com/quemsah/awesome-claude-plugins)** | Автоматический сбор метрик adoption с GitHub |
-| **[awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code)** | Курированный список: skills, hooks, commands, agents, plugins |
-| **[claudemarketplaces.com](https://claudemarketplaces.com)** | Веб-каталог маркетплейсов |
-| **[claude-tools](https://paddo.dev/blog/claude-tools-plugin-marketplace/)** | Маркетплейс специализированных external capabilities |
-| **Community marketplaces** | 87+ плагинов в community-built каталогах |
+Растущая экосистема — community-каталоги, курированные списки, веб-агрегаторы:
+
+- [awesome-claude-plugins](https://github.com/quemsah/awesome-claude-plugins) — автоматический сбор метрик adoption
+- [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) — курированный список расширений
+- [claudemarketplaces.com](https://claudemarketplaces.com) — веб-каталог маркетплейсов
 
 ---
 
@@ -343,11 +325,11 @@ claude plugin install <name> --scope project
 
 | Дата | Событие |
 |------|---------|
-| Октябрь 2025 | Public beta плагинов Claude Code, 36+ плагинов |
+| Октябрь 2025 | Public beta плагинов Claude Code |
 | Октябрь-декабрь 2025 | SHA-пиннинг, авто-обновление, output styles, ветки/теги |
 | Декабрь 2025 | Agent Skills как открытый стандарт. v4.0 Superpowers. LSP в плагинах |
-| Январь 2026 | Cowork launch (12 янв). Cowork Plugins (30 янв). 28 плагинов в official |
-| Февраль 2026 | Agent Teams (experimental). Community 87+ плагинов. Factory Droid совместим. knowledge-work-plugins выросли до 15+4 (добавлены design, engineering, HR, operations, partner-built) |
+| Январь 2026 | Cowork launch (12 янв). Cowork Plugins (30 янв) |
+| Февраль 2026 | Agent Teams (experimental). Factory Droid совместим. Enterprise: private marketplaces, отраслевые шаблоны, новые коннекторы |
 
 ---
 
