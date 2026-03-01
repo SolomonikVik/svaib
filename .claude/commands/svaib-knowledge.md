@@ -92,7 +92,8 @@ description: "Режим работы с базой знаний (knowledge/)"
 
 Собрать коммиты с последнего пуша, сгенерировать пост для Telegram, показать Виктору, после ОК — push.
 
-**Детали режимов 5-6:** `.claude/skills/knowledge-research/session-close.md` (читать при активации)
+**Детали режима 5:** `.claude/skills/knowledge-research/session-commit.md` (читать при активации)
+**Детали режима 6:** `.claude/skills/knowledge-research/session-push.md` (читать при активации)
 
 ---
 
