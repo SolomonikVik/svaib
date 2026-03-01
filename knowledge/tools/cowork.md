@@ -4,11 +4,11 @@ source: "https://claude.com/blog/cowork-research-preview"
 source_type: docs
 status: raw
 added: 2026-02-01
-updated: 2026-02-07
-review_by: 2026-05-01
+updated: 2026-02-28
+review_by: 2026-05-28
 tags: [cowork, anthropic, plugins, knowledge-work, agents, svaib-product]
 publish: false
-version: 3
+version: 4
 ---
 
 # Cowork — агентная платформа для knowledge workers
@@ -23,7 +23,7 @@ Cowork — фича Claude Desktop (macOS), запущена 12 января 202
 
 | | Cowork | Claude Code |
 |---|---|---|
-| **Интерфейс** | Claude Desktop GUI (macOS) | CLI / VS Code / JetBrains |
+| **Интерфейс** | Claude Desktop GUI (macOS, Windows) | CLI / VS Code / JetBrains |
 | **Аудитория** | Knowledge workers (sales, legal, finance) | Разработчики |
 | **Среда** | Sandboxed VM | Прямой доступ к файловой системе |
 | **Формат плагинов** | Идентичный | Идентичный |
@@ -67,7 +67,7 @@ claude plugins add knowledge-work-plugins/sales      # конкретный пл
 **Маркетплейсы:**
 - [anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins) — 11 official (Apache-2.0)
 - [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — 53+ плагина, `marketplace.json`
-- **Internal catalogs** — для компаний (анонсировано, в разработке)
+- **Private plugin marketplaces** — для компаний (shipped, февраль 2026). Источники: GitHub repos (вкл. private, beta)
 - Community-built маркетплейсы уже появились (87+ плагинов)
 
 ### 11 официальных плагинов (knowledge work)
@@ -90,6 +90,12 @@ claude plugins add knowledge-work-plugins/sales      # конкретный пл
 
 ---
 
+## Scheduled Tasks
+
+Команда `/schedule` — recurring tasks (daily/weekly). Docs: [Anthropic](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-cowork).
+
+---
+
 ## Pricing / Access
 
 | План | Цена | Cowork + Plugins |
@@ -103,7 +109,7 @@ claude plugins add knowledge-work-plugins/sales      # конкретный пл
 | Enterprise | Custom | SSO, audit logs, SCIM, 400K+ context |
 
 **Ограничения:**
-- macOS only (research preview)
+- macOS + Windows (research preview). Multi-App: Claude работает сквозь Excel и PowerPoint, передавая контекст между приложениями
 - Cowork НЕ попадает в Audit Logs, Compliance API, Data Exports (пока)
 - Запрещено для HIPAA, FedRAMP, FSI regulated workloads
 
@@ -125,7 +131,7 @@ Cowork Plugins — техническая реализация этой моде
 **Что это означает:**
 1. **Delivery mechanism готов** — Anthropic построила инфраструктуру (marketplace, CLI, internal catalogs)
 2. **Наша `.claude/` уже plugin-compatible** — шаг до плагина: создать `plugin.json`, реорганизовать файлы
-3. **Internal catalogs** (анонсированы) = точка входа для корпоративных клиентов
+3. **Private marketplaces** (shipped) = точка входа для корпоративных клиентов
 4. **Не нужно изобретать дистрибуцию** — заполняем готовую инфраструктуру содержимым
 5. **Anthropic покрывает generic** (sales, legal) — наша ценность в кастомизации + русскоязычный рынок
 
@@ -147,6 +153,7 @@ Cowork Plugins — техническая реализация этой моде
 
 - Cowork launch: https://claude.com/blog/cowork-research-preview
 - Cowork Plugins launch: https://claude.com/blog/cowork-plugins
+- Enterprise update (Feb 2026): https://claude.com/blog/cowork-plugins-across-enterprise
 - Knowledge-work plugins (GitHub): https://github.com/anthropics/knowledge-work-plugins
 - Plugin docs: https://code.claude.com/docs/en/plugins
 - Official plugin directory: https://github.com/anthropics/claude-plugins-official

@@ -57,7 +57,7 @@ version: 3
 
 **Что:** Десктопное приложение OpenAI для работы с AI-агентами. Параллельные агенты, автоматизации, worktrees.
 **Платформы:** macOS (февраль 2026). CLI — кроссплатформенный.
-**Модели:** OpenAI (GPT-5.2, o3, codex-1).
+**Модели:** OpenAI (актуальные модели — см. docs).
 **Ключевое:** Multi-agent: несколько агентов работают параллельно на одном репо через worktrees. Automations — агенты работают по расписанию в фоне. Skills (Figma, Linear, deploy, PDF/docx). Результаты — в review queue.
 **Ссылка:** https://openai.com/codex
 **Docs:** https://developers.openai.com/codex/app/
