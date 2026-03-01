@@ -13,3 +13,15 @@
   preventive: "В svaib-lab.md добавлен чеклист промпта и guardrail на шаг Исследовать"
   pattern: "Process Step Skip — пропуск собственного задокументированного процесса"
   resolved: true
+
+- date: 2026-02-28
+  session: "svaib-knowledge: обновление cowork.md по ссылке на /schedule"
+  category: meta
+  type: scope-creep
+  module: planning
+  where: "knowledge-research/SKILL.md → Фаза 4 (Запиши) — нет принципа пропорциональности"
+  root_cause: "Скилл предписывает полный цикл (файл + Кратко + секция + !файл) на любое обновление. Координатор тронул 4 места ради одной строчки новой информации"
+  fix: "Откат лишних правок. Оставлена 1 строка в cowork.md"
+  preventive: "Добавлен принцип пропорциональности в SKILL.md с тремя тестами"
+  pattern: "Disproportionate Update — полный цикл обновления для микро-информации"
+  resolved: true
