@@ -1,12 +1,12 @@
 ---
 title: "Агентные системы — сводка знаний"
 status: processed
-updated: 2026-02-21
+updated: 2026-03-01
 added: 2026-01-30
 review_by: 2026-05-16
 tags: [agents, subagents, mcp, multi-agent, patterns, hosting]
 publish: false
-version: 7
+version: 8
 ---
 
 # Agents — Агентные системы
@@ -55,6 +55,7 @@ AI-системы, способные автономно принимать ре
 | **Hierarchical** | Дерево: supervisor → team leads → specialists | Крупные проекты |
 | **Parallel Specialists** | Несколько агентов анализируют одно с разных ракурсов | Многоаспектная оценка (security + perf + architecture) |
 | **Closed Feedback Loop** | Agent → Eval → Analyzer → Evolver → Agent (next gen). Автономная эволюция промпта/кода через замкнутый цикл с измеримой обратной связью | Оптимизация метрики, прохождение тестов, prompt engineering at scale. Подробнее → [feedback-loop-evolution.md](feedback-loop-evolution.md) |
+| **Schema-Guided Reasoning (SGR)** | Структурирование рассуждений LLM через Pydantic-схемы (constrained decoding). Три компонуемых паттерна: Cascade (последовательность), Routing (ветвление), Cycle (повторение) | Предсказуемое поведение агентов, работа с дешёвыми моделями, аудитируемые решения. Подробнее → [sgr.md](sgr.md) |
 
 ### Gateway-Agent-Skills-Memory
 Архитектурный паттерн: Gateway абстрагирует канал доставки, Agent — reasoning, Skills — модульные действия, Memory — персистентный контекст на Markdown. Skills как плагины + Memory на файлах + проактивность агента — рабочая комбинация для AI-ассистентов. Реализация паттерна: OpenClaw (→ [../tools/openclaw.md](../tools/openclaw.md)).

@@ -10,3 +10,4 @@
 - [mcp.md](mcp.md) — MCP: протокол, экосистема, SDK, security
 - [subagents.md](subagents.md) — Субагенты и мульти-агентные архитектуры
 - [feedback-loop-evolution.md](feedback-loop-evolution.md) — Closed Feedback Loop: автономная эволюция агентов
+- [sgr.md](sgr.md) — Schema-Guided Reasoning: паттерны структурирования рассуждений (Cascade, Routing, Cycle)
