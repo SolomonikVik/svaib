@@ -18,7 +18,8 @@
 - [x] sv-lab: разобраться с плагинами https://code.claude.com/docs/ru/plugins → knowledge/plugins/!plugins.md
 - [ ] sv-lab: опыт Claudesidian: Claude+Obsidian https://github.com/heyitsnoah/claudesidian 
 - [ ] sv-lab: опыт - встроить агента от versel https://t.me/the_ai_architect/214 
-- [ ] sv-lab: опыт - встроить skill frontend https://t.me/the_ai_architect/218 
+- [ ] sv-lab: опыт - встроить skill frontend https://t.me/the_ai_architect/218
+- [ ] sv-knowledge: обновить knowledge/skills/ — расхождения с CC docs (март 2026). !skills.md: нет hooks/model/argument-hint в frontmatter, нет $ARGUMENTS[N]/$1/$2, !`command`, ultrathink, bundled skills, commands=skills, permission rules, типы Reference vs Task. skill-activation.md: бюджет 15K→16K (2% от context window), нет context:fork+agent. Источник: дистилляция todo-skill.md, верификация по code.claude.com/docs/en/skills и context7.
 
 - [ ] sv-lab: Изучить вот это @aiwizards  - пост от 6 января и от 18 января- это ря
 
