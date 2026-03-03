@@ -17,4 +17,7 @@
 
 - [ai-system-files.md](ai-system-files.md) — AI System Files: карта конфигурационных файлов для AI-ассистентов (CLAUDE.md, AGENTS.md, soul.md), стандартизация AAIF, best practices, архитектура памяти через файлы
 
+**Кросс-ссылки:**
+- [../skills/skill-graphs/](../skills/skill-graphs/) — Skill Graphs (arscontexta): навигация агента по знаниям, progressive disclosure, wikilinks. Живёт в skills/, но контент на 85%+ про context engineering
+
 **Как файлы связаны:** agent-memory.md — широкая карта всех подходов к памяти агентов. temporal-graphs.md — глубокое погружение в один конкретный подход (Temporal Graph). temporal-graphs-doronin.md — практика работы с Graphiti. context-graphs.md — бизнес-концепция: зачем организации нужна память решений, открытый вопрос темпоральности решается через temporal-graphs. markdown-for-llm.md и search-mechanics.md — пара: первый про КАК писать файлы, второй про КАК их находят AI-инструменты. ai-system-files.md — карта самих файлов (CLAUDE.md, AGENTS.md и др.): какие инструменты что читают, стандарт AGENTS.md, паттерн персоны (soul.md).

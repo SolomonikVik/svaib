@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-02-28
-review_by: 2026-05-28
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index]
+updated: 2026-03-03
+review_by: 2026-06-03
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure]
 publish: false
-version: 12
+version: 13
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -63,6 +63,10 @@ version: 12
 
 Консолидированное исследование (3 модели, февраль 2026) по тому, как три основных инструмента технически находят файлы. Claude Code — агентный grep без индекса (Boris Cherny: "outperformed everything else by a lot"). Cursor — облачный semantic index (tree-sitter → Turbopuffer). Claude Projects — full context (<200K) или автоматический RAG (>200K, предположительно Contextual Retrieval). Главный вывод: имя файла — единственная оптимизация, работающая везде; Claude Code "ходит" по ссылкам, Cursor "сканирует" по смыслу. Оптимизировать файлы нужно под grep И embedding одновременно. Подробнее → [search-mechanics.md](search-mechanics.md).
 
+### Navigation & Progressive Disclosure — как агент навигирует знания
+
+Паттерны послойной навигации по файлам знаний: агент начинает с дешёвых операций (file tree, YAML descriptions) и углубляется только по необходимости (MOC hierarchy → wiki-link traversal → full content). Результат: минимум контекста при максимуме пользы. Навигация отвязана от файловой структуры — файлы находятся по связям, а не по путям. Формализовано как "skill graph" (Heinrich/@arscontexta, 2026) — по сути context engineering, хотя название отсылает к skills. Архитектура, элементы, верифицированная реализация → [../skills/skill-graphs/](../skills/skill-graphs/).
+
 ### Context Window Management
 Управление ограниченным контекстным окном: что включить, что опустить, когда сжимать. Стратегии: progressive summarization, context rotation, priority-based selection.
 
@@ -80,3 +84,5 @@ version: 12
 - [markdown-for-llm.md](markdown-for-llm.md) — анатомия Markdown-файла для человека + LLM + RAG (YAML, структура, чанкинг, связи)
 - [search-mechanics.md](search-mechanics.md) — как Claude Code, Cursor, Claude Projects и ChatGPT ищут файлы (механики поиска, уровни доступа)
 - [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов для AI-ассистентов: 13 инструментов, AGENTS.md стандарт, паттерн персоны, best practices
+- [../skills/skill-graphs/skill-graphs.md](../skills/skill-graphs/skill-graphs.md) — Skill Graphs: навигация по знаниям, progressive disclosure, wikilinks (arscontexta). Живёт в skills/, но по сути context engineering
+- [../skills/skill-graphs/architecture.md](../skills/skill-graphs/architecture.md) — архитектура: Three-Space, 6Rs pipeline, hooks, верифицированный progressive disclosure

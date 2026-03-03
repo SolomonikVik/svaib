@@ -158,6 +158,32 @@ Knowledge flows between commands. Когда knowledge/ обогатился —
 
   **Первый шаг:** сделать дистилляцию вручную один раз (встроить выжимку в todo-skill.md). Потом — автоматизировать через inbox.
 
+- **Навигация по связям, не по путям (arscontexta model)**
+
+  **Откуда:** Сессия 2026-03-03. Глубокий разбор arscontexta architecture — верифицировано по коду на GitHub.
+
+  **Проблема:** Джарвис находит файлы по путям (`knowledge/skills/!skills.md`). Реорганизация файлов ломает все ссылки. knowledge/ обновляется — lab/ не узнаёт. Каждая сессия начинается с чистого листа без понимания ландшафта.
+
+  **Что видели в arscontexta (верифицировано по коду):**
+
+  1. **Session-orient hook** — при старте сессии автоматически инжектит: file tree (`tree -L 3`), identity-файлы (кто агент, методология, цели), condition signals (observations ≥10 → предложи reduce, inbox ≥3 → обработай, methodology staleness ≥30d → пересмотри). Джарвис ничего из этого не делает — стартует холодно.
+
+  2. **Wikilinks `[[name]]`** — ссылки по имени файла, не по пути. Файл можно переместить — все ссылки работают. У нас markdown links `[text](path)` — привязаны к путям.
+
+  3. **Progressive Disclosure (5 уровней)** — `tree + self/ → YAML descriptions → MOC hierarchy → wiki-link traversal → full content`. У Джарвиса 2 уровня: lean core (svaib-lab.md) → todo-файлы. Нет промежуточного слоя YAML-описаний и MOC-навигаторов.
+
+  4. **Three-Space Architecture** — self/ (identity, slow), notes/ (knowledge, steady), ops/ (operations, fluctuating). У нас: .claude/ (identity + operations смешаны), knowledge/ (отдельно), lab/ (meta).
+
+  **Что можно взять:**
+  - Session-orient hook → hook в `.claude/hooks/`, инжектит tree + текущую версию Джарвиса + inbox count + последний changelog entry
+  - YAML descriptions → каждый файл knowledge/ уже имеет description в YAML, нужен навигатор (субагент или скилл), который сканирует descriptions без чтения файлов целиком
+  - Condition signals → hook проверяет `lab/_inbox/` (есть ли диффы), последнюю запись changelog (свежесть), `rescue-log.yml` (частые сбои) — и подсказывает координатору что требует внимания
+  - Crossfeed (уже в backlog выше) получает конкретную механику: knowledge-координатор пишет дифф → session-orient показывает его lab-координатору
+
+  **Связь с осями развития:** Knowledge Integration (#1), Progressive Disclosure (#2), Cross-session Memory (#4), Cross-team Sync (#5) — arscontexta model даёт конкретную реализацию для всех четырёх.
+
+  **Ирония сессии:** мы обсуждали "в какую папку положить файлы skill-graphs/" — именно ту проблему, которую arscontexta architecture решает. Навигация по связям делает вопрос папки вторичным.
+
 ---
 
 ## Inbox (не распределено)
