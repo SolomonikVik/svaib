@@ -300,7 +300,7 @@ Skills API: endpoint `/v1/skills`, параметр `container.skills` в Messag
 
 ## Связанные файлы
 
-- [skill-graphs/](skill-graphs/) — Skill Graphs: сети файлов знаний, связанных wikilinks (теория, архитектура, паттерны)
+- [skill-graphs/](skill-graphs/) — Skill Graphs: сети файлов знаний, связанных wikilinks (теория, архитектура, паттерны plugin, паттерны проектирования скиллов, пример /architect)
 - [skill-activation.md](skill-activation.md) — Механика активации: надёжность, hooks, стратегии
 - [superpowers.md](superpowers.md) — Superpowers: крупнейшая библиотека скиллов
 - [../plugins/!plugins.md](../plugins/!plugins.md) — Плагины: Skills + Commands + Agents + Hooks + MCP + LSP

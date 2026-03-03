@@ -106,5 +106,7 @@ Claude Code грузит ВЕСЬ body SKILL.md при старте, не тол
 
 - [skill-graphs.md](skill-graphs.md) — теория: что такое skill graph и зачем
 - [architecture.md](architecture.md) — архитектура: как устроены элементы
+- [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов (дополняет: patterns → anatomy)
+- [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect
 - [../../cases/arscontexta.md](../../cases/arscontexta.md) — кейс arscontexta как продукт
 - [../!skills.md](../!skills.md) — сводка знаний о Skills

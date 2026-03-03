@@ -224,5 +224,7 @@ arscontexta не предлагает шаблоны — рассуждает и
 
 - [skill-graphs.md](skill-graphs.md) — теория: что такое skill graph и зачем
 - [arscontexta-patterns.md](arscontexta-patterns.md) — паттерны для plugin-архитектуры
+- [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов (извлечены из кода arscontexta)
+- [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect (демонстрирует все паттерны)
 - [../!skills.md](../!skills.md) — сводка знаний о Skills
 - [../../context/!context.md](../../context/!context.md) — сводка context engineering (progressive disclosure, навигация — контекстные паттерны)

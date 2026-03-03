@@ -152,8 +152,10 @@ Skills (SKILL.md) — context engineering: курированное знание
 
 ## Связанные файлы
 
-- [architecture.md](architecture.md) — как устроены элементы: Index, Node, MOC, Pipeline, Hooks
+- [architecture.md](architecture.md) — как устроены элементы: Three-Space, Hub MOC, Node, Pipeline, Hooks
 - [arscontexta-patterns.md](arscontexta-patterns.md) — паттерны arscontexta для plugin-архитектуры
+- [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов (EXECUTE NOW, фазы, edge cases, quality gates)
+- [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect (все 7 паттернов в действии)
 - [../!skills.md](../!skills.md) — сводка знаний о Skills (skill graph расширяет принципы оттуда)
 - [../../context/markdown-for-llm.md](../../context/markdown-for-llm.md) — как LLM видит wikilinks и YAML (технические основы навигации)
 - [../../context/search-mechanics.md](../../context/search-mechanics.md) — как AI-инструменты ищут файлы (механика traversal)
