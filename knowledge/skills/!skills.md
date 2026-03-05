@@ -2,11 +2,11 @@
 title: "Skills — исполняемые инструкции для AI — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-02-24
-review_by: 2026-05-24
-tags: [skills, index, marketplace, ecosystem, skill-graph, patterns]
+updated: 2026-03-05
+review_by: 2026-06-05
+tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling]
 publish: false
-version: 12
+version: 13
 ---
 
 # Skills — Исполняемые инструкции для AI
@@ -287,6 +287,19 @@ Causes и solutions:
 
 **Качество и безопасность:** Экосистема open source — качество варьируется. Перед установкой: прочитать SKILL.md, проверить скрипты, оценить репо.
 
+### Инструменты lifecycle
+
+Экосистема богата инструментами, но они разрозненны — каждый решает один аспект. Подробный обзор: [skill-tooling.md](skill-tooling.md).
+
+| Аспект | Инструмент | Суть |
+|--------|-----------|------|
+| Линтинг | agnix (agent-sh) | 230+ правил, LSP, CI-интеграция |
+| Валидация | ccgg-skills-factory (DaronVee) | Python-валидатор: frontmatter, progressive disclosure |
+| Маршрутизация | claude-code-showcase (ChrisWiles) | Rule-based scoring вместо LLM routing |
+| Архитектура | shanraisshan | Паттерн Command → Agent → Skill |
+| Автогенерация | Claudeception (blader) | Bottom-up: скиллы из практики, не из проектирования |
+| Quality Gates | levnikolaevich | 4-level (PASS/CONCERNS/REWORK/FAIL), multi-model review |
+
 ### API
 
 Skills API: endpoint `/v1/skills`, параметр `container.skills` в Messages API, интеграция с Claude Agent SDK. Требует Code Execution Tool beta. Use cases: production deployments, automated pipelines, agent systems. Для ручного тестирования — Claude.ai / Claude Code.
@@ -301,6 +314,7 @@ Skills API: endpoint `/v1/skills`, параметр `container.skills` в Messag
 ## Связанные файлы
 
 - [skill-graphs/](skill-graphs/) — Skill Graphs: сети файлов знаний, связанных wikilinks (теория, архитектура, паттерны plugin, паттерны проектирования скиллов, пример /architect)
+- [skill-tooling.md](skill-tooling.md) — Инструменты lifecycle: линтинг, валидация, маршрутизация, автогенерация, quality gates
 - [skill-activation.md](skill-activation.md) — Механика активации: надёжность, hooks, стратегии
 - [superpowers.md](superpowers.md) — Superpowers: крупнейшая библиотека скиллов
 - [../plugins/!plugins.md](../plugins/!plugins.md) — Плагины: Skills + Commands + Agents + Hooks + MCP + LSP

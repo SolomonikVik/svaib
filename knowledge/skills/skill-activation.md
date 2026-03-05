@@ -170,6 +170,10 @@ agent: Explore
 
 ---
 
+## Связанные файлы
+
+- [skill-tooling.md](skill-tooling.md) — конкретные инструменты для решения проблемы активации: rule-based routing (claude-code-showcase), SessionStart hooks (claude-pipeline), preloaded skills в агентах (shanraisshan)
+
 ## Ссылки
 
 - Официальная документация: https://code.claude.com/docs/en/skills

@@ -9,4 +9,5 @@
 - [!skills.md](!skills.md) — сводка знаний (формат, принципы, экосистема)
 - [skill-graphs/](skill-graphs/) — Skill Graphs: сети файлов знаний для послойной навигации агента (теория, архитектура, паттерны plugin, 7 паттернов проектирования скиллов, пример /architect). По сути context engineering — см. также [context/!context.md](../context/!context.md)
 - [superpowers.md](superpowers.md) — Superpowers: крупнейшая авторская библиотека скиллов
+- [skill-tooling.md](skill-tooling.md) — Инструменты lifecycle: линтинг (agnix), валидация (ccgg), маршрутизация (showcase, pipeline), автогенерация (Claudeception), quality gates
 - [skill-activation.md](skill-activation.md) — Механика активации: надёжность, hooks, стратегии
