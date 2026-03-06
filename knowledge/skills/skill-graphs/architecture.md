@@ -1,14 +1,14 @@
 ---
-title: "Архитектура Skill Graph — как устроены элементы"
+title: "Three-Space, MOC hierarchy, Pipeline 6Rs и Hooks — как arscontexta организует пространство, навигацию и обработку знаний"
 source: "https://github.com/agenticnotetaking/arscontexta"
 source_type: research
 status: processed
 added: 2026-03-03
-updated: 2026-03-03
-review_by: 2026-06-03
+updated: 2026-03-06
+review_by: 2026-06-06
 tags: [skill-graph, architecture, arscontexta, progressive-disclosure]
 publish: false
-version: 3
+version: 4
 ---
 
 # Архитектура Skill Graph
@@ -25,7 +25,16 @@ version: 3
 | **notes/** | Knowledge graph: атомарные заметки + MOC | Стабильный (10-50 файлов/нед) | Progressive disclosure |
 | **ops/** | Операционка: очередь задач, сессии, здоровье графа | Флуктуирующий | Точечная, по запросу |
 
-**Зачем разделение:** self/ — что агент знает о себе (меняется редко). notes/ — что агент знает о предметной области (растёт). ops/ — что агент делает прямо сейчас (меняется постоянно). Смешение трёх пространств ведёт к хаосу: goals теряются в заметках, задачи путаются со знаниями.
+**Зачем разделение:** self/ — что агент знает о себе (меняется редко). notes/ — что агент знает о предметной области (растёт). ops/ — что агент делает прямо сейчас (меняется постоянно). Смешение ведёт к конкретным failure modes:
+
+- notes в ops/ → знания теряются при ротации операционки
+- ops в notes/ → операционный мусор засоряет knowledge graph
+- self в notes/ → идентичность растворяется в знаниях
+- notes в self/ → self/ раздувается, перестаёт грузиться целиком при старте
+- ops в self/ → сессионные артефакты загрязняют идентичность
+- self в ops/ → goals ротируются как задачи
+
+Подробнее: reference/three-spaces.md в arscontexta содержит decision tree маршрутизации ("куда класть этот файл?").
 
 ---
 
@@ -64,6 +73,8 @@ version: 3
 ## Node — атомарный файл знания
 
 **Один файл = одно законченное утверждение (claim), техника или концепция.** Файл самодостаточен — понятен без чтения других файлов.
+
+**Title as claim:** заголовок файла — утверждение, а не тема. Не "naming conventions", а "title as claim enables traversal as reasoning". Когда заголовок = claim, wikilink в прозе становится частью аргументации: `"because [[structure enables navigation without reading everything]], we invest in wiki links"`. Заголовок IS reasoning. Traversal IS thinking. Примеры: [arscontexta-file-examples.md](arscontexta-file-examples.md).
 
 ```markdown
 ---
@@ -171,21 +182,21 @@ Overview paragraph: что объединяет этот кластер.
 
 ## Hooks — enforcement
 
-В `hooks/hooks.json` arscontexta v0.8.0 настроены **3 hook-команды** (хотя README упоминает 4 — session capture реализован внутри session-orient.sh). Покрывают orient → validate → persist:
+Три хука покрывают цикл orient → validate → persist. Принцип: hooks — enforcement, не intelligence. Проверяют и сигнализируют, не принимают решения.
 
-| Hook | Событие | Что делает | Timeout |
-|------|---------|-----------|---------|
-| **session-orient** | SessionStart | Инжектит: tree vault, goals.md, identity.md, methodology.md + maintenance signals: observations ≥10 → suggest /rethink, tensions ≥5 → suggest /rethink, sessions ≥5 → suggest /remember --mine-sessions, inbox ≥3 → suggest /reduce, methodology staleness ≥30 дней → suggest update. Также создаёт session record в ops/ | 10s |
-| **write-validate** | PostToolUse(write) | Проверяет YAML: есть ли description, topics, корректные `---`. Non-blocking (warn, don't block). Возвращает additionalContext | 5s |
-| **auto-commit** | PostToolUse(write) | Автокоммит после записи в vault. Async | 5s |
+| Hook | Событие | Суть |
+|------|---------|------|
+| **session-orient** | SessionStart | Goals → identity → tree → maintenance signals |
+| **write-validate** | PostToolUse(Write) | Проверка YAML (non-blocking) |
+| **auto-commit** | PostToolUse(Write) | Автокоммит (async) |
 
-**Принцип:** hooks — enforcement, не intelligence. Они проверяют и сигнализируют, не принимают решения.
+Детали реализации — точный порядок session-orient, hooks.json конфигурация, что проверяет validate: [hooks-and-sessions.md](hooks-and-sessions.md).
 
 ---
 
 ## Progressive Disclosure — как агент читает граф
 
-5 уровней, от дешёвого к дорогому:
+5 уровней, от дешёвого к дорогому. Это **набор инструментов, не лестница** — агент комбинирует под задачу, может пропускать уровни:
 
 ```
 1. File tree + self/ (session-orient hook: `tree -L 3 -P '*.md'` + identity.md, methodology.md, goals.md)
@@ -193,10 +204,15 @@ Overview paragraph: что объединяет этот кластер.
 3. MOC hierarchy (Hub → Domain → Topic — навигация с аннотированными ссылками)
 4. Wiki-link traversal (inline-ссылки в прозе — переход к связанным nodes по необходимости)
 5. Full content (полное содержимое файла)
-+ Semantic search через qmd (параллельный канал, не часть иерархии)
 ```
 
-> Верифицировано по коду arscontexta на GitHub, 2026-03-03. Heading outlines (предыдущая версия) — в коде не реализован как отдельный слой. Index.md как файл не существует — роль входной точки играет tree + self/.
+Параллельно работают **два канала навигации:**
+- **Структурный:** wikilinks + MOC (ручная курация) — находит то, что человек связал
+- **Семантический:** embeddings через qmd (MCP) — находит то, что ссылки пропустили
+
+qmd — отдельный инструмент (semantic search engine), интегрируется через MCP. Трёхуровневый fallback: `mcp__qmd__deep_search` (hybrid) → `mcp__qmd__vector_search` → qmd CLI → grep по bundled references.
+
+> Верифицировано по коду arscontexta на GitHub, 2026-03-05. Концептуальная модель "5 последовательных слоёв" — из статьи Heinrich. В реальном коде — параллельные каналы. Агент может пропустить MOC и сразу читать файл, если wikilink в прозе привёл напрямую.
 
 **Правило:** агент останавливается на том уровне, который отвечает на вопрос. Не грузит всё.
 
@@ -223,8 +239,11 @@ arscontexta не предлагает шаблоны — рассуждает и
 ## Связанные файлы
 
 - [skill-graphs.md](skill-graphs.md) — теория: что такое skill graph и зачем
+- [kernel-primitives.md](kernel-primitives.md) — 15 примитивов системы, DAG из трёх слоёв (foundation → convention → automation)
+- [hooks-and-sessions.md](hooks-and-sessions.md) — операционный слой: точный порядок session-orient, hooks.json, write-validate
+- [arscontexta-file-examples.md](arscontexta-file-examples.md) — реальные файлы из GitHub: node, MOC, agent, goals
 - [arscontexta-patterns.md](arscontexta-patterns.md) — паттерны для plugin-архитектуры
-- [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов (извлечены из кода arscontexta)
-- [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect (демонстрирует все паттерны)
+- [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов
+- [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect
 - [../!skills.md](../!skills.md) — сводка знаний о Skills
-- [../../context/!context.md](../../context/!context.md) — сводка context engineering (progressive disclosure, навигация — контекстные паттерны)
+- [../../context/!context.md](../../context/!context.md) — сводка context engineering

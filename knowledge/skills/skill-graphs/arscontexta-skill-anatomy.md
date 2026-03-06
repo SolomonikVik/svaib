@@ -1,5 +1,5 @@
 ---
-title: "Анатомия скилла arscontexta — паттерны для проектирования"
+title: "7 паттернов проектирования скиллов: EXECUTE NOW, фазовая архитектура, edge cases, quality gates — извлечены из кода arscontexta"
 source: "https://github.com/agenticnotetaking/arscontexta"
 source_type: research
 status: processed
@@ -49,7 +49,7 @@ Parse immediately:
 
 **Зачем:** Императивный стиль ("делай сейчас") надёжнее описательного ("вот что можно делать"). Claude склонен "размышлять" вместо действия — EXECUTE NOW снижает эту вероятность.
 
-**$ARGUMENTS:** встроенная переменная Claude Code. `$ARGUMENTS` — всё что после `/skillname`, `$1`, `$2` — позиционные. Если `$ARGUMENTS` нет в контенте SKILL.md — аргументы добавляются в конец как `ARGUMENTS: <value>`.
+**$ARGUMENTS:** встроенная переменная Claude Code. `$ARGUMENTS` — всё что после `/skillname`, `$ARGUMENTS[0]`, `$ARGUMENTS[1]` — позиционные (0-based индексация). `$1`, `$2` — алиасы. Если `$ARGUMENTS` нет в контенте SKILL.md — аргументы добавляются в конец как `ARGUMENTS: <value>`.
 
 **Применимость:** Любой скилл. Даже простой reader-telegram выиграет от "Parse $ARGUMENTS → extract URL → fetch immediately" вместо "Usage: provide a URL".
 
@@ -157,6 +157,8 @@ If these files don't exist, use universal defaults and warn.
 
 **Зачем:** Скилл адаптируется к контексту перед работой. Не hardcoded пути, а "прочитай конфиг → узнай как здесь устроено".
 
+> **Уточнение (верифицировано 2026-03-03):** В реальном коде architect ссылки найдены на ops/config.yaml и ops/derivation.md. Файл ops/derivation-manifest.md в скиллах не обнаружен — vocabulary mapping может быть частью derivation.md.
+
 **Применимость:** Для plugin клиентам — обязательно (разные клиенты, разные настройки). Для внутренних скиллов — полезно если скилл работает с разными папками/форматами.
 
 ---
@@ -193,6 +195,19 @@ If these files don't exist, use universal defaults and warn.
 Один скилл, один SKILL.md — но работает в разных доменах. Setup генерирует vocabulary из разговора с пользователем.
 
 **Применимость:** Для plugin клиентам Second AI Brain. Не для внутренних скиллов (у нас один домен).
+
+---
+
+## Два типа скиллов (верифицировано по коду)
+
+Не все паттерны применяются в каждом скилле. arscontexta чётко разделяет:
+
+| Тип | Примеры | Что есть | Чего нет |
+|-----|---------|----------|----------|
+| **Genesis** | setup | Quality Gates (7x), Vocabulary Templating | EXECUTE NOW, Runtime Config, Edge Cases — он СОЗДАЁТ конфиг |
+| **Operational** | architect, health, recommend | Runtime Config → EXECUTE NOW → фазы → Edge Cases | Они ЧИТАЮТ конфиг, созданный setup |
+
+Genesis-скилл конфигурирует систему. Operational-скиллы работают внутри сконфигурированной системы.
 
 ---
 

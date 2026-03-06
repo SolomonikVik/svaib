@@ -1,5 +1,5 @@
 ---
-title: "Пример скилла: /architect из arscontexta"
+title: "Полный /architect скилл arscontexta (500+ строк) — reference implementation всех 7 паттернов проектирования"
 source: "https://github.com/agenticnotetaking/arscontexta"
 source_type: example
 status: processed

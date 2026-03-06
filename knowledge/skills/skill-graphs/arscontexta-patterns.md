@@ -1,14 +1,14 @@
 ---
-title: "Паттерны arscontexta для plugin-архитектуры"
+title: "Vocabulary transformation, feature blocks и presets — паттерны для plugin, который обслуживает разные домены одним фреймворком"
 source: "https://github.com/agenticnotetaking/arscontexta"
 source_type: research
 status: processed
 added: 2026-03-03
-updated: 2026-03-03
-review_by: 2026-06-03
+updated: 2026-03-06
+review_by: 2026-06-06
 tags: [skill-graph, arscontexta, plugin, vocabulary-transformation, feature-blocks]
 publish: false
-version: 1
+version: 2
 ---
 
 # Паттерны arscontexta для plugin-архитектуры
@@ -32,13 +32,13 @@ vocabulary:
   inbox: encounters    # или journal, задачи
 ```
 
-Один framework, клиент видит свой язык. Применяется ДО генерации всех файлов.
+Один framework, клиент видит свой язык. Применяется ДО генерации всех файлов. В Hub MOC arscontexta vocabulary transformation выделен как отдельная guidance area: `[[vocabulary-transformation]] — 6-level domain-native vocabulary mapping`. Шесть уровней маппинга — содержимое не вытащено, нужно дополнительное исследование.
 
 **Для Second AI Brain:** plugin поверх нашей методологии → термины клиента. "Контекст" → "База знаний", "Скаффолд" → "Структура рабочего пространства" и т.д.
 
 ## 2. Feature Blocks Composition
 
-CLAUDE.md клиента собирается из 17 модульных блоков (11 обязательных + 6 условных). Каждый блок — независимый фрагмент. Принципы:
+CLAUDE.md клиента собирается из **17 модульных блоков** (11 обязательных, всегда включены + 6 условных, зависят от конфигурации). Секции: Philosophy, Discovery-First Design, Session Rhythm, Self Space, Memory Type Routing, Pipeline Compliance, Self-Improvement и др. Каждый блок — независимый фрагмент. Принципы:
 
 - Vocabulary transformation ДО сборки (блоки уже на языке клиента)
 - Если блок отключен — ссылки на него перемаршрутизируются
@@ -60,7 +60,19 @@ dimensions:
 extraction_categories: [claims, evidence, methodology-comparisons, contradictions, open-questions]
 ```
 
-Разные пресеты для разных доменов: research (высокая гранулярность), personal (средняя), experimental (с нуля).
+Два верифицированных пресета:
+
+**personal:**
+- self_space: true, personality: "warm-supportive"
+- Starter MOCs: life-areas, people, goals
+- Vocabulary: note → reflection, moc → life area
+
+**research:**
+- self_space: false, personality: "neutral-analytical"
+- Starter MOCs: domain-overview, methods, open-questions
+- Vocabulary: note → claim, moc → topic map
+
+Примеры starter файлов для personal preset: [arscontexta-file-examples.md](arscontexta-file-examples.md).
 
 **Для Second AI Brain:** пресеты по типу клиента (CEO, CTO, маркетинг-директор). Каждый — свой набор dimensions.
 
@@ -93,7 +105,7 @@ Claude Code грузит ВЕСЬ body SKILL.md при старте, не тол
 
 - 249 research claims в methodology/ — не прочитаны. Это ядро методологии arscontexta
 - Конкретные generator templates (17 feature blocks) — содержимое не изучено
-- Kernel primitives (15 штук) — структура известна, cognitive grounding не изучен
+- Vocabulary transformation — 6 уровней маппинга, содержимое файла не вытащено
 
 ## Источники
 
@@ -105,8 +117,10 @@ Claude Code грузит ВЕСЬ body SKILL.md при старте, не тол
 ## Связанные файлы
 
 - [skill-graphs.md](skill-graphs.md) — теория: что такое skill graph и зачем
-- [architecture.md](architecture.md) — архитектура: как устроены элементы
-- [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов (дополняет: patterns → anatomy)
+- [architecture.md](architecture.md) — архитектура: Three-Space, MOC, Pipeline, Hooks
+- [kernel-primitives.md](kernel-primitives.md) — 15 примитивов, presets определяют какие включены
+- [arscontexta-file-examples.md](arscontexta-file-examples.md) — реальные файлы: starter MOC, goals (иллюстрация presets)
+- [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов
 - [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect
 - [../../cases/arscontexta.md](../../cases/arscontexta.md) — кейс arscontexta как продукт
 - [../!skills.md](../!skills.md) — сводка знаний о Skills
