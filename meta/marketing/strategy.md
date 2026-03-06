@@ -2,7 +2,8 @@
 title: "svaib — позиционирование, каналы, воронка"
 updated: 2026-02-24
 version: 1
-type: reference
+scope: "project_strategy"
+priority: high
 ---
 
 # Strategy
