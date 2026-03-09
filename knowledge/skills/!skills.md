@@ -2,11 +2,11 @@
 title: "Skills — исполняемые инструкции для AI — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-03-05
-review_by: 2026-06-05
-tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling]
+updated: 2026-03-07
+review_by: 2026-06-07
+tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling, code-enforcement, fallback]
 publish: false
-version: 13
+version: 14
 ---
 
 # Skills — Исполняемые инструкции для AI
@@ -143,6 +143,21 @@ skill-name/
 **4. Context-aware tool selection** — один результат, разные инструменты в зависимости от контекста. Decision tree → execute → explain choice. Прозрачность выбора, fallback-опции. Пример: файловое хранилище (>10MB → cloud, docs → Notion, code → GitHub, temporary → local).
 
 **5. Domain-specific intelligence** — специализированные знания поверх доступа к инструментам. Доменная экспертиза встроена в логику, compliance before action, audit trail. Пример: платёжная обработка с compliance-проверками (sanctions, jurisdiction, risk level → process или flag for review).
+
+**6. Code-enforced phases** — критичные шаги вынесены в bundled scripts, не в промпт. Каждая фаза скрипта возвращает data structure → следующая фаза принимает как input → пропуск невозможен. Промпт отвечает только за синтез готовых данных. Пример: [last30days-skill](last30days-skill.md) — Python-скрипт (~1800 строк) собирает данные с 8 платформ, SKILL.md (~400 строк) только синтезирует. Связь с принципом "Degrees of Freedom": для хрупких шагов — код, для творческих — промпт.
+
+**7. Fallback chains** — каждый внешний источник/API имеет цепочку fallback: Primary → Fallback 1 → Fallback 2 → Skip (с пометкой). Один недоступный источник не блокирует весь процесс. Graceful degradation вместо hard failure. Пример: [last30days-skill](last30days-skill.md) — Reddit: ScrapeCreators → OpenAI API → skip; Web: Parallel → Brave → OpenRouter → WebSearch.
+
+### Два полюса архитектуры
+
+| Аспект | Prompt-heavy (Superpowers) | Code-heavy (last30days) |
+|--------|---------------------------|------------------------|
+| Логика | В тексте SKILL.md | В bundled scripts |
+| Phase enforcement | Iron Law + Red Flags | Data dependency между фазами |
+| Scope control | Pressure tests | Output template (нет места = нет действия) |
+| Лучше для | Творческие задачи, code review | Детерминированные шаги, внешние API |
+
+Детали: [superpowers.md](superpowers.md), [last30days-skill.md](last30days-skill.md).
 
 ### Три категории скиллов
 
