@@ -44,11 +44,10 @@
     ],
     "SubagentStart": [
       {
-        "matcher": "rescue",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/inject_rescue_context.py",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/inject_session_context.py",
             "timeout": 10
           }
         ]

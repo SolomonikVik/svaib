@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 """
-SubagentStart hook (matcher: rescue): inject session transcript context.
+SubagentStart hook (all subagents): inject parent session context.
 
-Reads the parent session transcript and extracts the last ~20 conversation
+Reads the parent session transcript and extracts the last ~5 conversation
 turns (user + assistant text). Returns them via additionalContext so that
-the rescue agent starts with full context of what went wrong.
+every subagent starts with awareness of what's happening in the session.
 
-Zero overhead for other subagents — matcher ensures this only runs for rescue.
+Replaces inject_rescue_context.py (was rescue-only, 20 turns).
+Pattern: Context-Free Delegation fix (rescue-log 2026-03-10).
 """
 
 import json
 import sys
 
-MAX_TURNS = 20
-TAIL_BYTES = 102400  # 100KB — covers ~20-30 turns comfortably
+MAX_TURNS = 5
+TAIL_BYTES = 25600  # 25KB — covers ~5-8 turns comfortably
 
 
 def extract_conversation(transcript_path: str) -> str | None:
@@ -58,16 +59,14 @@ def extract_conversation(transcript_path: str) -> str | None:
 
         if text_parts:
             role = "ВИКТОР" if entry_type == "user" else "КООРДИНАТОР"
-            # Truncate very long turns to save context
             combined = "\n".join(text_parts)
-            if len(combined) > 2000:
-                combined = combined[:2000] + "\n[...обрезано]"
+            if len(combined) > 1200:
+                combined = combined[:1200] + "\n[...обрезано]"
             turns.append(f"### {role}:\n{combined}")
 
     if not turns:
         return None
 
-    # Keep last N turns
     recent = turns[-MAX_TURNS:]
     return "\n\n".join(recent)
 
@@ -91,10 +90,11 @@ def main():
         "hookSpecificOutput": {
             "hookEventName": "SubagentStart",
             "additionalContext": (
-                "## Контекст сессии (автоматически извлечён из транскрипта)\n\n"
+                "## Контекст родительской сессии\n\n"
                 f"{conversation}\n\n"
                 "---\n"
-                "Выше — последние реплики сессии. Найди где произошёл сбой."
+                "Используй этот контекст чтобы понять задачу. "
+                "Если запрос координатора неполный — опирайся на слова Виктора."
             ),
         }
     }
