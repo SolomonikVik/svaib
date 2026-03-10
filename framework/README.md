@@ -22,7 +22,6 @@ priority: high
 
 - architecture.md — архитектура продукта (слои, компоненты, связи)
 - ../meta/product/product_vision.md — видение продукта Second AI Brain
-- ../meta/product/model.md — модель продукта для презентации клиентам
 - ../clients/_playbook/onboarding.md — процесс онбординга клиента
 
 ---

@@ -23,6 +23,7 @@ verified: false
 | `todo-command.md` | Пошаговая последовательность для создания Command |
 | `autonomous-mode.md` | Переключение permissions для автономной ночной работы (включить/откатить) |
 | `inbox-rules.md` | Правила работы с _inbox/ — единые для всего проекта |
+| `inbox-last30days-patterns.md` | Паттерны из анализа _inbox за последние 30 дней |
 | `_inbox/` | Материалы на разбор |
 
 > **changelog.md удалён.** Единый лог сессий → `meta/management/session-log.md`. Вызов: `/close-session`.
