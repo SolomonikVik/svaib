@@ -1,0 +1,113 @@
+{
+  "title": "arscontexta: context engineering",
+  "slides": [
+    {
+      "layout": "title",
+      "title": "arscontexta: как устроен context engineering",
+      "subtitle": "Архитектура знаний для AI-агента"
+    },
+    {
+      "layout": "icon-text",
+      "title": "Три пространства",
+      "items": [
+        { "icon": "FaUser", "heading": "self/ — идентичность", "text": "Кто я, как работаю, к чему стремлюсь. Загружается целиком" },
+        { "icon": "FaBook", "heading": "notes/ — знания", "text": "Атомарные файлы + навигаторы. Загружается выборочно" },
+        { "icon": "FaCogs", "heading": "ops/ — операционка", "text": "Задачи, логи, отчёты. Загружается точечно" }
+      ]
+    },
+    {
+      "layout": "quote",
+      "quote": "Имя файла — утверждение, не тема. Не navigation.md, а structure-enables-navigation-without-reading-everything.md",
+      "author": "Принцип arscontexta: один файл = одна мысль"
+    },
+    {
+      "layout": "stats",
+      "title": "YAML-шапка: файлы как база данных",
+      "stats": [
+        { "value": "249", "label": "нодов" },
+        { "value": "5", "label": "полей YAML" },
+        { "value": "1 grep", "label": "заменяет SQL" }
+      ]
+    },
+    {
+      "layout": "section",
+      "title": "Как файлы связаны"
+    },
+    {
+      "layout": "bullets",
+      "title": "MOC: вертикальная навигация",
+      "bullets": [
+        "Hub MOC → точка входа, оглавление базы",
+        "Domain MOC → навигатор домена (7 доменов)",
+        "Topic MOC → кластер 5-20 нодов по теме",
+        "Node → атомарная единица знания"
+      ]
+    },
+    {
+      "layout": "two-column",
+      "title": "Wikilinks: горизонтальные связи",
+      "leftTitle": "Список внизу",
+      "leftBullets": [
+        "Related: [[файл-1]], [[файл-2]]",
+        "Агент видит ЧТО связано",
+        "Не понимает ЗАЧЕМ"
+      ],
+      "rightTitle": "В прозе",
+      "rightBullets": [
+        "\"...после [[провал-Q2]] стало ясно...\"",
+        "Агент видит КОНТЕКСТ связи",
+        "Понимает КОГДА переходить"
+      ]
+    },
+    {
+      "layout": "stats",
+      "title": "Граф, а не дерево",
+      "stats": [
+        { "value": "1", "label": "нод — один факт" },
+        { "value": "3", "label": "контекста доступа" },
+        { "value": "0", "label": "дублей" }
+      ]
+    },
+    {
+      "layout": "icon-text",
+      "title": "Как агент читает: 5 слоёв",
+      "items": [
+        { "icon": "FaTree", "heading": "1. Дерево файлов + self/ — ландшафт", "text": "" },
+        { "icon": "FaSearch", "heading": "2. YAML descriptions — один grep", "text": "" },
+        { "icon": "FaMap", "heading": "3. MOC — карта кластера", "text": "" },
+        { "icon": "FaLink", "heading": "4. Wikilinks — связи в контексте", "text": "" },
+        { "icon": "FaFileAlt", "heading": "5. Полное чтение — крайний случай", "text": "" }
+      ]
+    },
+    {
+      "layout": "two-column",
+      "title": "Скиллы: навигаторы, не контейнеры",
+      "leftTitle": "Plugin-level (10)",
+      "leftBullets": [
+        "Работают НАД графом",
+        "setup, architect, health",
+        "Управляют жизненным циклом"
+      ],
+      "rightTitle": "Generated (16)",
+      "rightBullets": [
+        "Работают ВНУТРИ графа",
+        "reduce, reflect, reweave",
+        "Генерируются под клиента"
+      ]
+    },
+    {
+      "layout": "icon-text",
+      "title": "Хуки: рефлексы системы",
+      "items": [
+        { "icon": "FaPlay", "heading": "session-orient", "text": "Утренний брифинг: контекст + что накопилось" },
+        { "icon": "FaShieldAlt", "heading": "write-validate", "text": "Фейс-контроль YAML при каждой записи" },
+        { "icon": "FaCodeBranch", "heading": "auto-commit", "text": "Git commit после каждого изменения" }
+      ]
+    },
+    {
+      "layout": "quote",
+      "quote": "Граф — мозг. Скиллы — навыки. Хуки — рефлексы.",
+      "author": "arscontexta"
+    }
+  ]
+}
