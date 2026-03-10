@@ -41,16 +41,19 @@ priority: high
 framework/
 ├── README.md                    ← этот файл
 ├── architecture.md              ← архитектура продукта (слои, компоненты)
-├── _inbox.md                    ← сырые инсайты на разбор → ontology/methodology/scaffold
+├── _inbox/                      ← сырые инсайты, наброски, чужие архитектуры (gitignore)
 │
 ├── ontology/                    ← сущности, связи, определения
 │   ├── README.md
-│   ├── ontology.md
+│   ├── ontology.md              ← файлы-контейнеры, связи, правила размещения
+│   ├── entities.md              ← атомарные сущности (решение, задача, идея...)
 │   └── file_spec.md             ← спецификация файла (формат, YAML, связи)
 │
 ├── methodology/                 ← принципы, ритуалы, decision frames
 │   ├── README.md
-│   └── methodology.md
+│   ├── methodology.md
+│   ├── onboarding.md            ← последовательность освоения системы клиентом
+│   └── meeting_analysis.md      ← анализ транскриптов встреч (DRAFT)
 │
 ├── scaffold/                    ← наглядный каркас (референс)
 │   ├── README.md                ← шаблон README проекта

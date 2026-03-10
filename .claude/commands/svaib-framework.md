@@ -11,8 +11,9 @@ description: "Режим работы с фреймворком Second AI Brain"
 @framework/ontology/ontology.md
 @framework/methodology/methodology.md
 
-**Контекст продукта (архитектура = источник правды):**
+**Контекст продукта:**
 @framework/architecture.md
+@meta/product/product_vision.md
 
 ---
 

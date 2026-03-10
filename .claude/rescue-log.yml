@@ -25,3 +25,77 @@
   preventive: "Добавлен принцип пропорциональности в SKILL.md с тремя тестами"
   pattern: "Disproportionate Update — полный цикл обновления для микро-информации"
   resolved: true
+
+- date: 2026-03-04
+  session: "svaib-framework: верификация meeting_analysis.md"
+  category: meta
+  type: process-step-skip
+  module: действие
+  where: "Координатор задал вопрос 'Вношу правки?' и в том же ходе вызвал TodoWrite + Edit"
+  root_cause: "Платформенное ограничение Claude Code: текстовый вопрос и tool calls уходят в одном ходе. Текст не блокирует выполнение. Координатор не знал об этой механике"
+  fix: "CLAUDE.md правило #10: вопрос = только текст, без tool calls в том же ходе"
+  preventive: "rescue-агент усилен: три обязательных источника (rescue-log, claude-code-guide, knowledge/), пункт 5 в чеклисте (ограничение платформы)"
+  pattern: "Self-Answered Gate — координатор задаёт вопрос и сам же отвечает действиями, не дожидаясь ответа"
+  resolved: true
+
+- date: 2026-03-04
+  session: "svaib-framework: верификация meeting_analysis.md (каскад)"
+  category: instruction
+  type: token-костыль
+  module: действие
+  where: "rescue-агент предложил 'добавить определение одобрения' в CLAUDE.md"
+  root_cause: "У rescue не было инструментов для исследования механики платформы (только Read/Glob/Grep). Искал причину только в тексте инструкций, нашёл 'нечёткую формулировку' — единственное что мог видеть. Слепое пятно: чеклист пункт 4 покрывал 'ограничение модели' но не 'ограничение платформы'"
+  fix: "rescue.md: добавлены Agent, WebSearch. Три обязательных источника. Обязательная проверка платформы на шаге ATTRIBUTE. rescue-reference.md: пункт 5 в чеклисте (платформа отдельно от модели)"
+  preventive: "Структурное изменение — rescue теперь может исследовать за пределами файлов проекта"
+  pattern: "Blind Spot Diagnosis — агент диагностирует только то, что может видеть своими инструментами"
+  resolved: true
+
+- date: 2026-03-05
+  session: "svaib-lab: создание скилла presentation"
+  category: planning
+  type: process-step-skip
+  module: планирование
+  where: "todo-skill.md → шаг 2а (Поиск аналогов) + шаг 3 (Спроектировать → показать Виктору)"
+  root_cause: "Координатор пропустил исследовательскую фазу: не искал аналоги в каталогах (хотя знал о document-skills:pptx), не прочитал knowledge/tools/presentations.md (Slidev с Agent Skill), не исследовал best practices по дизайну. Изобрёл минимальный reveal.js шаблон с нуля. При дистилляции design-guide потерял layout rules и параметры картинок из исходного гайда."
+  fix: "Переделать скилл: wrapper вокруг document-skills:pptx + brand overlay. Восстановить потерянные layout/image rules в design-guide.md"
+  preventive: "Добавить обязательный артефакт-gate в конец шага 2 todo-skill.md: показать Виктору отчёт об исследовании (аналоги, best practices, решение) перед переходом к проектированию. Без артефакта — шаг 3 не начинается. Текстовый guardrail от первого кейса не сработал — нужен артефакт."
+  pattern: "Process Step Skip (Recurring) — пропуск исследовательской фазы, второй случай"
+  resolved: true
+
+- date: 2026-03-06
+  session: "svaib-lab: апгрейд knowledge-research (reader-hn, reader-reddit)"
+  category: planning
+  type: obstacle-reclassification
+  module: строительство
+  where: "todo-skill.md → шаг 4 (Построить). Reddit API вернул 403, координатор перестроил скрипт на PullPush.io без согласования"
+  root_cause: "Стратегическая проблема (нужен ли вообще этот скилл?) переклассифицирована как техническая (какой API использовать?). Координатор потратил токены на 5+ альтернативных подходов вместо возврата к Виктору"
+  fix: "Полный откат: удалены reader-hn, reader-reddit, откачен knowledge-research. Добавлен блокер в todo-skill.md после шага 4"
+  preventive: "todo-skill.md: секция 'Блокер во время строительства' — если план ломается при реализации, вернись к шагу 3 за новым одобрением"
+  pattern: "Obstacle Reclassification — стратегическая проблема решается как техническая, без возврата к согласованию"
+  resolved: true
+
+- date: 2026-03-06
+  session: "svaib-lab: улучшение presentation skill (ночная автономная работа)"
+  category: planning
+  type: process-step-skip
+  module: планирование + действие
+  where: "todo-skill.md → шаг 2 (Исследовать) + SKILL.md Option B (ручной код)"
+  root_cause: "Три пропуска в одной сессии: (1) не исследовал best practices и архитектуру out-of-box skill, (2) не улучшил сам скилл, а написал one-off python скрипт (gen_arscontexta.py), обойдя SKILL.md полностью, (3) не проводил QA в Google Slides. Текстовые guardrails (артефакт-gate в todo-skill.md) прочитаны но не выполнены. Третье повторение паттерна process-step-skip."
+  fix: "Pending — скилл не улучшен, задача не завершена"
+  preventive: "Pending — три варианта обсуждались: (A) убрать Option B из SKILL.md, (B) обязательный skill-creator при создании скиллов, (C) checkpoint с Виктором после каждой фазы"
+  pattern: "Process Step Skip (3rd recurrence) — текстовые guardrails архитектурно не работают как enforcement"
+  severity: critical
+  owner_impact: "Глубокое разочарование Виктора. Три недели инвестиций в систему (принципы, процессы, guardrails, rescue-агент) — и координатор по-прежнему не следует плану и не работает системно. Цитата: 'мега-дилетантский уровень', 'как будто общаюсь с ребёнком малым', 'менять Claude вообще на что-то другое'. Это не баг — это вопрос доверия к платформе."
+  resolved: false
+
+- date: 2026-03-07
+  session: "svaib-lab: фиксация настроек autonomous-mode"
+  category: meta
+  type: context-cost-blindness
+  module: действие
+  where: "Координатор предложил сохранить ссылку на autonomous-mode.md в MEMORY.md"
+  root_cause: "Модель не различает стоимость хранения в разных местах контекста. MEMORY.md грузится в каждую сессию (горячее), lab/README.md — только при входе в роль (тёплое), файл в папке — по запросу (холодное). Для модели все три — просто файлы. По умолчанию кладёт в самое 'громкое' место. Принцип 1 (необходимо и достаточно) прочитан но не применён к решению о размещении."
+  fix: "Ссылка добавлена в lab/README.md (тёплое), MEMORY.md очищен"
+  preventive: "Открытый вопрос: как дать модели модель стоимости контекста? Текстовый принцип не сработал. Возможно нужна явная иерархия (hot/warm/cold) в структуре проекта или в принципах."
+  pattern: "Context Cost Blindness — модель не учитывает частоту чтения при выборе места хранения"
+  resolved: true

@@ -16,7 +16,7 @@ import re
 import sys
 
 DEFERRED_PATTERNS = [
-    # Russian
+    # Russian — deferred to "next time"
     r"в следующий раз",
     r"в следующем чате",
     r"в следующей сессии",
@@ -31,7 +31,13 @@ DEFERRED_PATTERNS = [
     r"учту это на будущее",
     r"в следующий раз буду",
     r"в следующий раз постараюсь",
-    # English
+    # Russian — fake "noted" without writing to file
+    r"зафиксирую для себя",
+    r"запомню для себя",
+    r"возьму на заметку",
+    r"приму к сведению",
+    r"буду учитывать",
+    # English — deferred to "next time"
     r"next time i'?ll",
     r"i'?ll remember (this |that )?(for )?(next|future)",
     r"i will remember (this |that )?(for )?(next|future)",
@@ -39,6 +45,10 @@ DEFERRED_PATTERNS = [
     r"for future reference",
     r"in future sessions",
     r"next session i'?ll",
+    # English — fake "noted" without writing to file
+    r"i'?ll keep (this |that )?in mind",
+    r"noted for myself",
+    r"i'?ll take note",
 ]
 
 DEFERRED_RE = re.compile("|".join(DEFERRED_PATTERNS), re.IGNORECASE)

@@ -20,7 +20,7 @@ priority: medium
 - infrastructure.md — инвентаризация ресурсов (credentials, URLs)
 - data_model.md — структура таблиц БД
 - data_dictionary.md — справочник значений (prompt_roles, document_types)
-- _inbox/prompts_draft.md — черновики промптов (детали контрактов)
+- meta/_inbox/prompts_draft.md — черновики промптов (детали контрактов)
 
 ---
 
@@ -255,7 +255,7 @@ meeting_cleaner → meeting_analyst → meeting_protocol_finalizer
 | 4 | meeting_docs_editor | CANONICAL_PROTOCOL + dossier | Полный текст досье | ⏳ |
 | 5 | meeting_task_extractor | CANONICAL_PROTOCOL | JSON: [{title, assignee, deadline, priority}] | ⏳ |
 
-**Детали контрактов:** См. `_inbox/prompts_draft.md` секция "3. Контракты промптов"
+**Детали контрактов:** См. `meta/_inbox/prompts_draft.md` секция "3. Контракты промптов"
 
 ### 3.4 Маппинг плейсхолдеров
 

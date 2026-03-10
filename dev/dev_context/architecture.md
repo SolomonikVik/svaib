@@ -335,7 +335,7 @@ utility_*              — вспомогательные (cleanup, notification
 ```
 
 > **Примечание:** Модель выбирается на этапе реализации. Оптимизация моделей — отдельная задача.
-> **Связанные документы:** `_inbox/meeting_protocol_ontology.md`, `_inbox/dossier_structure.md`
+> **Связанные документы:** `meta/_inbox/meeting_protocol_ontology.md`, `meta/_inbox/dossier_structure.md`
 
 **Контекстная матрица (кто что получает):**
 
@@ -366,7 +366,7 @@ utility_*              — вспомогательные (cleanup, notification
 ```
 
 > **TODO:** Поле `meetings.participants` нужно добавить. Данные доступны из Recall API (`meeting_participants`).
-> **Структура досье:** См. `_inbox/dossier_structure.md`
+> **Структура досье:** См. `meta/_inbox/dossier_structure.md`
 
 **Преимущества:**
 

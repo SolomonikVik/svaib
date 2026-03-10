@@ -21,7 +21,7 @@ arscontexta — plugin для Claude Code (MIT, 2K+ stars). 26 скиллов: 1
 
 **Ключевое отличие от наших скиллов:** arscontexta SKILL.md не содержит знания — содержит инструкции КАК доставать знания из внешних файлов. references/ нет вообще — вся knowledge base живёт снаружи. Скилл = навигатор по knowledge base.
 
-Ниже — 7 паттернов, извлечённых из arscontexta и применимых к проектированию скиллов. Ссылка из [todo-skill.md](../../../.claude/lab/todo-skill.md), Шаг 3.
+Ниже — 7 паттернов, извлечённых из arscontexta и применимых к проектированию скиллов. Ссылка из [todo-skill.md](../../../lab/todo-skill.md), Шаг 3.
 
 ---
 
@@ -243,4 +243,4 @@ Genesis-скилл конфигурирует систему. Operational-ски
 - [architecture.md](architecture.md) — архитектура элементов: Three-Space, MOC, Node, Pipeline, Hooks
 - [arscontexta-patterns.md](arscontexta-patterns.md) — паттерны для plugin (vocabulary, presets, feature blocks)
 - [../!skills.md](../!skills.md) — сводка знаний о Skills
-- [../../../.claude/lab/todo-skill.md](../../../.claude/lab/todo-skill.md) — процесс создания скилла (ссылается на этот файл)
+- [../../../lab/todo-skill.md](../../../lab/todo-skill.md) — процесс создания скилла (ссылается на этот файл)

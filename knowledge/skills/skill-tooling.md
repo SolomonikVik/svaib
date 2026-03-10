@@ -37,7 +37,7 @@ version: 1
 - Валидация kebab-case в name
 - Проверка структуры директории
 
-**Ценность для нас:** Шаг 4 (Build) в [todo-skill.md](../../.claude/lab/todo-skill.md) содержит 13-item чеклист — agnix автоматизирует большинство этих проверок. Можно встроить в CI или pre-commit hook.
+**Ценность для нас:** Шаг 4 (Build) в [todo-skill.md](../../lab/todo-skill.md) содержит 13-item чеклист — agnix автоматизирует большинство этих проверок. Можно встроить в CI или pre-commit hook.
 
 **Репо:** [github.com/agent-sh/agnix](https://github.com/agent-sh/agnix)
 
@@ -128,7 +128,7 @@ SessionStart hook — инжектирует `using-skills` скилл в нач
 - Quality filter: "не просто documentation lookup, реально протестировано, поможет кому-то через 6 месяцев"
 - Автоматически генерирует SKILL.md с description, trigger phrases, steps
 
-**Философия:** Top-down (наш [todo-skill.md](../../.claude/lab/todo-skill.md)) — от боли к скиллу. Bottom-up (Claudeception) — от открытия к скиллу. Оба подхода дополняют друг друга: top-down для запланированных скиллов, bottom-up для emergent patterns.
+**Философия:** Top-down (наш [todo-skill.md](../../lab/todo-skill.md)) — от боли к скиллу. Bottom-up (Claudeception) — от открытия к скиллу. Оба подхода дополняют друг друга: top-down для запланированных скиллов, bottom-up для emergent patterns.
 
 **Ценность для нас:** Паттерн "скилл создаётся из практики" — можно адаптировать для лаборатории. Когда координатор решает нетривиальную задачу, хук предлагает: "Стоит ли сохранить как скилл?"
 

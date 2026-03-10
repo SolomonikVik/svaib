@@ -42,7 +42,7 @@ meeting_cleaner → meeting_analyst → meeting_protocol_finalizer → meeting_p
                                                               ↘ meeting_task_extractor
 ```
 
-> **Связанные документы:** `_inbox/meeting_protocol_ontology.md`, `_inbox/dossier_structure.md`
+> **Связанные документы:** `meta/_inbox/meeting_protocol_ontology.md`, `meta/_inbox/dossier_structure.md`
 
 ---
 

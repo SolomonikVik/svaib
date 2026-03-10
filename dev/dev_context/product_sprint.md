@@ -137,9 +137,9 @@ RETURNING *
 
 > **Примечание:** Модель выбирается на этапе реализации. Шаги 3-5 выполняются параллельно (все получают CANONICAL_PROTOCOL).
 
-**Контракты промптов:** См. `_inbox/prompts_draft.md` секция "3. Контракты промптов"
-**Онтология протокола:** См. `_inbox/meeting_protocol_ontology.md`
-**Структура досье:** См. `_inbox/dossier_structure.md`
+**Контракты промптов:** См. `meta/_inbox/prompts_draft.md` секция "3. Контракты промптов"
+**Онтология протокола:** См. `meta/_inbox/meeting_protocol_ontology.md`
+**Структура досье:** См. `meta/_inbox/dossier_structure.md`
 
 ---
 

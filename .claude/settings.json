@@ -8,9 +8,15 @@
       "Bash(python3 *)",
       "Bash(echo *)", "Bash(cat *)",
       "Bash(curl *)", "Bash(which *)",
-      "Bash(cd *)", "Bash(pwd)",
+      "Bash(cd *)", "Bash(pwd)", "Bash(date *)",
       "Bash(chmod *)", "Bash(touch *)",
-      "Bash(gh *)"
+      "Bash(gh *)",
+      "Bash(uv run *)",
+      "Bash(NODE_PATH=* node *)",
+      "Bash(node *)",
+      "Bash(soffice *)",
+      "Bash(pdftoppm *)",
+      "Bash(open *)"
     ],
     "ask": [
       "Bash(git push*)",
@@ -26,6 +32,18 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/check_deferred_actions.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "rescue",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/inject_rescue_context.py",
             "timeout": 10
           }
         ]

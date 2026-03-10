@@ -23,3 +23,4 @@
 - [seminars/](seminars/) — программы, записи, материалы
 - [conferences/](conferences/) — Liga и т.д.
 - [youtube/](youtube/) — сценарии, ролики
+- [_inbox/](_inbox/) — входящие задачи и материалы на разбор

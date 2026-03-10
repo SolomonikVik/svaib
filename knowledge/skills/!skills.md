@@ -323,7 +323,7 @@ Skills API: endpoint `/v1/skills`, параметр `container.skills` в Messag
 
 ## Источники
 
-- [The Complete Guide to Building Skills for Claude](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) — Официальный PDF-гайд Anthropic (33 стр., 6 глав). Паттерны, troubleshooting, best practices. Полный текст: [_inbox/anthropic-skills-guide-text.md](../../_inbox/anthropic-skills-guide-text.md)
+- [The Complete Guide to Building Skills for Claude](https://resources.anthropic.com/hubfs/The-Complete-Guide-to-Building-Skill-for-Claude.pdf) — Официальный PDF-гайд Anthropic (33 стр., 6 глав). Паттерны, troubleshooting, best practices. Полный текст: [_inbox/anthropic-skills-guide-text.md](../../meta/_inbox/anthropic-skills-guide-text.md)
 - [Agent Skills with Anthropic](https://learn.deeplearning.ai/courses/agent-skills-with-anthropic) — Курс Anthropic + DeepLearning.AI (Elie Schoppik, Andrew Ng, январь 2026)
 
 ## Связанные файлы
