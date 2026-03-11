@@ -46,9 +46,10 @@ framework/
 │   ├── README.md
 │   ├── ontology.md              ← файлы-контейнеры, связи, правила размещения
 │   ├── entities.md              ← атомарные сущности (решение, задача, идея...)
+│   ├── rituals.md               ← каталог ритуалов (ежедневный, еженедельный, встреча...)
 │   └── file_spec.md             ← спецификация файла (формат, YAML, связи)
 │
-├── methodology/                 ← принципы, ритуалы, decision frames
+├── methodology/                 ← протоколы, decision frames, масштабирование
 │   ├── README.md
 │   ├── methodology.md
 │   ├── onboarding.md            ← последовательность освоения системы клиентом

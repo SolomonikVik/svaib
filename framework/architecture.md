@@ -15,7 +15,8 @@ priority: high
 ## Связанные файлы
 
 - ontology/ontology.md — сущности, связи, правила размещения
-- methodology/methodology.md — ритуалы, протоколы, decision frames
+- methodology/methodology.md — протоколы, decision frames, масштабирование
+- ontology/rituals.md — каталог ритуалов
 - ontology/file_spec.md — формат файлов: YAML, секции, ограничения
 - scaffold/ — готовый каркас (воплощение онтологии)
 - plugin/README.md — деплоимый пакет (реализация помощников)
@@ -63,7 +64,7 @@ priority: high
 
 **Онтология** ([ontology.md](ontology/ontology.md)) — какие сущности существуют, как связаны, что куда кладётся. Справочник.
 
-**Методология** ([methodology.md](methodology/methodology.md)) — как с этими сущностями работать: ритуалы, протоколы, decision frames. То, что зашивается в skills и agents.
+**Методология** ([methodology.md](methodology/methodology.md)) — как с этими сущностями работать: протоколы, decision frames, масштабирование. Каталог ритуалов — в [ontology/rituals.md](ontology/rituals.md). То, что зашивается в skills и agents.
 
 Клиент может не читать онтологию и методологию напрямую — они зашиты в scaffold (структуру) и plugin (автоматизацию). Но они существуют как отдельные документы для развития продукта и обучения.
 
