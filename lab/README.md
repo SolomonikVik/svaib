@@ -26,4 +26,9 @@ verified: false
 | `inbox-last30days-patterns.md` | Паттерны из анализа _inbox за последние 30 дней |
 | `_inbox/` | Материалы на разбор |
 
-> **changelog.md удалён.** Единый лог сессий → `meta/management/session-log.md`. Вызов: `/close-session`.
+
+## Где искать знания
+
+- `knowledge/` — база знаний проекта: 9 категорий (coding, context, skills, agents, prompting, tools, plugins, cases). Каждая категория имеет README (навигация) и !файл (сводка). Читай README категории чтобы понять что есть, потом конкретный файл
+
+- `knowledge/coding/claude-code.md` — как устроен Claude Code в VSCode (мы здесь)

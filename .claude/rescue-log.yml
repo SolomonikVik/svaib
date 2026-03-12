@@ -148,3 +148,26 @@
   preventive: "Ограничение платформы Claude Code. Полное решение невозможно без изменения архитектуры (раздельная генерация текста и tool calls). Зафиксировано в lab/todo-hook.md"
   pattern: "Platform Limitation — архитектура Claude Code не позволяет разделить текст и tool calls до permission prompt"
   resolved: true
+
+- date: 2026-03-12
+  session: "svaib-lab: эксперимент по механике контекста VSCode"
+  category: infrastructure
+  type: context-injection-overhead
+  module: платформа
+  where: "Claude Code VSCode extension — system-reminder injection"
+  symptoms: |
+    Каждый вопрос-ответ съедает 5-6% контекста даже когда Claude ничего не читает.
+  root_cause: |
+    Два скрытых пожирателя (подтверждено экспериментально, 25+ замеров):
+    1. File modification reminders: после Read/Edit файла VSCode инжектирует diff этого файла
+       в КАЖДЫЙ последующий ход. Размер пропорционален diff, не всему файлу.
+       Отслеживаются только файлы, которые Claude явно читал/редактировал.
+    2. Каскадная загрузка через подпапочные CLAUDE.md: 6 файлов с @README.md
+       вызывают полную инъекцию README (~1.5k токенов) на КАЖДЫЙ Read в папке.
+       Не кешируется, не дедуплицируется.
+    НЕ подтвердилось: CLAUDE.md и MEMORY.md НЕ множатся per turn (статичная стоимость ~15%).
+    Открытые табы IDE НЕ инжектируют контент (~20 токенов уведомление).
+  fix: "Подробности и рекомендации: knowledge/coding/claude-code.md → секция «Контекст-инъекции в VSCode extension»"
+  preventive: "TODO: удалить 6 подпапочных CLAUDE.md с @README.md (добавлено в lab/_inbox/_TODO.md)"
+  pattern: "Context Injection Overhead — скрытая стоимость platform-level injection"
+  resolved: true
