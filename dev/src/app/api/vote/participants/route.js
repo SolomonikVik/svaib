@@ -1,9 +1,13 @@
 import { createServerClient } from '@/lib/supabase';
 import { getWeightByPosition } from '@/lib/supabase';
+import { ensureInternalVoteEnabled } from '@/lib/vote';
 import { NextResponse } from 'next/server';
 
 // POST /api/vote/participants - добавить участника
 export async function POST(request) {
+  const disabledResponse = ensureInternalVoteEnabled();
+  if (disabledResponse) return disabledResponse;
+
   const supabase = createServerClient();
   const body = await request.json();
 
@@ -33,6 +37,9 @@ export async function POST(request) {
 
 // PATCH /api/vote/participants - обновить участника
 export async function PATCH(request) {
+  const disabledResponse = ensureInternalVoteEnabled();
+  if (disabledResponse) return disabledResponse;
+
   const supabase = createServerClient();
   const body = await request.json();
 
@@ -63,6 +70,9 @@ export async function PATCH(request) {
 
 // DELETE /api/vote/participants - удалить участника
 export async function DELETE(request) {
+  const disabledResponse = ensureInternalVoteEnabled();
+  if (disabledResponse) return disabledResponse;
+
   const supabase = createServerClient();
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id');

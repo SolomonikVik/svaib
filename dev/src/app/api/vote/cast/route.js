@@ -1,8 +1,12 @@
 import { createServerClient } from '@/lib/supabase';
+import { ensureInternalVoteEnabled } from '@/lib/vote';
 import { NextResponse } from 'next/server';
 
 // POST /api/vote/cast - подать голос
 export async function POST(request) {
+  const disabledResponse = ensureInternalVoteEnabled();
+  if (disabledResponse) return disabledResponse;
+
   const supabase = createServerClient();
   const body = await request.json();
 

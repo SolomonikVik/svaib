@@ -1,5 +1,8 @@
 import { Inter, Sora } from 'next/font/google';
 import './globals.css';
+import SiteHeader from '@/components/site/SiteHeader';
+import SiteFooter from '@/components/site/SiteFooter';
+import { siteConfig } from '@/lib/site';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -16,15 +19,33 @@ const sora = Sora({
 });
 
 export const metadata = {
-  title: 'svaib — AI-решения для бизнеса',
-  description: 'Продуктовая AI-мастерская, создающая AI-решения для управления встречами',
+  metadataBase: new URL(siteConfig.url),
+  title: siteConfig.title,
+  description: siteConfig.description,
+  openGraph: {
+    title: siteConfig.title,
+    description: siteConfig.description,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    locale: 'ru_RU',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ru" className={`${inter.variable} ${sora.variable}`}>
       <body className="font-body antialiased">
-        {children}
+        <div className="min-h-screen bg-background">
+          <SiteHeader />
+          <main>{children}</main>
+          <SiteFooter />
+        </div>
       </body>
     </html>
   );

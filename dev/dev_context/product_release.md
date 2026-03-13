@@ -4,9 +4,12 @@ updated: 2025-12-01
 version: 6
 scope: "product_release"
 priority: high
+status: archive
 ---
 
 # Product Release
+
+> **⚠️ АРХИВ (13.03.2026):** этот release относится к прошлому meeting/presentation pivot. Для текущего сайта и current product messaging использовать `site_rebuild_plan.md`, `site_rebuild_creative_brief.md` и `meta/product/product_vision.md`.
 
 ## О документе
 

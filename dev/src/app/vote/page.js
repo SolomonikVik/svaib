@@ -14,11 +14,7 @@ export default function VotePage() {
   const [submitting, setSubmitting] = useState(false);
   const [voted, setVoted] = useState(false);
 
-  useEffect(() => {
-    loadSession();
-  }, []);
-
-  async function loadSession() {
+  const loadSession = async () => {
     const res = await fetch('/api/vote/sessions');
     const data = await res.json();
 
@@ -28,7 +24,11 @@ export default function VotePage() {
       setProjects((data.session.vote_projects || []).sort((a, b) => a.order_index - b.order_index));
     }
     setLoading(false);
-  }
+  };
+
+  useEffect(() => {
+    loadSession();
+  }, []);
 
   const maxVotes = Math.ceil(projects.length / 2);
   const usedVotes = Object.values(votes).reduce((sum, v) => sum + v, 0);

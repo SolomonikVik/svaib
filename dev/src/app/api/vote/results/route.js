@@ -1,8 +1,12 @@
 import { createServerClient } from '@/lib/supabase';
+import { ensureInternalVoteEnabled } from '@/lib/vote';
 import { NextResponse } from 'next/server';
 
 // GET /api/vote/results - получить результаты
 export async function GET(request) {
+  const disabledResponse = ensureInternalVoteEnabled();
+  if (disabledResponse) return disabledResponse;
+
   const supabase = createServerClient();
   const { searchParams } = new URL(request.url);
   const sessionId = searchParams.get('session_id');

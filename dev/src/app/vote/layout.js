@@ -1,22 +1,30 @@
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { isInternalVoteEnabled } from '@/lib/site';
+
 export const metadata = {
   title: 'Голосование | svaib',
   description: 'Система голосования для стратсессий',
 };
 
 export default function VoteLayout({ children }) {
+  if (!isInternalVoteEnabled()) {
+    notFound();
+  }
+
   return (
     <div className="min-h-screen bg-[#F0FDFB]">
       <header className="bg-white border-b border-[#E0F7F5] px-4 py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <a href="/" className="font-heading font-bold text-xl hover:opacity-80 transition">
+          <Link href="/" className="font-heading font-bold text-xl hover:opacity-80 transition">
             <span className="text-[#00B4A6]">sv</span>
             <span className="text-[#FF4D8D]">ai</span>
             <span className="text-[#00B4A6]">b</span>
             <span className="text-gray-400 font-normal text-sm ml-2">vote</span>
-          </a>
+          </Link>
           <nav className="flex gap-4 text-sm">
-            <a href="/vote" className="text-gray-600 hover:text-[#00B4A6]">Голосование</a>
-            <a href="/vote/results" className="text-gray-600 hover:text-[#00B4A6]">Результаты</a>
+            <Link href="/vote" className="text-gray-600 hover:text-[#00B4A6]">Голосование</Link>
+            <Link href="/vote/results" className="text-gray-600 hover:text-[#00B4A6]">Результаты</Link>
           </nav>
         </div>
       </header>

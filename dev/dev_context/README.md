@@ -8,20 +8,28 @@
 
 ## Файлы
 
+### Актуальные документы
+
 | Файл | Что внутри | Когда читать |
 |------|-----------|--------------|
-| architecture.md | Архитектурный контракт (слои, стек, SGR, ReasoningBank) | Понимание структуры системы |
-| data_model.md | Модель данных Supabase (детальная структура таблиц) | Работа с БД, схемой данных |
-| data_dictionary.md | Справочник сущностей (роли промптов, типы документов, статусы) | Понимание сущностей системы |
-| infrastructure.md | Инвентаризация ресурсов (серверы, домены, API, credentials) | DevOps, деплой, доступы |
+| site_rebuild_plan.md | Техническая архитектура новой версии сайта | Реализация и review |
+| site_rebuild_creative_brief.md | Copy, design constraints, demo/article specs | Источник контента |
 | design_system.md | Дизайн-система (цвета, шрифты, компоненты, spacing) | Работа с UI |
-| product_roadmap.md | Фазы развития продукта и статусы компонентов | Планирование фич |
-| product_release.md | Текущий релиз (что работает, как настроить) | Статус продукта |
-| product_sprint.md | MVP Implementation Roadmap (5 недель) | Текущий спринт |
-| workflows.md | Потоки данных, структура n8n workflows, контракты AI-промптов | Реализация системы |
-| guide_presentation.md | Структура презентации (слайд-за-слайдом) | Создание презентаций |
-| guide_team_patterns.md | Паттерны команды (Фаза 3: ReasoningBank) | Будущие фичи |
-| product_sprint_future.md | Будущие спринты | Планирование |
+| infrastructure.md | Инвентаризация реальных ресурсов | DevOps, деплой |
+| archive_notes.md | Разделение current vs archive | Быстрая навигация |
+
+### Архивные документы прошлого pivot
+
+| Файл | Что внутри | Когда читать |
+|------|-----------|--------------|
+| architecture.md | Архитектурный контракт meeting/presentation MVP | Только для истории |
+| product_release.md | Детали прошлого product release | Только для истории |
+| product_roadmap.md | Фазы развития прошлого pivot | Только для истории |
+| product_sprint.md | Старый MVP sprint plan | Только для истории |
+| workflows.md | Отключённые n8n workflows | Восстановление old stack |
+| guide_presentation.md | Структура meeting-презентации | История подхода |
+| guide_team_patterns.md | Паттерны команды (Phase 3 legacy) | История |
+| product_sprint_future.md | Будущие спринты старого MVP | История |
 
 ## Связанные папки
 

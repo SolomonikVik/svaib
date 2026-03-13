@@ -7,11 +7,7 @@ export default function ResultsPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadResults();
-  }, []);
-
-  async function loadResults() {
+  const loadResults = async () => {
     // Сначала получаем сессию
     const sessionRes = await fetch('/api/vote/sessions');
     const sessionData = await sessionRes.json();
@@ -27,7 +23,11 @@ export default function ResultsPage() {
 
     setData({ session: sessionData.session, ...results });
     setLoading(false);
-  }
+  };
+
+  useEffect(() => {
+    loadResults();
+  }, []);
 
   if (loading) {
     return <div className="text-center py-12 text-gray-500">Загрузка...</div>;

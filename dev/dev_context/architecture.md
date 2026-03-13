@@ -4,9 +4,12 @@ updated: 2025-12-25
 version: 7
 scope: "development"
 priority: critical
+status: archive
 ---
 
 # Архитектура MVP svaib
+
+> **⚠️ АРХИВ (13.03.2026):** этот документ описывает прошлый meeting/presentation pivot. Для текущего публичного сайта и current positioning использовать `site_rebuild_plan.md`, `site_rebuild_creative_brief.md` и `meta/product/product_vision.md`.
 
 ## Кратко
 

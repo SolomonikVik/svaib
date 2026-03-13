@@ -16,11 +16,7 @@ export default function AdminPage() {
   const [newParticipant, setNewParticipant] = useState({ name: '', position: 'Специалист' });
   const [newProject, setNewProject] = useState({ name: '', description: '' });
 
-  useEffect(() => {
-    loadSession();
-  }, []);
-
-  async function loadSession() {
+  const loadSession = async () => {
     const res = await fetch('/api/vote/sessions');
     const data = await res.json();
 
@@ -31,7 +27,11 @@ export default function AdminPage() {
       setProgress(data.progress);
     }
     setLoading(false);
-  }
+  };
+
+  useEffect(() => {
+    loadSession();
+  }, []);
 
   async function createSession() {
     if (!newSessionName.trim()) return;

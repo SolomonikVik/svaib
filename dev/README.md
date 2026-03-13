@@ -10,8 +10,8 @@
 
 ```
 dev/
-├── src/           — Код сайта (деплоится на Vercel)
-├── dev_context/   — Документация продукта
+├── src/           — Публичный сайт svaib.com (Next.js, App Router)
+├── dev_context/   — Техническая документация сайта и архивные product docs
 └── n8n_backup/    — Бэкапы n8n workflows
 ```
 
@@ -21,18 +21,15 @@ dev/
 
 | Файл | Что внутри | Когда читать |
 |------|-----------|--------------|
-| architecture.md | Архитектурный контракт (слои, стек, SGR, ReasoningBank) | Понимание структуры |
-| data_model.md | Модель данных Supabase (детальная структура таблиц) | Работа с БД |
-| data_dictionary.md | Справочник сущностей (роли промптов, типы документов) | Понимание сущностей |
-| infrastructure.md | Инвентаризация ресурсов (серверы, домены, API) | DevOps, деплой |
+| site_rebuild_plan.md | Технический план новой версии сайта | Реализация и review |
+| site_rebuild_creative_brief.md | Copy, design constraints, demo/content specs | Источник контента |
 | design_system.md | Дизайн-система (цвета, шрифты, компоненты) | Работа с UI |
-| product_roadmap.md | Фазы развития и статусы компонентов | Планирование фич |
-| product_release.md | Текущий релиз (что работает, как настроить) | Статус продукта |
-| product_sprint.md | MVP Implementation Roadmap (5 недель) | Текущий спринт |
-| workflows.md | Потоки данных, структура workflows, контракты промптов | Реализация системы |
-| guide_presentation.md | Структура презентации (слайд-за-слайдом) | Создание презентаций |
-| guide_team_patterns.md | Паттерны команды (Фаза 3) | Будущие фичи |
-| product_sprint_future.md | Будущие спринты | Планирование |
+| infrastructure.md | Инвентаризация ресурсов (серверы, домены, API) | DevOps, деплой |
+| archive_notes.md | Какие docs актуальны, а какие архивны | Быстрая ориентация |
+| architecture.md | Архивный архитектурный контракт прошлого meeting pivot | История |
+| product_release.md | Архивный релиз meeting/presentation MVP | История |
+| product_roadmap.md | Архивная roadmap прошлого pivot | История |
+| workflows.md | Архив отключённых n8n workflows | История |
 
 ## src/ — Сайт svaib.com
 
@@ -40,7 +37,9 @@ dev/
 **Deployment:** Vercel (auto-deploy on push to main)
 **Live:** https://svaib.com
 
-**Дополнительно:** `/vote` — изолированный модуль взвешенного голосования (лабораторный инструмент для стратсессий)
+**Публичные маршруты:** `/`, `/second-ai-brain`, `/lab`, `/knowledge`, `/archive`
+**История пивотов:** `public/archive/`
+**Внутренний модуль:** `/vote` — internal-only, выключен по умолчанию через `ENABLE_INTERNAL_VOTE=false`
 
 ## Связанные папки
 

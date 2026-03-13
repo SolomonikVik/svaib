@@ -4,9 +4,12 @@ updated: 2025-12-24
 version: 3
 scope: "product_roadmap"
 priority: high
+status: archive
 ---
 
 # Product Roadmap
+
+> **⚠️ АРХИВ (13.03.2026):** roadmap ниже описывает прошлый meeting/presentation pivot. Для текущего направления сайта ориентироваться на `site_rebuild_plan.md`, `site_rebuild_creative_brief.md` и `meta/management/02_goal.md`.
 
 ## О документе
 

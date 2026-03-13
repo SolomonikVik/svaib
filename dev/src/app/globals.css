@@ -3,12 +3,32 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-text-primary font-body;
   }
 
   h1, h2, h3 {
     @apply font-heading;
+  }
+
+  a {
+    @apply outline-none;
+  }
+
+  pre {
+    @apply font-mono;
   }
 }
 
@@ -49,6 +69,10 @@
 
   .zoom-in-95 {
     animation: zoomIn 0.2s ease-out;
+  }
+
+  .details-reset summary::-webkit-details-marker {
+    display: none;
   }
 
   @keyframes fadeIn {
