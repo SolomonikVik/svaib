@@ -11,6 +11,7 @@ description: "Режим работы с клиентами SVAIB"
 @clients/README.md
 @clients/_playbook/README.md
 @meta/meta_context/product_vision.md
+@clients/_inbox/_worklog.md
 
 ---
 
@@ -40,11 +41,10 @@ description: "Режим работы с клиентами SVAIB"
 
 ## Быстрый старт
 
-1. Прочитай `clients/README.md` — список клиентов и структура
-2. Прочитай `clients/_playbook/` — методология (model, offers, onboarding, custdev_insights)
-3. Спроси Виктора: **с каким клиентом работаем?**
-4. Загрузи папку клиента: `clients/{name}/profile.md` + `clients/{name}/company.md` + `clients/{name}/project.md`
-5. Если есть встречи — прочитай последние из `clients/{name}/meetings/`
+1. Проверь worklog. Если есть активная задача — предложи продолжить: "Вижу незакрытую задачу: {название}. Продолжаем?"
+2. Если worklog пуст — спроси Виктора: **с каким клиентом работаем?** Если задача выглядит большой (>1 сессии) — предложи обсудить план и зафиксировать в worklog.
+3. Загрузи папку клиента: `clients/{name}/profile.md` + `clients/{name}/company.md` + `clients/{name}/project.md`
+4. Если есть встречи — прочитай последние из `clients/{name}/meetings/`
 
 ---
 

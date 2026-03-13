@@ -22,6 +22,7 @@ verified: false
 | `todo-hook.md` | Пошаговая последовательность для создания Hook |
 | `todo-command.md` | Пошаговая последовательность для создания Command |
 | `autonomous-mode.md` | Переключение permissions для автономной ночной работы (включить/откатить) |
+| `session-handoff.md` | Полный цикл: план → задача → worklog → сессии → close-session → session-log |
 | `inbox-rules.md` | Правила работы с _inbox/ — единые для всего проекта |
 | `inbox-last30days-patterns.md` | Паттерны из анализа _inbox за последние 30 дней |
 | `_inbox/` | Материалы на разбор |
