@@ -16,7 +16,8 @@
       "Bash(node *)",
       "Bash(soffice *)",
       "Bash(pdftoppm *)",
-      "Bash(open *)"
+      "Bash(open *)",
+      "Write(**/_inbox/subagents/**)"
     ],
     "ask": [
       "Bash(git push*)",

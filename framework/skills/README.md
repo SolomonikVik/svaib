@@ -29,12 +29,17 @@ priority: high
 
 ```
 skills/
-├── README.md                ← этот файл
-└── meeting-analysis/        ← анализ встреч
-    ├── prompt-entity-extractor.md
-    ├── prompt-behavior-extractor.md
-    └── prompt-synthesizer.md
+├── README.md                       ← этот файл
+└── meeting-analysis/               ← анализ встреч
+    ├── README.md                   ← пайплайн и инструкция для координатора
+    ├── L1-prompt-entity-extractor.md
+    ├── L1-prompt-behavior-extractor.md
+    ├── L1-prompt-synthesizer.md
+    ├── L1-procedure-chunking.md
+    └── L2-prompt-protocol.md
 ```
+
+L2-prompt-telegram — TODO, файл ещё не создан.
 
 ---
 
@@ -46,6 +51,8 @@ skills/
 | `skill-` | Скилл | Исполняемый навык (SKILL.md формат) |
 | `agent-` | Агент | Автономный агент с логикой и состоянием |
 | `hook-` | Хук | Триггер (событие → действие) |
+
+Если в домене есть пайплайн с несколькими слоями — допустим комбинированный префикс: `L1-prompt-`, `L2-prompt-` и т.д. Слой идёт первым, тип артефакта — вторым.
 
 ---
 

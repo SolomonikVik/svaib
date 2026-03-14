@@ -69,6 +69,12 @@ version: 3
 
 ---
 
+## Extraction prompts
+
+Отдельная сводка: [extraction-prompts.md](extraction-prompts.md). Покрывает entity extraction (бизнес-сущности) и behavioral extraction (поведенческие паттерны) из транскриптов и текстов. Ключевые паттерны: quote-first extraction, structured decomposition, camera test (NVC), vocabulary blocklist, anti-pattern few-shot, pipeline architecture (parallel extractors → synthesizer).
+
+---
+
 ## Связи с другими файлами knowledge/
 
 - **skills/** — скиллы это "упакованные промпты с методологией". Паттерны из системных промптов AI-инструментов применимы при проектировании SKILL.md

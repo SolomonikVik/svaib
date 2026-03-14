@@ -171,3 +171,21 @@
   preventive: "TODO: удалить 6 подпапочных CLAUDE.md с @README.md (добавлено в lab/_inbox/_TODO.md)"
   pattern: "Context Injection Overhead — скрытая стоимость platform-level injection"
   resolved: true
+
+- date: 2026-03-14
+  session: "svaib-framework: промпт протокола (шаг 4b Meeting Analysis)"
+  category: instruction
+  type: habitual-write-through
+  module: действие
+  where: "Координатор обновил worklog, затем попытался записать в framework/status.md после завершения одного шага (4b из 6)"
+  root_cause: |
+    Координатор ассоциирует "завершил шаг framework" с "обнови status.md" — привычка из многократного close-session.
+    Правила status.md чёткие (строки 9-10: "вся задача, не промежуточный шаг"), но не перечитываются при спонтанной записи.
+    Усилитель: svaib-framework.md "Проверь status.md — мини-лог покажет что делали недавно" — создаёт ассоциацию status.md = место для записи прогресса.
+  fix: "Предложено 3 точки правок: svaib-framework.md (запрет записи по ходу работы), close-session/SKILL.md (усиление 'ТОЛЬКО через close-session'). Виктор отклонил — текстовые правки не работают (доказано повторениями)."
+  preventive: "Открытый вопрос. Текстовые guardrails архитектурно не работают как enforcement (подтверждено 5+ кейсами в этом логе). Нужно структурное решение: hook, или убрать status.md из прямого доступа координатора, или другой механизм."
+  pattern: "Habitual Write-Through — процедура из одного контекста (close-session) переносится в рабочую сессию без перечитывания правил целевого файла. Подтип process-step-skip"
+  severity: moderate
+  recurring: true
+  note: "Текстовые фиксы для этого класса проблем многократно не срабатывали. Виктор явно указал: 'это повторяется неоднократно, мы не можем починить'"
+  resolved: false

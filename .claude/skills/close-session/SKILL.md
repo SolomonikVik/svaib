@@ -51,6 +51,7 @@ description: "Close the current work session with structured log, unsaved insigh
 6. Если секции с сегодняшней датой нет — создай `## YYYY-MM-DD` после `---`
 7. Обнови поле `updated:` в YAML-заголовке
 8. Если существует worklog с данными по этой задаче — очисти его до шаблона (по правилам в самом файле)
+9. Если направление = `framework` И задача завершена (Phase 1A, не 1B) — добавь строку в мини-лог `framework/status.md` (формат: `- YYYY-MM-DD: Что сделано`). Если задача продолжается — НЕ трогай status.md. Правила файла — в самом status.md.
 
 ### Phase 1B: Обновление worklog (продолжение в новом чате)
 
