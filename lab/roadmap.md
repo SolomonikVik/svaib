@@ -134,14 +134,34 @@ Knowledge flows between commands. Когда knowledge/ обогатился —
 
 **Результат v0.05:** Чистый, проверенный фундамент. Команда лёгкая и не грузит лишнее. Todo-файлы с конкретными шагами, опирающимися на knowledge/. Механики Claude Code задокументированы и верифицированы. Все существующие файлы проверены Виктором.
 
-### v0.06 — Principles Refactor ← current
+### v0.06 — Principles Refactor
 
 - principles.md: 10 → 3 принципа (необходимо и достаточно, ландшафт, принципы > правила)
 - svaib-lab.md: убран Iron Law, убрана таблица типов (есть в tooling.md), добавлена @principles.md
 - Бывшие принципы распределены: делегирование → todo-agent.md, лимиты → todo-skill.md, заметки → tooling.md
 - Обновлены ссылки на номера принципов во всех файлах lab/
 
-### Backlog (пересмотреть после завершения v0.05/v0.06)
+### v0.07 — Runtime Fix (S5-S6, 2026-03-17) ← current
+
+Диагностика и реализация runtime fix. Участники: Claude Code, Codex, Claude.ai.
+
+**Проблема:** Claude уходил в мета-планирование из-за стратегического bias в always-on CLAUDE.md + одноканального coordinator flow в lab + сырого потока мыслей на входе.
+
+**Что сделано:**
+- CLAUDE.md пересобран в lean core. Rule 0 "Поток → следующий шаг" финализирован
+- `.claude/strategic-mode.md` — include-файл, грузится после выбора маршрута
+- svaib-lab.md: ingress + Architect/Engineer. Identity "Джарвис" только в Architect
+- lab/README.md: пересобран как MOC — навигатор по lab/ и knowledge/. Принудительно загружается (@)
+- Design constraints из arscontexta: `lab/_inbox/lab-runtime-conclusions.md`
+- Доказано: memory не работает как enforcement, hooks работают. Записано в rescue-log
+
+**Открыто:**
+- Тест pilot'а — новый чат с `/svaib-lab`
+- Phase 3: propagation на dev/framework/clients
+- Phase 4: enforcement research (hooks)
+- MOC решает навигацию, но не enforcement — process-step-skip по-прежнему не решён структурно
+
+### Backlog (пересмотреть после завершения v0.07)
 
 Эти задачи были запланированы в v0.04, но v0.05 (cleanup) стал приоритетом. После завершения v0.05 — пересмотреть: что ещё актуально, что уже сделано в рамках cleanup, что отпало.
 

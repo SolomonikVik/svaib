@@ -6,7 +6,7 @@
       "Bash(mkdir *)", "Bash(mv *)", "Bash(cp *)",
       "Bash(npm *)", "Bash(npx *)",
       "Bash(python3 *)",
-      "Bash(echo *)", "Bash(cat *)",
+      "Bash(echo *)", "Bash(cat *)", "Bash(grep *)", "Bash(wc *)",
       "Bash(curl *)", "Bash(which *)",
       "Bash(cd *)", "Bash(pwd)", "Bash(date *)",
       "Bash(chmod *)", "Bash(touch *)",
@@ -27,6 +27,18 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/remind_subagent_rules.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
@@ -38,6 +50,11 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/enforce_rule10.py",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/banned_phrases.py",
             "timeout": 10
           }
         ]

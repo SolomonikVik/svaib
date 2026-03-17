@@ -189,3 +189,40 @@
   recurring: true
   note: "Текстовые фиксы для этого класса проблем многократно не срабатывали. Виктор явно указал: 'это повторяется неоднократно, мы не можем починить'"
   resolved: false
+
+- date: 2026-03-17
+  session: "svaib-lab: runtime fix S6"
+  category: infrastructure
+  type: memory-enforcement-failure
+  module: memory
+  where: "auto memory → feedback_no_session_close_prompt.md. Файл прочитан при старте, содержит явный запрет. Координатор написал 'закрываем сессию или оставляем как задачу?' через несколько ходов"
+  root_cause: |
+    Memory файл загружается в контекст, но не работает как enforcement.
+    Модель читает его как контекст, а не как инструкцию. В середине длинной сессии
+    ранний контекст теряет вес. Hook check_deferred_actions.py на тот же паттерн
+    сработал мгновенно и заблокировал.
+  fix: "Memory очищена. Правило 'не предлагай закрыть сессию' — кандидат на CLAUDE.md или hook"
+  preventive: "Memory как enforcement архитектурно не работает. Подтверждено: hook работает, memory нет. Совпадает с arscontexta принципом 'hooks = enforcement, not intelligence'. Для критичных запретов — hook или CLAUDE.md, не memory."
+  pattern: "Memory Enforcement Failure — memory файл прочитан но не применён. Hook на тот же паттерн сработал"
+  severity: moderate
+  resolved: true
+
+- date: 2026-03-17
+  session: "svaib-lab: создание Stop hook banned_phrases.py"
+  category: planning
+  type: process-step-skip
+  module: чтение инструкций
+  where: "lab/README.md:22 → таблица навигации, столбец knowledge/. todo-hook.md:28 → шаг 2"
+  root_cause: |
+    Координатор прочитал todo-hook.md (столбец lab/), но не прочитал
+    knowledge/coding/claude-code.md (столбец knowledge/). README загружен
+    через @lab/README.md в команде. Таблица навигации обработана как контекст,
+    а не как чеклист. После получения достаточного контекста из todo-hook.md
+    и существующего примера (check_deferred_actions.py) координатор перешёл
+    к действию, пропустив второй источник.
+  fix: "Не требуется — хук рабочий. Процесс нарушен."
+  preventive: "Задача: перевести todo-файлы (todo-hook, todo-skill, todo-command, todo-agent) в Skills с обязательными фазами. Скиллы загружаются автоматически и имеют более высокий вес как инструкции. См. lab/_inbox/_TODO.md"
+  pattern: "Navigation Table Skip — таблица навигации прочитана, выполнен только первый столбец. Подтип process-step-skip (7-й случай)"
+  severity: moderate
+  recurring: true
+  resolved: false

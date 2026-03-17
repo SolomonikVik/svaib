@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """
-SubagentStart hook (all subagents): inject parent session context.
+SubagentStart hook (all subagents): inject parent session context + rules.
 
-Reads the parent session transcript and extracts the last ~5 conversation
-turns (user + assistant text). Returns them via additionalContext so that
-every subagent starts with awareness of what's happening in the session.
+Two things injected into every subagent via additionalContext:
+1. Last ~5 conversation turns from the parent session
+2. Critical subagent rules (SUBAGENT_RULES below)
+
+Source of truth for rules: lab/subagent-rules.md (⚡-marked rules).
+When updating rules there — update SUBAGENT_RULES here too, and vice versa.
 
 Replaces inject_rescue_context.py (was rescue-only, 20 turns).
 Pattern: Context-Free Delegation fix (rescue-log 2026-03-10).
@@ -15,6 +18,18 @@ import sys
 
 MAX_TURNS = 5
 TAIL_BYTES = 25600  # 25KB — covers ~5-8 turns comfortably
+
+# ⚡ Critical subagent rules — synced with lab/subagent-rules.md
+# If you change these, update the source file too (and vice versa).
+SUBAGENT_RULES = """\
+## Обязательные правила для субагентов
+
+1. **Bash: только простые команды.** Одна команда за вызов. Без &&, ||, |, ; и редиректов.
+2. **Запись: только в указанный путь внутри _inbox/subagents/.** Если путь не дан — не придумывай его сам.
+3. **Работай только в пределах порученного куска.** Если не хватает границ задачи или пути записи — вернись к координатору с блокером.
+
+Источник: lab/subagent-rules.md\
+"""
 
 
 def extract_conversation(transcript_path: str) -> str | None:
@@ -79,23 +94,23 @@ def main():
         sys.exit(0)
 
     transcript_path = hook_input.get("transcript_path")
-    if not transcript_path:
-        sys.exit(0)
+    conversation = extract_conversation(transcript_path) if transcript_path else None
 
-    conversation = extract_conversation(transcript_path)
-    if not conversation:
-        sys.exit(0)
+    parts = [SUBAGENT_RULES]
+
+    if conversation:
+        parts.append(
+            "## Контекст родительской сессии\n\n"
+            f"{conversation}\n\n"
+            "---\n"
+            "Используй этот контекст чтобы понять задачу. "
+            "Если запрос координатора неполный — опирайся на слова Виктора."
+        )
 
     result = {
         "hookSpecificOutput": {
             "hookEventName": "SubagentStart",
-            "additionalContext": (
-                "## Контекст родительской сессии\n\n"
-                f"{conversation}\n\n"
-                "---\n"
-                "Используй этот контекст чтобы понять задачу. "
-                "Если запрос координатора неполный — опирайся на слова Виктора."
-            ),
+            "additionalContext": "\n\n".join(parts),
         }
     }
     print(json.dumps(result, ensure_ascii=False))

@@ -96,6 +96,7 @@ For project-wide strategic context, prefer:
 6. If a task is under-specified, ask Viktor before proceeding.
 7. If a file is methodology or strategy-heavy, prefer critique and cleanup over speculative redesign.
 8. When discussing recent tools, products, APIs, or market claims, verify externally if freshness matters.
+9. Do not put client names or other personal client data into git-tracked files. Outside `clients/`, refer to clients anonymously, e.g. `С.` or `Client 1`.
 
 ## Knowledge Fixation
 

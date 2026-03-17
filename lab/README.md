@@ -1,35 +1,54 @@
 ---
 title: "lab/ — мета-знания лаборатории"
-updated: 2026-03-06
-verified: false
+updated: 2026-03-17
 ---
 
 # lab/
 
-Мета-информация о строительстве AI-помощников. Принципы, инсайты из экспериментов, материалы на разбор.
+Знания о строительстве AI-помощников. Принципы, процессы, инсайты из экспериментов.
 
-Читается координатором (svaib-lab) в начале сессии для опоры на накопленный опыт.
+Загружается принудительно при вызове `/svaib-lab`. Служит навигатором — отсюда агент находит нужный файл, не читая всё подряд.
 
-## Содержание
+---
+
+## Что делаешь → где искать
+
+| Задача | Файл в lab/ | Знания в knowledge/ |
+|--------|------------|---------------------|
+| Выбрать тип помощника (Skill/Command/Agent/Hook) | `tooling.md` | — |
+| Создать Skill | `todo-skill.md` | `knowledge/skills/` — паттерны, skill graphs, arscontexta |
+| Создать Command | `todo-command.md` | `knowledge/coding/claude-code.md` — механики |
+| Создать Agent | `todo-agent.md` | `knowledge/agents/` — субагенты, MCP, паттерны |
+| Создать Hook | `todo-hook.md` | `knowledge/coding/claude-code.md` — механики hooks |
+| Понять принципы проектирования | `principles.md` | — |
+| Понять context engineering | — | `knowledge/context/` — RAG, memory, progressive disclosure |
+| Понять промптинг | — | `knowledge/prompting/` — техники, паттерны |
+| Посмотреть чужие решения | — | `knowledge/plugins/` — плагины, каталоги |
+| Посмотреть наши эксперименты | — | `knowledge/cases/` — кейсы применения |
+
+**Навигация в knowledge/:** каждая категория имеет README (что есть) и !файл (сводка знаний). Читай README категории → потом конкретный файл.
+
+**Архитектура arscontexta** — reference-реализация skill graph подхода: progressive disclosure, session-orient, mode separation, hooks как enforcement. Изучено и задокументировано в `knowledge/skills/skill-graphs/` (README → architecture → patterns → skill anatomy → полный пример /architect). Наши design constraints для команд выведены из этой архитектуры.
+
+---
+
+## Процессы и правила
 
 | Файл | Что внутри |
 |------|-----------|
-| `tooling.md` | Навигатор: какой инструмент выбрать (Skill / Command / Agent / Hook) + маршрутизация инсайтов |
-| `roadmap.md` | Стратегия и версии Джарвиса: vision + версионный roadmap |
-| `principles.md` | Три принципа проектирования помощников |
-| `todo-skill.md` | Пошаговая последовательность для создания Skill (процесс + справочник формата) |
-| `todo-agent.md` | Пошаговая последовательность для создания Agent (+ чеклист промпта) |
-| `todo-hook.md` | Пошаговая последовательность для создания Hook |
-| `todo-command.md` | Пошаговая последовательность для создания Command |
-| `autonomous-mode.md` | Переключение permissions для автономной ночной работы (включить/откатить) |
-| `session-handoff.md` | Полный цикл: план → задача → worklog → сессии → close-session → session-log |
+| `session-handoff.md` | Полный цикл: план → задача → worklog → сессии → close-session |
+| `subagent-rules.md` | Правила работы с субагентами: permissions, чанкинг, контекст |
 | `inbox-rules.md` | Правила работы с _inbox/ — единые для всего проекта |
-| `inbox-last30days-patterns.md` | Паттерны из анализа _inbox за последние 30 дней |
-| `_inbox/` | Материалы на разбор |
+| `autonomous-mode.md` | Переключение permissions для автономной ночной работы |
 
+---
 
-## Где искать знания
+## Диагностика и история
 
-- `knowledge/` — база знаний проекта: 9 категорий (coding, context, skills, agents, prompting, tools, plugins, cases). Каждая категория имеет README (навигация) и !файл (сводка). Читай README категории чтобы понять что есть, потом конкретный файл
-
-- `knowledge/coding/claude-code.md` — как устроен Claude Code в VSCode (мы здесь)
+| Файл | Что внутри |
+|------|-----------|
+| `.claude/rescue-log.yml` | История всех диагностированных сбоев — паттерны, root cause, что починили. Читай перед проектированием чтобы не повторять |
+| `roadmap.md` | История версий лаборатории, backlog идей |
+| `_inbox/lab-runtime-conclusions.md` | Выводы диагностики runtime (S5-S6): design constraints, инсайты |
+| `_inbox/` | Материалы на разбор, research |
+| `inbox-last30days-patterns.md` | Паттерны из анализа _inbox |
