@@ -5,8 +5,8 @@ added: 2026-01-30
 review_by: 2026-04-30
 tags: [tools, automation, platforms, index]
 publish: false
-version: 10
-updated: 2026-02-21
+version: 11
+updated: 2026-03-18
 ---
 
 # Tools — AI-инструменты и платформы
@@ -21,7 +21,11 @@ updated: 2026-02-21
 
 ### AI-оболочки
 
-Среды, через которые пользователь работает с AI. Для SVAIB это интерфейс клиента: мы наполняем оболочку содержимым. Каталог: Claude Code, Cowork, OpenCode, Codex, Kojori, ValeDesk, VS Code. → [ai-workspaces.md](ai-workspaces.md)
+Среды, через которые пользователь работает с AI. Для SVAIB это интерфейс клиента: мы наполняем оболочку содержимым. Каталог: Claude Code, Claude Project, Cowork, OpenCode, Codex, Kojori, ValeDesk, VS Code. → [ai-workspaces.md](ai-workspaces.md)
+
+### Claude Project
+
+Веб-интерфейс Claude (claude.ai) с подключением данных. Основной runtime для клиентов SVAIB: руководитель в браузере, данные в Google Docs, AI читает через Drive Fetch. Google Workspace коннекторы (Drive Search + Drive Fetch), три уровня доступа (System Prompt / Project Files / Project Knowledge). Ключевое: Drive Fetch даёт актуальную версию, RAG отстаёт на 2+ часа. → [claude-project.md](claude-project.md)
 
 ### Cowork и плагины
 

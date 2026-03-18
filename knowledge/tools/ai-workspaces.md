@@ -3,11 +3,11 @@ title: "AI-оболочки — среды для работы с AI (катал
 source_type: docs
 status: raw
 added: 2026-02-11
-updated: 2026-02-21
+updated: 2026-03-18
 review_by: 2026-05-21
 tags: [tools, ai-workspace, shells, catalog]
 publish: false
-version: 3
+version: 4
 ---
 
 # AI-оболочки — где работать с AI
@@ -39,6 +39,18 @@ version: 3
 **Ключевое:** Те же плагины что Claude Code, но через GUI. Sandboxed VM. Целевая аудитория: sales, legal, finance, marketing. Маркетплейс плагинов.
 **Ссылка:** https://claude.com/blog/cowork-research-preview
 **Подробнее:** [cowork.md](cowork.md)
+
+---
+
+### Claude Project
+
+**Что:** Веб-интерфейс Claude (claude.ai) с подключением данных — Project Knowledge, системные инструкции, Google Workspace коннекторы. Основной runtime для клиентов SVAIB (руководители, не разработчики).
+**Платформы:** Web, iOS, Android.
+**Модели:** Claude (Opus, Sonnet, Haiku).
+**Ключевое:** Два режима контекста: full (<200K — всё в памяти) и RAG (>200K). Google Workspace коннекторы: Drive Search + Drive Fetch дают доступ к Google Docs клиента прямо из чата. Scope через системную инструкцию, не через API.
+**Ссылка:** https://claude.ai
+**Docs:** https://support.claude.com/ru/articles/10166901-используйте-соединители-google-workspace
+**Подробнее:** [claude-project.md](claude-project.md)
 
 ---
 
@@ -105,7 +117,7 @@ version: 3
 |----------------------|-------------|
 | Разработчик, терминал | Claude Code, OpenCode |
 | Разработчик, IDE | VS Code + расширения, Codex |
-| Руководитель, маркетолог, не-разработчик | Cowork, Kojori |
+| Руководитель, маркетолог, не-разработчик | Claude Project, Cowork, Kojori |
 | Нужна мультимодельность (разные провайдеры) | OpenCode, Kojori, ValeDesk |
 | Нужны автоматизации по расписанию | Codex |
 | Закрытый контур, данные не покидают машину | ValeDesk + локальные модели |

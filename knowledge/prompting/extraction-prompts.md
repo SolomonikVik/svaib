@@ -3,11 +3,11 @@ title: "Best practices для extraction-промптов: извлечение 
 source_type: research
 status: processed
 added: 2026-03-14
-updated: 2026-03-14
-review_by: 2026-06-14
+updated: 2026-03-18
+review_by: 2026-06-18
 tags: [prompting, extraction, meeting-analysis, anti-hallucination, behavioral-analysis, NVC]
 publish: false
-version: 1
+version: 2
 ---
 
 # Extraction prompts — best practices
@@ -115,6 +115,12 @@ LLM выдаёт обсуждение за решение. Митигация: r
 ---
 
 ## Архитектура pipeline
+
+### Монолит vs пайплайн: зависит от контекстного окна
+
+При достаточном контексте модели (1M+ токенов, Opus 4.6) один промпт с методологией > цепочка специализированных агентов. Верифицировано: generic промпт из интернета (16.5/20) ≈ полная 4-агентная система (16/20), а один промпт с встроенной методологией — лучше обоих (17.5/20). Причина: "телефонная игра" — каждая передача между агентами теряет контекст и вносит искажения (гипотеза → факт, обсуждение → решение). Подробнее: `framework/_inbox/experiments/conclusions.md`. Источник: эксперимент svaib, март 2026.
+
+**Следствие:** паттерн parallel extractors → synthesizer (ниже) остаётся релевантным для коротких контекстных окон и batch-обработки, но для моделей с 1M+ контекстом стоит начинать с одного промпта.
 
 ### Parallel extractors → Synthesizer
 

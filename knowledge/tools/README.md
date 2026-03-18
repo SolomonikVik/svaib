@@ -16,3 +16,4 @@
 - [web-scraping-apis.md](web-scraping-apis.md) — Web Scraping APIs: прокси-сервисы для AI
 - [meeting-transcription.md](meeting-transcription.md) — Запись и транскрибация встреч: Granola, Bluedot, Otter, Hyprnote, Sherpa-ONNX
 - [presentations.md](presentations.md) — Презентации с AI: Slidev, Lovable, Slider AI, подходы
+- [claude-project.md](claude-project.md) — Claude Project: delivery-среда для клиентов SVAIB (Google Workspace коннекторы, ограничения Drive API)

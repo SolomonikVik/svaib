@@ -2,11 +2,11 @@
 title: "Промптинг — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-02-21
+updated: 2026-03-18
 review_by: 2026-05-21
 tags: [prompting, system-prompts, prompt-optimization]
 publish: false
-version: 3
+version: 4
 ---
 
 # Промптинг — сводка знаний
@@ -71,7 +71,7 @@ version: 3
 
 ## Extraction prompts
 
-Отдельная сводка: [extraction-prompts.md](extraction-prompts.md). Покрывает entity extraction (бизнес-сущности) и behavioral extraction (поведенческие паттерны) из транскриптов и текстов. Ключевые паттерны: quote-first extraction, structured decomposition, camera test (NVC), vocabulary blocklist, anti-pattern few-shot, pipeline architecture (parallel extractors → synthesizer).
+Отдельная сводка: [extraction-prompts.md](extraction-prompts.md). Покрывает entity extraction (бизнес-сущности) и behavioral extraction (поведенческие паттерны) из транскриптов и текстов. Ключевые паттерны: quote-first extraction, structured decomposition, camera test (NVC), vocabulary blocklist, anti-pattern few-shot, pipeline architecture (parallel extractors → synthesizer). Инсайт (март 2026): при 1M+ контексте один промпт с методологией > цепочка агентов — "телефонная игра" теряет контекст на стыках.
 
 ---
 
