@@ -7,7 +7,7 @@ type: plan
 
 # Plan
 
-> Shortcut for agent: `План md` = запустить local day plan viewer в Safari.
+> Shortcut for agent: `План md` = запустить `python3 lab/tools/day-plan-viewer.py` — откроется Safari с планом дня. Ctrl+C чтобы остановить.
 
 ## Кратко
 
