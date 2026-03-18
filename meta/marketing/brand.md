@@ -93,7 +93,7 @@ priority: high
 |-------|-----------|-------|------------|
 | Слайды | Montserrat Bold | Roboto Regular | Основная пара |
 | Web (сайт) | Sora | Inter | Google Fonts |
-| PDF | Inter-Bold (кириллица), Sora (латиница) | Inter | Sora не поддерживает кириллицу, целевой — Montserrat |
+| PDF | Montserrat Bold | Roboto Regular | Единая пара со слайдами (утв. март 2026). Детали: [brand-design-pdf.md](brand-design-pdf.md) |
 
 ---
 
