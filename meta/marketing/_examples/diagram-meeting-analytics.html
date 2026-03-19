@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  @page { size: 1400px 788px; margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1400px; height: 788px;
+    background: #FFFFFF;
+    font-family: 'Roboto', sans-serif;
+    color: #2C3E50;
+    position: relative;
+    overflow: hidden;
+  }
+  .top-stripe {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 6px; background: #00B4A6;
+  }
+  .footer {
+    position: absolute; bottom: 14px; right: 36px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; font-size: 14px; color: #9CA3AF;
+  }
+  .footer .dot { color: #FF4D8D; }
+  .arrows {
+    position: absolute; top: 0; left: 0;
+    width: 1400px; height: 788px;
+    pointer-events: none; z-index: 5;
+  }
+  h2 { font-family: 'Montserrat', sans-serif; font-weight: 800; line-height: 1.15; }
+  p { font-family: 'Roboto', sans-serif; font-weight: 400; line-height: 1.4; }
+
+  /* Tags / pills */
+  .tag {
+    display: inline-block;
+    font-family: 'Roboto', sans-serif;
+    font-size: 11px; font-weight: 500;
+    border-radius: 6px;
+    padding: 3px 8px;
+    margin: 2px 3px 2px 0;
+  }
+  .tag-teal { background: #E0F7F5; color: #008B7F; border: 1px solid #00B4A6; }
+  .tag-pink { background: #FFE5ED; color: #FF4D8D; border: 1px solid #FF4D8D; }
+  .tag-gray { background: #F3F4F6; color: #6B7280; border: 1px solid #D1D5DB; }
+
+  /* Small label */
+  .label { font-family: 'Roboto', sans-serif; font-size: 12px; font-weight: 500; margin-bottom: 6px; }
+  .label-pink { color: #FF4D8D; }
+  .label-teal { color: #00B4A6; }
+
+  /* Bullet list */
+  .bullets { list-style: none; padding: 0; margin: 0; }
+  .bullets li {
+    font-family: 'Roboto', sans-serif;
+    font-size: 13px; color: #2C3E50;
+    padding: 2px 0 2px 14px;
+    position: relative;
+    line-height: 1.35;
+  }
+  .bullets li::before {
+    content: ''; position: absolute;
+    left: 0; top: 9px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .bullets.pink li::before { background: #FF4D8D; }
+</style>
+</head>
+<body>
+<div class="top-stripe"></div>
+
+<!-- ======= TRANSCRIPT ======= -->
+<div style="position:absolute; left:36px; top:50px; width:175px; height:590px;
+  border:2.5px solid #00B4A6; border-left:7px solid #00B4A6; border-radius:14px;
+  background:#F0FDFB; padding-top:268px; text-align:center;">
+  <h2 style="font-size:24px; color:#008B7F;">Транскрипт</h2>
+</div>
+
+<!-- ======= EXTRACTOR ENTITY ======= -->
+<div style="position:absolute; left:290px; top:50px; width:270px; height:280px;
+  border:2.5px solid #00B4A6; border-left:7px solid #00B4A6; border-radius:14px;
+  background:#F0FDFB; padding:28px 20px 16px 24px;">
+  <h2 style="font-size:24px; color:#008B7F; margin-bottom:8px;">Экстрактор<br>сущностей</h2>
+  <div class="label label-pink">11 типов бизнес-сущностей</div>
+  <div style="margin-top:6px;">
+    <span class="tag tag-teal">решения</span>
+    <span class="tag tag-teal">задачи</span>
+    <span class="tag tag-teal">цели</span>
+    <span class="tag tag-teal">идеи</span>
+    <span class="tag tag-teal">инсайты</span>
+    <span class="tag tag-teal">факты</span>
+    <span class="tag tag-teal">принципы</span>
+    <span class="tag tag-teal">метрики</span>
+    <span class="tag tag-teal">вопросы</span>
+    <span class="tag tag-teal">риски</span>
+    <span class="tag tag-teal">запросы</span>
+  </div>
+</div>
+
+<!-- ======= EXTRACTOR BEHAVIOR ======= -->
+<div style="position:absolute; left:290px; top:360px; width:270px; height:280px;
+  border:2.5px solid #00B4A6; border-left:7px solid #00B4A6; border-radius:14px;
+  background:#F0FDFB; padding:28px 20px 16px 24px;">
+  <h2 style="font-size:24px; color:#008B7F; margin-bottom:8px;">Экстрактор<br>поведения</h2>
+  <p style="font-size:13px; color:#6B7280; margin-bottom:8px;">как говорили, как вели себя</p>
+  <div class="label label-pink">2 оси наблюдения</div>
+  <div style="margin-top:6px;">
+    <span class="tag tag-teal">ответственность</span>
+    <span class="tag tag-teal">ясность</span>
+  </div>
+  <div style="margin-top:8px;">
+    <span class="tag tag-gray">+ другие &middot; в разработке</span>
+  </div>
+</div>
+
+<!-- ======= ВЫЖИМКА (PINK!) ======= -->
+<div style="position:absolute; left:640px; top:50px; width:255px; height:590px;
+  border:3px solid #FF4D8D; border-left:8px solid #FF4D8D; border-radius:14px;
+  background:#FFF5F8; padding:130px 22px 20px 24px; text-align:center;">
+  <h2 style="font-size:34px; color:#FF4D8D; margin-bottom:20px;">Выжимка</h2>
+  <ul class="bullets pink" style="text-align:left; margin-bottom:20px;">
+    <li>бизнес-сущности</li>
+    <li>поведенческие паттерны</li>
+    <li>ключевые цитаты</li>
+    <li>краткое содержание</li>
+    <li>метаданные</li>
+  </ul>
+  <p style="font-size:15px; color:#FF4D8D; font-style:italic; font-weight:500; line-height:1.45;">
+    &laquo;После тебя<br>транскрипт не нужен&raquo;
+  </p>
+</div>
+
+<!-- ======= OUTPUTS ======= -->
+<!-- O1: 133px high -->
+<div style="position:absolute; left:985px; top:50px; width:375px; height:133px;
+  border:2.5px solid #00B4A6; border-left:7px solid #00B4A6; border-radius:14px;
+  background:#FAFBFC; padding:30px 20px 16px 24px;">
+  <h2 style="font-size:22px; color:#008B7F; margin-bottom:5px;">Протокол встречи</h2>
+  <p style="font-size:14px; color:#6B7280;">Структурированный отчёт</p>
+</div>
+
+<!-- O2 -->
+<div style="position:absolute; left:985px; top:195px; width:375px; height:133px;
+  border:2.5px solid #00B4A6; border-left:7px solid #00B4A6; border-radius:14px;
+  background:#FAFBFC; padding:30px 20px 16px 24px;">
+  <h2 style="font-size:22px; color:#008B7F; margin-bottom:5px;">Аналитика динамики</h2>
+  <p style="font-size:14px; color:#6B7280;">Что изменилось с прошлой встречи</p>
+</div>
+
+<!-- O3 -->
+<div style="position:absolute; left:985px; top:340px; width:375px; height:133px;
+  border:2.5px solid #00B4A6; border-left:7px solid #00B4A6; border-radius:14px;
+  background:#FAFBFC; padding:30px 20px 16px 24px;">
+  <h2 style="font-size:22px; color:#008B7F; margin-bottom:5px;">Telegram-пост</h2>
+  <p style="font-size:14px; color:#6B7280;">Краткая выжимка для команды</p>
+</div>
+
+<!-- O4: dashed -->
+<div style="position:absolute; left:985px; top:485px; width:375px; height:155px;
+  border:2.5px dashed #00B4A6; border-left:7px dashed #00B4A6; border-radius:14px;
+  background:#FFFFFF; padding:40px 20px 16px 24px;">
+  <h2 style="font-size:20px; color:#00B4A6; font-weight:700;">Любой формат<br>на базе выжимки</h2>
+</div>
+
+<!-- ======= ARROWS ======= -->
+<svg class="arrows" viewBox="0 0 1400 788">
+  <!-- Transcript(R=211, CY=345) → ExtEntity(L=290, CY=190) -->
+  <path d="M 211 280 C 250 280, 250 190, 290 190" stroke="#00B4A6" stroke-width="3" fill="none"/>
+  <polygon points="285,184 295,190 285,196" fill="#00B4A6"/>
+
+  <!-- Transcript → ExtBehavior(CY=500) -->
+  <path d="M 211 410 C 250 410, 250 500, 290 500" stroke="#00B4A6" stroke-width="3" fill="none"/>
+  <polygon points="285,494 295,500 285,506" fill="#00B4A6"/>
+
+  <!-- ExtEntity(R=560) → Synth(L=640, CY=345) -->
+  <path d="M 560 190 C 600 190, 600 345, 640 345" stroke="#00B4A6" stroke-width="3" fill="none"/>
+
+  <!-- ExtBehavior → Synth -->
+  <path d="M 560 500 C 600 500, 600 345, 640 345" stroke="#00B4A6" stroke-width="3" fill="none"/>
+  <polygon points="635,339 645,345 635,351" fill="#FF4D8D"/>
+
+  <!-- Synth(R=895) → Outputs -->
+  <!-- O1 CY=116 -->
+  <path d="M 895 280 C 940 280, 940 116, 985 116" stroke="#00B4A6" stroke-width="2.5" fill="none"/>
+  <polygon points="980,110 990,116 980,122" fill="#00B4A6"/>
+
+  <!-- O2 CY=261 -->
+  <path d="M 895 320 C 940 320, 940 261, 985 261" stroke="#00B4A6" stroke-width="2.5" fill="none"/>
+  <polygon points="980,255 990,261 980,267" fill="#00B4A6"/>
+
+  <!-- O3 CY=406 -->
+  <path d="M 895 370 C 940 370, 940 406, 985 406" stroke="#00B4A6" stroke-width="2.5" fill="none"/>
+  <polygon points="980,400 990,406 980,412" fill="#00B4A6"/>
+
+  <!-- O4 CY=562 -->
+  <path d="M 895 410 C 940 410, 940 562, 985 562" stroke="#00B4A6" stroke-width="2.5" fill="none"/>
+  <polygon points="980,556 990,562 980,568" fill="#00B4A6"/>
+</svg>
+
+<!-- Logo top-right -->
+<div style="position:absolute; top:12px; right:36px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.5px;">
+  <span style="color:#00B4A6;">sv</span><span style="color:#FF4D8D;">ai</span><span style="color:#00B4A6;">b</span><span style="color:#FF4D8D;">.</span>
+</div>
+
+<div class="footer">svaib<span class="dot">.</span></div>
+</body>
+</html>
