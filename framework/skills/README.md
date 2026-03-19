@@ -34,7 +34,6 @@ skills/
     ├── README.md                   ← пайплайн и инструкция для координатора
     ├── L1-prompt-entity-extractor.md
     ├── L1-prompt-behavior-extractor.md
-    ├── L1-prompt-synthesizer.md
     ├── L1-procedure-chunking.md
     └── L2-prompt-protocol.md
 ```

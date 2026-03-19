@@ -15,6 +15,7 @@
 - [brand.md](brand.md) — ядро бренда: палитра, логотип, философия, tone of voice, правила
 - [brand-design-presentation.md](brand-design-presentation.md) — дизайн-гайд для слайдов
 - [brand-design-pdf.md](brand-design-pdf.md) — дизайн-гайд для PDF-документов
+- [brand-design-diagrams.md](brand-design-diagrams.md) — дизайн-гайд для схем и диаграмм (HTML→Puppeteer→PDF)
 - [brand-design-web.md](brand-design-web.md) — дизайн-гайд для сайта (stub, ссылка на dev/)
 
 ## Папки
