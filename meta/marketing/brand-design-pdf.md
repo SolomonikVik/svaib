@@ -1,7 +1,7 @@
 ---
 title: "svaib — дизайн-гайд для PDF-документов"
-updated: 2026-03-18
-version: 3
+updated: 2026-03-19
+version: 4
 scope: "publications"
 priority: medium
 ---
@@ -15,7 +15,9 @@ priority: medium
 ## Связанные файлы
 
 - [brand.md](brand.md) — палитра, логотип, философия, универсальные правила
-- [generate_proposal_guide.md](../../clients/_playbook/generate_proposal_guide.md) — инструкция к генератору оффера
+- [generate_proposal_guide.md](../../clients/_playbook/generate_proposal_guide.md) — инструкция к генератору оффера (автоматический)
+- Эталон HTML (оффер): [_examples/template-offer.html](_examples/template-offer.html)
+- Эталон HTML (многостраничный): [_examples/template-multipage.html](_examples/template-multipage.html)
 
 ---
 
@@ -32,7 +34,8 @@ priority: medium
 | Элемент | Шрифт | Размер |
 |---------|-------|--------|
 | Логотип "svaib" | Montserrat Bold | 18px |
-| Заголовок документа (латиница) | Montserrat Bold | 28pt |
+| Заголовок документа (оффер) | Montserrat Bold | 28pt |
+| Заголовок документа (многостраничный) | Montserrat Bold | 16pt |
 | Заголовок секции (h2) | Montserrat Bold | 15pt |
 | Подзаголовок внутри bento-блоков | Montserrat Bold | 11pt |
 | Основной текст | Roboto Regular | 10pt |
@@ -72,7 +75,7 @@ priority: medium
 
 **Header:**
 - Тонкая teal-полоска вверху (2 мм) — маркер бренда
-- Логотип svaib (Sora, teal) + розовая точка — компактный
+- Логотип svaib (Montserrat Bold, teal) + розовая точка — компактный
 - Дата справа вверху, мелким шрифтом
 
 **Footer:**
@@ -116,30 +119,71 @@ priority: medium
 
 ---
 
+## Многостраничные документы
+
+Протоколы, инсайты, письма, обзоры — 2-5 страниц. Эталон: [_examples/template-multipage.html](_examples/template-multipage.html).
+
+### Отличия от одностраничного оффера
+
+| Параметр | Оффер (1 стр.) | Многостраничный |
+|----------|---------------|-----------------|
+| Футер `bottom` | `0` | **`-12mm`** (уходит в page margin) |
+| Заголовки | — | `break-after: avoid` |
+| Teal-полоска | `header-bar` (edge-to-edge, 3mm) | `border-top` на `.header` (2mm) |
+| Заголовок документа | 28pt | 16pt |
+| `@page margin` | 1.8cm / 1.5cm | 20mm / 22mm / 18mm |
+| Разрыв страницы | — | `.page-break { page-break-before: always; }` |
+
+### Антипаттерны
+
+| Ошибка | Почему плохо | Что делать |
+|--------|-------------|-----------|
+| Футер `bottom: 0` на многостраничном | Наезжает на контент | `bottom: -12mm` |
+| Писать CSS футера с нуля | Каждый раз ошибки | Копировать из шаблона |
+| Нет `break-after: avoid` на заголовках | Заголовок висит внизу страницы без контента | Добавить на h2, h3, .info-label, .person-name |
+| `@page { @bottom-center }` для футера | Не поддерживает HTML-разметку (цветной логотип) | `position: fixed` + `bottom: -12mm` |
+| Изобретать футер вместо copy-paste | 20 минут вместо 3 | Открыть шаблон, скопировать |
+
+### Протокол создания
+
+1. Скопировать [_examples/template-multipage.html](_examples/template-multipage.html)
+2. Заменить контент (заголовок, секции, списки)
+3. `weasyprint input.html output.pdf`
+4. Открыть PDF, проверить по чеклисту ниже
+5. Если ок — удалить HTML, оставить PDF
+
+---
+
 ## Чеклист перед финализацией
 
+### Общий (все PDF)
 - [ ] Заголовки в Montserrat Bold, текст в Roboto
 - [ ] Заголовки секций — Dark Teal `#008B7F`
 - [ ] Розовый — только в логотипе (точка) и слове "AI" в заголовке
 - [ ] Нет фоновых заливок (кроме белого и `#F0FDFB` в info-карточках/feature-box)
-- [ ] Карточки — рамка без заливки
 - [ ] Максимум 2 цветовых акцента на страницу
-- [ ] Текст не наезжает на элементы
-- [ ] Одна страница (для офферов)
 - [ ] Визуальная проверка: открыть PDF
+
+### Дополнительно для многостраничных
+- [ ] Футер не наезжает на текст (на каждой странице!)
+- [ ] Заголовки не висят одиноко внизу страницы
+- [ ] Принудительные разрывы где нужно (`.page-break`)
+
+### Дополнительно для офферов
+- [ ] Всё на одной странице, ничего не обрезано
+- [ ] Карточки — рамка без заливки
 
 ---
 
 ## Реализации
 
-Готовые шаблоны и генераторы — источник правды для дизайна. Если нужно сделать новый документ, начни отсюда.
+Готовые шаблоны — источник правды для дизайна. **Начинай с копирования шаблона, не пиши CSS с нуля.**
 
-| Тип документа | Генератор / шаблон | Эталонный пример | Где лежит |
-|---------------|-------------------|-----------------|-----------|
-| Оффер (предложение) | [generate_proposal.py](../../clients/_playbook/generate_proposal.py) | [proposal_svaib_final.pdf](../../clients/_playbook/proposal_svaib_final.pdf) | `clients/_playbook/` |
-| Обзор компании клиента | HTML-шаблон (в deliverables) | company_overview.pdf (Меркуданов) | `clients/{name}/deliverables/` |
-
-**Инструкция к генератору оффера:** [generate_proposal_guide.md](../../clients/_playbook/generate_proposal_guide.md)
+| Тип документа | HTML-шаблон | Генератор | Стек |
+|---------------|------------|-----------|------|
+| **Оффер** (1 стр.) | [_examples/template-offer.html](_examples/template-offer.html) | [generate_proposal.py](../../clients/_playbook/generate_proposal.py) ([инструкция](../../clients/_playbook/generate_proposal_guide.md)) | weasyprint |
+| **Многостраничный** (протокол, инсайты, письмо) | [_examples/template-multipage.html](_examples/template-multipage.html) | — (ручная подстановка) | weasyprint |
+| **Схема/диаграмма** | [_examples/diagram-meeting-analytics.html](_examples/diagram-meeting-analytics.html) | — | Puppeteer (см. [brand-design-diagrams.md](brand-design-diagrams.md)) |
 
 ---
 

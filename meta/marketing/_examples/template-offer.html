@@ -1,0 +1,436 @@
+<!--
+  svaib — шаблон одностраничного PDF-оффера
+  Тип: коммерческое предложение (1 страница)
+  Стек: HTML + weasyprint → PDF
+  Бренд: meta/marketing/brand-design-pdf.md
+
+  Как использовать:
+  1. Скопировать этот файл
+  2. Заменить плейсхолдеры (заголовок, описание, варианты, цены)
+  3. weasyprint input.html output.pdf
+  4. Открыть PDF, проверить: всё на одной странице, ничего не обрезано
+
+  Автоматический генератор: clients/_playbook/generate_proposal.py
+  Инструкция к генератору: clients/_playbook/generate_proposal_guide.md
+
+  Отличия от многостраничного шаблона:
+  - Футер: bottom: 0 (одна страница, наезжание невозможно)
+  - Заголовок документа: 28pt (крупнее)
+  - Teal-полоска сверху через header-bar (3mm, edge-to-edge)
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+    @page {
+        size: A4;
+        margin: 1.8cm 1.5cm 1.5cm 1.5cm;
+    }
+
+    body {
+        font-family: 'Roboto', 'DejaVu Sans', sans-serif;
+        color: #1A1A1A;
+        font-size: 10pt;
+        line-height: 1.5;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* ── Header ── */
+    .header-bar {
+        background: #00B4A6;
+        height: 3mm;
+        margin: -1.8cm -1.5cm 0 -1.5cm;
+        width: calc(100% + 3cm);
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14pt;
+        margin-bottom: 6pt;
+    }
+
+    .logo {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+
+    .logo-sv, .logo-b { color: #00B4A6; }
+    .logo-ai { color: #FF4D8D; }
+    .logo-dot { color: #FF4D8D; }
+
+    .header-date {
+        color: #9CA3AF;
+        font-size: 9pt;
+    }
+
+    /* ── Title ── */
+    .doc-title {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 28pt;
+        font-weight: 700;
+        color: #1A1A1A;
+        margin: 6pt 0 2pt 0;
+    }
+
+    .doc-title .ai-accent { color: #FF4D8D; }
+
+    .doc-subtitle {
+        font-size: 11pt;
+        color: #6B7280;
+        margin: 0 0 4pt 0;
+    }
+
+    /* ── Separator ── */
+    hr {
+        border: none;
+        border-top: 0.5px solid #E5E7EB;
+        margin: 10pt 0;
+    }
+
+    /* ── Sections ── */
+    h2 {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 15pt;
+        font-weight: 700;
+        color: #008B7F;
+        margin: 0 0 6pt 0;
+        padding-left: 12pt;
+        border-left: 3px solid #00B4A6;
+        page-break-after: avoid;
+    }
+
+    .section-text {
+        font-size: 10pt;
+        line-height: 1.5;
+        margin: 3pt 0;
+    }
+
+    /* ── Feature box ── */
+    .feature-box {
+        border-left: 3pt solid #00B4A6;
+        padding: 6pt 12pt;
+        margin: 6pt 0;
+        background: #F0FDFB;
+        border-radius: 0 4pt 4pt 0;
+        font-size: 9.5pt;
+    }
+
+    .feature-box strong {
+        color: #008B7F;
+    }
+
+    /* ── Bento block ── */
+    .bento-block {
+        border: 1px solid #E5E7EB;
+        border-radius: 6pt;
+        padding: 12pt 14pt;
+        margin: 0;
+    }
+
+    .bento-header {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 11pt;
+        font-weight: 700;
+        color: #008B7F;
+        margin-bottom: 4pt;
+    }
+
+    .bento-header.dark {
+        color: #1A1A1A;
+    }
+
+    .market-context {
+        font-size: 9pt;
+        color: #6B7280;
+        margin-bottom: 6pt;
+    }
+
+    .market-grid {
+        display: flex;
+        gap: 10pt;
+        margin: 0;
+    }
+
+    .market-card {
+        flex: 1;
+        background: #F0FDFB;
+        border-radius: 4pt;
+        padding: 8pt 12pt;
+        text-align: center;
+    }
+
+    .market-card .market-label {
+        font-size: 7.5pt;
+        color: #6B7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 3pt;
+    }
+
+    .market-card .market-value {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14pt;
+        font-weight: 700;
+        color: #1A1A1A;
+    }
+
+    .market-card .market-note {
+        font-size: 7.5pt;
+        color: #9CA3AF;
+        margin-top: 2pt;
+    }
+
+    /* ── Early adopter ── */
+    .ea-section {
+        margin-top: 10pt;
+        padding-top: 8pt;
+        border-top: 0.5px solid #E5E7EB;
+    }
+
+    .ea-intro {
+        font-size: 9.5pt;
+        line-height: 1.5;
+        margin-bottom: 6pt;
+    }
+
+    .exchange-grid {
+        display: flex;
+        gap: 12pt;
+    }
+
+    .exchange-col {
+        flex: 1;
+    }
+
+    .exchange-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 9pt;
+        color: #00B4A6;
+        margin-bottom: 4pt;
+    }
+
+    .exchange-item {
+        font-size: 9pt;
+        margin-bottom: 3pt;
+        padding-left: 14pt;
+        position: relative;
+    }
+
+    .exchange-item::before {
+        content: "—";
+        position: absolute;
+        left: 0;
+        color: #00B4A6;
+        font-weight: 600;
+    }
+
+    /* ── Variant cards ── */
+    .variants-grid {
+        display: flex;
+        gap: 12pt;
+        margin: 8pt 0 6pt 0;
+    }
+
+    .variant-card {
+        flex: 1;
+        border-radius: 6pt;
+        padding: 12pt 14pt;
+    }
+
+    .variant-card.primary {
+        border: 1.5px solid #00B4A6;
+    }
+
+    .variant-card.secondary {
+        border: 1px solid #E5E7EB;
+    }
+
+    .variant-name {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 12pt;
+        margin-bottom: 2pt;
+    }
+
+    .variant-label {
+        font-weight: 600;
+        font-size: 9pt;
+        margin-bottom: 6pt;
+    }
+
+    .variant-label.teal { color: #00B4A6; }
+
+    .variant-price {
+        margin-bottom: 6pt;
+    }
+
+    .variant-price .price {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 26pt;
+        font-weight: 700;
+        color: #1A1A1A;
+    }
+
+    .variant-price .unit {
+        font-size: 10pt;
+        color: #6B7280;
+        margin-left: 3pt;
+    }
+
+    .variant-details {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .variant-details li {
+        font-size: 9pt;
+        margin-bottom: 3pt;
+        color: #1A1A1A;
+    }
+
+    .footer-note {
+        font-size: 8.5pt;
+        color: #9CA3AF;
+        margin-top: 4pt;
+    }
+
+    /* ── Footer ── */
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        font-size: 7.5pt;
+        color: #9CA3AF;
+        display: flex;
+        justify-content: space-between;
+        border-top: 0.5px solid #E5E7EB;
+        padding-top: 4pt;
+    }
+
+    .footer-logo {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    .footer .logo-sv, .footer .logo-b { color: #00B4A6; }
+    .footer .logo-ai { color: #FF4D8D; }
+</style>
+</head>
+<body>
+
+<div class="header-bar"></div>
+
+<div class="header">
+    <div class="logo">
+        <span class="logo-sv">sv</span><span class="logo-ai">ai</span><span class="logo-b">b</span><span class="logo-dot">.</span>
+    </div>
+    <div class="header-date">Месяц 2026</div>
+</div>
+
+<div class="doc-title">Second <span class="ai-accent">AI</span> Brain</div>
+<div class="doc-subtitle">Описание — для кого и зачем</div>
+
+<hr>
+
+<h2>Что мы делаем</h2>
+<p class="section-text">Описание услуги — 1-2 предложения.</p>
+
+<div class="feature-box">
+    <strong>Формат:</strong> описание формата работы.
+</div>
+
+<hr>
+
+<!-- Bento: Рыночная рамка + Early adopter -->
+<div class="bento-block">
+    <div class="bento-header">Рыночная рамка</div>
+    <div class="market-context">AI + бизнес-стратегия, независимые консультанты, 2026:</div>
+
+    <div class="market-grid">
+        <div class="market-card">
+            <div class="market-label">Ретейнер (10–12 ч/мес)</div>
+            <div class="market-value">$3,000 – 5,000</div>
+        </div>
+        <div class="market-card">
+            <div class="market-label">Часовая ставка</div>
+            <div class="market-value">$200 – 350</div>
+            <div class="market-note">senior: $300 – 500+</div>
+        </div>
+    </div>
+
+    <div class="ea-section">
+        <div class="bento-header dark">Early adopter rate</div>
+        <p class="ea-intro">Описание ценностного обмена.</p>
+
+        <div class="exchange-grid">
+            <div class="exchange-col">
+                <div class="exchange-title">Что получаешь ты</div>
+                <div class="exchange-item">Пункт 1</div>
+                <div class="exchange-item">Пункт 2</div>
+                <div class="exchange-item">Пункт 3</div>
+            </div>
+            <div class="exchange-col">
+                <div class="exchange-title">Что получаю я</div>
+                <div class="exchange-item">Пункт 1</div>
+                <div class="exchange-item">Пункт 2</div>
+                <div class="exchange-item">Пункт 3</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<h2>Варианты</h2>
+<div class="variants-grid">
+    <div class="variant-card primary">
+        <div class="variant-name">Вариант А</div>
+        <div class="variant-label teal">Основной</div>
+        <div class="variant-price">
+            <span class="price">$X,XXX</span>
+            <span class="unit">/ мес</span>
+        </div>
+        <ul class="variant-details">
+            <li>Пункт 1</li>
+            <li>Пункт 2</li>
+            <li>Пункт 3</li>
+        </ul>
+    </div>
+    <div class="variant-card secondary">
+        <div class="variant-name">Вариант Б</div>
+        <div class="variant-label">Альтернативный</div>
+        <div class="variant-price">
+            <span class="price">$XXX</span>
+            <span class="unit">/ час</span>
+        </div>
+        <ul class="variant-details">
+            <li>Пункт 1</li>
+            <li>Пункт 2</li>
+            <li>Пункт 3</li>
+        </ul>
+    </div>
+</div>
+<div class="footer-note">Условия оплаты</div>
+
+<div class="footer">
+    <div>
+        <span class="footer-logo"><span class="logo-sv">sv</span><span class="logo-ai">ai</span><span class="logo-b">b</span></span>
+        &nbsp;· svaib.com
+    </div>
+    <div>Виктор Соломоник</div>
+</div>
+
+</body>
+</html>

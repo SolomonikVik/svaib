@@ -4,11 +4,11 @@ source: "consolidated research (Claude Opus 4.6, Gemini 3.0, GPT 5.2)"
 source_type: article
 status: processed
 added: 2026-02-17
-updated: 2026-02-21
+updated: 2026-03-19
 review_by: 2026-05-21
-tags: [markdown, llm, rag, yaml, chunking, context-engineering, wikilinks]
+tags: [markdown, llm, rag, yaml, chunking, context-engineering, wikilinks, instruction-following]
 publish: false
-version: 3
+version: 4
 ---
 
 # Анатомия идеального Markdown-файла для человека + LLM + RAG
@@ -131,6 +131,14 @@ Summary / Кратко: 2-3 предложения   <- Якорный чанк 
 **Три паттерна:** YAML frontmatter (структурированные metadata), HTML-комментарий `<!-- AI: ... -->` (краткая инструкция без визуального шума), отдельная секция с trigger/instruction парами (сложные правила работы с файлом).
 
 **Пример trigger-пары:** "Trigger: агент обновляет факты → Instruction: обнови только секции с [SOURCE]"
+
+**Instruction Following в system prompts.** Исследования 2023–2025 про соблюдение правил в CLAUDE.md и аналогичных файлах:
+- Позиция важнее объёма: compliance падает на 30%+ когда правило в середине длинного списка (Lost in the Middle, Stanford/Berkeley 2023). Критичные правила — в начало.
+- Краткость > многословность: verbose инструкции (~1700 токенов) выполняются менее чем в 30% случаев идеально (AGENTIF benchmark, 2025). Короткое правило получает больший вес, чем длинное.
+- Повтор в конце усиливает compliance через recency bias — задокументированный паттерн.
+- Доля правила в документе (N слов / всего слов) НЕ определяет внимание модели.
+
+Источники: [arxiv 2307.03172](https://arxiv.org/abs/2307.03172), [arxiv 2406.15981](https://arxiv.org/html/2406.15981v1), [arxiv 2507.11538](https://arxiv.org/html/2507.11538v1)
 
 ### 2.6 Данные внутри файла
 

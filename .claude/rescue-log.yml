@@ -277,3 +277,23 @@
   pattern: "Function-Blind Cleanup — оценка элемента файла по форме, а не по функции. Каскад: self-reinforcement превращает ошибочную оценку в аксиому, координатор строит 4 неверных предложения подряд на ложной посылке"
   severity: moderate
   resolved: true
+
+- date: 2026-03-19
+  session: "svaib-meta: создание папки для постов без чтения README"
+  category: planning
+  type: process-step-skip
+  module: чтение инструкций
+  where: "CLAUDE.md — Протокол чтения (README папки → конкретный файл), Verify-first, Не плоди сущности"
+  root_cause: |
+    Координатор получил задачу "создать папку для постов" в meta/ и предложил
+    meta/content/posts/ без вызова Read на meta/README.md. README прямо показывает
+    meta/marketing/ — куда и нужно класть контент. Три правила нарушены одновременно.
+    Каскадная загрузка meta/CLAUDE.md → @README.md не сработала: срабатывает только
+    при Read файла из папки, а координатор не вызвал ни одного Read в meta/.
+    Модельный bias: "знаю ответ из общих знаний" (content/ — типичная папка) → пропуск верификации.
+  fix: "Прочитал README после указания Виктора. Нашёл правильный путь (meta/marketing/posts/)."
+  preventive: "Текстовые фиксы для process-step-skip доказано не работают (8-й случай). Виктор отклонил hook как костыль — должно быть поведением модели, не enforcement."
+  pattern: "Confident Skip — пропуск верификации при высокой уверенности в ответе. Подтип process-step-skip (8-й случай)"
+  severity: moderate
+  recurring: true
+  resolved: false

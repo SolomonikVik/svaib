@@ -1,0 +1,260 @@
+<!--
+  svaib — шаблон многостраничного PDF-документа
+  Тип: протоколы, инсайты, письма, обзоры (2-5 страниц)
+  Стек: HTML + weasyprint → PDF
+  Бренд: meta/marketing/brand-design-pdf.md
+
+  Как использовать:
+  1. Скопировать этот файл
+  2. Заменить контент (заголовок, секции, списки)
+  3. weasyprint input.html output.pdf
+  4. Открыть PDF, проверить: футер не наезжает, заголовки не висят внизу страницы
+
+  Ключевые отличия от одностраничного оффера:
+  - Футер: bottom: -12mm (уходит в margin, не наезжает на контент)
+  - Заголовки: break-after: avoid (не отрываются от следующего блока)
+  - page-break-before: always — для принудительного разрыва страницы
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto:wght@400;500;700&display=swap');
+
+@page {
+  size: A4;
+  margin: 20mm 22mm 18mm 22mm;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 10pt;
+  line-height: 1.5;
+  color: #1A1A1A;
+}
+
+/* ── Header (только первая страница) ── */
+.header {
+  border-top: 2mm solid #00B4A6;
+  padding-top: 6mm;
+  margin-bottom: 6mm;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+.logo .sv, .logo .b { color: #00B4A6; }
+.logo .ai { color: #FF4D8D; }
+.logo .dot { color: #FF4D8D; }
+.header-label {
+  font-size: 8pt;
+  color: #9CA3AF;
+}
+
+/* ── Title ── */
+.doc-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 16pt;
+  color: #1A1A1A;
+  margin-bottom: 2mm;
+}
+.doc-subtitle {
+  font-size: 9pt;
+  color: #6B7280;
+  margin-bottom: 6mm;
+}
+
+/* ── Sections ── */
+h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 12pt;
+  color: #008B7F;
+  border-left: 3px solid #00B4A6;
+  padding-left: 3mm;
+  margin-top: 5mm;
+  margin-bottom: 3mm;
+  break-after: avoid;
+}
+h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 10pt;
+  color: #1A1A1A;
+  margin-top: 3mm;
+  margin-bottom: 2mm;
+  break-after: avoid;
+}
+
+.section-divider {
+  border: none;
+  border-top: 0.5px solid #E5E7EB;
+  margin: 4mm 0;
+}
+
+/* ── Summary box (feature-box) ── */
+.summary-box {
+  border-left: 3px solid #00B4A6;
+  background: #F0FDFB;
+  padding: 3mm 4mm;
+  margin-bottom: 4mm;
+  font-size: 9.5pt;
+  line-height: 1.5;
+}
+
+/* ── Text ── */
+p { margin-bottom: 2mm; }
+
+ul, ol {
+  margin-left: 5mm;
+  margin-bottom: 3mm;
+}
+li {
+  margin-bottom: 1.5mm;
+}
+
+/* ── Task list (чеклист) ── */
+.task-list { list-style: none; margin-left: 0; }
+.task-list li { padding-left: 5mm; position: relative; }
+.task-list li::before {
+  content: "☐";
+  position: absolute;
+  left: 0;
+  color: #00B4A6;
+}
+
+/* ── Person name (для задач по исполнителям) ── */
+.person-name {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 10pt;
+  color: #008B7F;
+  break-after: avoid;
+}
+
+/* ── Info labels (uppercase подзаголовки) ── */
+.info-label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 9pt;
+  color: #6B7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3mm;
+  margin-bottom: 1.5mm;
+  break-after: avoid;
+}
+
+/* ── Page break ── */
+.page-break {
+  page-break-before: always;
+}
+
+/* ── Footer (из generate_proposal.py, опущен в margin) ── */
+.footer {
+  position: fixed;
+  bottom: -12mm;
+  left: 0;
+  right: 0;
+  font-size: 7.5pt;
+  color: #9CA3AF;
+  display: flex;
+  justify-content: space-between;
+  border-top: 0.5px solid #E5E7EB;
+  padding-top: 4pt;
+}
+
+.footer-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.footer .logo-sv, .footer .logo-b { color: #00B4A6; }
+.footer .logo-ai { color: #FF4D8D; }
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<div class="header">
+  <div class="logo"><span class="sv">sv</span><span class="ai">ai</span><span class="b">b</span><span class="dot">.</span></div>
+  <div class="header-label">Тип документа</div>
+</div>
+
+<!-- ═══ TITLE ═══ -->
+<div class="doc-title">Заголовок документа</div>
+<div class="doc-subtitle">Дополнительная информация · Дата</div>
+
+<!-- ═══ SUMMARY ═══ -->
+<h2>Итог</h2>
+<div class="summary-box">
+Краткое описание ключевого результата или сути документа. 2-3 предложения.
+</div>
+
+<hr class="section-divider">
+
+<!-- ═══ SECTION: список ═══ -->
+<h2>Решения</h2>
+<ul>
+  <li>Первый пункт решений</li>
+  <li>Второй пункт решений</li>
+  <li>Третий пункт решений</li>
+</ul>
+
+<hr class="section-divider">
+
+<!-- ═══ SECTION: задачи по исполнителям ═══ -->
+<h2>Задачи</h2>
+
+<h3 class="person-name">Исполнитель 1</h3>
+<ul class="task-list">
+  <li>Задача первая</li>
+  <li>Задача вторая</li>
+</ul>
+
+<h3 class="person-name">Исполнитель 2</h3>
+<ul class="task-list">
+  <li>Задача первая</li>
+  <li>Задача вторая</li>
+</ul>
+
+<hr class="section-divider">
+
+<!-- ═══ SECTION: info-labels ═══ -->
+<h2>Дополнительная информация</h2>
+
+<div class="info-label">Категория A</div>
+<ul>
+  <li>Пункт первый</li>
+  <li>Пункт второй</li>
+</ul>
+
+<div class="info-label">Категория B</div>
+<ul>
+  <li>Пункт первый</li>
+  <li>Пункт второй</li>
+</ul>
+
+<!-- ═══ PAGE BREAK (если нужен принудительный разрыв) ═══ -->
+<!-- <div class="page-break"></div> -->
+
+<!-- ═══ FOOTER (на каждой странице) ═══ -->
+<div class="footer">
+  <div>
+    <span class="footer-logo"><span class="logo-sv">sv</span><span class="logo-ai">ai</span><span class="logo-b">b</span></span>
+    &nbsp;· svaib.com
+  </div>
+  <div>Виктор Соломоник</div>
+</div>
+
+</body>
+</html>
