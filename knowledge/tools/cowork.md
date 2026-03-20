@@ -127,3 +127,4 @@ Product vision описывает модель подписки "Плагин": 
 - [coding/claude-code.md](../coding/claude-code.md) — Claude Code: рабочая среда, система расширения
 - [skills/!skills.md](../skills/!skills.md) — Skills как формат: проектирование, экосистема
 - [coding/agent-teams.md](../coding/agent-teams.md) — Agent Teams: координация команды AI-агентов
+- [../context/claude_integrations_gdrive.md](../context/claude_integrations_gdrive.md) — тестирование интеграции Cowork + Google Drive + Claude Projects: что пишет, что видит, где зазоры

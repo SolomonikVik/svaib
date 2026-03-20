@@ -76,3 +76,4 @@ Claude Project (claude.ai) — веб-интерфейс Claude с подклю�
 - [cowork.md](cowork.md) — Cowork: другая оболочка Anthropic (для knowledge workers, плагины)
 - [../context/search-mechanics.md](../context/search-mechanics.md) — механики поиска в Claude Projects (full context vs RAG, уровни доступа)
 - [../coding/claude-code.md](../coding/claude-code.md) — Claude Code: CLI для разработчиков (другой runtime)
+- [../context/claude_integrations_gdrive.md](../context/claude_integrations_gdrive.md) — тестирование Google Drive + Claude Projects + Cowork: матрица совместимости, зазоры, мосты

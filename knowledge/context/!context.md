@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-03-03
-review_by: 2026-06-03
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure]
+updated: 2026-03-20
+review_by: 2026-06-20
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations]
 publish: false
-version: 13
+version: 14
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -55,6 +55,10 @@ version: 13
 
 Теория выше описывает механизмы (RAG, temporal graphs, file-based memory). Как это реализовано в конкретных AI-инструментах (Claude Code, Cursor, Claude Projects, ChatGPT Projects) — механики поиска, уровни доступа, практические выводы для организации файлов → [search-mechanics.md](search-mechanics.md).
 
+### Интеграция Google Drive + Claude Projects + Cowork
+
+Тестирование (март 2026) выявило ключевой зазор в экосистеме Anthropic: что Cowork умеет писать (.docx, .md) — Claude в Projects не видит автоматически. Что Claude видит автоматически (нативные Google Docs) — Cowork не умеет писать. Целевая архитектура для клиентов SVAIB: клиент пишет в Google Docs → скрипт синхронизации → GitHub-репо (markdown) → Claude Project видит через RAG. Матрица совместимости форматов, варианты мостов → [claude_integrations_gdrive.md](claude_integrations_gdrive.md).
+
 ### Оптимизация Markdown-файлов для LLM и RAG
 
 Консолидированное исследование (3 модели, февраль 2026) выявило ключевые принципы написания файлов, которые одинаково хорошо работают для человека, LLM и RAG-систем. Семь главных находок (все — консенсус или подтверждены бенчмарками): `description` в YAML — самое ценное одиночное улучшение для discovery; "summary first" из-за Lost in the Middle (-20%+ точности в середине контекста); каждая H2-секция — автономный чанк с повторением субъекта (-35% ошибок поиска, Anthropic Contextual Retrieval); структурный чанкинг по заголовкам превосходит семантический (70.5% vs 63.8%); YAML обрабатывается LLM как текст, не как структурированные данные; <300 строк, таблицы <20 строк, вложенность ≤2. Подробнее → [markdown-for-llm.md](markdown-for-llm.md).
@@ -86,3 +90,4 @@ version: 13
 - [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов для AI-ассистентов: 13 инструментов, AGENTS.md стандарт, паттерн персоны, best practices
 - [../skills/skill-graphs/skill-graphs.md](../skills/skill-graphs/skill-graphs.md) — Skill Graphs: навигация по знаниям, progressive disclosure, wikilinks (arscontexta). Живёт в skills/, но по сути context engineering
 - [../skills/skill-graphs/architecture.md](../skills/skill-graphs/architecture.md) — архитектура: Three-Space, 6Rs pipeline, hooks, верифицированный progressive disclosure
+- [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости, зазоры чтения/записи, мосты, целевая архитектура для клиентов

@@ -165,6 +165,10 @@ body {
   color: var(--pink);
 }
 
+.group-title.meetings {
+  color: #5B6ABF;
+}
+
 .group-title.done-group {
   color: var(--accent);
 }
@@ -292,7 +296,7 @@ function render(data) {
   let html = '';
   for (const group of data.groups) {
     html += `<div class="group">`;
-    const titleClass = group.title.match(/[Сс]делано/) ? 'done-group' : 'doing';
+    const titleClass = group.title.match(/[Сс]делано/) ? 'done-group' : group.title.match(/[Вв]стреч/) ? 'meetings' : 'doing';
     html += `<div class="group-title ${titleClass}">${esc(group.title)}</div>`;
     for (const task of group.tasks) {
       const doneClass = task.done ? ' done' : '';
