@@ -1,7 +1,7 @@
 ---
 title: "Meeting Analysis — пайплайн анализа встреч"
-updated: 2026-03-19
-version: 2
+updated: 2026-03-20
+version: 3
 ---
 
 # Meeting Analysis
@@ -32,7 +32,7 @@ version: 2
               ┌──────────┴──────────┐
               ▼                     ▼
          Протокол              Telegram
-         (L2)                  (L2, TODO)
+         (L2)                  (L2)
 ```
 
 ---
@@ -45,7 +45,8 @@ version: 2
 | [L1-prompt-behavior-extractor.md](L1-prompt-behavior-extractor.md) | L1 | Извлекает поведенческие паттерны — аналитический формат (цитаты, оси, полярность) |
 | [L1-prompt-behavior-extractor-v2.md](L1-prompt-behavior-extractor-v2.md) | L1 (experimental) | Извлекает поведенческие паттерны — клиентский формат (по участникам, без цитат, 3 оси) |
 | [L1-procedure-chunking.md](L1-procedure-chunking.md) | L1 | Процедура нарезки длинных транскриптов. В разработке: порог не верифицирован с новым экстрактором |
-| [L2-prompt-protocol.md](L2-prompt-protocol.md) | L2 | Выжимка → клиентский протокол |
+| [L2-prompt-protocol.md](L2-prompt-protocol.md) | L2 | Выжимка → клиентский протокол (полный) |
+| [L2-prompt-telegram.md](L2-prompt-telegram.md) | L2 | Выжимка → Telegram-сводка (с фильтрацией по приоритету) |
 
 ---
 
