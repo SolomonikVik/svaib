@@ -102,7 +102,7 @@ type: plan
 - [ ] Единый пайплайн онбординга клиента — scaffold, чеклист этапов, промпты в одном месте. Детали: `clients/_inbox/_worklog.md`
 - [ ] Рефлексия над фиаско 15 марта — пересмотреть методологию быстрых тестов
 - [ ] Python-скрипт нарезки транскриптов
-- [ ] ❄️ Nanobot — delivery runtime для телеграм-бота клиенту. Выбран как основной кандидат [REF: decisions/runtime-choice.md], первый шаг — пилотный тест (установить, попробовать Telegram, понять skills/heartbeat/cron). Запрос АС на клоубот — реализуется через этот же пилот
+- [ ] ❄️ Nanobot — delivery runtime для телеграм-бота клиенту. Выбран как основной кандидат [REF: decisions/runtime-choice.md], первый шаг — пилотный тест (установить, попробовать Telegram, понять skills/heartbeat/cron). Запрос АС на клоубот — реализуется через этот же пилот. Альтернатива: официальный Telegram-плагин Anthropic (MCP-сервер, reply/react/edit, access control) — https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram
 
 ### Лаборатория
 
