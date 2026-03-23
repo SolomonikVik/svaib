@@ -14,6 +14,7 @@ type: operational
 ## Связанные файлы
 
 - [seminars_ai_brain.md](seminars_ai_brain.md) — содержание серии, программа, лог
+- [seminars_youtube.md](seminars_youtube.md) — пост-продакшн: запись → YouTube
 
 ---
 
@@ -21,20 +22,29 @@ type: operational
 
 ### Безопасность — zoom.us → Settings → Meeting → Security
 
-- **Waiting Room** — включить
-- **Allow participants to share screen** — ВЫКЛЮЧИТЬ (только хост)
-- **Annotation** — ВЫКЛЮЧИТЬ (запрет рисования на экране)
+- **Waiting Room** — ВЫКЛЮЧИТЬ (для кружка не нужен, отвлекает хоста)
+- **Passcode** — включить (встроен в ссылку, защита от случайных ботов)
+- **Join before host** — ВЫКЛЮЧИТЬ
+- **Allow removed participants to rejoin** — ВЫКЛЮЧИТЬ
 
-### Запись для YouTube — zoom.us → Settings → Recording → Cloud Recording
+### Во время встречи — zoom.us → Settings → Meeting → In Meeting (Basic)
 
-**Включить:**
-- Record active speaker with shared screen — один готовый файл для YouTube
-- Record a separate audio file for each participant — чистый звук для монтажа
-- Hide non-video participants — без чёрных квадратов
+- **Демонстрация экрана → Кто может осуществлять трансляцию** — только организатор
+- **Комментарий (Annotation)** — ВЫКЛЮЧИТЬ (защита от рисования на экране)
+- **Отправить файлы в чате конференции** — ВЫКЛЮЧИТЬ
+- **Разрешить участникам переименовывать себя** — ВЫКЛЮЧИТЬ
+- **Звуковое уведомление при подключении** — ВЫКЛЮЧИТЬ (отвлекает во время рассказа)
 
-**Выключить:**
-- Record active speaker, gallery view and shared screen separately — лишние файлы
-- Record gallery view with shared screen — конфликтует с active speaker
+### Запись для YouTube — zoom.us → Settings → Recording
+
+- **Запись в облако** — включить
+- **Активный докладчик с демонстрацией экрана** — включить (один готовый .mp4)
+- **Вид галереи с демонстрацией** — ВЫКЛЮЧИТЬ (лишний файл)
+- **Записывать отдельно (докладчик, галерея, экран)** — ВЫКЛЮЧИТЬ
+- **Скрыть участников без видео** — включить (без чёрных квадратов)
+- **Расшифровка аудио** — включить (автосубтитры для YouTube)
+- **Оптимизация для стороннего редактора** — ВЫКЛЮЧИТЬ (раздувает размер)
+- **Автоматическая запись** — включить (в облако)
 
 ---
 
@@ -62,7 +72,5 @@ type: operational
 - [ ] Включить запись в облако (Record to the Cloud)
 
 ### После семинара
-- [ ] Скачать запись из Zoom Cloud
-- [ ] Выложить на YouTube как есть (без монтажа — правило №3)
-- [ ] Пост в Telegram: краткий итог + ссылка на запись
-- [ ] Обновить лог в seminars_ai_brain.md (участники, заметки, ссылка на запись)
+
+→ [seminars_youtube.md](seminars_youtube.md) — чеклист: обработка записи, публикация на YouTube, дистрибуция
