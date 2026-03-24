@@ -16,6 +16,7 @@ type: operational
 - [seminars_setup.md](seminars_setup.md) — техническая подготовка и чеклист проведения
 - [seminars_youtube.md](seminars_youtube.md) — пост-продакшн: запись → YouTube
 - [../02_goal.md](../02_goal.md) — семинары = фоновый режим первой декады, валидация формата за 12 недель
+- [Презентации (Google Drive)](https://drive.google.com/drive/u/0/folders/1IP-c4kWss_BmZhypqOs30nZFoy9Ph4w7) — материалы для демо на семинарах
 
 ---
 
@@ -70,4 +71,4 @@ type: operational
 
 | # | Дата | Тема | Участники | Запись | Заметки |
 |---|------|------|-----------|--------|---------|
-| 1 | 21.03.2026 | | | | | перенесён с 15.03 (потерял голос) |
+| 1 | 21.03.2026 | Как устроены LLM + промпты | 18 | [YouTube](https://youtu.be/IGrvUqbP4Ck) | перенесён с 15.03 (потерял голос) |
