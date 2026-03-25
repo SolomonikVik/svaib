@@ -47,6 +47,7 @@ version: 3
 | [L1-procedure-chunking.md](L1-procedure-chunking.md) | L1 | Процедура нарезки длинных транскриптов. В разработке: порог не верифицирован с новым экстрактором |
 | [L2-prompt-protocol.md](L2-prompt-protocol.md) | L2 | Выжимка → клиентский протокол (полный) |
 | [L2-prompt-telegram.md](L2-prompt-telegram.md) | L2 | Выжимка → Telegram-сводка (с фильтрацией по приоритету) |
+| [meeting_processing.md](../../scaffold/clients/meeting_processing.md) | L2 | Процедура обновления досье контрагента после встречи (DRAFT). Живёт в scaffold/clients/ — привязан к структуре файлов |
 
 ---
 
