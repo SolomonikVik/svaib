@@ -40,6 +40,9 @@
 ├── product/                 ← продукт: стратегия, описания, прайс, specs
 │   └── README.md
 │
+├── clients/                 ← клиентские проекты (profile, project, tasks...)
+│   └── README.md
+│
 ├── processes/               ← бизнес-процессы, регламенты, SOP
 │   └── README.md
 │

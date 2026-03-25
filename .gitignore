@@ -69,7 +69,7 @@ out/
 _inbox/
 
 # --- Клиенты (приватные данные) ---
-clients/
+/clients/
 
 # --- Архив (локально) ---
 meta/z_archive/

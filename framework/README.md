@@ -58,6 +58,8 @@ plugin/            → собранный пакет для клиента (де
 | Понять как работать с X | [methodology/](methodology/) | Протоколы, decision frames, ритуалы |
 | Добавить/изменить сущность | [ontology/entities.md](ontology/entities.md) | Каталог атомарных сущностей |
 | Создать/улучшить шаблон | [scaffold/](scaffold/) | Готовый каркас + спецификации |
+| Спроектировать структуру папок | [scaffold/principles.md](scaffold/principles.md) | Принципы: миссия файла, развёртывание, маршрутизация |
+| Развернуть scaffold для клиента | [scaffold/clients/](scaffold/clients/) | Шаблоны клиентских проектов |
 | Спроектировать навык | [skills/](skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |
 | Работа со встречами | [methodology/meeting_analysis.md](methodology/meeting_analysis.md) | Пайплайн анализа транскриптов |
