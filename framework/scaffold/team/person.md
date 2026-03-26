@@ -15,16 +15,17 @@ type: reference
 
 ## Связанные файлы
 
-- [../{direction}/01_overview.md](../{direction}/01_overview.md) — направление, которое ведёт
+- [../{direction}/01_overview.md](../{direction}/01_overview.md) — направление(-я), которое ведёт
 - [README.md](README.md) — оргструктура и маппинг направлений
 
 ---
 
 ## Направления
 
-> Какие направления ведёт или в каких участвует.
+> Какие направления ведёт или в каких участвует. При двойной роли — указать обе.
 
 - **Лидер:** [{direction}](../{direction}/01_overview.md)
+- **Лидер:** [{direction}/{sub_direction}](../{direction}/{sub_direction}/01_overview.md) ← если двойная роль
 
 ---
 
