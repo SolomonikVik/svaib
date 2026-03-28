@@ -322,6 +322,30 @@ priority: high
 * **Тип:** VS Code Extension
 * **Авторизация:** через Claude Max подписка ($100/мес)
 
+### Claude Code Channels (настроено 28.03.2026)
+
+Telegram-канал для управления Claude Code из мессенджера. Работает только при открытой CLI-сессии на MacBook.
+
+* **Запуск:** `cd ~/Projects/svaib && claude --channels plugin:telegram@claude-plugins-official`
+* **Бот:** @svaib_bot (тот же бот, что в секции Telegram Bot)
+* **Токен бота:** хранится в `~/.claude/channels/telegram/.env`
+* **Telegram ID Виктора:** хранится в `~/.claude/channels/telegram/.env`
+* **Policy:** allowlist (только Виктор может писать боту)
+* **Плагин:** telegram@claude-plugins-official (user scope)
+* **Конфиг доступа:** `~/.claude/channels/telegram/access.json`
+* **Статус:** ✅ работает (research preview)
+
+### Scheduled Tasks (обнаружено 28.03.2026)
+
+Cloud-режим Claude Code: задача крутится на серверах Anthropic, MacBook не нужен.
+
+* **UI:** claude.ai/code/scheduled
+* **Возможности:** клонировать GitHub-репо, читать файлы, подключаться к Google Drive/Calendar через коннекторы, выполнять bash (curl)
+* **Протестировано:** отправка сообщений в Telegram через curl + Bot API — работает
+* **Ограничение:** research preview, возможности могут меняться
+* **Статус:** ✅ протестировано, работает
+* **Продуктовое значение:** потенциальный delivery runtime для клиентов — см. `meta/product/decisions/runtime-choice.md`
+
 ### MCP-серверы (обновлено 10.02.2026)
 
 | MCP | Назначение | Статус |

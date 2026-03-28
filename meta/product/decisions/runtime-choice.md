@@ -1,6 +1,6 @@
 ---
 title: "Выбор runtime для Second AI Brain"
-updated: 2026-03-17
+updated: 2026-03-28
 version: 1
 type: decision
 status: accepted
@@ -28,6 +28,8 @@ priority: high
 ## Статус
 
 **Accepted.** Решение принято по направлению, но конкретный runtime ещё проходит пилотную проверку.
+
+**Update 28.03.2026:** Обнаружен новый кандидат — Claude Code Scheduled Tasks (cloud-режим). По итогам первого теста выглядит сильнее nanobot для нашего кейса, т.к. это нативный Claude без посредников. Подробнее — в секции «Альтернативы».
 
 ## Решение
 
@@ -77,6 +79,35 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 Но это ещё не означает, что он идеально совпадает с нашим plugin-слоем без адаптации.
 
 ## Альтернативы
+
+### Claude Code Scheduled Tasks (discovery 28.03.2026)
+
+Cloud-режим Claude Code: задачи крутятся на серверах Anthropic по расписанию (cron). Комп не нужен. UI: claude.ai/code/scheduled.
+
+Почему это сильный кандидат:
+
+- **Нативный Claude** — наши скиллы и промпты работают без адаптерного слоя, это тот же Claude Code;
+- **Cloud без инфраструктуры** — не нужен VPS, Docker, self-hosting;
+- **Коннекторы из коробки** — Google Drive, Google Calendar, GitHub;
+- **Bash (curl)** — протестирована отправка в Telegram через Bot API, работает;
+- **Клиент не видит сложности** — для клиента это Telegram + Google Drive, без GitHub/терминала/CLI.
+
+Потенциальная продуктовая схема для клиента:
+- Наша сторона: скилл (методология + промпт) + Telegram-бот (@svaib_bot, один на всех клиентов)
+- Клиентская сторона: Google Drive с файлами (scaffold) + Telegram
+- Связка: cloud scheduled task + коннектор Google Drive + коннектор Google Calendar + curl в Telegram Bot API
+
+Закрывает все три критерия проверки из этого документа:
+1. Приём запроса через простой интерфейс — Telegram
+2. Proactive сценарий по расписанию — cron
+3. Наш методологический слой без переписывания — скиллы работают нативно
+
+Риски:
+- Research preview — возможности, лимиты и pricing могут измениться;
+- Vendor lock-in на Anthropic (но мы и так на Claude);
+- Неизвестны ограничения по количеству задач, длительности выполнения, объёму данных.
+
+**Статус:** протестировано базово (28.03.2026), требуется полноценный пилот на реальном клиентском сценарии.
 
 ### OpenClaw
 
@@ -161,10 +192,10 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 2. Что в текущем `framework/plugin/` является общей моделью, а что — наследием Claude Code / Cowork?
 3. Нужен ли отдельный документ про adapter layer между plugin и runtime?
 4. Какие альтернативы держим в watchlist после пилота (`ZeroClaw`, managed runtimes, собственный thin layer)?
+5. (28.03) Scheduled Tasks vs nanobot — какой кандидат берём для первого клиентского пилота? Scheduled Tasks проще (нет self-hosting), но research preview. Nanobot стабильнее, но требует больше инфраструктуры.
 
 ## Следующий шаг
 
-После этого memo нужно сделать две вещи:
-
 1. Отразить решение в [../../../framework/architecture.md](../../../framework/architecture.md) — явно развести продуктовый plugin и заменяемый runtime.
-2. Провести короткую техническую валидацию `nanobot` на одном реальном сценарии, не расширяя scope до "строим новую платформу".
+2. Провести пилот Scheduled Tasks на реальном клиентском сценарии: утренний план дня (читает scaffold клиента из Google Drive + календарь → шлёт в Telegram). Если сработает — это приоритетный кандидат вместо nanobot.
+3. Если Scheduled Tasks не закроет — вернуться к пилоту nanobot.
