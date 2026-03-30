@@ -1,7 +1,7 @@
 ---
 title: "Skills — мастерская промптов и навыков Second AI Brain"
-updated: 2026-03-12
-version: 1
+updated: 2026-03-30
+version: 2
 scope: "product_core"
 priority: high
 ---
@@ -31,14 +31,16 @@ priority: high
 skills/
 ├── README.md                       ← этот файл
 └── meeting-analysis/               ← анализ встреч
-    ├── README.md                   ← пайплайн и инструкция для координатора
-    ├── L1-prompt-entity-extractor.md
-    ├── L1-prompt-behavior-extractor.md
-    ├── L1-procedure-chunking.md
-    └── L2-prompt-protocol.md
+    ├── README.md                   ← пайплайн, карта файлов, как запустить
+    ├── orchestrator-meeting.md     ← оркестратор полного цикла (entity-only)
+    ├── L1-prompt-entity-extractor.md     ← выжимка бизнес-сущностей
+    ├── L1-prompt-behavior-extractor.md   ← поведение (аналитический, не в пайплайне)
+    ├── L1-prompt-behavior-extractor-v2.md ← поведение (клиентский, experimental)
+    ├── L1-procedure-chunking.md          ← чанкинг (needs-revalidation)
+    ├── L2-prompt-protocol-full.md             ← выжимка → протокол (полный)
+    ├── L2-prompt-protocol-telegram.md             ← выжимка → Telegram-сводка
+    └── L2-procedure-scaffold-update.md   ← выжимка → обновление scaffold (дельта)
 ```
-
-L2-prompt-telegram — TODO, файл ещё не создан.
 
 ---
 

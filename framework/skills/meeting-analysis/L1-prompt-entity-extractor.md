@@ -214,24 +214,9 @@ version: 1
 
 ## Примечания
 
-**Источники:**
-- Базовая структура: `framework/_inbox/experiments/prompts/single.md` (победитель эксперимента, 17.5/20)
-- 11 типов + маркеры: `framework/ontology/entities.md`
-- 18 правил разграничения: `L1-prompt-synthesizer.md`
-- Принципы: quote-first, мягкие метки, живой язык (из `L1-prompt-entity-extractor.md`)
-- Iron Law + phantom consensus: `L1-prompt-synthesizer.md`
-- Стиль + запреты: `single.md` + `L1-prompt-synthesizer.md`
-
-**Отличия от single.md:**
-- Выход = структурированная выжимка по типам (не протокол)
-- Все 11 типов с речевыми маркерами (single.md имел сокращённый набор)
-- Полные 18 правил разграничения (single.md имел 5)
-- Quote-first подход: цитата-опора у каждой сущности
-- Phantom consensus как явная проверка
-- Iron Law как главное правило
-- Нет behavioral
+**Происхождение:** Промпт собран из эксперимента S8 (single-pass победил 4-агентный пайплайн, 17.5/20 → доработан до 19/20 в S9). Источники методологии: 11 типов + маркеры из `ontology/entities.md`, 18 правил разграничения, quote-first, Iron Law, phantom consensus.
 
 **Что не включено намеренно:**
-- Behavioral паттерны — отдельная задача
+- Behavioral паттерны — отдельный экстрактор
 - FRAME-скоринг — отложен
 - Few-shot примеры — после тестирования

@@ -192,7 +192,9 @@ skills/ (разработка)              plugin/ (деплой)
 ├── meeting-analysis/             ├── skills/
 │   ├── prompt-entity-*           ├── agents/
 │   ├── prompt-behavior-*         └── hooks/
-│   └── prompt-synthesizer*
+│   ├── prompt-protocol/telegram
+│   ├── procedure-scaffold-update
+│   └── orchestrator-meeting
 └── [будущие домены]/
 ```
 

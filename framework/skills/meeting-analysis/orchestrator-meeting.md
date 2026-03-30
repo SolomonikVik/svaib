@@ -93,7 +93,7 @@ Use only simple, single bash commands - no &&, no ||, no pipes, no ;, no redirec
 Если да — запусти субагент:
 
 ```
-Прочитай промпт из файла framework/skills/meeting-analysis/L2-prompt-telegram.md
+Прочитай промпт из файла framework/skills/meeting-analysis/L2-prompt-protocol-telegram.md
 (секция "Промпт", содержимое внутри блока ```).
 
 Прочитай выжимку: {target_dir}/meetings/{date}_{topic}_summary.md
@@ -122,5 +122,5 @@ Use only simple, single bash commands - no &&, no ||, no pipes, no ;, no redirec
 
 - L1-prompt-entity-extractor.md — промпт выжимки
 - L2-procedure-scaffold-update.md — дельта-анализатор (шаг 2)
-- L2-prompt-telegram.md — Telegram-сводка (шаг 3)
+- L2-prompt-protocol-telegram.md — Telegram-сводка (шаг 3)
 - scaffold/direction/README.md — конвенция meetings/, правило наименьшего общего контейнера
