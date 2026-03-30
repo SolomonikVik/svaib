@@ -19,7 +19,8 @@ type: reference
 - 03_progress.md — хроника по встречам
 - 04_decisions.md — решения направления
 - ../team/{person}.md — профайл лидера
-- ../team/README.md — оргструктура и маппинг направлений
+- ../team/org_structure.md — оргструктура
+- ../team/README.md — обзор team/, маппинг направлений
 
 ---
 

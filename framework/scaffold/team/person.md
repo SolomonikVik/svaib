@@ -16,7 +16,8 @@ type: reference
 ## Связанные файлы
 
 - [../{direction}/01_overview.md](../{direction}/01_overview.md) — направление(-я), которое ведёт
-- [README.md](README.md) — оргструктура и маппинг направлений
+- [org_structure.md](org_structure.md) — оргструктура
+- [README.md](README.md) — обзор team/, маппинг направлений
 
 ---
 
