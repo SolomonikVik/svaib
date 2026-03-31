@@ -54,8 +54,8 @@ Source of truth по flow — шаг 3 в [orchestrator-meeting.md](orchestrator
 
 1. Создать бота через @BotFather (мы делаем)
 2. Записать токен в KeePass (папка "Клиенты -> Telegram-боты")
-3. Клиент пишет `/start` боту
-4. Достать `chat_id` через `curl https://api.telegram.org/bot{TOKEN}/getUpdates`
+3. Клиент пишет `/start` боту @userinfobot в Telegram — получает свой `chat_id` (число). Передаёт нам
+4. Записать `chat_id` в KeePass рядом с токеном
 5. Создать `.env` в корне рабочего пространства клиента
 6. Скопировать `send_telegram.sh` в `skills/` рабочего пространства
 7. Тест: `./skills/send_telegram.sh "test message"` (из корня рабочего пространства)
