@@ -1,8 +1,8 @@
 ---
 title: "Оркестратор: полная обработка встречи"
 status: DRAFT
-updated: 2026-03-30
-version: 2
+updated: 2026-03-31
+version: 3
 type: procedure
 ---
 
@@ -56,7 +56,7 @@ type: procedure
 | Тип встречи | Подгрузить как минимум |
 |-------------|----------------------|
 | По направлению (планёрка, статус) | `{direction}/01_overview.md` |
-| 1-on-1 с сотрудником | `team/{person}.md` |
+| 1-on-1 с сотрудником | `team/{person}.md` (⚠️ сначала `ls team/` — не угадывай имя файла) |
 | Клиентская встреча | `clients/{client}/project.md` |
 | Стратсессия | `management/01_vision.md` + `02_goal.md` |
 
