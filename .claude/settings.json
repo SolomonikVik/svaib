@@ -17,7 +17,9 @@
       "Bash(soffice *)",
       "Bash(pdftoppm *)",
       "Bash(open *)",
-      "Write(**/_inbox/subagents/**)"
+      "Write(**/_inbox/subagents/**)",
+      "Bash(bash *send_telegram.sh *)",
+      "Bash(./*/send_telegram.sh *)"
     ],
     "ask": [
       "Bash(git push*)",

@@ -137,7 +137,17 @@ Use only simple, single bash commands - no &&, no ||, no pipes, no ;, no redirec
 Use only simple, single bash commands - no &&, no ||, no pipes, no ;, no redirects.
 ```
 
-Покажи результат руководителю. Он скопирует и отправит сам.
+Когда сводка готова, спроси руководителя: **"Показать в чате или отправить в Telegram?"**
+
+### Вариант A: Показать в чате (по умолчанию)
+
+Выведи сводку в code block (```), чтобы руководитель мог скопировать одним действием.
+
+### Вариант B: Отправить в Telegram
+
+Найди `send_telegram.sh` в skills/ рабочего пространства и выполни: `./path/to/send_telegram.sh "ТЕКСТ СВОДКИ"`. Проверь `"ok":true` в ответе. Если скрипт или `.env` не найдены — переключись на вариант A.
+
+> EXPERIMENTAL — требует настроенного Telegram-бота и `.env` в корне рабочего пространства. См. [telegram-delivery.md](telegram-delivery.md).
 
 ---
 
