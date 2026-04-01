@@ -4,7 +4,7 @@ source: "https://claude.com/blog/cowork-research-preview"
 source_type: docs
 status: processed
 added: 2026-02-01
-updated: 2026-03-01
+updated: 2026-04-01
 review_by: 2026-06-01
 tags: [cowork, anthropic, plugins, knowledge-work, agents, svaib-product]
 publish: false
@@ -74,7 +74,6 @@ Anthropic выпускает open-source плагины для knowledge workers
 | Enterprise | Custom | SSO, audit logs, SCIM, private marketplaces |
 
 **Ограничения (research preview):**
-- Нет memory между сессиями
 - Cowork НЕ попадает в Audit Logs, Compliance API, Data Exports
 - Запрещено для HIPAA, FedRAMP, FSI regulated workloads
 - История хранится локально, нет cross-device sync
