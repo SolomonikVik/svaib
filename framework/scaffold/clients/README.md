@@ -120,7 +120,7 @@ Scaffold для ведения проектов с внешними контра
 
 ## Обработка встреч
 
-Процедура обновления файлов досье после встречи с контрагентом: [meeting_processing.md](meeting_processing.md) (DRAFT).
+Полный цикл обработки встречи с контрагентом (выжимка -> обновление досье -> Telegram): [orchestrator-client-meeting.md](../../skills/meeting-analysis/orchestrator-client-meeting.md). L2-процедура обновления досье: [L2-procedure-client-update.md](../../skills/meeting-analysis/L2-procedure-client-update.md).
 
 ## Связанные файлы
 

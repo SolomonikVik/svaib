@@ -71,3 +71,4 @@ updated: 2026-03-31
 - 2026-03-31: Meeting analysis pipeline beta — полная синхронизация по канонической цепочке (S18). 10 файлов обновлены: protocol_format v3, L2-full v3, L2-telegram v3, orchestrator v3, README v5, meeting_overlays v3, meeting_analysis терминология. _inbox вычищен (5 файлов закрыты/удалены), future-пункты перенесены в бэклог
 - 2026-04-01: glossary.md встроен в L2-пайплайн как обязательный файл на чтение и обновление (scaffold-update v5, orchestrator v4)
 - 2026-03-31: Telegram delivery (EXPERIMENTAL) — автоотправка сводок через бота. Скрипт send_telegram.sh (markdown→HTML, экранирование, разбивка), оркестратор шаг 3 обновлён, спека telegram-delivery.md. Протестировано в Claude Code и Cowork
+- 2026-04-02: Клиентский оркестратор встреч — orchestrator-client-meeting.md + L2-procedure-client-update.md. Параллельная структура каноническому (direction/team). Удалены 3 устаревших файла (playbook + scaffold + todo), ссылки обновлены

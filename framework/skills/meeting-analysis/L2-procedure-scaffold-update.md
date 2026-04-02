@@ -4,7 +4,7 @@ status: DRAFT
 updated: 2026-04-01
 version: 5
 type: procedure
-based_on: "clients/_playbook/meeting_processing.md"
+based_on: "scaffold/clients/README.md"
 ---
 
 # Обновление файлов проекта по выжимке встречи
@@ -165,4 +165,4 @@ L2-надстройка над выжимкой встречи. Получает
 - scaffold/direction/README.md — структура направления, миссии файлов, правило наименьшего общего контейнера
 - scaffold/principles.md — принципы маршрутизации (миссия файла, один аспект — одно место, catch-all)
 - scaffold/team/person.md — шаблон профайла человека
-- clients/_playbook/meeting_processing.md — процедура-прототип (для клиентского досье svaib)
+- L2-procedure-client-update.md — аналогичная процедура для встреч с контрагентами (клиентское досье)
