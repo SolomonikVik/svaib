@@ -19,7 +19,8 @@
       "Bash(open *)",
       "Write(**/_inbox/subagents/**)",
       "Bash(bash *send_telegram.sh *)",
-      "Bash(./*/send_telegram.sh *)"
+      "Bash(./*/send_telegram.sh *)",
+      "Bash(*/send_telegram.sh *)"
     ],
     "ask": [
       "Bash(git push*)",
