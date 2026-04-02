@@ -60,6 +60,23 @@ Source of truth по flow — шаг 3 в [orchestrator-meeting.md](orchestrator
 6. Скопировать `send_telegram.sh` в `skills/` рабочего пространства
 7. Тест: `./skills/send_telegram.sh "test message"` (из корня рабочего пространства)
 
+## Troubleshooting
+
+### curl к Telegram возвращает 403 (только Cowork)
+
+**Симптом:** `send_telegram.sh` возвращает `403 Forbidden`, заголовок `X-Proxy-Error: blocked-by-allowlist`. В Claude Code CLI проблема не воспроизводится.
+
+**Причина:** Cowork выполняет команды в sandbox-VM. Если "Allow network egress" выключен — sandbox прокси блокирует все внешние домены, включая `api.telegram.org`.
+
+**Решение:**
+1. Settings → Capabilities → Allow network egress → ON
+2. Domain allowlist → All domains
+3. Открыть **новую сессию** Cowork (старые не подхватывают изменение)
+
+**Диагностика:** `env | grep -i proxy` — если в выводе есть `HTTPS_PROXY=http://localhost:3128`, sandbox фильтрует трафик.
+
+> Подробный отчёт расследования: `clients/_inbox/cowork-telegram-debug-report.md`
+
 ## Связанные файлы
 
 - orchestrator-meeting.md — оркестратор (ссылается на этот файл)
