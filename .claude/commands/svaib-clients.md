@@ -32,6 +32,7 @@ description: "Режим работы с клиентами SVAIB"
 
 Примеры задач:
 - "Обработай встречу с Евгением" → используй оркестратор `framework/skills/meeting-analysis/orchestrator-client-meeting.md`
+- "Подтяни транскрипт" → скилл `macwhisper-transcript` (вытаскивает из MacWhisper в `_transcript.md`, метаданные для Шага 0)
 - "Что ему на домашку дать"
 - "Собери контекст для следующей встречи"
 

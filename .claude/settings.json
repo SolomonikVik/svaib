@@ -20,7 +20,9 @@
       "Write(**/_inbox/subagents/**)",
       "Bash(bash *send_telegram.sh *)",
       "Bash(./*/send_telegram.sh *)",
-      "Bash(*/send_telegram.sh *)"
+      "Bash(*/send_telegram.sh *)",
+      "Bash(bash *macwhisper_transcript.sh *)",
+      "Bash(sqlite3 *MacWhisper*)"
     ],
     "ask": [
       "Bash(git push*)",
