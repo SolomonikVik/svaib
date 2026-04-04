@@ -2,11 +2,11 @@
 title: "Skills — исполняемые инструкции для AI — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-03-07
+updated: 2026-04-04
 review_by: 2026-06-07
 tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling, code-enforcement, fallback]
 publish: false
-version: 14
+version: 15
 ---
 
 # Skills — Исполняемые инструкции для AI
@@ -297,6 +297,7 @@ Causes и solutions:
 | **[SkillsMP](https://skillsmp.com)** | Веб-агрегатор. Десятки тысяч скиллов, фильтрация | Найти → клонировать с GitHub |
 | **[HashiCorp](https://github.com/hashicorp/agent-skills)** | Terraform, Packer, инфраструктура | `npx skills add hashicorp/agent-skills` |
 | **[antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills)** | Курированная коллекция 883+ скиллов, 9 категорий | `npx antigravity-awesome-skills` |
+| **[NeuralDeep](https://neuraldeep.ru/)** | База скиллов под российские сервисы: Яндекс, Битрикс24, 1С. Open source, формат claude-skill. Автор: @neuraldeep | [GitHub](https://github.com/vakovalskii/neuraldeep) |
 
 Также: [add-skill.org](https://add-skill.org), openskills, [SkillHub](https://www.skillhub.club/).
 
