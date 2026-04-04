@@ -21,7 +21,9 @@ type: operational
 
 ## Настройки Zoom (один раз)
 
-### Безопасность — zoom.us → Settings → Meeting → Security
+Все настройки: [zoom.us/profile/setting](https://us06web.zoom.us/profile/setting)
+
+### Безопасность — Settings → Meeting → Security
 
 - **Waiting Room** — ВЫКЛЮЧИТЬ (для кружка не нужен, отвлекает хоста)
 - **Passcode** — включить (встроен в ссылку, защита от случайных ботов)

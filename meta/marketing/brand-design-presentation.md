@@ -15,6 +15,7 @@ priority: medium
 ## Связанные файлы
 
 - [brand.md](brand.md) — палитра, логотип, философия, универсальные правила
+- [brand-design-illustrations.md](brand-design-illustrations.md) — промпт арт-директора, шаблон для генерации картинок
 - `.claude/skills/presentation/references/design-guide.md` — PptxGenJS-реализация (ссылается сюда)
 
 ---
@@ -143,6 +144,4 @@ priority: medium
 
 ## Art Director Prompt
 
-Промпт для генерации иллюстраций — хранится в инструкции арт-директора (отдельный контекст).
-
-Стиль: современная иллюстрация, Bauhaus-структура с Matisse/Kandinsky-игривостью. Flat design, геометрические формы, ограниченная палитра (teal, dark blue, yellow, pink = только акцент).
+Полный гайд по генерации иллюстраций: стиль, шаблон промпта, библиотека форм, проверенные примеры — в [brand-design-illustrations.md](brand-design-illustrations.md).
