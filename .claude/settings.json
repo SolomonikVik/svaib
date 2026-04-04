@@ -25,6 +25,7 @@
       "Bash(sqlite3 *MacWhisper*)"
     ],
     "ask": [
+      "Edit(*)",
       "Bash(git push*)",
       "Bash(git reset*)",
       "Bash(git checkout -- *)",
