@@ -21,7 +21,7 @@ version: 1
 - [../tools/claude-project.md](../tools/claude-project.md) — Claude Project как delivery-среда (Drive Fetch, PK sync, уровни доступа)
 - [../tools/cowork.md](../tools/cowork.md) — Cowork: возможности и ограничения
 - [search-mechanics.md](search-mechanics.md) — механики поиска в Claude Projects
-- [../../clients/_playbook/claude_setup_guide.md](../../clients/_playbook/claude_setup_guide.md) — гайд по настройке Claude для клиента
+- [../../clients/playbook/delivery/operations/setup_claude/claude_setup_guide.md](../../clients/playbook/delivery/operations/setup_claude/claude_setup_guide.md) — гайд по настройке Claude для клиента
 
 ---
 

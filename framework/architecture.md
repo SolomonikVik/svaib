@@ -23,7 +23,7 @@ priority: high
 - plugin/README.md — деплоимый пакет (реализация помощников)
 - ../meta/product/decisions/runtime-choice.md — решение о границе между plugin и runtime
 - ../meta/product/product_vision.md — видение продукта, бизнес-модель
-- ../clients/_playbook/model.md — модель продукта для клиентов (презентационный слой)
+- ../meta/product/product_vision.md — видение продукта, бизнес-модель
 
 ---
 

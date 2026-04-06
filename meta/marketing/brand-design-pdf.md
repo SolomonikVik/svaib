@@ -15,7 +15,7 @@ priority: medium
 ## Связанные файлы
 
 - [brand.md](brand.md) — палитра, логотип, философия, универсальные правила
-- [generate_proposal_guide.md](../../clients/_playbook/generate_proposal_guide.md) — инструкция к генератору оффера (автоматический)
+- [generate_proposal.md](../../clients/playbook/presale/operations/generate_proposal.md) — инструкция к генератору оффера (автоматический)
 - Эталон HTML (оффер): [_examples/template-offer.html](_examples/template-offer.html)
 - Эталон HTML (многостраничный): [_examples/template-multipage.html](_examples/template-multipage.html)
 
@@ -181,7 +181,7 @@ priority: medium
 
 | Тип документа | HTML-шаблон | Генератор | Стек |
 |---------------|------------|-----------|------|
-| **Оффер** (1 стр.) | [_examples/template-offer.html](_examples/template-offer.html) | [generate_proposal.py](../../clients/_playbook/generate_proposal.py) ([инструкция](../../clients/_playbook/generate_proposal_guide.md)) | weasyprint |
+| **Оффер** (1 стр.) | [_examples/template-offer.html](_examples/template-offer.html) | [generate_proposal.py](../../clients/playbook/presale/operations/proposal_generator/generate_proposal.py) ([инструкция](../../clients/playbook/presale/operations/generate_proposal.md)) | weasyprint |
 | **Многостраничный** (протокол, инсайты, письмо) | [_examples/template-multipage.html](_examples/template-multipage.html) | — (ручная подстановка) | weasyprint |
 | **Схема/диаграмма** | [_examples/diagram-meeting-analytics.html](_examples/diagram-meeting-analytics.html) | — | Puppeteer (см. [brand-design-diagrams.md](brand-design-diagrams.md)) |
 

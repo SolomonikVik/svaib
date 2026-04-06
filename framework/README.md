@@ -24,7 +24,7 @@ priority: high
 - [status.md](status.md) — текущее состояние фреймворка (что готово, что в работе, ограничения)
 - [architecture.md](architecture.md) — архитектура продукта (слои, компоненты, связи)
 - [../meta/product/product_vision.md](../meta/product/product_vision.md) — видение продукта Second AI Brain
-- [../clients/_playbook/onboarding.md](../clients/_playbook/onboarding.md) — процесс онбординга клиента
+- [../clients/playbook/delivery/01_delivery_plan.md](../clients/playbook/delivery/01_delivery_plan.md) — delivery plan (онбординг, ДЗ, инструменты)
 - [_inbox/](_inbox/) — входящие задачи, инсайты, чужие архитектуры для разбора
 
 ---
