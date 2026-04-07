@@ -5,8 +5,8 @@ added: 2026-01-30
 review_by: 2026-04-30
 tags: [tools, automation, platforms, index]
 publish: false
-version: 11
-updated: 2026-03-18
+version: 12
+updated: 2026-04-07
 ---
 
 # Tools — AI-инструменты и платформы
@@ -37,7 +37,11 @@ Agent platform Anthropic для не-разработчиков. Формат п
 
 ### Запись и транскрибация встреч
 
-Конкурентный ландшафт и технологический стек для продукта SVAIB. Коммерческие (Granola, Bluedot, Otter, Fireflies) и open-source (Hyprnote, Sherpa-ONNX, T-one). → [meeting-transcription.md](meeting-transcription.md)
+Дерево решений по сценариям: онлайн (Granola, Fireflies, Krisp, Fellow, Circleback), офлайн (MacWhisper, Vibe, Plaud Note Pro), звонки (Plaud VCS, iOS 18.1, Cube ACR), приватность (локальный Whisper/GigaAM). Автоматизация: Zoom webhook, Контур Толк API/F5AI, Plaud AutoFlow/Zapier, наш MacWhisper-скилл. MCP-серверы у 6 из 9 инструментов. Ключевое: ни один софт не закрывает все сценарии — комбинация софт + Plaud покрывает 95%. → [meeting-transcription.md](meeting-transcription.md)
+
+### STT-модели для русского языка
+
+Сравнение движков распознавания русской речи по WER-бенчмаркам. GigaAM-v3 (Сбер, MIT) доминирует с двукратным отрывом от Whisper (~8% vs ~16% средний WER). На зашумлённом аудио (дальний микрофон) разрыв 4x. Рекомендации: GigaAM-v3 e2e_rnnt для batch-обработки, T-one для стриминга, pyannote для диаризации. Облачные альтернативы: ElevenLabs Scribe v2, Yandex SpeechKit. → [russian-stt-models.md](russian-stt-models.md)
 
 ### n8n — платформа автоматизации
 

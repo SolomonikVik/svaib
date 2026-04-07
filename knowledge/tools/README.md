@@ -14,6 +14,7 @@
 - [manus.md](manus.md) — Manus: автономный AI-агент (Meta), Telegram-бот
 - [ai-workspaces.md](ai-workspaces.md) — AI-оболочки: каталог сред для работы с AI
 - [web-scraping-apis.md](web-scraping-apis.md) — Web Scraping APIs: прокси-сервисы для AI
-- [meeting-transcription.md](meeting-transcription.md) — Запись и транскрибация встреч: Granola, Bluedot, Otter, Hyprnote, Sherpa-ONNX
+- [meeting-transcription.md](meeting-transcription.md) — Запись и транскрибация встреч: дерево решений по сценариям, автоматизация, MCP-серверы
+- [russian-stt-models.md](russian-stt-models.md) — STT-модели для русского: GigaAM-v3 vs Whisper vs T-one, WER-бенчмарки, рекомендации
 - [presentations.md](presentations.md) — Презентации с AI: Slidev, Lovable, Slider AI, подходы
 - [claude-project.md](claude-project.md) — Claude Project: delivery-среда для клиентов SVAIB (Google Workspace коннекторы, ограничения Drive API)
