@@ -72,3 +72,4 @@ updated: 2026-03-31
 - 2026-04-01: glossary.md встроен в L2-пайплайн как обязательный файл на чтение и обновление (scaffold-update v5, orchestrator v4)
 - 2026-03-31: Telegram delivery (EXPERIMENTAL) — автоотправка сводок через бота. Скрипт send_telegram.sh (markdown→HTML, экранирование, разбивка), оркестратор шаг 3 обновлён, спека telegram-delivery.md. Протестировано в Claude Code и Cowork
 - 2026-04-02: Клиентский оркестратор встреч — orchestrator-client-meeting.md + L2-procedure-client-update.md. Параллельная структура каноническому (direction/team). Удалены 3 устаревших файла (playbook + scaffold + todo), ссылки обновлены
+- 2026-04-07: Границы продукта зафиксированы — Second AI Brain для бизнеса, не для всей жизни. Решение (product-scope.md) + правки в 5 файлах (vision, architecture, scaffold, onboarding)
