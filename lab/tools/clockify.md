@@ -15,14 +15,14 @@ type: reference
 - **Timezone:** `Asia/Krasnoyarsk` (UTC+7)
 - **Base URL:** `https://api.clockify.me/api/v1`
 
-## Как получить записи за день
+## Как получить записи
+
+Скрипт: [clockify-fetch.sh](clockify-fetch.sh)
 
 ```bash
-source .env && curl -s -H "X-Api-Key: $CLOCKIFY_API_KEY" \
-  "https://api.clockify.me/api/v1/workspaces/658198f8a2695d07b8c9c523/user/658198f8a2695d07b8c9c51f/time-entries?start=YYYY-MM-DDT00:00:00Z&end=YYYY-MM-DDT00:00:00Z&project=67b2acf080926120156524ca"
+lab/tools/clockify-fetch.sh 2026-04-04           # один день
+lab/tools/clockify-fetch.sh 2026-04-04 2026-04-06 # диапазон (end не включается)
 ```
-
-Подставить нужные даты. `end` — следующий день после `start`.
 
 ## Маппинг направлений
 
