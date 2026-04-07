@@ -1,7 +1,7 @@
 ---
 title: "Архитектура продукта Second AI Brain"
 updated: 2026-04-07
-version: 5
+version: 6
 scope: "product_core"
 priority: high
 ---
@@ -105,7 +105,7 @@ README, навигация  →  описание того что есть
 Какие файлы, какие папки, что куда кладётся.
 
 - **Scaffold** ([scaffold/](scaffold/)) — готовый каркас папок и документов. Клиент разворачивает и начинает заполнять
-- **Онтология** ([ontology.md](ontology/ontology.md)) — описание сущностей: 8 файлов ядра (vision, goal, plan, weekly_progress, timeline, ideas, decisions, reflections) + мета (README, my_profile, SKILL.md) + опциональные блоки (product, processes, knowledge)
+- **Онтология** ([ontology.md](ontology/ontology.md)) — описание сущностей: 8 файлов ядра (vision, goal, plan, weekly_progress, timeline, ideas, decisions, reflections) + мета (README, my_profile, CLAUDE.md) + опциональные блоки (product, processes, knowledge)
 - **Связи между файлами** — чёткая иерархия: vision → goal → plan → weekly_progress → timeline
 
 Наша ценность: клиент получает не пустую папку, а архитектуру — понятно что куда класть, как файлы связаны, когда какой обновлять.

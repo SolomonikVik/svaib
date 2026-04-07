@@ -45,14 +45,14 @@ updated: 2026-03-31
 
 ## Что в работе
 
-- Meeting analysis: beta достигнута. Следующее: behavioral extractor, pre-processing, SKILL.md формат
+- Meeting analysis: beta достигнута. Следующее: behavioral extractor, pre-processing
 
 ## Блокеры
 
 - Meeting analysis протестирован на 2 клиентских транскриптах, но behavioral не верифицирован
 - Skills зависят от стабилизации meeting analysis
 - Формат scaffold-шаблона не зафиксирован
-- SKILL.md в scaffold — роль неясна
+- ~~SKILL.md в scaffold — роль неясна~~ → решено: SKILL.md → CLAUDE.md, skills → .claude/skills/
 
 ## Мини-лог
 
@@ -73,3 +73,4 @@ updated: 2026-03-31
 - 2026-03-31: Telegram delivery (EXPERIMENTAL) — автоотправка сводок через бота. Скрипт send_telegram.sh (markdown→HTML, экранирование, разбивка), оркестратор шаг 3 обновлён, спека telegram-delivery.md. Протестировано в Claude Code и Cowork
 - 2026-04-02: Клиентский оркестратор встреч — orchestrator-client-meeting.md + L2-procedure-client-update.md. Параллельная структура каноническому (direction/team). Удалены 3 устаревших файла (playbook + scaffold + todo), ссылки обновлены
 - 2026-04-07: Границы продукта зафиксированы — Second AI Brain для бизнеса, не для всей жизни. Решение (product-scope.md) + правки в 5 файлах (vision, architecture, scaffold, onboarding)
+- 2026-04-07: SKILL.md → CLAUDE.md + .claude/skills/ — два слоя разделены (инструкция агенту vs исполняемые навыки). Anthropic-specific пометка, 9 файлов обновлены (scaffold, ontology, file_spec, architecture, plugin, playbook)

@@ -1,4 +1,6 @@
-# SKILL.md — [Название проекта]
+# CLAUDE.md — [Название проекта]
+
+> **Runtime-зависимость:** CLAUDE.md и `.claude/skills/` — механизмы платформы Anthropic Claude (Claude.ai, Claude Code, Cowork). При смене runtime: CLAUDE.md → system prompt нового runtime, `.claude/skills/` → native skills mechanism. Продуктовая ценность (методология, промпты) не зависит от runtime — меняется только обёртка.
 
 ## Роль
 
@@ -22,7 +24,7 @@
 
 ### По умолчанию (каждый сеанс)
 ```
-README → SKILL.md → 01_vision → 02_goal → 03_plan
+README → CLAUDE.md → my_profile → 01_vision → 02_goal → 03_plan
 ```
 
 ### По триггеру
@@ -30,6 +32,14 @@ README → SKILL.md → 01_vision → 02_goal → 03_plan
 - Подведение итогов → 04_weekly_progress
 - Планирование квартала → ideas, metrics
 - Анализ состояния → reflections
+
+## Помощники (.claude/skills/)
+
+Исполняемые навыки лежат в `.claude/skills/`. Claude подключает их автоматически по описанию задачи.
+
+| Навык | Когда срабатывает |
+|-------|------------------|
+| [Заполняется при настройке] | [триггер] |
 
 ## Ритуалы
 

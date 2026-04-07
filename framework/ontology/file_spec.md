@@ -1,7 +1,7 @@
 ---
 title: "Спецификация файла Second AI Brain — формат, структура, правила"
-updated: 2026-03-27
-version: 4
+updated: 2026-04-07
+version: 5
 scope: "product_core"
 priority: high
 type: reference
@@ -285,7 +285,7 @@ Management-ядро (vision, goal, plan, weekly_progress, timeline) — **status
 |:--------|:---------------|:------------|:------------|
 | **Полный** | management/ ядро | YAML (title, updated, version) + Кратко + Работа с файлом + Связанные файлы + автономные секции + [SOURCE]/[REF:] | type, scope, priority |
 | **Стандартный** | knowledge/, проектные файлы | YAML (title, updated, version) + Кратко + Связанные файлы | type, tags, source, status, review_by |
-| **Мета** | README.md, SKILL.md | Свой формат (будет описан позже) | — |
+| **Мета** | README.md, CLAUDE.md | Свой формат (будет описан позже) | — |
 
 ---
 
@@ -334,7 +334,7 @@ Management-ядро (vision, goal, plan, weekly_progress, timeline) — **status
 
 - **type → онтология.** Как 5 значений type маппятся на 8 сущностей онтологии (vision, goal, ideas...)? Возможно нужен другой подход
 - **status.** Какие значения, кому нужен, кому нет. Нужен ли status management-ядру? Сейчас — "не нужен", но decisions точно нуждается
-- **Формат мета-файлов.** README.md и SKILL.md — "свой формат", но нигде не описан
+- **Формат мета-файлов.** README.md и CLAUDE.md — "свой формат", но нигде не описан
 - **[SOURCE]/[REF:] и reflections.** "Полный" уровень требует маркеры для всего ядра, но reflections — неструктурированный лог, маркировка бессмысленна
 - **Порог для Contents.** Когда файл "близок к лимиту"? >250 строк? Не определено
 
