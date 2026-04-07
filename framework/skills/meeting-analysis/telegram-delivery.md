@@ -50,15 +50,9 @@ Source of truth по flow — шаг 3 в [orchestrator-meeting.md](orchestrator
 3. **Показать в чате** (по умолчанию) — вывести в code block для копирования
 4. **Отправить в Telegram** — выполнить `send_telegram.sh "ТЕКСТ СВОДКИ"` (скрипт из `skills/`). Проверить `"ok":true`. Если `.env` не найден или ошибка — fallback на code block
 
-## Онбординг (шаги для нового клиента)
+## Онбординг
 
-1. Создать бота через @BotFather (мы делаем)
-2. Записать токен в KeePass (папка "Клиенты -> Telegram-боты")
-3. Клиент пишет `/start` боту @userinfobot в Telegram — получает свой `chat_id` (число). Передаёт нам
-4. Записать `chat_id` в KeePass рядом с токеном
-5. Создать `.env` в корне рабочего пространства клиента
-6. Скопировать `send_telegram.sh` в `skills/` рабочего пространства
-7. Тест: `./skills/send_telegram.sh "test message"` (из корня рабочего пространства)
+Пошаговая инструкция для настройки бота новому клиенту: [clients/playbook/delivery/operations/setup_telegram_bot.md](../../../clients/playbook/delivery/operations/setup_telegram_bot.md)
 
 ## Troubleshooting
 
