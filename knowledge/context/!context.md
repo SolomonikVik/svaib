@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-03-20
+updated: 2026-04-07
 review_by: 2026-06-20
 tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations]
 publish: false
-version: 14
+version: 15
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -46,6 +46,10 @@ version: 14
 Файлы — «нулевой уровень» памяти агента (аудируемость, git-diff, ручная правка). Спектр уровней: 0 — статические инструкции (CLAUDE.md) → 1 — авто-память (MEMORY.md) → 2 — файлы + семантический поиск (OpenClaw memsearch) → 3 — внешние API (Mem0) → 4 — темпоральные графы (Graphiti/Zep). Индексация и графы — надстройки, но source of truth остаётся в редактируемых файлах. Подробнее о спектре → [ai-system-files.md](ai-system-files.md).
 
 Паттерн персоны из OpenClaw: soul.md (ядро личности), identity.md (внешняя подача), user.md (контекст пользователя), memory.md (накопленные факты). Разделение «кто агент» от «что агент делает» — архитектурный паттерн, позволяющий ревьюить изменения в «душе» отдельно от «памяти». → [../tools/openclaw.md](../tools/openclaw.md)
+
+### LLM Wiki — вики, поддерживаемая LLM
+
+Паттерн (Karpathy, 2026): вместо RAG по сырым источникам — LLM инкрементально компилирует markdown-вики. Три операции: **Ingest** (обработать источник → обновить 10-15 страниц), **Query** (ответ на вопрос становится страницей вики — знание компаундится), **Lint** (периодический аудит целостности: противоречия, устаревшие факты, осиротевшие страницы). Ключевой инсайт: LLM отлично справляется с бухгалтерией знаний (кросс-ссылки, консистентность), от которой человек отказывается из-за экспоненциального роста maintenance burden. Паттерн работает на уровнях 0-1 спектра (markdown + git, без БД). Вызвал волну реализаций: llm-wiki-kit (MCP), sage-wiki, memex, atomic-knowledge. Подробнее → [llm-wiki.md](llm-wiki.md)
 
 ### Context Graphs — институциональная память решений
 
@@ -90,4 +94,5 @@ version: 14
 - [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов для AI-ассистентов: 13 инструментов, AGENTS.md стандарт, паттерн персоны, best practices
 - [../skills/skill-graphs/skill-graphs.md](../skills/skill-graphs/skill-graphs.md) — Skill Graphs: навигация по знаниям, progressive disclosure, wikilinks (arscontexta). Живёт в skills/, но по сути context engineering
 - [../skills/skill-graphs/architecture.md](../skills/skill-graphs/architecture.md) — архитектура: Three-Space, 6Rs pipeline, hooks, верифицированный progressive disclosure
+- [llm-wiki.md](llm-wiki.md) — LLM Wiki (Karpathy): паттерн инкрементальной вики — Ingest/Query/Lint, комьюнити-реализации, связь с arscontexta и ICM
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости, зазоры чтения/записи, мосты, целевая архитектура для клиентов
