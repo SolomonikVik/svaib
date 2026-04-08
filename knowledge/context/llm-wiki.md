@@ -97,7 +97,7 @@ LLM обрабатывает один источник за раз. Извлек
 
 **arscontexta (6Rs Pipeline)** — Reweave и Verify из 6Rs = более детализированная версия Lint. arscontexta добавляет Reflect (поиск неочевидных связей) и Rethink (рефакторинг структуры). Карпатый проще, arscontexta глубже. → [skill-graphs/architecture.md](skill-graphs/architecture.md)
 
-**ICM (Van Clief, 2026)** — "configure the factory, not the product" = близко к подходу Карпатого: правь schema/конфигурацию, а не отдельные страницы. ICM добавляет разделение reference (стабильные правила) vs working (per-run артефакты), которого у Карпатого нет.
+**ICM (Van Clief, 2026)** — "configure the factory, not the product" = близко к подходу Карпатого: правь schema/конфигурацию, а не отдельные страницы. ICM добавляет разделение reference (стабильные правила) vs working (per-run артефакты), которого у Карпатого нет. → [icm.md](icm.md)
 
 **File-based Memory** — LLM Wiki работает на уровнях 0-1 спектра памяти (статические файлы + авто-поддержка, без embeddings, без графовых БД). Осознанный выбор: портабельность и аудируемость важнее скорости поиска. → [ai-system-files.md](ai-system-files.md)
 

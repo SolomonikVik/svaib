@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-04-07
+updated: 2026-04-08
 review_by: 2026-06-20
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations]
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm]
 publish: false
-version: 15
+version: 16
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -71,6 +71,10 @@ version: 15
 
 Консолидированное исследование (3 модели, февраль 2026) по тому, как три основных инструмента технически находят файлы. Claude Code — агентный grep без индекса (Boris Cherny: "outperformed everything else by a lot"). Cursor — облачный semantic index (tree-sitter → Turbopuffer). Claude Projects — full context (<200K) или автоматический RAG (>200K, предположительно Contextual Retrieval). Главный вывод: имя файла — единственная оптимизация, работающая везде; Claude Code "ходит" по ссылкам, Cursor "сканирует" по смыслу. Оптимизировать файлы нужно под grep И embedding одновременно. Подробнее → [search-mechanics.md](search-mechanics.md).
 
+### ICM — оркестрация через файловую структуру
+
+ICM (Van Clief, McDermott, 2026) — методология, где файловая система заменяет code-level оркестрацию агентов. Порядок папок = последовательность этапов, содержимое папки = контекст этапа. Пять принципов (one stage one job, plain text interface, layered context loading, every output is an edit surface, configure the factory not the product) и пятислойная иерархия контекста (Layer 0-4: identity → routing → stage contract → reference → working). Ключевые инсайты: разделение reference (стабильные правила, internalize) vs working (per-run данные, transform) — разное когнитивное задание для модели; stage contracts как декларативный критерий достаточности контекста; токен-бюджеты ~5k vs ~42k показывают что staged loading в разы эффективнее монолитного. Работает для sequential workflows с human review; не работает для динамической навигации по произвольным задачам. Подробнее → [icm.md](icm.md)
+
 ### Navigation & Progressive Disclosure — как агент навигирует знания
 
 Паттерны послойной навигации по файлам знаний: агент начинает с дешёвых операций (file tree, YAML descriptions) и углубляется только по необходимости (MOC hierarchy → wiki-link traversal → full content). Результат: минимум контекста при максимуме пользы. Навигация отвязана от файловой структуры — файлы находятся по связям, а не по путям. Формализовано как "skill graph" (Heinrich/@arscontexta, 2026) — по сути context engineering, хотя название отсылает к skills. Архитектура, элементы, верифицированная реализация → [skill-graphs/](skill-graphs/).
@@ -94,5 +98,6 @@ version: 15
 - [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов для AI-ассистентов: 13 инструментов, AGENTS.md стандарт, паттерн персоны, best practices
 - [skill-graphs/skill-graphs.md](skill-graphs/skill-graphs.md) — Skill Graphs: навигация по знаниям, progressive disclosure, wikilinks (arscontexta)
 - [skill-graphs/architecture.md](skill-graphs/architecture.md) — архитектура: Three-Space, 6Rs pipeline, hooks, верифицированный progressive disclosure
+- [icm.md](icm.md) — ICM (Van Clief, 2026): оркестрация агентов через файловую структуру, 5 слоёв контекста, stage contracts, reference vs working
 - [llm-wiki.md](llm-wiki.md) — LLM Wiki (Karpathy): паттерн инкрементальной вики — Ingest/Query/Lint, комьюнити-реализации, связь с arscontexta и ICM
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости, зазоры чтения/записи, мосты, целевая архитектура для клиентов

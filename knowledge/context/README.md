@@ -16,6 +16,7 @@
 - [search-mechanics.md](search-mechanics.md) — Как Claude Code, Cursor, Claude Projects и ChatGPT Projects ищут файлы: механики поиска, уровни доступа, практические выводы
 
 - [ai-system-files.md](ai-system-files.md) — AI System Files: карта конфигурационных файлов для AI-ассистентов (CLAUDE.md, AGENTS.md, soul.md), стандартизация AAIF, best practices, архитектура памяти через файлы
+- [icm.md](icm.md) — ICM (Van Clief, 2026): оркестрация агентов через файловую структуру, 5 слоёв контекста, stage contracts, reference vs working
 - [llm-wiki.md](llm-wiki.md) — LLM Wiki (Karpathy): паттерн персональной вики, поддерживаемой LLM — Ingest/Query/Lint, комьюнити-реализации
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости форматов, зазоры чтения/записи, варианты мостов, целевая архитектура для клиента
 
