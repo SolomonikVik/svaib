@@ -245,5 +245,5 @@ arscontexta не предлагает шаблоны — рассуждает и
 - [arscontexta-patterns.md](arscontexta-patterns.md) — паттерны для plugin-архитектуры
 - [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов
 - [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect
-- [../!skills.md](../!skills.md) — сводка знаний о Skills
-- [../../context/!context.md](../../context/!context.md) — сводка context engineering
+- [../../skills/!skills.md](../../skills/!skills.md) — сводка знаний о Skills
+- [../!context.md](../!context.md) — сводка context engineering

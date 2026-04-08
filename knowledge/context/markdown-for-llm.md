@@ -193,7 +193,7 @@ Anthropic Contextual Retrieval (2024): инъекция контекста в ч
 
 ### 4.1 Как LLM видит ссылки
 
-LLM не может переходить по ссылкам (`[[wikilinks]]` или `[markdown](file.md)`). Видит их только как семантические сигналы: "этот файл связан с X". Для перехода нужен tool use. Однако при agentic use (Claude Code, Cursor) агент может следовать ссылкам через инструменты — это основа паттерна Skill Graphs, где wikilinks в прозе служат семантически богатой навигацией (→ [../skills/skill-graphs/skill-graphs.md](../skills/skill-graphs/skill-graphs.md)).
+LLM не может переходить по ссылкам (`[[wikilinks]]` или `[markdown](file.md)`). Видит их только как семантические сигналы: "этот файл связан с X". Для перехода нужен tool use. Однако при agentic use (Claude Code, Cursor) агент может следовать ссылкам через инструменты — это основа паттерна Skill Graphs, где wikilinks в прозе служат семантически богатой навигацией (→ [skill-graphs/skill-graphs.md](skill-graphs/skill-graphs.md)).
 
 ### 4.2 Типизированные связи
 

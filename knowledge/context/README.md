@@ -19,7 +19,6 @@
 - [llm-wiki.md](llm-wiki.md) — LLM Wiki (Karpathy): паттерн персональной вики, поддерживаемой LLM — Ingest/Query/Lint, комьюнити-реализации
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости форматов, зазоры чтения/записи, варианты мостов, целевая архитектура для клиента
 
-**Кросс-ссылки:**
-- [../skills/skill-graphs/](../skills/skill-graphs/) — Skill Graphs (arscontexta): навигация агента по знаниям, progressive disclosure, wikilinks. Живёт в skills/, но контент на 85%+ про context engineering
+- [skill-graphs/](skill-graphs/) — Skill Graphs (arscontexta): навигация агента по знаниям, progressive disclosure, wikilinks, архитектура контекста
 
 **Как файлы связаны:** agent-memory.md — широкая карта всех подходов к памяти агентов. temporal-graphs.md — глубокое погружение в один конкретный подход (Temporal Graph). temporal-graphs-doronin.md — практика работы с Graphiti. context-graphs.md — бизнес-концепция: зачем организации нужна память решений, открытый вопрос темпоральности решается через temporal-graphs. markdown-for-llm.md и search-mechanics.md — пара: первый про КАК писать файлы, второй про КАК их находят AI-инструменты. ai-system-files.md — карта самих файлов (CLAUDE.md, AGENTS.md и др.): какие инструменты что читают, стандарт AGENTS.md, паттерн персоны (soul.md).

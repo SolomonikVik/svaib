@@ -187,4 +187,4 @@ SessionStart hook — инжектирует `using-skills` скилл в нач
 - [!skills.md](!skills.md) — сводка знаний о скиллах (формат, принципы, экосистема)
 - [skill-activation.md](skill-activation.md) — механика активации и проблема надёжности ~20%, к которой tooling даёт конкретные решения
 - [superpowers.md](superpowers.md) — библиотека Superpowers: TDD-подход к скиллам (complementary к tooling)
-- [skill-graphs/arscontexta-skill-anatomy.md](skill-graphs/arscontexta-skill-anatomy.md) — 7 паттернов проектирования (design-level, tooling — build/validate-level)
+- [context/skill-graphs/arscontexta-skill-anatomy.md](../context/skill-graphs/arscontexta-skill-anatomy.md) — 7 паттернов проектирования (design-level, tooling — build/validate-level)

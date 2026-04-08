@@ -123,4 +123,4 @@ Claude Code грузит ВЕСЬ body SKILL.md при старте, не тол
 - [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов
 - [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect
 - [../../cases/arscontexta.md](../../cases/arscontexta.md) — кейс arscontexta как продукт
-- [../!skills.md](../!skills.md) — сводка знаний о Skills
+- [../../skills/!skills.md](../../skills/!skills.md) — сводка знаний о Skills

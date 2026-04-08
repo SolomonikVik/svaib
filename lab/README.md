@@ -28,7 +28,7 @@ updated: 2026-03-17
 
 **Навигация в knowledge/:** каждая категория имеет README (что есть) и !файл (сводка знаний). Читай README категории → потом конкретный файл.
 
-**Архитектура arscontexta** — reference-реализация skill graph подхода: progressive disclosure, session-orient, mode separation, hooks как enforcement. Изучено и задокументировано в `knowledge/skills/skill-graphs/` (README → architecture → patterns → skill anatomy → полный пример /architect). Наши design constraints для команд выведены из этой архитектуры.
+**Архитектура arscontexta** — reference-реализация skill graph подхода: progressive disclosure, session-orient, mode separation, hooks как enforcement. Изучено и задокументировано в `knowledge/context/skill-graphs/` (README → architecture → patterns → skill anatomy → полный пример /architect). Наши design constraints для команд выведены из этой архитектуры.
 
 ---
 

@@ -91,7 +91,7 @@ skill-name/
 
 **Что НЕ включать:** README.md, CHANGELOG.md — скилл содержит только то, что нужно AI. При распространении через GitHub — repo-level README отдельно от skill folder.
 
-Много маленьких скиллов лучше одного большого. Системы обрабатывают 100+ скиллов. Один скилл — одна задача. Когда домен глубже — Skill Graph (→ [skill-graphs/](skill-graphs/skill-graphs.md)).
+Много маленьких скиллов лучше одного большого. Системы обрабатывают 100+ скиллов. Один скилл — одна задача. Когда домен глубже — Skill Graph (→ [context/skill-graphs/](../context/skill-graphs/skill-graphs.md)).
 
 Три паттерна организации ресурсов:
 - **High-level guide + references** — SKILL.md содержит quick start, ссылки на отдельные файлы
@@ -124,7 +124,7 @@ skill-name/
 
 **Cross-references — скиллы ссылаются друг на друга.** Секция "Related Skills" создаёт связную методологию. Пример: systematic-debugging → test-driven-development (написание теста, предотвращающего повторение бага). Skill graphs расширяют: wikilinks в прозе вместо списков.
 
-**Progressive Disclosure — три уровня.** 1) Metadata (name + description) — всегда в контексте (~100 слов). 2) SKILL.md body — при активации (<5k слов). 3) Bundled resources — по необходимости (скрипты исполняются без чтения в контекст). Skill graphs расширяют до пяти уровней. Подробнее: [skill-graphs/](skill-graphs/skill-graphs.md).
+**Progressive Disclosure — три уровня.** 1) Metadata (name + description) — всегда в контексте (~100 слов). 2) SKILL.md body — при активации (<5k слов). 3) Bundled resources — по необходимости (скрипты исполняются без чтения в контекст). Skill graphs расширяют до пяти уровней. Подробнее: [context/skill-graphs/](../context/skill-graphs/skill-graphs.md).
 
 **Composability — скилл работает рядом с другими.** Claude загружает несколько скиллов одновременно. Скилл не должен предполагать, что он единственный. Аналогия Anthropic: MCP — профессиональная кухня (инструменты, ингредиенты). Skills — рецепты (как приготовить). Вместе — пользователь получает результат без знания каждого шага. Пример: один скилл получает данные через MCP, другой задаёт brand guidelines с assets/, третий генерирует презентацию.
 
@@ -329,7 +329,7 @@ Skills API: endpoint `/v1/skills`, параметр `container.skills` в Messag
 
 ## Связанные файлы
 
-- [skill-graphs/](skill-graphs/) — Skill Graphs: сети файлов знаний, связанных wikilinks (теория, архитектура, паттерны plugin, паттерны проектирования скиллов, пример /architect)
+- [context/skill-graphs/](../context/skill-graphs/) — Skill Graphs: сети файлов знаний, связанных wikilinks (теория, архитектура, паттерны plugin, паттерны проектирования скиллов, пример /architect). Перенесено в context/
 - [skill-tooling.md](skill-tooling.md) — Инструменты lifecycle: линтинг, валидация, маршрутизация, автогенерация, quality gates
 - [skill-activation.md](skill-activation.md) — Механика активации: надёжность, hooks, стратегии
 - [superpowers.md](superpowers.md) — Superpowers: крупнейшая библиотека скиллов

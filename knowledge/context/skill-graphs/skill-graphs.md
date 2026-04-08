@@ -141,7 +141,7 @@ arscontexta использует плоскую структуру (249 файл
 
 ## Связь с принципами из !skills.md
 
-Skill graph — не замена Skills (SKILL.md), а дополнительный слой: граф знаний, по которому агент навигирует. Концепция развивает три принципа из [!skills.md](../!skills.md):
+Skill graph — не замена Skills (SKILL.md), а дополнительный слой: граф знаний, по которому агент навигирует. Концепция развивает три принципа из [!skills.md](../../skills/!skills.md):
 
 - **"Много маленьких скиллов лучше одного большого"** → skill graph доводит это до архитектуры: не просто "разбей на части", а "свяжи в навигируемый граф"
 - **"Cross-references"** → wikilinks в прозе — более мощная версия секции "Related Skills"
@@ -162,8 +162,8 @@ Skills (SKILL.md) — context engineering: курированное знание
 - [arscontexta-patterns.md](arscontexta-patterns.md) — паттерны arscontexta для plugin-архитектуры
 - [arscontexta-skill-anatomy.md](arscontexta-skill-anatomy.md) — 7 паттернов проектирования скиллов (EXECUTE NOW, фазы, edge cases, quality gates)
 - [arscontexta-architect-example.md](arscontexta-architect-example.md) — полный пример скилла /architect (все 7 паттернов в действии)
-- [../!skills.md](../!skills.md) — сводка знаний о Skills (skill graph расширяет принципы оттуда)
-- [../../context/markdown-for-llm.md](../../context/markdown-for-llm.md) — как LLM видит wikilinks и YAML (технические основы навигации)
-- [../../context/search-mechanics.md](../../context/search-mechanics.md) — как AI-инструменты ищут файлы (механика traversal)
-- [../../context/!context.md](../../context/!context.md) — сводка знаний о context engineering (skill graph — по сути context engineering паттерн)
+- [../../skills/!skills.md](../../skills/!skills.md) — сводка знаний о Skills (skill graph расширяет принципы оттуда)
+- [../markdown-for-llm.md](../markdown-for-llm.md) — как LLM видит wikilinks и YAML (технические основы навигации)
+- [../search-mechanics.md](../search-mechanics.md) — как AI-инструменты ищут файлы (механика traversal)
+- [../!context.md](../!context.md) — сводка знаний о context engineering (skill graph — по сути context engineering паттерн)
 - [../../plugins/!plugins.md](../../plugins/!plugins.md) — arscontexta как примечательный плагин

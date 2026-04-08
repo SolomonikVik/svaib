@@ -73,7 +73,7 @@ version: 15
 
 ### Navigation & Progressive Disclosure — как агент навигирует знания
 
-Паттерны послойной навигации по файлам знаний: агент начинает с дешёвых операций (file tree, YAML descriptions) и углубляется только по необходимости (MOC hierarchy → wiki-link traversal → full content). Результат: минимум контекста при максимуме пользы. Навигация отвязана от файловой структуры — файлы находятся по связям, а не по путям. Формализовано как "skill graph" (Heinrich/@arscontexta, 2026) — по сути context engineering, хотя название отсылает к skills. Архитектура, элементы, верифицированная реализация → [../skills/skill-graphs/](../skills/skill-graphs/).
+Паттерны послойной навигации по файлам знаний: агент начинает с дешёвых операций (file tree, YAML descriptions) и углубляется только по необходимости (MOC hierarchy → wiki-link traversal → full content). Результат: минимум контекста при максимуме пользы. Навигация отвязана от файловой структуры — файлы находятся по связям, а не по путям. Формализовано как "skill graph" (Heinrich/@arscontexta, 2026) — по сути context engineering, хотя название отсылает к skills. Архитектура, элементы, верифицированная реализация → [skill-graphs/](skill-graphs/).
 
 ### Context Window Management
 Управление ограниченным контекстным окном: что включить, что опустить, когда сжимать. Стратегии: progressive summarization, context rotation, priority-based selection.
@@ -92,7 +92,7 @@ version: 15
 - [markdown-for-llm.md](markdown-for-llm.md) — анатомия Markdown-файла для человека + LLM + RAG (YAML, структура, чанкинг, связи)
 - [search-mechanics.md](search-mechanics.md) — как Claude Code, Cursor, Claude Projects и ChatGPT ищут файлы (механики поиска, уровни доступа)
 - [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов для AI-ассистентов: 13 инструментов, AGENTS.md стандарт, паттерн персоны, best practices
-- [../skills/skill-graphs/skill-graphs.md](../skills/skill-graphs/skill-graphs.md) — Skill Graphs: навигация по знаниям, progressive disclosure, wikilinks (arscontexta). Живёт в skills/, но по сути context engineering
-- [../skills/skill-graphs/architecture.md](../skills/skill-graphs/architecture.md) — архитектура: Three-Space, 6Rs pipeline, hooks, верифицированный progressive disclosure
+- [skill-graphs/skill-graphs.md](skill-graphs/skill-graphs.md) — Skill Graphs: навигация по знаниям, progressive disclosure, wikilinks (arscontexta)
+- [skill-graphs/architecture.md](skill-graphs/architecture.md) — архитектура: Three-Space, 6Rs pipeline, hooks, верифицированный progressive disclosure
 - [llm-wiki.md](llm-wiki.md) — LLM Wiki (Karpathy): паттерн инкрементальной вики — Ingest/Query/Lint, комьюнити-реализации, связь с arscontexta и ICM
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости, зазоры чтения/записи, мосты, целевая архитектура для клиентов

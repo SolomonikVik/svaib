@@ -84,7 +84,7 @@ verified: false
 
 > Автоактивация скиллов ~20%. Если нужна надёжная активация — см. справочник, секция "Повышение надёжности активации". Для `disable-model-invocation: true` — неактуально.
 
-**Паттерны проектирования (arscontexta):** 7 паттернов, проверенных в production (arscontexta v0.8.0, 26 скиллов, MIT, 2K+ stars). Применимы к любому скиллу — от простого reader до сложного навигатора. Подробности и примеры: `knowledge/skills/skill-graphs/arscontexta-skill-anatomy.md`.
+**Паттерны проектирования (arscontexta):** 7 паттернов, проверенных в production (arscontexta v0.8.0, 26 скиллов, MIT, 2K+ stars). Применимы к любому скиллу — от простого reader до сложного навигатора. Подробности и примеры: `knowledge/context/skill-graphs/arscontexta-skill-anatomy.md`.
 
 | Паттерн | Суть | Когда применять |
 |---------|------|-----------------|

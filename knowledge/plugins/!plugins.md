@@ -362,7 +362,7 @@ Product vision описывает модель подписки: клиент п
 
 ### arscontexta — персональный Second Brain
 
-От Heinrich (@arscontexta). Через conversational derivation engine генерирует персональную knowledge system (skill graph) из разговора. 249 связанных markdown-файлов, three-space model (self/notes/ops), 6Rs processing pipeline, 10 skills, subagent orchestration. Первая публичная реализация паттерна [Skill Graphs](../skills/skill-graphs/skill-graphs.md). 6.7K лайков, 2.3M просмотров. MIT. Подробный разбор: [cases/arscontexta.md](../cases/arscontexta.md).
+От Heinrich (@arscontexta). Через conversational derivation engine генерирует персональную knowledge system (skill graph) из разговора. 249 связанных markdown-файлов, three-space model (self/notes/ops), 6Rs processing pipeline, 10 skills, subagent orchestration. Первая публичная реализация паттерна [Skill Graphs](../context/skill-graphs/skill-graphs.md). 6.7K лайков, 2.3M просмотров. MIT. Подробный разбор: [cases/arscontexta.md](../cases/arscontexta.md).
 
 ### Claude-mem — постоянная память
 

@@ -242,5 +242,5 @@ Genesis-скилл конфигурирует систему. Operational-ски
 - [skill-graphs.md](skill-graphs.md) — теория: что такое skill graph
 - [architecture.md](architecture.md) — архитектура элементов: Three-Space, MOC, Node, Pipeline, Hooks
 - [arscontexta-patterns.md](arscontexta-patterns.md) — паттерны для plugin (vocabulary, presets, feature blocks)
-- [../!skills.md](../!skills.md) — сводка знаний о Skills
+- [../../skills/!skills.md](../../skills/!skills.md) — сводка знаний о Skills
 - [../../../lab/todo-skill.md](../../../lab/todo-skill.md) — процесс создания скилла (ссылается на этот файл)

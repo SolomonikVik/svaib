@@ -95,7 +95,7 @@ LLM обрабатывает один источник за раз. Извлек
 
 ## Связь с другими подходами
 
-**arscontexta (6Rs Pipeline)** — Reweave и Verify из 6Rs = более детализированная версия Lint. arscontexta добавляет Reflect (поиск неочевидных связей) и Rethink (рефакторинг структуры). Карпатый проще, arscontexta глубже. → [../skills/skill-graphs/architecture.md](../skills/skill-graphs/architecture.md)
+**arscontexta (6Rs Pipeline)** — Reweave и Verify из 6Rs = более детализированная версия Lint. arscontexta добавляет Reflect (поиск неочевидных связей) и Rethink (рефакторинг структуры). Карпатый проще, arscontexta глубже. → [skill-graphs/architecture.md](skill-graphs/architecture.md)
 
 **ICM (Van Clief, 2026)** — "configure the factory, not the product" = близко к подходу Карпатого: правь schema/конфигурацию, а не отдельные страницы. ICM добавляет разделение reference (стабильные правила) vs working (per-run артефакты), которого у Карпатого нет.
 
@@ -108,4 +108,4 @@ LLM обрабатывает один источник за раз. Извлек
 - [!context.md](!context.md) — сводка знаний по context engineering (секция File-based Memory)
 - [agent-memory.md](agent-memory.md) — жизненный цикл памяти: extraction → storage → retrieval → evolution (Ingest = extraction + storage)
 - [markdown-for-llm.md](markdown-for-llm.md) — как оформлять файлы вики для LLM (summary first, автономные секции, YAML)
-- [../skills/skill-graphs/architecture.md](../skills/skill-graphs/architecture.md) — arscontexta: 6Rs pipeline, progressive disclosure
+- [skill-graphs/architecture.md](skill-graphs/architecture.md) — arscontexta: 6Rs pipeline, progressive disclosure
