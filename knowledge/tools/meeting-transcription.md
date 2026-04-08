@@ -4,11 +4,11 @@ source: "https://www.granola.ai/blog/granola-mcp"
 source_type: article
 status: processed
 added: 2026-02-11
-updated: 2026-04-07
-review_by: 2026-07-07
-tags: [meeting, transcription, audio, granola, plaud, macwhisper, mcp, automation]
+updated: 2026-04-08
+review_by: 2026-07-08
+tags: [meeting, transcription, audio, granola, plaud, macwhisper, mcp, automation, groq]
 publish: false
-version: 2
+version: 3
 ---
 
 # Запись и транскрибация встреч
@@ -66,6 +66,10 @@ version: 2
 
 **На ходу + звонки** — **Plaud Note Pro** ($189) на MagSafe. Записывает и звонок (VCS), и разговор вокруг (микрофоны).
 
+### Real-time транскрибация
+
+**Groq API + Whisper Turbo** — единственное реальное решение для live-транскрибации (216x RT, практически нулевая задержка). Бесплатный тир покрывает большинство задач. Для повседневной диктовки на русском — проверенный надёжный выбор. Единственный вариант для Intel Mac. Подключение в MacWhisper: Settings → Cloud Services → API key.
+
 ### Максимальная приватность
 
 **Ни один байт в облако** — MacWhisper Pro (Mac) или Vibe (Win/Linux) для записи + локальный Whisper. Для AI-саммари — **Char (ex-Hyprnote)** с локальным LLM через Ollama.
@@ -116,6 +120,8 @@ version: 2
 - **Звонки iPhone (не через платформу)** → Plaud Note Pro (тихо) или iOS 18.1 (с уведомлением)
 - **Звонки Android** → встроенная Samsung/Xiaomi или Cube ACR
 - **На ходу** → Plaud NotePin S (клип) или Note Pro (MagSafe)
+- **Real-time** → Groq API + Whisper Turbo (единственный вариант с нулевой задержкой)
+- **Диктовка (русский)** → Whisper Turbo через Groq (надёжно, $0)
 - **Приватность** → MacWhisper Pro / Vibe + Char для AI-саммари
 - **Один инструмент на всё** → Circleback + Plaud Note Pro
 

@@ -4,11 +4,11 @@ source: "https://alphacephei.com/nsh/2025/04/18/russian-models.html"
 source_type: article
 status: processed
 added: 2026-04-07
-updated: 2026-04-07
-review_by: 2026-07-07
-tags: [stt, asr, speech-recognition, russian, gigaam, whisper, t-one, diarization]
+updated: 2026-04-08
+review_by: 2026-07-08
+tags: [stt, asr, speech-recognition, russian, gigaam, whisper, t-one, diarization, groq, soniox, whisperkit]
 publish: false
-version: 1
+version: 2
 ---
 
 # STT-модели для русского языка
@@ -44,6 +44,16 @@ version: 1
 | **Vosk 0.54** | 10,7% | — | 13-19% | Нет | Apache 2.0, CPU | Да, RT |
 
 Источник WER: [бенчмарк AlphaCephei](https://alphacephei.com/nsh/2025/04/18/russian-models.html) (11 датасетов, 13 моделей).
+
+### Бэкенды исполнения (важно для MacWhisper)
+
+Whisper-модели могут исполняться через разные бэкенды с разной производительностью:
+
+- **Whisper C++ (GGML)** — стандартный бэкенд, работает на любом железе (M1, Intel, GPU). Все размеры от Base (150 MB) до Large V3 (3 GB).
+- **WhisperKit** — оптимизированный бэкенд для Apple Silicon (M1/M2/M3), использует ANE (Apple Neural Engine). Быстрее Whisper C++ на Apple Silicon. Доступны Small (483 MB) и Large v2 (3.1 GB). **Не работает на Intel Mac.**
+- **Parakeet v3** (494 MB) — отдельная архитектура NVIDIA, **только Apple Silicon**. Экстремальная скорость (300x RT), но нет публичных бенчмарков WER для русского.
+
+На Intel Mac из локальных вариантов работает только Whisper C++ (и то медленно — терпимо лишь Small/Base). Решение для Intel — облачные API.
 
 ---
 
@@ -81,11 +91,17 @@ version: 1
 
 | Провайдер | Цена/час | Диаризация | Публичный WER (рус.) |
 |-----------|------:|---|---|
+| **Groq API** | Free tier | Нет | Whisper Turbo ~9,5% |
 | **ElevenLabs Scribe v2** | $0,22-0,40 | Нативная, до 32 спикеров | <= 5% (заявл.) |
+| **Soniox API** | $6-12/мес | Нативная code-switching | 6,2% |
 | **Yandex SpeechKit** | $0,08-0,30 | Нативная, до 2 дикторов | Не опубликован |
 | **AssemblyAI Universal-2** | $0,15 | +$0,02/час | <= 10% (заявл.), только batch |
 | **Deepgram Nova-3** | $0,46-0,55 | +$0,12/час | Не опубликован |
 | **Google Cloud STT** | $0,18-0,96 | Chirp 3 | Не опубликован |
+
+**Groq API** — единственное реальное решение для real-time транскрибации (216x RT на Whisper Turbo). Бесплатный тир покрывает большинство задач. Единственный вариант для Intel Mac, где локальные модели непрактичны. Для повседневной диктовки на русском Whisper Turbo через Groq — проверенный надёжный выбор.
+
+**Soniox API** — лучший облачный WER для русского (6,2%), единственный сервис с нативной поддержкой code-switching (русский + английский в одном потоке). Малоизвестен, подключение через API.
 
 ---
 
