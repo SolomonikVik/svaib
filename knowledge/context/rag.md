@@ -8,7 +8,7 @@ updated: 2026-04-09
 review_by: 2026-07-09
 tags: [rag, hybrid-search, vector-search, bm25, reranking, graphrag, agentic-rag, chunking, benchmarks]
 publish: false
-version: 1
+version: 2
 ---
 
 # RAG — Retrieval-Augmented Generation
@@ -104,11 +104,21 @@ LLM читает сырые материалы → пишет wiki-статьи 
 
 ### QMD (приоритетный кандидат)
 
-Локальный семантический поиск по markdown. Автор — Tobi Lütke (основатель Shopify). Гибридный пайплайн: query expansion (LLM) → BM25 + vector параллельно → RRF fusion → LLM reranking. Всё локально, три GGUF-модели (~2 ГБ). MCP-сервер для Claude Code.
+Локальный семантический поиск по markdown-файлам. Автор — Tobi Lütke (основатель Shopify). Рекомендован Karpathy в гисте LLM Wiki. Репо: [github.com/tobi/qmd](https://github.com/tobi/qmd).
 
-Подробный research → [../../lab/_inbox/qmd-research.md](../../lab/_inbox/qmd-research.md)
+**Как работает:** гибридный пайплайн в 4 шага — query expansion (LLM расширяет запрос) → BM25 + vector search параллельно → RRF fusion (объединение результатов) → LLM reranking. Три режима: `search` (ключевые слова), `vsearch` (семантика), `query` (гибрид, лучшее качество).
 
-**Почему приоритетный:** проверенный автор, полный гибридный пайплайн, работает поверх файловой системы (не нужна отдельная БД), MCP-интеграция, рекомендован Karpathy.
+**Всё локально:** три GGUF-модели (~2 ГБ суммарно) — embeddinggemma-300M (эмбеддинги), qwen3-reranker-0.6b (реранкинг), qmd-query-expansion-1.7B (расширение запросов). Никаких облачных API.
+
+**Интеграция с Claude Code:** MCP-сервер — Claude Code получает инструменты `query`, `get`, `multi_get`, `status`. Работает поверх файловой системы — не нужна отдельная база данных, индексирует markdown-файлы напрямую. Инкрементальный update — `qmd update` обновляет только изменённые файлы.
+
+**Чанкинг:** ~900 токенов, разрыв по markdown-структуре (заголовки, блоки кода). Код не разрывается.
+
+**Контексты:** описания папок, которые возвращаются вместе с результатами — агент сразу понимает что за файл перед ним.
+
+**Экосистема:** OpenClaw Engram (persistent memory для AI на базе QMD), ghost (захват сессий Claude Code + индексация в QMD), Rust-порт (qntx-labs/qmd).
+
+**Почему приоритетный для SVAIB:** проверенный автор с репутацией, полный гибридный пайплайн (все 4 шага best practice), работает поверх существующих файлов, MCP-интеграция, рекомендован Karpathy. Для нашего репо (570+ md-файлов) и клиентов (100+ файлов через неделю) — решает проблему семантического поиска, которую grep не закрывает.
 
 ### MemPalace (хайп-проект, исследован 2026-04-09)
 
@@ -177,4 +187,4 @@ Open source (MIT), заявлено 96.6% на LongMemEval. Verbatim storage в 
 - [llm-wiki.md](llm-wiki.md) — подход Karpathy к персональной памяти
 - [search-mechanics.md](search-mechanics.md) — как AI-инструменты ищут файлы на практике
 - [temporal-graphs.md](temporal-graphs.md) — Graphiti, Hindsight (альтернатива RAG для темпоральных данных)
-- [../../lab/_inbox/qmd-research.md](../../lab/_inbox/qmd-research.md) — QMD research и план внедрения
+- QMD repo: [github.com/tobi/qmd](https://github.com/tobi/qmd)
