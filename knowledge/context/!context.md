@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-04-08
+updated: 2026-04-09
 review_by: 2026-06-20
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm]
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, graphrag]
 publish: false
-version: 16
+version: 17
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -26,7 +26,7 @@ version: 16
 Память агента можно организовать по-разному. Пять основных архитектур хранения: Knowledge Graph (явные связи между сущностями), Hierarchical (слои от деталей к обобщениям), Temporal Graph (факты с временными метками), Hypergraph (связи на 3+ узлов — групповые взаимодействия), Hybrid (комбинация). Жизненный цикл: extraction → storage → retrieval → evolution. Подробная карта архитектур, стратегий поиска, эволюции памяти и бенчмарков → [agent-memory.md](agent-memory.md).
 
 ### RAG (Retrieval-Augmented Generation)
-Подтягивание релевантных документов в контекст AI перед генерацией ответа. Базовый подход: vector store + embeddings + similarity search. Ограничение: не понимает время — все chunks равнозначны. В таксономии памяти агентов RAG — это similarity-based retrieval, простейшая из девяти стратегий поиска (→ [agent-memory.md](agent-memory.md)).
+Паттерн подачи AI релевантной информации из внешнего хранилища: чанкинг → эмбеддинги → vector store → retrieval → LLM. Стандартный RAG (один вектор) устарел — работающий пайплайн 2026: гибридный поиск (BM25 + vector + RRF fusion + cross-encoder reranker). Три направления эволюции: Agentic RAG (агент решает что искать), GraphRAG (поиск по графу связей), подход Karpathy (wiki-статьи вместо чанков). Для SVAIB: RAG = реализация неструктурированного поиска в контекстной архитектуре. Подробная карта подходов, реализаций (QMD, MemPalace, GraphRAG), бенчмарков → [rag.md](rag.md).
 
 ### Extraction — извлечение сущностей из текста
 

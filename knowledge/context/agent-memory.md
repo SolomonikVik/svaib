@@ -4,11 +4,11 @@ source: "https://arxiv.org/abs/2602.05665"
 source_type: article
 status: processed
 added: 2026-02-16
-updated: 2026-02-16
+updated: 2026-04-09
 review_by: 2026-05-16
 tags: [agent-memory, knowledge-graph, temporal-graph, hypergraph, retrieval, benchmarks]
 publish: false
-version: 1
+version: 2
 ---
 
 # Архитектуры памяти AI-агентов — обзорная карта
@@ -59,6 +59,8 @@ Extraction → Storage → Retrieval → Evolution
 **MAGMA** — мульти-граф: одна информация представлена параллельно в semantic, temporal, causal и entity графах. Каждое измерение отвечает за свой тип запросов.
 
 **Zep/Graphiti** — трёхуровневая иерархия: episode subgraph (что произошло) → semantic entity subgraph (факты о сущностях) → community subgraph (кластеры). Подробнее → [temporal-graphs.md](temporal-graphs.md).
+
+**MemPalace** (исследован 2026-04-09) — verbatim RAG на ChromaDB + метадатная фильтрация ("дворец": wings/halls/rooms) + SQLite KG. Заявлено 96.6% на LongMemEval. Реальность: hybrid scoring и reranking только в бенчмарк-скриптах, не в продукте. Авторы связаны с крипто-pump-and-dump. Инсайт про verbatim storage верный, реализация ненадёжная. Подробнее → [rag.md](rag.md).
 
 **TiMem** — temporal-hierarchical: консолидация памяти слоями, как в нейронауке (working memory → episodic → semantic).
 
