@@ -349,3 +349,25 @@
   severity: moderate
   recurring: true
   resolved: true
+
+- date: 2026-04-10
+  session: "svaib-clients: обработка встречи ЕВ, предложена запись с фамилией в session-log"
+  category: meta
+  type: confidentiality-breach-attempt
+  module: действие
+  where: "CLAUDE.md:34 (правило 5), close-session/SKILL.md (нет проверки), session-log.md:12 (текстовый запрет)"
+  root_cause: |
+    Правило конфиденциальности — текстовое, в двух местах (CLAUDE.md, session-log.md).
+    Close-session скилл, через который идёт запись, не упоминает конфиденциальность.
+    Контекстное давление (фамилия звучала в сессии многократно) сильнее текстового запрета.
+    Доказано rescue-log: текстовые guardrails не работают как enforcement (10+ кейсов).
+  fix: "Запись НЕ была сделана — Виктор заметил до записи."
+  preventive: |
+    Структурное решение: PreToolUse hook guard_client_names.py на Write|Edit.
+    Перехватывает запись в git-tracked файлы, сканирует на фамилии из client_names.txt.
+    Блокирует с сообщением "use initials only". Дополнительно: git commit-msg hook
+    (фамилия Смолянинов уже в коммите 387d0bf). Статус: НЕ РЕАЛИЗОВАНО, в бэклоге.
+  pattern: "Confidentiality Enforcement Gap — текстовое правило конфиденциальности без механизма enforcement. Контекстное давление побеждает текстовый запрет."
+  severity: critical
+  recurring: false
+  resolved: false

@@ -104,13 +104,65 @@ sqlite3 "$DB" "
 
 echo ""
 
-# Извлекаем fullText в файл
-sqlite3 "$DB" "
-    SELECT fullText FROM session
+# Извлекаем транскрипт из transcriptline (со спикерами и таймкодами)
+# fullText — сплошной текст без разметки, поэтому собираем из отдельных строк
+SESSION_ID=$(sqlite3 "$DB" "
+    SELECT hex(id) FROM session
     WHERE userChosenTitle = '$SESSION_NAME'
     ORDER BY dateCreated DESC
     LIMIT 1;
-" > "$OUTPUT_FILE"
+")
+
+if [ -z "$SESSION_ID" ]; then
+    echo "ERROR: Could not get session ID"
+    exit 1
+fi
+
+# Собираем транскрипт: группируем последовательные реплики одного спикера
+# Формат: **Спикер** [MM:SS]: текст
+sqlite3 -separator $'\t' "$DB" "
+    SELECT
+        COALESCE(sp.name, 'Unknown'),
+        tl.start,
+        tl.text
+    FROM transcriptline tl
+    JOIN session s ON tl.sessionId = s.id
+    LEFT JOIN speaker sp ON tl.speakerID = sp.id
+    WHERE hex(s.id) = '$SESSION_ID'
+    ORDER BY tl.start ASC;
+" | awk -F'\t' '
+BEGIN { prev_speaker = ""; buffer = "" }
+{
+    speaker = $1
+    start_ms = $2
+    text = $3
+
+    # Convert milliseconds to MM:SS
+    total_sec = int(start_ms / 1000)
+    mins = int(total_sec / 60)
+    secs = total_sec % 60
+    timestamp = sprintf("%02d:%02d", mins, secs)
+
+    if (speaker != prev_speaker) {
+        # Flush previous speaker buffer
+        if (buffer != "") {
+            print buffer
+            print ""
+        }
+        buffer = "**" speaker "** [" timestamp "]: " text
+        prev_speaker = speaker
+    } else {
+        # Same speaker — append text
+        buffer = buffer " " text
+    }
+}
+END {
+    if (buffer != "") {
+        print buffer
+        print ""
+    }
+}
+' > "$OUTPUT_FILE"
 
 LINES=$(wc -l < "$OUTPUT_FILE")
 echo "Transcript written to $OUTPUT_FILE ($LINES lines)"
