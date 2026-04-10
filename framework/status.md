@@ -74,3 +74,4 @@ updated: 2026-03-31
 - 2026-04-02: Клиентский оркестратор встреч — orchestrator-client-meeting.md + L2-procedure-client-update.md. Параллельная структура каноническому (direction/team). Удалены 3 устаревших файла (playbook + scaffold + todo), ссылки обновлены
 - 2026-04-07: Границы продукта зафиксированы — Second AI Brain для бизнеса, не для всей жизни. Решение (product-scope.md) + правки в 5 файлах (vision, architecture, scaffold, onboarding)
 - 2026-04-07: SKILL.md → CLAUDE.md + .claude/skills/ — два слоя разделены (инструкция агенту vs исполняемые навыки). Anthropic-specific пометка, 9 файлов обновлены (scaffold, ontology, file_spec, architecture, plugin, playbook)
+- 2026-04-10: Scaffold deployment v2 — убит conditional deployment (все файлы создаются сразу), удалён management/team.md (единая team/), плейсхолдеры→инструкции, deploy→manifest. 16 файлов обновлены (scaffold, ontology, methodology, skills, playbook). Миграция клиентов — отдельный pass

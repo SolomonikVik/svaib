@@ -24,6 +24,7 @@ TEXT=$(echo "$TEXT" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
 
 # Конвертация markdown → HTML для Telegram
 TEXT=$(echo "$TEXT" | sed 's/\*\*\([^*]*\)\*\*/<b>\1<\/b>/g')  # **жирный** → <b>жирный</b>
+TEXT=$(echo "$TEXT" | sed 's/__\([^_]*\)__/<i>\1<\/i>/g')      # __курсив__ → <i>курсив</i>
 TEXT=$(echo "$TEXT" | sed 's/^- \[ \] /- /g')                    # - [ ] → -
 TEXT=$(echo "$TEXT" | sed 's/^---$//g')                           # --- → убрать
 
