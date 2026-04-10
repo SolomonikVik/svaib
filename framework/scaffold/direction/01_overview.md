@@ -18,15 +18,14 @@ type: reference
 - 02_active.md — операционный хаб (задачи, проблемы, вопросы, риски)
 - 03_progress.md — хроника по встречам
 - 04_decisions.md — решения направления
-- ../team/{person}.md — профайл лидера
-- ../team/org_structure.md — оргструктура
-- ../team/README.md — обзор team/, маппинг направлений
+- [../team/](../team/) — профайлы людей, маппинг направлений
+- [../team/org_structure.md](../team/org_structure.md) — оргструктура
 
 ---
 
 ## Лидер
 
-**{Имя}** ({роль}) — [team/{person}.md](../team/{person}.md)
+<!-- Указать лидера. Пример: Иван Петров (CTO) — [team/petrov.md](../team/petrov.md) -->
 
 ## Команда
 

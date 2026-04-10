@@ -15,7 +15,7 @@ type: reference
 
 ## Связанные файлы
 
-- [../{direction}/01_overview.md](../{direction}/01_overview.md) — направление(-я), которое ведёт
+<!-- Указать направление(-я): [Маркетинг](../marketing/01_overview.md) -->
 - [org_structure.md](org_structure.md) — оргструктура
 - [README.md](README.md) — обзор team/, маппинг направлений
 
@@ -25,8 +25,7 @@ type: reference
 
 > Какие направления ведёт или в каких участвует. При двойной роли — указать обе.
 
-- **Лидер:** [{direction}](../{direction}/01_overview.md)
-- **Лидер:** [{direction}/{sub_direction}](../{direction}/{sub_direction}/01_overview.md) ← если двойная роль
+<!-- Указать направление(-я). Формат: **Лидер:** [Название](../направление/01_overview.md). При двойной роли — две строки. -->
 
 ---
 
