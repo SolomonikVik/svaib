@@ -24,4 +24,4 @@ type: reference
 
 ## Связанные файлы
 
-- [README.md](README.md) — обзор team/, маппинг направлений
+- [README.md](README.md) — обзор team

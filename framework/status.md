@@ -1,6 +1,6 @@
 ---
 title: "Framework Status"
-updated: 2026-03-31
+updated: 2026-04-14
 ---
 
 # Framework Status
@@ -29,13 +29,13 @@ updated: 2026-03-31
 
 ## Что существует
 
-**Онтология** — базовый управленческий цикл (8 файлов ядра) и встречи. Остальные домены CEO (метрики/KPI, стратсессии, оргструктура, должности, финансы, клиенты, процессы...) не затронуты. Всё DRAFT, не проверено на клиентах.
+**Онтология** — базовый CEO-workspace зафиксирован вокруг `01_ceo/`, `02_strategy/`, `03_team/`, `04_management/` и встреч. Остальные домены CEO (метрики/KPI, финансы, клиенты, процессы...) затронуты частично. Всё DRAFT, не проверено на клиентах.
 
-**Методология** — протокол чтения, decision frames. Meeting analysis pipeline v9 (entity-only рабочая версия, beta — все файлы синхронизированы по канонической цепочке, behavioral в разработке). Протестирован на 2 реальных клиентских транскриптах, entity extractor 19/20. Онбординг описан, проверен только на MyProfile.
+**Методология** — протокол чтения, decision frames. Meeting analysis pipeline v9 (entity-only рабочая версия, behavioral в разработке). Протестирован на 2 реальных клиентских транскриптах, entity extractor 19/20. Онбординг описан, проверен только на `01_ceo/01_my_profile.md`.
 
 **Архитектура** — зафиксирована (v2). Чертёж есть.
 
-**Scaffold** — management/ частично (4 шаблона подробных, 5 заглушек). product/, processes/, knowledge/ пустые. Не тестирован.
+**Scaffold** — корень перестроен под новую модель: `01_ceo/`, `02_strategy/`, `03_team/`, `04_management/` + опциональные папки. Source of truth — `scaffold/MODEL.md`. Не тестирован на полном клиентском цикле.
 
 **Skills** — 9 файлов в домене meeting-analysis (1 оркестратор, 3 L1-промпта, 1 L1-процедура, 3 L2-промпта/процедуры, 1 README). Рабочий пайплайн: entity extractor → протокол/Telegram/обновление файлов. Все файлы синхронизированы по канонической цепочке (beta). Behavioral не подключён. Остальные домены — 0.
 
@@ -75,3 +75,4 @@ updated: 2026-03-31
 - 2026-04-07: Границы продукта зафиксированы — Second AI Brain для бизнеса, не для всей жизни. Решение (product-scope.md) + правки в 5 файлах (vision, architecture, scaffold, onboarding)
 - 2026-04-07: SKILL.md → CLAUDE.md + .claude/skills/ — два слоя разделены (инструкция агенту vs исполняемые навыки). Anthropic-specific пометка, 9 файлов обновлены (scaffold, ontology, file_spec, architecture, plugin, playbook)
 - 2026-04-10: Scaffold deployment v2 — убит conditional deployment (все файлы создаются сразу), удалён management/team.md (единая team/), плейсхолдеры→инструкции, deploy→manifest. 16 файлов обновлены (scaffold, ontology, methodology, skills, playbook). Миграция клиентов — отдельный pass
+- 2026-04-14: Scaffold model — единица/группировка как канон. Подняты MODEL.md и skills/scaffold/_draft_spec.md. Корень scaffold перестроен в 4 обязательные папки (01_ceo, 02_strategy, 03_team, 04_management) + 5 опциональных. README каждой папки переписаны под миссию + правила. principles.md v4 (Принцип 4 → Iron Law). Обновлены пути в ontology.md, methodology/* (5 файлов). scaffold/README + CLAUDE под новую раскладку. Skills meeting-analysis и playbook delivery — в следующих сессиях (фазы 4-5). Лебедев и Смолянинов — фаза 6+

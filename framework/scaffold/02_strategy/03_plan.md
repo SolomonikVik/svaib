@@ -1,7 +1,7 @@
 ---
 title: "[Название проекта] — оперативный план: период, неделя, день"
-updated: 2026-02-23
-version: 2
+updated: 2026-04-14
+version: 3
 type: plan
 ---
 
@@ -15,10 +15,9 @@ type: plan
 
 ## Связанные файлы
 
-- 02_goal.md — цели и метрики периода, из которых вытекает план периода (depends_on)
-- 04_weekly_progress_YYYY.md — итоги недели переносятся из plan в weekly_progress
-- ideas.md — при планировании периода: просмотреть ideas, вытащить релевантное
-- decisions.md — решения влияют на задачи и приоритеты
+- [02_goal.md](02_goal.md) — цели и метрики периода, из которых вытекает план периода (depends_on)
+- [04_weekly_progress.md](04_weekly_progress.md) — итоги недели переносятся из plan в weekly_progress
+- [06_decisions.md](06_decisions.md) — решения влияют на задачи и приоритеты
 
 ---
 
