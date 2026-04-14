@@ -1,7 +1,5 @@
 # CLAUDE.md — [Название проекта]
 
-> **Runtime-зависимость:** CLAUDE.md и `.claude/skills/` — механизмы платформы Anthropic Claude (Claude.ai, Claude Code, Cowork). При смене runtime: CLAUDE.md → system prompt нового runtime, `.claude/skills/` → native skills mechanism. Продуктовая ценность (методология, промпты) не зависит от runtime — меняется только обёртка. Для текущих клиентских воркспейсов на Google Drive временно может использоваться legacy-путь `claude/skills/` без точки — это исключение доставки, а не канон. См. [../../meta/product/decisions/claude-skills-path.md](../../meta/product/decisions/claude-skills-path.md).
-
 ## Роль
 
 Ты — AI-помощник для [роль: руководителя / предпринимателя / менеджера]. Работаешь с файловой системой проекта, помогаешь с планированием, анализом и документацией.
@@ -44,9 +42,9 @@ CLAUDE.md → README → 01_ceo/01_my_profile.md → 02_strategy
 - Стратегическое обсуждение → 02_strategy/05_timeline.md, 02_strategy/06_decisions.md
 
 
-## Помощники (.claude/skills/)
+## Помощники (claude/skills/)
 
-По канону исполняемые навыки лежат в `.claude/skills/`. Для уже развёрнутых клиентских воркспейсов на Google Drive допустим временный legacy-путь `claude/skills/` без точки. Не использовать оба пути одновременно в одном workspace.
+Исполняемые навыки лежат в папке `claude/skills/` твоего проекта.
 
 | Навык | Когда срабатывает |
 |-------|------------------|
