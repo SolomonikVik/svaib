@@ -1,8 +1,8 @@
 ---
 title: "Оркестратор: обработка встречи с контрагентом"
 status: DRAFT
-updated: 2026-04-02
-version: 1
+updated: 2026-04-14
+version: 2
 type: procedure
 ---
 
@@ -12,7 +12,7 @@ type: procedure
 
 ## Scope
 
-Встречи с одним контрагентом (клиент, партнёр, подрядчик). Предполагает досье по scaffold/clients/ (profile.md, company.md, project.md и т.д.).
+Встречи с одним контрагентом (клиент, партнёр, подрядчик). Предполагает досье по стандартной структуре клиентского проекта (profile.md, company.md, project.md и т.д.).
 
 Вне scope этой версии: внутренние встречи (-> orchestrator-meeting.md), встречи с несколькими контрагентами, поведенческий экстрактор (behavioral).
 
@@ -149,14 +149,14 @@ Use only simple, single bash commands - no &&, no ||, no pipes, no ;, no redirec
 1. Убедись что выжимка сохранена: `{project_dir}/meetings/{date}_{topic}_summary.md`
 2. Перемести транскрипт в archive: `{project_dir}/meetings/archive/{date}_{topic}_transcript.md`
 
-Конвенция именования: `YYYY-MM-DD_{topic}_{type}.md` -- topic в snake_case, английский. Подробнее -> file_spec.md.
+Конвенция именования: `YYYY-MM-DD_{topic}_{type}.md` -- topic в snake_case, английский.
 
 ---
 
 ## Связанные файлы
 
-- orchestrator-meeting.md -- аналогичный оркестратор для внутренних встреч (direction/team)
+- orchestrator-meeting.md -- аналогичный оркестратор для внутренних встреч (04_management/ + 03_team/)
 - L1-prompt-entity-extractor.md -- промпт выжимки
 - L2-procedure-client-update.md -- обновление досье контрагента (шаг 2)
 - L2-prompt-protocol-telegram.md -- Telegram-сводка (шаг 3)
-- scaffold/clients/README.md -- структура досье, конвенция meetings/
+- clients/README.md -- структура досье, конвенция meetings/
