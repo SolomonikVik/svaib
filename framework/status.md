@@ -1,6 +1,6 @@
 ---
 title: "Framework Status"
-updated: 2026-04-14
+updated: 2026-04-15
 ---
 
 
@@ -18,27 +18,27 @@ updated: 2026-04-14
 
 Готовый Second AI Brain ≈ онтология десятков доменов + методология + scaffold + ~20 skills + 3-4 hooks + 1+ agent + onboarding skill + pipeline ритуалов. Бенчмарк: Ars Contexta (26 skills), COG (17 skills).
 
-**Стадия: зачаточная.** Проекту ~2 недели. Один человек, параллельно клиенты + лаб + сайт + контент.
+**Стадия: зачаточная.** Проекту ~2 месяца. Один человек, параллельно клиенты + лаб + сайт + контент.
 
 ## Цель декады (недели 18→30, до ~22 мая)
 
 1. Онбординг за 1-2 сессии — нет скилла
-2. 1 помощник end-to-end (встреча → протокол → файлы) — промпты не написаны
+2. 1 помощник end-to-end (встреча → протокол → файлы) — пайплайн в beta (entity-only), behavioral не подключён
 3. Плагин как единица (показать, установить, работает) — скелет
 
 Детали → meta/management/02_goal.md
 
 ## Что существует
 
-**Онтология** — базовый CEO-workspace зафиксирован вокруг `01_ceo/`, `02_strategy/`, `03_team/`, `04_management/` и встреч. Остальные домены CEO (метрики/KPI, финансы, клиенты, процессы...) затронуты частично. Всё DRAFT, не проверено на клиентах.
+**Онтология** — зафиксирована вокруг `01_ceo/`, `02_strategy/`, `03_team/`, `04_management/`. Модель единица/группировка закреплена в `scaffold/MODEL.md` как канон. Остальные домены CEO (метрики/KPI, финансы, клиенты, процессы…) затронуты частично.
 
-**Методология** — протокол чтения, decision frames. Meeting analysis pipeline v9 (entity-only рабочая версия, behavioral в разработке). Протестирован на 2 реальных клиентских транскриптах, entity extractor 19/20. Онбординг описан, проверен только на `01_ceo/01_my_profile.md`.
+**Методология** — протокол чтения, decision frames. Meeting analysis pipeline v9 — beta (entity-only). Entity extractor протестирован на 2 реальных транскриптах (19/20). `glossary.md` встроен в L2-пайплайн. Клиентский оркестратор встреч отдельно (параллельная структура каноническому). Behavioral в разработке. Онбординг описан, проверен только на `01_ceo/01_my_profile.md`.
 
-**Архитектура** — зафиксирована (v2). Чертёж есть.
+**Архитектура** — v7, зафиксирована. Мета-рамка (методология + онтология) → данные → память → помощники → универсальность → skills/plugin/runtime.
 
-**Scaffold** — корень перестроен под новую модель: `01_ceo/`, `02_strategy/`, `03_team/`, `04_management/` + опциональные папки. Source of truth — `scaffold/MODEL.md`. Не тестирован на полном клиентском цикле.
+**Scaffold** — канон: `MODEL.md` + `principles.md` (Iron Law: все файлы создаются сразу при развёртывании). Корень: 4 обязательные папки (`01_ceo`, `02_strategy`, `03_team`, `04_management`) + 5 опциональных. Playbook delivery синхронизирован (9 файлов, `deploy_scaffold` полностью под новую раскладку). Обкатан на первом клиенте через полный цикл миграции.
 
-**Skills** — 9 файлов в домене meeting-analysis (1 оркестратор, 3 L1-промпта, 1 L1-процедура, 3 L2-промпта/процедуры, 1 README). Рабочий пайплайн: entity extractor → протокол/Telegram/обновление файлов. Все файлы синхронизированы по канонической цепочке (beta). Behavioral не подключён. Остальные домены — 0.
+**Skills** — meeting-analysis: 9 файлов (оркестратор + L1/L2 + README), синхронизированы с `MODEL.md`. Рабочий пайплайн: entity extractor → протокол/Telegram/обновление файлов. Клиентские скиллы самодостаточны (не ссылаются на framework-only файлы). Beta. Behavioral не подключён. Остальные домены — 0.
 
 **Plugin** — скелет. 4 README, ноль реализации.
 
@@ -46,37 +46,14 @@ updated: 2026-04-14
 
 ## Что в работе
 
-- Meeting analysis: beta достигнута. Следующее: behavioral extractor, pre-processing
+- Meeting analysis: beta. Следующее — behavioral extractor, pre-processing транскрибации
+- Методология контекстной памяти: мета-анализ + ICM разобран, базовая развилка (структурированная vs неструктурированная информация) найдена. Блоки 1-4 в проектировании. Worklog: `framework/_inbox/_worklog.md`
 
 ## Блокеры
 
-- Meeting analysis протестирован на 2 клиентских транскриптах, но behavioral не верифицирован
+- Meeting analysis: behavioral не верифицирован на реальных транскриптах
 - Skills зависят от стабилизации meeting analysis
-- Формат scaffold-шаблона не зафиксирован
-- ~~SKILL.md в scaffold — роль неясна~~ → решено: SKILL.md → CLAUDE.md, skills → .claude/skills/
 
 ## Мини-лог
 
-- 2026-03-13: Аудит framework по бенчмарку — зачаточная стадия, честная оценка в status.md
-- 2026-03-13: behavioral_patterns.md переработан до v1 — 186→100 строк, оси через ракурсы
-- 2026-03-18: Meeting analysis — два рабочих промпта (выжимка + протокол), протестированы на реальном транскрипте. Cleanup plan готов
-- 2026-03-20: L2-Telegram промпт + архитектурное решение: протокол = семейство форматов, каждый — отдельный промпт
-- 2026-03-25: Scaffold clients/ + principles.md — архитектура файлов для клиентских проектов, 7 принципов проектирования (миссия файла, развёртывание, маршрутизация)
-- 2026-03-25: Scaffold clients/ обогащён из playbook — полная ценность (маршрутизация, тесты, инструкции агенту). Meeting_processing.md (DRAFT) — процедура обновления досье после встречи
-- 2026-03-26: tasks.md → active.md — переименование операционного хаба в scaffold + workflow подтверждения выполненных задач на встрече
-- 2026-03-26: Scaffold direction/ + team/ — модель управления компанией через направления (зоны ответственности). 7 новых шаблонов, scaffold/README.md обновлён
-- 2026-03-26: Вложенные направления — направление может содержать под-направления (макс. 1 уровень). Правило наименьшего общего контейнера для маршрутизации встреч. 8 файлов обновлены (scaffold, ontology, methodology, team)
-- 2026-03-27: Конвенция именования файлов встреч (YYYY-MM-DD_{topic}_{type}.md) зафиксирована в file_spec.md, scaffold и playbook ссылаются. Группировка пользовательских файлов — открытый вопрос до контекстной архитектуры
-- 2026-03-30: Аудит meeting analysis source of truth. Убит synthesizer-призрак (3 файла), chunking → needs-revalidation, L1/L2 naming fix, удалено 6 устаревших черновиков из meta/_inbox/. Методология v8: разделены "рабочая версия" (entity-only) и "целевая архитектура" (entity+behavioral). Навигация (skills/README, status.md) обновлена
-- 2026-03-31: L1 entity extractor протестирован на реальном транскрипте — лучше вытаскивает спецификации, разграничивает типы, ставит метки [→след.встреча]. Промпт v2 валидирован
-- 2026-03-31: Meeting analysis pipeline beta — полная синхронизация по канонической цепочке (S18). 10 файлов обновлены: protocol_format v3, L2-full v3, L2-telegram v3, orchestrator v3, README v5, meeting_overlays v3, meeting_analysis терминология. _inbox вычищен (5 файлов закрыты/удалены), future-пункты перенесены в бэклог
-- 2026-04-01: glossary.md встроен в L2-пайплайн как обязательный файл на чтение и обновление (scaffold-update v5, orchestrator v4)
-- 2026-03-31: Telegram delivery (EXPERIMENTAL) — автоотправка сводок через бота. Скрипт send_telegram.sh (markdown→HTML, экранирование, разбивка), оркестратор шаг 3 обновлён, спека telegram-delivery.md. Протестировано в Claude Code и Cowork
-- 2026-04-02: Клиентский оркестратор встреч — orchestrator-client-meeting.md + L2-procedure-client-update.md. Параллельная структура каноническому (direction/team). Удалены 3 устаревших файла (playbook + scaffold + todo), ссылки обновлены
-- 2026-04-07: Границы продукта зафиксированы — Second AI Brain для бизнеса, не для всей жизни. Решение (product-scope.md) + правки в 5 файлах (vision, architecture, scaffold, onboarding)
-- 2026-04-07: SKILL.md → CLAUDE.md + .claude/skills/ — два слоя разделены (инструкция агенту vs исполняемые навыки). Anthropic-specific пометка, 9 файлов обновлены (scaffold, ontology, file_spec, architecture, plugin, playbook)
-- 2026-04-10: Scaffold deployment v2 — убит conditional deployment (все файлы создаются сразу), удалён management/team.md (единая team/), плейсхолдеры→инструкции, deploy→manifest. 16 файлов обновлены (scaffold, ontology, methodology, skills, playbook). Миграция клиентов — отдельный pass
-- 2026-04-14: Scaffold model — единица/группировка как канон. Подняты MODEL.md и skills/scaffold/_draft_spec.md. Корень scaffold перестроен в 4 обязательные папки (01_ceo, 02_strategy, 03_team, 04_management) + 5 опциональных. README каждой папки переписаны под миссию + правила. principles.md v4 (Принцип 4 → Iron Law). Обновлены пути в ontology.md, methodology/* (5 файлов). scaffold/README + CLAUDE под новую раскладку. Skills meeting-analysis и playbook delivery — в следующих сессиях (фазы 4-5). Лебедев и Смолянинов — фаза 6+
-- 2026-04-14: Фаза 4 скаффолд-миграции — meeting-analysis синхронизирован с MODEL.md. 5 файлов (README v6, orchestrator-meeting v5, orchestrator-client-meeting v2, L2-procedure-client-update v2, L2-procedure-scaffold-update v6). Убрана «контейнерная логика вне scope» (группировка = обычная единица). Чеклист decisions расширен с одного маршрута (management/decisions.md) до трёх: `04_management/{org_node}/04_decisions.md` (единица), `02_strategy/06_decisions.md` (курс компании), `01_ceo/04_decisions.md` (личный уровень CEO). Grep по старым путям чисто. Runtime готов к Gate 2 (Codex-ревью)
-- 2026-04-14: Фаза 4 дочистка — клиентские скиллы meeting-analysis стали самодостаточны (не ссылаются на framework-only файлы). Убраны битые ссылки в 4 клиентских файлах (orchestrator-meeting, orchestrator-client-meeting, L2-procedure-scaffold-update, L2-procedure-client-update, L2-prompt-protocol-telegram). Принцип: скиллы — артефакты исполнения, связи держит методология (односторонне). Framework-only файлы (README.md пакета, L1-prompt-behavior-extractor) оставлены как есть — ссылки на methodology/ в них легитимны. В transformation-plan фазы 5 добавлена задача адаптации префикса `framework/skills/meeting-analysis/` → клиентский путь при deploy (баг стрелял у Лебедева)
-- 2026-04-14: Фаза 5 scaffold-миграции (S7) — `clients/playbook/delivery/` синхронизирован с новой раскладкой. 9 файлов: deploy_scaffold.md (полная перезапись под 4 обязательные папки + Iron Law + точечное rm .gitkeep), setup_meeting_pipeline.md (секция «Адаптация путей при копировании» + sed-snippet — фикс бага Лебедева), 01_delivery_plan.md (блоки 1 и 4.3 под новую раскладку), fill_profile + fill_profile_custom_gpt + setup_claude + setup_workspace (полные target-paths: `01_ceo/01_my_profile.md`, `02_strategy/*`, `03_team/*`), delivery/README.md (ссылка на MODEL.md). `framework/scaffold/CLAUDE.md` — runtime-блок про `.claude/skills/` удалён (самодостаточность scaffold для клиента). clients/playbook/README.md проверен — актуален. Codex подтвердил Gate 3. Фаза 6 (миграция Лебедева) — в параллельном чате
+- 2026-04-15: ритуал — мини-лог свёрнут в секции, очищено от детализации сессий и имён клиентов
