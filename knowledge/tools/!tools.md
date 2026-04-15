@@ -5,8 +5,8 @@ added: 2026-01-30
 review_by: 2026-04-30
 tags: [tools, automation, platforms, index]
 publish: false
-version: 13
-updated: 2026-04-08
+version: 14
+updated: 2026-04-15
 ---
 
 # Tools — AI-инструменты и платформы
@@ -56,4 +56,4 @@ Open-source платформа для построения workflow-автома
 
 ### Презентации с AI
 
-Два подхода: markdown-first (Slidev — Git, Agent Skill, hackable) и визуальные AI-генераторы (Lovable, Slider AI — быстрый результат без дизайн-навыков). Slidev вписывается в file-first философию продукта. → [presentations.md](presentations.md)
+Два подхода: markdown-first и визуальные AI-генераторы. Markdown-first — это Marp и Slidev: оба конвертируют .md в слайды, живут в git, редактируются AI напрямую, но делают разные ставки. **Marp** — статический рендер, минимум окружения (standalone binary или CLI), чистый Markdown + CSS, низкая кривая входа; выбираем когда нужны быстрые рабочие презентации без возни. **Slidev** — Vite + Vue 3 компоненты, интерактив, Monaco, Magic Move, Presenter View, запись с камерой; выбираем для технических демо и конференционных докладов. Ключевое структурное различие: у **Slidev есть официальный Agent Skill** от самих авторов (`npx skills add slidevjs/slidev`) + выделенная страница «Work with AI» в документации; у Marp — зоопарк community-скиллов разного качества. Оба вписываются в file-first философию продукта. Визуальные генераторы (Lovable, Gamma, NotebookLM, Slider AI) — альтернатива для быстрого результата без дизайн-навыков, но ценой потери git-workflow и AI-редактирования. → [presentations.md](presentations.md)

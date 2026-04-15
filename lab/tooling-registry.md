@@ -1,6 +1,6 @@
 ---
 title: "Реестр инструментария svaib"
-updated: 2026-03-18
+updated: 2026-04-15
 ---
 
 # Tooling Registry
@@ -26,9 +26,13 @@ updated: 2026-03-18
 
 ---
 
-## Скиллы (9)
+## Скиллы (10)
 
-Специализированные навыки. Вызываются автоматически по триггеру или через `/skill-name`. Файлы: `.claude/skills/`.
+Специализированные навыки. Вызываются автоматически по триггеру или через `/skill-name`. Живут на двух уровнях: проектные (в репо) и персональные (в `~/.claude/`).
+
+### Локальные (проектные) — `svaib/.claude/skills/`
+
+Живут в репо, едут вместе с проектом, доступны только внутри svaib.
 
 | Скилл | Что делает | Триггер |
 |-------|-----------|---------|
@@ -41,6 +45,22 @@ updated: 2026-03-18
 | `reader-jina` | Чтение веб-страниц (fallback для JS-сайтов) | URL когда WebFetch не справился |
 | `sign-pdf` | Подпись и печать на PDF | "подпиши", "поставь печать" |
 | `weekly-progress` | Генерация еженедельной хроники | "итоги недели", "weekly progress" |
+
+### Глобальные (персональные) — `~/.claude/skills/`
+
+Живут вне репо, в домашней папке. Доступны во всех проектах Виктора, не только svaib.
+
+| Скилл | Что делает | Триггер |
+|-------|-----------|---------|
+| `marp-slides` | Markdown-first презентации в svaib-стиле (SVAIB theme по умолчанию + Dark/Light как альтернативы) | "marp", "slides", "presentation", "deck" |
+
+**Про `marp-slides`:**
+- Основан на [robonuggets/marp-slides](https://github.com/robonuggets/marp-slides) v2.0
+- Кастомизирован под svaib brand: SVAIB Theme добавлена как третий стартер рядом с Dark/Light, плюс эталонный пример `examples/marp_svaib-sample.md`
+- Brand-источник: [meta/marketing/brand-design-presentation.md](../meta/marketing/brand-design-presentation.md) — все цвета/шрифты/маркеры в SKILL.md повторяют его
+- **Мы форк** — когда автор выпускает новую версию, смотрим diff и мержим вручную
+- **Prerequisites:** VS Code extension `marp-team.marp-vscode` + два settings (глобальные, user-level) — `markdown.marp.html: "all"`, `markdown.marp.allowLocalFiles: true`
+- **Когда использовать:** быстрые рабочие decks, markdown-first workflow, git-версионирование слайдов, AI редактирует напрямую. Альтернатива — скилл `presentation` (PPTX) для брендированных PPTX-файлов
 
 ---
 
