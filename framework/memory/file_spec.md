@@ -1,8 +1,8 @@
 ---
 title: "Спецификация файла Second AI Brain — формат, структура, правила"
-updated: 2026-04-07
-version: 5
-scope: "product_core"
+updated: 2026-04-15
+version: 6
+scope: "memory"
 priority: high
 type: reference
 ---
@@ -17,7 +17,7 @@ type: reference
 
 ## Связанные файлы
 
-- ontology.md — типы файлов и их контентная часть (vision, goal, plan...). Spec дополняет: онтология = что внутри, spec = как оформлено
+- ../ontology/ontology.md — типы файлов и их контентная часть (vision, goal, plan...). Spec дополняет: онтология = что внутри, spec = как оформлено
 - ../scaffold/principles.md — принципы проектирования структуры (миссия файла, развёртывание, маршрутизация). file_spec = КАК устроен файл, principles = КОГДА создавать и КАК маршрутизировать
 - ../methodology/methodology.md — ритуалы работы с файлами (когда обновлять, как переносить)
 - ../scaffold/ — шаблоны файлов, должны соответствовать этой спецификации

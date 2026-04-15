@@ -16,7 +16,7 @@ type: reference
 
 ## Связанные файлы
 
-- [../ontology/file_spec.md](../ontology/file_spec.md) — КАК устроен один файл (YAML, секции, ограничения)
+- [../memory/file_spec.md](../memory/file_spec.md) — КАК устроен один файл (YAML, секции, ограничения)
 - [../ontology/ontology.md](../ontology/ontology.md) — КАКИЕ файлы бывают (management-ядро)
 - [../ontology/entities.md](../ontology/entities.md) — атомарные сущности (решение, задача, идея...)
 - [README.md](README.md) — обзор scaffold

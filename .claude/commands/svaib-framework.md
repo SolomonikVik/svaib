@@ -40,7 +40,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 | Сборка пакета клиенту | `framework/plugin/` (README внутри) |
 | Онбординг клиента | `framework/methodology/onboarding.md` |
 | Анализ транскриптов встреч | `framework/methodology/meeting_analysis.md`, `meeting_overlays.md` |
-| Формат файлов, YAML, секции | `framework/ontology/file_spec.md` |
+| Формат файлов, YAML, секции | `framework/memory/file_spec.md` |
 | Как фреймворк применяется к клиентам | `clients/playbook/` |
 
 **База знаний:** при проектировании skills, agents, hooks — проверь `knowledge/skills/`, `knowledge/plugins/`, `knowledge/agents/`, `knowledge/context/`.

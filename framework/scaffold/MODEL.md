@@ -22,7 +22,7 @@ type: reference
 - [principles.md](principles.md) — принципы проектирования файловой структуры
 - [CLAUDE.md](CLAUDE.md) — протокол чтения для агента клиента
 - [../ontology/ontology.md](../ontology/ontology.md) — каталог сущностей
-- [../ontology/file_spec.md](../ontology/file_spec.md) — формат одного файла
+- [../memory/file_spec.md](../memory/file_spec.md) — формат одного файла
 - [../skills/scaffold/_draft_spec.md](../skills/scaffold/_draft_spec.md) — драфт скилла `deploy-scaffold` (отложен)
 
 ---

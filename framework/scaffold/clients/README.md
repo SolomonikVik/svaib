@@ -126,5 +126,5 @@ Scaffold для ведения проектов с внешними контра
 
 - [../principles.md](../principles.md) — принципы проектирования файловой структуры
 - [../README.md](../README.md) — обзор scaffold
-- [../../ontology/file_spec.md](../../ontology/file_spec.md) — спецификация формата файлов
+- [../../memory/file_spec.md](../../memory/file_spec.md) — спецификация формата файлов
 - [../../ontology/entities.md](../../ontology/entities.md) — каталог сущностей
