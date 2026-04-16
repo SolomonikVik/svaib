@@ -13,6 +13,9 @@
 .vscode/
 **/.vscode/
 
+# --- Obsidian ---
+.obsidian/
+
 # --- Node.js ---
 node_modules/
 npm-debug.log*
