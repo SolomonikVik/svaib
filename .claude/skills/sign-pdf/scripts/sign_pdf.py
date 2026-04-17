@@ -45,6 +45,17 @@ PRESETS = {
         "stamp_y": 76.0,   # 34 + 42
         "pages": "last",
     },
+    "upd": {
+        "description": "УПД — ИП + главбух (верх стр.2) + печать между ними, landscape",
+        "size_cm": 4.5,
+        "sign_x": 202.0,
+        "sign_y": 460.3,
+        "stamp_x": 285.0,
+        "stamp_y": 465.0,
+        "sign2_x": 551.0,
+        "sign2_y": 491.6,
+        "pages": [2],
+    },
 }
 
 DEFAULT_PRESET = {

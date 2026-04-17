@@ -1,6 +1,6 @@
 ---
 name: sign-pdf
-description: "Overlay stamp and signature on a PDF document. Trigger when: (1) user says 'подпиши', 'поставь печать', 'sign PDF', (2) user drops a PDF and mentions signing/stamping, (3) user asks to prepare an invoice or document for sending with seal. Supports presets for known document types (счёт-фактура) with pre-calibrated positions."
+description: "Overlay stamp and signature on a PDF document. Trigger when: (1) user says 'подпиши', 'поставь печать', 'sign PDF', (2) user drops a PDF and mentions signing/stamping, (3) user asks to prepare an invoice or document for sending with seal. Supports presets for known document types (счёт-фактура, УПД, договор) with pre-calibrated positions."
 ---
 
 # Sign PDF
@@ -57,6 +57,7 @@ python3 .claude/skills/sign-pdf/scripts/sign_pdf.py "doc.pdf" --sign-dy -28.35 -
 |--------|-----------|-------------|
 | Счёт-фактура | `invoice` | 4.5 cm, печать + подпись ИП (left) + подпись бухгалтера (right), all pages |
 | Договор | `contract` | 4.5 cm, печать + подпись Исполнителя (правая колонка), last page |
+| УПД | `upd` | 4.5 cm, подпись ИП + главбух (верх стр.2) + печать между ними, page 2, landscape |
 | Default | (none) | 4.5 cm, bottom-left, all pages |
 
 New presets: add to `PRESETS` dict in `scripts/sign_pdf.py`.
