@@ -1,11 +1,11 @@
 ---
 name: weekly-planning
-description: "Weekly planning ritual: close previous week, generate weekly progress, analyze, plan next week, draft Telegram post. Trigger when: (1) user says 'планёрка', 'план недели', 'ритуал недели', (2) user invokes /weekly-planning, (3) it's Monday and user wants to plan. Do NOT trigger for: day planning (use /svaib-strategy), quick task add/remove (use /plan), weekly progress generation alone (use /weekly-progress)."
+description: "Weekly planning ritual: close previous week, generate weekly progress, analyze, plan next week, draft Telegram post, plan Monday. Trigger when: (1) user says 'планёрка', 'план недели', 'ритуал недели', (2) user invokes /weekly-planning, (3) it's Monday and user wants to plan. Do NOT trigger for: day planning alone on non-Monday (use /svaib-strategy), quick task add/remove (use /plan), weekly progress generation alone (use /weekly-progress)."
 ---
 
 # Ритуал планирования недели
 
-Понедельник утром, один раз в неделю. Шесть фаз: закрытие → итоги → анализ → бэклог → план → пост.
+Понедельник утром, один раз в неделю. Семь фаз: закрытие → итоги → анализ → бэклог → план недели → пост → план дня.
 
 ## Iron Law
 
@@ -28,6 +28,7 @@ description: "Weekly planning ritual: close previous week, generate weekly progr
 **Фаза 4** → Чистка бэклога
 **Фаза 5** → План недели
 **Фаза 6** → Пост Telegram
+**Фаза 7** → План дня на понедельник
 
 **Iron Law: каждая фаза = отдельное сообщение. Не начинай следующую фазу без «ОК» от Виктора.**
 
@@ -239,10 +240,17 @@ description: "Weekly planning ritual: close previous week, generate weekly progr
 
 ---
 
+## Фаза 7: План дня на понедельник
+
+Выполнить ритуал планирования дня по инструкции из `meta/management/03_plan.md` (раздел «Инструкция: ритуал планирования дня»).
+
+Сверку Clockify за вчера (шаг 1 ритуала) пропустить, если она уже сделана в начале планёрки. Спросить Виктора.
+
+---
+
 ## Закрытие
 
-1. Запись в session-log: "Ритуал планирования недели W(N+1)." + длительность. Спросить Виктора сколько заняло
-2. Перейти к ритуалу планирования дня (инструкция в конце `meta/management/03_plan.md`)
+Запись в session-log: "Ритуал планирования недели W(N+1)." + длительность. Спросить Виктора сколько заняло.
 
 ## Red Flags
 
