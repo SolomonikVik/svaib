@@ -1,7 +1,7 @@
 ---
 title: "Framework — ядро продукта Second AI Brain"
-updated: 2026-04-15
-version: 7
+updated: 2026-04-20
+version: 8
 scope: "product_core"
 priority: high
 ---
@@ -22,11 +22,14 @@ priority: high
 
 ## Связанные файлы
 
-- [status.md](status.md) — текущее состояние фреймворка (что готово, что в работе, ограничения)
+- [01_overview.md](01_overview.md) — обзор направления: миссия, стадия, цель декады
+- [02_active.md](02_active.md) — что в работе сейчас, Session Handoff
+- [02_backlog.md](02_backlog.md) — задачи направления на будущее
+- [03_progress.md](03_progress.md) — хроника сделанного
 - [architecture.md](architecture.md) — архитектура продукта (слои, компоненты, связи)
 - [../meta/product/product_vision.md](../meta/product/product_vision.md) — видение продукта Second AI Brain
 - [../clients/playbook/delivery/01_delivery_plan.md](../clients/playbook/delivery/01_delivery_plan.md) — delivery plan (онбординг, ДЗ, инструменты)
-- [_inbox/](_inbox/) — входящие задачи, инсайты, чужие архитектуры для разбора
+- [_inbox/01_inbox.md](_inbox/01_inbox.md) — входящее на разбор: инсайты, чужие архитектуры, черновики
 
 ---
 
