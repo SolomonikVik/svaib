@@ -3,14 +3,14 @@ import { footerNavigation } from '@/data/siteContent';
 
 export default function SiteFooter() {
   return (
-    <footer className="border-t border-border bg-[#071616] text-white">
+    <footer className="border-t border-border bg-ink text-white">
       <div className="mx-auto max-w-6xl px-6 py-12">
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr]">
           <div className="space-y-4">
-            <p className="font-heading text-xl font-bold tracking-[0.08em]">
-              <span className="text-primary">sv</span>
+            <p className="font-display text-2xl font-extrabold tracking-[-0.02em] leading-none">
+              <span className="text-white">sv</span>
               <span className="text-accent">ai</span>
-              <span className="text-primary">b</span>
+              <span className="text-white">b</span>
               <span className="text-accent">.</span>
             </p>
             <p className="max-w-xl text-sm leading-7 text-white/65">

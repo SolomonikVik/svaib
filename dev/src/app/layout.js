@@ -1,4 +1,4 @@
-import { Inter, Sora } from 'next/font/google';
+import { Inter, Montserrat, Fraunces } from 'next/font/google';
 import './globals.css';
 import SiteHeader from '@/components/site/SiteHeader';
 import SiteFooter from '@/components/site/SiteFooter';
@@ -11,10 +11,18 @@ const inter = Inter({
   display: 'swap',
 });
 
-const sora = Sora({
+const montserrat = Montserrat({
   subsets: ['latin', 'cyrillic'],
-  weight: ['600', '700', '800'],
-  variable: '--font-sora',
+  weight: ['500', '600', '700', '800'],
+  variable: '--font-montserrat',
+  display: 'swap',
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['700'],
+  style: ['italic'],
+  variable: '--font-fraunces',
   display: 'swap',
 });
 
@@ -39,7 +47,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru" className={`${inter.variable} ${sora.variable}`}>
+    <html lang="ru" className={`${inter.variable} ${montserrat.variable} ${fraunces.variable}`}>
       <body className="font-body antialiased">
         <div className="min-h-screen bg-background">
           <SiteHeader />

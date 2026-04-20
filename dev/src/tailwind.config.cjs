@@ -11,6 +11,7 @@ module.exports = {
         primary: {
           DEFAULT: '#00B4A6',
           hover: '#008B7F',
+          dark: '#008B7F',
           light: '#E0F7F5',
           subtle: '#F0FDFB',
         },
@@ -18,14 +19,22 @@ module.exports = {
           DEFAULT: '#FF4D8D',
           hover: '#E6548A',
           light: '#FFE5ED',
+          subtle: '#FFF5F8',
+        },
+        ink: {
+          DEFAULT: '#2C3E50',
+          soft: '#5A6C7D',
+        },
+        reserve: {
+          DEFAULT: '#FFD600',
         },
         background: {
           DEFAULT: '#FAFBFC',
           secondary: '#F3F4F6',
         },
         text: {
-          primary: '#1A1A1A',
-          secondary: '#6B7280',
+          primary: '#2C3E50',
+          secondary: '#5A6C7D',
           tertiary: '#9CA3AF',
         },
         border: {
@@ -34,7 +43,9 @@ module.exports = {
         },
       },
       fontFamily: {
-        heading: ['var(--font-sora)', 'sans-serif'],
+        heading: ['var(--font-montserrat)', 'sans-serif'],
+        display: ['var(--font-montserrat)', 'sans-serif'],
+        accent: ['var(--font-fraunces)', 'Georgia', 'serif'],
         body: ['var(--font-inter)', 'sans-serif'],
       },
       borderRadius: {
