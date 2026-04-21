@@ -7,8 +7,8 @@ description: "Режим работы с базой знаний (knowledge/)"
 **Основная область:** knowledge/
 
 **Контекст проекта:**
-@meta/meta_context/project_overview.md
-@meta/meta_context/product_vision.md
+@meta/management/01_vision.md
+@framework/product.md
 @knowledge/README.md
 @knowledge/_inbox/01_inbox.md
 
@@ -38,7 +38,7 @@ description: "Режим работы с базой знаний (knowledge/)"
 
 ## Связь с продуктом
 
-Знания в knowledge/ напрямую питают продукт SVAIB. Актуальный вижен продукта — в product_vision.md (подгружается выше). knowledge/ — наш собственный пример подхода, который мы продаём клиентам: мы строим для себя то же, что предлагаем другим.
+Знания в knowledge/ напрямую питают продукт SVAIB. Актуальный вижен продукта — в framework/product.md (подгружается выше). knowledge/ — наш собственный пример подхода, который мы продаём клиентам: мы строим для себя то же, что предлагаем другим.
 
 Поэтому знания о создании Skills, построении агентов, работе с контекстом — это не абстрактный интерес, а рабочий материал для продукта.
 

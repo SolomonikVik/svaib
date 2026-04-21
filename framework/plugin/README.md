@@ -27,14 +27,14 @@ Plugin и runtime — не одно и то же.
 - **Plugin** — наш слой: skills, agents, hooks, то есть методология и автоматизация.
 - **Runtime** — внешний слой доставки: AI-host, scheduling, orchestration, интерфейсные коннекторы.
 
-Мы не считаем runtime частью ядра продукта. Текущее решение по этой границе зафиксировано в [../../meta/product/decisions/runtime-choice.md](../../meta/product/decisions/runtime-choice.md).
+Мы не считаем runtime частью ядра продукта. Текущее решение по этой границе зафиксировано в [../04_decisions.md](../04_decisions.md) (пункт 1 — Выбор runtime).
 
 ### Что это значит на практике
 
 - plugin должен оставаться максимально runtime-agnostic;
 - нельзя описывать plugin как артефакт только для `Claude Code / Cowork`, если это не часть самой сути;
 - конкретный runtime может меняться без пересборки продуктовой логики;
-- текущий пилотный кандидат на runtime — `HKUDS/nanobot`, но plugin не должен быть описан как "nanobot-плагин".
+- текущие пилотные кандидаты — Claude Code Scheduled Tasks (приоритетный, cloud-режим) и `HKUDS/nanobot` (запасной), детали в [../04_decisions.md](../04_decisions.md) (пункт 1 — Выбор runtime); plugin не должен быть описан как «nanobot-плагин» или «Scheduled-Tasks-плагин».
 
 ## Delivery-модель
 
@@ -70,5 +70,5 @@ runtime / host (внешняя доставка)
 - ../skills/ — мастерская разработки (исходники промптов и навыков)
 - ../README.md — обзор фреймворка
 - ../architecture.md — архитектурная граница между plugin и runtime
-- ../../meta/product/decisions/runtime-choice.md — решение по runtime
+- ../04_decisions.md — продуктовые решения (включая выбор runtime)
 - ../../knowledge/plugins/ — исследование формата плагинов и delivery-подходов

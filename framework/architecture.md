@@ -1,7 +1,7 @@
 ---
 title: "Архитектура продукта Second AI Brain"
-updated: 2026-04-15
-version: 8
+updated: 2026-04-21
+version: 9
 scope: "product_core"
 priority: high
 ---
@@ -14,6 +14,9 @@ priority: high
 
 ## Связанные файлы
 
+- product.md — видение продукта, принципы, границы, бизнес-модель
+- 01_overview.md — состояние реализации шести частей
+- 04_decisions.md — продуктовые решения (runtime, границы, путь skills)
 - ontology/ontology.md — сущности, связи, правила размещения
 - methodology/methodology.md — протоколы, decision frames, масштабирование
 - ontology/rituals.md — каталог ритуалов
@@ -22,9 +25,6 @@ priority: high
 - scaffold/ — готовый каркас (воплощение онтологии)
 - skills/ — мастерская промптов и навыков (разработка помощников)
 - plugin/README.md — деплоимый пакет (реализация помощников)
-- ../meta/product/decisions/runtime-choice.md — решение о границе между plugin и runtime
-- ../meta/product/product_vision.md — видение продукта, бизнес-модель
-- ../meta/product/product_vision.md — видение продукта, бизнес-модель
 
 ---
 
@@ -240,7 +240,7 @@ Runtime — это внешний исполняющий слой, через к
 - `Claude Code`, `Cowork`, `nanobot` или будущий managed runtime — это варианты delivery;
 - при проектировании skills, agents и hooks мы должны по возможности сохранять runtime-agnostic контракт.
 
-Текущее решение: свой runtime не пишем; внешний lightweight runtime проверяем как delivery-слой. Детали и статус — в `../meta/product/decisions/runtime-choice.md`.
+Текущее решение: свой runtime не пишем; внешний lightweight runtime проверяем как delivery-слой. Детали и статус — в [04_decisions.md](04_decisions.md) (пункт 1 — Выбор runtime).
 
 ---
 

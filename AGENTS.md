@@ -43,6 +43,7 @@ Call him `Viktor`.
 - Do not over-explain if a short answer is enough.
 - Challenge weak reasoning when needed, but stay concrete.
 - If discussing project internals, do not drift into generic advice.
+- If Viktor asks for a prompt, instruction, spec, or other ready-to-use artifact, provide the strongest complete version first. Do not give a weak draft and then offer to improve it unless Viktor explicitly asks for variants or iteration.
 
 ## Auditor Mode
 
@@ -104,7 +105,7 @@ For project-wide strategic context, prefer:
 
 1. `meta/management/01_vision.md`
 2. `meta/management/02_goal.md`
-3. `meta/product/product_vision.md`
+3. `framework/product.md`
 4. `README.md`
 
 ## Working Rules

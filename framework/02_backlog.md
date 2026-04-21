@@ -16,7 +16,7 @@ type: plan
 
 ## Связанные файлы
 
-- [01_overview.md](01_overview.md) — обзор направления
+- [01_overview.md](01_overview.md) — состояние реализации шести частей, roadmap декады, модель поставки
 - [02_active.md](02_active.md) — что делаем сейчас
 - [03_progress.md](03_progress.md) — хроника сделанного
 - [_inbox/01_inbox.md](_inbox/01_inbox.md) — входящее на разбор
@@ -28,7 +28,7 @@ type: plan
 - [ ] Проверка целостности scaffold
 - [ ] Слияние [scaffold/principles.md](scaffold/principles.md) → [scaffold/MODEL.md](scaffold/MODEL.md)
 - [ ] Перенести principles.md из `scaffold/` в `methodology/` — это принципы проектирования, не scaffold. Обновить ссылки в `scaffold/clients/README.md`, `scaffold/README.md`, `framework/README.md`
-- [ ] В scaffold нет шаблона `product_vision` — нужен ли клиентам файл продуктового видения? См. [../meta/product/product_vision.md](../meta/product/product_vision.md) как референс
+- [ ] В scaffold нет шаблона `product_vision` — нужен ли клиентам файл продуктового видения? См. [product.md](product.md) как референс
 
 ## Meeting analysis (аналитик встреч)
 
@@ -54,7 +54,7 @@ type: plan
 
 ## Архитектура и форматы данных
 
-- [ ] **Google Docs как альтернативный формат данных.** Обобщить слой «Данные» в architecture.md (Markdown → открытые данные), зафиксировать два формата scaffold (MD + GDocs), уточнить формулировку в product_vision.md, упростить onboarding для GDocs-клиентов. Технические ограничения Drive API — в инсайте (`_inbox/insights.md`, 2026-03-18)
+- [ ] **Google Docs как альтернативный формат данных.** Обобщить слой «Данные» в architecture.md (Markdown → открытые данные), зафиксировать два формата scaffold (MD + GDocs), уточнить формулировку в product.md, упростить onboarding для GDocs-клиентов. Технические ограничения Drive API — в инсайте (`_inbox/insights.md`, 2026-03-18)
 
 ## Плагин / runtime / инфраструктура
 

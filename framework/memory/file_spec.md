@@ -340,5 +340,5 @@ Management-ядро (vision, goal, plan, weekly_progress, timeline) — **status
 
 ---
 
-*Основано на: ontology.md, knowledge/context/markdown-for-llm.md, meta/meta_context/!context_rules.md*
+*Основано на: ontology.md, knowledge/context/markdown-for-llm.md*
 *v1 — 18 февраля 2026, v2 — 18 февраля 2026 (ревью + доработка)*

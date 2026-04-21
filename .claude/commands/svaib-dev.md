@@ -29,7 +29,6 @@ description: "Режим разработки проекта SVAIB"
 3. @dev/dev_context/architecture.md — архитектурный контракт
 4. @dev/dev_context/product_sprint.md — текущий статус MVP
 
-**Workflow команды:** @meta/meta_context/ai_team.md → секция "Workflow команды: кто что делает"
 
 ---
 

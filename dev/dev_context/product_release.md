@@ -9,7 +9,7 @@ status: archive
 
 # Product Release
 
-> **⚠️ АРХИВ (13.03.2026):** этот release относится к прошлому meeting/presentation pivot. Для текущего сайта и current product messaging использовать `site_rebuild_plan.md`, `site_rebuild_creative_brief.md` и `meta/product/product_vision.md`.
+> **⚠️ АРХИВ (13.03.2026):** этот release относится к прошлому meeting/presentation pivot. Для текущего сайта и current product messaging использовать `site_rebuild_plan.md`, `site_rebuild_creative_brief.md` и `framework/product.md`.
 
 ## О документе
 
@@ -20,7 +20,7 @@ status: archive
 - **Current Release** — что в текущем релизе (сценарий, фичи, ограничения)
 
 **Связанные документы:**
-- `product_vision.md` — зачем мы существуем, какие боли решаем
+- `framework/product.md` — зачем мы существуем, какие боли решаем
 - `product_roadmap.md` — куда движемся, что планируем
 
 ---

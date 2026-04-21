@@ -36,7 +36,7 @@ status: archive
 
 **Связанные документы:**
 
-* `product_vision.md` — зачем мы существуем, какие боли решаем
+* `framework/product.md` — зачем мы существуем, какие боли решаем
 * `product_release.md` — детали текущего релиза (MVP)
 * `guide_presentation.md` — подробная документация по презентации
 * `guide_team_patterns.md` — паттерны команды (анализ командной динамики)

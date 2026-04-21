@@ -9,7 +9,7 @@ status: archive
 
 # Архитектура MVP svaib
 
-> **⚠️ АРХИВ (13.03.2026):** этот документ описывает прошлый meeting/presentation pivot. Для текущего публичного сайта и current positioning использовать `site_rebuild_plan.md`, `site_rebuild_creative_brief.md` и `meta/product/product_vision.md`.
+> **⚠️ АРХИВ (13.03.2026):** этот документ описывает прошлый meeting/presentation pivot. Для текущего публичного сайта и current positioning использовать `site_rebuild_plan.md`, `site_rebuild_creative_brief.md` и `framework/product.md`.
 
 ## Кратко
 

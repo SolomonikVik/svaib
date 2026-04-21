@@ -155,7 +155,7 @@ Automated:
 
 Manual acceptance:
 - Home page no longer speaks like meeting SaaS or Google Workspace product
-- `/second-ai-brain` reflects the current `product_vision.md`
+- `/second-ai-brain` reflects the current `framework/product.md`
 - Demo section on `/second-ai-brain` shows 3 static scenario cards with real content from the brief, not placeholders
 - `/lab` is a public founder-story page, not an internal lab/process page
 - `/knowledge` shows exactly 3 article cards and each slug opens a readable article page

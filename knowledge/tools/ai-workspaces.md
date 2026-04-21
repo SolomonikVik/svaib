@@ -130,7 +130,7 @@ version: 4
 КЛИЕНТ выбирает оболочку          SVAIB даёт содержимое
 ─────────────────────────          ─────────────────────
 Claude Code / Cowork / Kojori     Skills + Agents + Онтология
-OpenCode / Codex / VS Code        (подписка, см. product_vision.md)
+OpenCode / Codex / VS Code        (подписка, см. framework/product.md)
 ValeDesk (закрытый контур)
 ```
 

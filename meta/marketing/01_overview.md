@@ -24,7 +24,7 @@ Marketing — бренд, каналы, контент, события svaib. Т
 - [strategy.md](strategy.md) — позиционирование, каналы, воронка
 - [brand.md](brand.md) — ядро бренда (в процессе перехода на v2 → `Brandbook.html`)
 - [../management/02_goal.md](../management/02_goal.md) — общая цель декады
-- [../product/product_vision.md](../product/product_vision.md) — видение продукта
+- [../../framework/product.md](../../framework/product.md) — видение продукта
 
 ---
 
@@ -38,7 +38,7 @@ Marketing отвечает за **внешнее лицо** svaib: как про
 - Контент по каналам: Telegram (`posts/`, `telegram/`), YouTube (`youtube/`), семинары (`seminars/`), конференции (`conferences/`)
 - Дизайн артефактов — слайды, PDF, диаграммы, иллюстрации
 
-**НЕ входит:** механизм публикации SEO/GEO на сайт (→ `dev/`), код сайта (→ `dev/`), стратегия продукта и метрики (→ `meta/management/`), позиционирование продукта Second AI Brain в техническом смысле (→ `meta/product/`), ядро продукта (→ `framework/`).
+**НЕ входит:** механизм публикации SEO/GEO на сайт (→ `dev/`), код сайта (→ `dev/`), стратегия продукта и метрики (→ `meta/management/`), позиционирование и устройство продукта Second AI Brain (→ `framework/`).
 
 ---
 
