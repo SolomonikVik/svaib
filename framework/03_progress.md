@@ -1,7 +1,7 @@
 ---
 title: "Framework — хроника"
-updated: 2026-04-20
-version: 1
+updated: 2026-04-21
+version: 2
 scope: product_core
 type: log
 ---
@@ -27,9 +27,13 @@ type: log
 
 Добавлена опциональная папка `scaffold/projects/` — полная раскладка шаблона проекта (10 файлов): `_inbox/01_inbox`, `01_overview` (Цель + таблица метрик), `02_active` без Session Handoff, `02_backlog` с двумя зонами (план по вехам + идеи), `03_progress` с разделением на «Динамика метрик» (только конец периода, SSOT, формат `YYYY-MM-DD`) и «Хроника встреч», `04_decisions`, `meetings/README` + `archive/`. Виктор встроил подробный `{project_name}/README.md` (жизненный цикл задач + метрики + разбор backlog). MODEL.md раздел 8 переписан под `projects/`, scaffold/README.md (5→6 опциональных папок), scaffold/_inbox/ унифицирован. .gitignore поправлен — исключения для шаблонов scaffold/**/_inbox/. Аудит самодостаточности: 5 параллельных холодных Explore + контрольный → 6 точечных правок (формат периода, разделение правил, унификация «Метрика», груминг → разбор, отсылка терминов L1/L2 к скиллу) подтверждены. Коммит: `9b68061`.
 
+## 2026-04-21 · Фаза 3 миграции на универсальный шаблон работы
+
+Закрыта миграция svaib на единую модель управления работой в направлениях. Переписаны скиллы `/close-session` (3 ситуации: завершена / значимая продолжается / короткая продолжается), `/plan` (операции на доменные `{direction}/02_backlog.md`), `/weekly-planning` (источник — доменные backlog + 03_progress). Создан `lab/work-model.md` как единый канон модели (слил `session-handoff.md` + `inbox-rules.md` + финальные решения спеки). Команды `svaib-framework/knowledge/sprint` вычищены от worklog/status/_TODO. Корневой `CLAUDE.md` и README направлений получили указатели на `work-model.md`. Удалены `session-handoff.md`, `inbox-rules.md`, `work_model_spec.md` (локальный). Коммит: `10198bb`.
+
 ## 2026-04-20 · Work model v2 approved
 
-Спроектирована модель универсального шаблона управления работой в направлениях svaib (`_inbox/01_inbox` + `01_overview` + `02_active` с Session Handoff + `03_progress` + расширения `02_backlog`/`04_decisions`). [work_model_spec.md v2](_inbox/work_model_spec.md) approved, собран план миграции Фаз 2 и 3 с правилом безопасности переноса.
+Спроектирована модель универсального шаблона управления работой в направлениях svaib (`_inbox/01_inbox` + `01_overview` + `02_active` с Session Handoff + `03_progress` + расширения `02_backlog`/`04_decisions`). Финальная спецификация `work_model_spec.md` v2 approved (документ реализован и удалён в Фазе 3, содержимое перешло в `lab/work-model.md`). Собран план миграции Фаз 2 и 3 с правилом безопасности переноса.
 
 ## 2026-04-15 · Создан слой memory/ (6-я часть фреймворка)
 
