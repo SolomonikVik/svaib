@@ -70,6 +70,9 @@ out/
 
 # --- Черновики и inbox ---
 _inbox/
+# Исключения: шаблоны scaffold в framework — это часть продукта, должны идти в git
+!framework/scaffold/**/_inbox/
+!framework/scaffold/**/_inbox/**
 
 # --- Клиенты (приватные данные) ---
 /clients/
