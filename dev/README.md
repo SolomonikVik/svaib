@@ -14,6 +14,8 @@
 - [03_progress.md](03_progress.md) — хроника сделанного
 - [_inbox/01_inbox.md](_inbox/01_inbox.md) — входящее на разбор
 
+Направление устроено по универсальной модели svaib: `_inbox → backlog → active → progress + decisions`. Правила работы — [../lab/work-model.md](../lab/work-model.md).
+
 ## Структура
 
 ```

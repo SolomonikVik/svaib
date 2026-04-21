@@ -10,7 +10,7 @@ description: "Режим работы с базой знаний (knowledge/)"
 @meta/meta_context/project_overview.md
 @meta/meta_context/product_vision.md
 @knowledge/README.md
-@knowledge/_inbox/_worklog.md
+@knowledge/_inbox/01_inbox.md
 
 **Скилл записи знаний (загружается принудительно):**
 @.claude/skills/knowledge-research/SKILL.md
@@ -100,5 +100,5 @@ description: "Режим работы с базой знаний (knowledge/)"
 
 ## Перед началом
 
-1. Проверь worklog. Если есть активная задача — предложи продолжить: "Вижу незакрытую задачу: {название}. Продолжаем?"
-2. Если worklog пуст — спроси Виктора: что сегодня? Если задача выглядит большой (>1 сессии) — предложи обсудить план и зафиксировать в worklog.
+1. Проверь `knowledge/_inbox/01_inbox.md` — что лежит на разбор, есть ли незакрытое исследование.
+2. Спроси Виктора что сегодня. `knowledge/` — не направление работы с `02_active.md`, передача контекста между чатами идёт через git commits и `knowledge/_inbox/01_inbox.md`.

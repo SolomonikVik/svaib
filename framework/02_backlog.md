@@ -58,6 +58,6 @@ type: plan
 
 ## Плагин / runtime / инфраструктура
 
-- [ ] **Единый пайплайн онбординга клиента (~3ч)** — scaffold, чеклист этапов, промпты. Детали в [../clients/_inbox/_worklog.md](../clients/_inbox/_worklog.md)
+- [ ] **Единый пайплайн онбординга клиента (~3ч)** — scaffold, чеклист этапов, промпты. Контекст: [../clients/02_active.md](../clients/02_active.md)
 - [ ] **Scheduled Tasks + Channels** — delivery-слой для клиента через Claude Code. Channels (Telegram ↔ CLI), Scheduled Tasks (cloud, без включённого компа), Telegram-плагин (официальный). Потенциально закрывает запрос АС на клоубот и заменяет Nanobot. Документация: [Channels](https://code.claude.com/docs/en/channels), [Scheduled Tasks](https://code.claude.com/docs/en/web-scheduled-tasks), [Telegram-плагин](https://github.com/anthropics/claude-plugins-official/tree/main/external_plugins/telegram), [Cloud environments](https://code.claude.com/docs/en/claude-code-on-the-web)
 - [ ] **QMD — локальный семантический поиск по markdown** (MCP для Claude Code). 19k stars, Tobi Lütke. Установить, протестировать на нашем репо (570+ файлов), оценить качество vs grep. Если работает — часть онбординга клиента. Детали: [../lab/_inbox/qmd-research.md](../lab/_inbox/qmd-research.md)

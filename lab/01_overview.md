@@ -31,7 +31,7 @@ Lab — мастерская AI-помощников **для внутренне
 
 Lab производит **внутренний инструментарий** svaib в Claude Code. Два слоя:
 
-1. **Знание как строить** — `principles.md`, `tooling.md`, todo-файлы по типам (`todo-skill.md`, `todo-command.md`, `todo-agent.md`, `todo-hook.md`), правила (`subagent-rules.md`, `inbox-rules.md`, `session-handoff.md`, `autonomous-mode.md`).
+1. **Знание как строить** — `principles.md`, `tooling.md`, todo-файлы по типам (`todo-skill.md`, `todo-command.md`, `todo-agent.md`, `todo-hook.md`), правила (`subagent-rules.md`, `work-model.md`, `autonomous-mode.md`).
 2. **Реализация** — помощники в `.claude/skills/`, `.claude/commands/`, `.claude/agents/`, `.claude/hooks/`. Lab-файлы — методология, `.claude/` — продукт методологии.
 
 **Входит в scope:** проектирование и сопровождение внутренних помощников, процессы работы с ними (sessions, inbox, autonomous), правила субагентов, tooling-registry.
@@ -67,7 +67,7 @@ Lab производит **внутренний инструментарий** s
 | **Принципы** | Design-правила, фильтры решений | `principles.md` |
 | **Tooling** | Выбор типа помощника, реестр существующих | `tooling.md`, `tooling-registry.md` |
 | **Todo по типам** | Пошаговые инструкции проектирования | `todo-skill.md`, `todo-command.md`, `todo-agent.md`, `todo-hook.md` |
-| **Процессы** | Сессии, inbox, субагенты, автономный режим | `session-handoff.md`, `inbox-rules.md`, `subagent-rules.md`, `autonomous-mode.md` |
+| **Процессы** | Модель работы, субагенты, автономный режим | `work-model.md`, `subagent-rules.md`, `autonomous-mode.md` |
 | **Диагностика** | Rescue-log, паттерны сбоев | `.claude/rescue-log.yml`, `inbox-last30days-patterns.md` |
 | **Реализация** | Работающие помощники | `.claude/skills/`, `.claude/commands/`, `.claude/agents/`, `.claude/hooks/` |
 

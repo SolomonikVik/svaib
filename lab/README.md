@@ -21,6 +21,8 @@ type: reference
 - [03_progress.md](03_progress.md) — хроника по направлению
 - [_inbox/01_inbox.md](_inbox/01_inbox.md) — входящее на разбор
 
+Направление устроено по универсальной модели svaib: `_inbox → backlog → active → progress + decisions`. Правила работы — [work-model.md](work-model.md).
+
 ---
 
 ## Что делаешь → где искать
@@ -57,9 +59,8 @@ type: reference
 
 | Файл | Что внутри |
 |------|-----------|
-| `session-handoff.md` | Полный цикл: план → задача → сессии → close-session (будет переписан в Фазе 3 миграции → `work-model.md`) |
+| `work-model.md` | Модель работы в направлениях svaib: структура, движение задачи, Session Handoff, контракт `/close-session` |
 | `subagent-rules.md` | Правила работы с субагентами: permissions, чанкинг, контекст |
-| `inbox-rules.md` | Правила работы с `_inbox/` — единые для всего проекта (будет слит в Фазе 3 → `work-model.md`) |
 | `autonomous-mode.md` | Переключение permissions для автономной ночной работы |
 
 ---

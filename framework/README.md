@@ -31,6 +31,8 @@ priority: high
 - [../clients/playbook/delivery/01_delivery_plan.md](../clients/playbook/delivery/01_delivery_plan.md) — delivery plan (онбординг, ДЗ, инструменты)
 - [_inbox/01_inbox.md](_inbox/01_inbox.md) — входящее на разбор: инсайты, чужие архитектуры, черновики
 
+Направление устроено по универсальной модели svaib: `_inbox → backlog → active → progress + decisions`. Правила работы — [../lab/work-model.md](../lab/work-model.md).
+
 ---
 
 ## Как части связаны
