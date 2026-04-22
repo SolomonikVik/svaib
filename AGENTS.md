@@ -105,7 +105,7 @@ For project-wide strategic context, prefer:
 
 1. `meta/management/01_vision.md`
 2. `meta/management/02_goal.md`
-3. `framework/product.md`
+3. `framework/00_product.md`
 4. `README.md`
 
 ## Working Rules

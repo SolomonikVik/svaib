@@ -9,7 +9,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 @framework/README.md
 @framework/01_overview.md
 @framework/02_active.md
-@framework/product.md
+@framework/00_product.md
 @framework/architecture.md
 
 ---

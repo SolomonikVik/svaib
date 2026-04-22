@@ -20,7 +20,7 @@ description: "Режим работы по спринту MVP"
 3. @dev/dev_context/infrastructure.md — workflow IDs, credentials, что развёрнуто
 4. @dev/dev_context/architecture.md — архитектурный контракт, что строим
 5. @.claude/claude_code_mechanics.md — MCP, ограничения, рабочий процесс
-6. @framework/product.md — зачем строим, какие боли решаем
+6. @framework/00_product.md — зачем строим, какие боли решаем
 
 После прочтения → предложи план на сессию (3-5 шагов) → получи ОК → исполняй.
 

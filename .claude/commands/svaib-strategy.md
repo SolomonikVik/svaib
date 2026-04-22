@@ -7,7 +7,7 @@ version: "0.01"
 
 @meta/management/01_vision.md
 @meta/management/02_goal.md
-@framework/product.md
+@framework/00_product.md
 
 ---
 

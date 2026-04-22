@@ -30,5 +30,5 @@
 ## Где искать дальше
 
 - Профиль Виктора → `meta/my_profile_viktor.md`
-- Vision продукта → `framework/product.md`
+- Vision продукта → `framework/00_product.md`
 - Цели проекта → `meta/management/02_goal.md`

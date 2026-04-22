@@ -24,7 +24,7 @@ Marketing — бренд, каналы, контент, события svaib. Т
 - [strategy.md](strategy.md) — позиционирование, каналы, воронка
 - [brand.md](brand.md) — ядро бренда (в процессе перехода на v2 → `Brandbook.html`)
 - [../management/02_goal.md](../management/02_goal.md) — общая цель декады
-- [../../framework/product.md](../../framework/product.md) — видение продукта
+- [../../framework/00_product.md](../../framework/00_product.md) — видение продукта
 
 ---
 

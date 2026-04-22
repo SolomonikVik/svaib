@@ -131,4 +131,4 @@ version: 3
 
 - [russian-stt-models.md](russian-stt-models.md) — сравнение STT-моделей для русского (GigaAM-v3, Whisper, T-one) с WER-бенчмарками
 - [cowork.md](cowork.md) — Fireflies как плагин Cowork
-- [../../framework/product.md](../../framework/product.md) — вижен продукта SVAIB
+- [../../framework/00_product.md](../../framework/00_product.md) — вижен продукта SVAIB

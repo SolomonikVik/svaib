@@ -346,7 +346,7 @@ Product vision описывает модель подписки: клиент п
 
 Наша `.claude/` уже plugin-compatible. Шаг до плагина: `plugin.json` + реорганизация файлов.
 
-Подробнее о связи с продуктом: [tools/cowork.md](../tools/cowork.md) (секция "Связь с продуктом SVAIB"), [framework/product.md](../../framework/product.md).
+Подробнее о связи с продуктом: [tools/cowork.md](../tools/cowork.md) (секция "Связь с продуктом SVAIB"), [framework/00_product.md](../../framework/00_product.md).
 
 ---
 

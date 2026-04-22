@@ -26,7 +26,7 @@ priority: high
 
 ### Смысловое ядро продукта
 
-- [product.md](product.md) — что за продукт, для кого, принципы, границы, бизнес-модель
+- [00_product.md](00_product.md) — что за продукт, для кого, принципы, границы, бизнес-модель
 - [architecture.md](architecture.md) — как продукт устроен внутри (слои, компоненты, связи)
 - [04_decisions.md](04_decisions.md) — продуктовые решения (runtime, границы, путь skills)
 
@@ -40,7 +40,7 @@ priority: high
 
 ### Связи наружу
 
-- [../meta/management/01_vision.md](../meta/management/01_vision.md) — vision проекта svaib (связь ①: блок «Продукт» → [product.md](product.md))
+- [../meta/management/01_vision.md](../meta/management/01_vision.md) — vision проекта svaib (связь ①: блок «Продукт» → [00_product.md](00_product.md))
 - [../meta/management/02_goal.md](../meta/management/02_goal.md) — цели декады svaib (связь ②: фокус «Продукт» → [01_overview.md](01_overview.md))
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор svaib (связь ③: [03_progress.md](03_progress.md) → туда)
 - [../clients/playbook/delivery/01_delivery_plan.md](../clients/playbook/delivery/01_delivery_plan.md) — delivery plan (онбординг, ДЗ, инструменты)
@@ -89,7 +89,7 @@ plugin/            → собранный пакет для клиента (де
 ┌──────────────│──────────────────────────────│──│───────────┐
 │ УРОВЕНЬ ПРОДУКТА — framework/               │  │           │
 │                                             ▼  ▼           │
-│  product.md       ◀──── ЧТО строим и зачем (связь ①)       │
+│  00_product.md       ◀──── ЧТО строим и зачем (связь ①)       │
 │  architecture.md  ─────  КАК устроено                      │
 │  01_overview.md   ◀──── КАК идёт стройка (связь ②)         │
 │                                                            │
@@ -103,13 +103,13 @@ plugin/            → собранный пакет для клиента (де
 
 | № | Откуда | Куда | Частота |
 |---|--------|------|---------|
-| ① | [../meta/management/01_vision.md](../meta/management/01_vision.md) (блок «Продукт») | [product.md](product.md) | Стабильная, меняется при пивотах |
+| ① | [../meta/management/01_vision.md](../meta/management/01_vision.md) (блок «Продукт») | [00_product.md](00_product.md) | Стабильная, меняется при пивотах |
 | ② | [../meta/management/02_goal.md](../meta/management/02_goal.md) (цель декады / Продукт) | [01_overview.md](01_overview.md) | Каждую декаду (~10 нед) |
 | ③ | [03_progress.md](03_progress.md) | [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) | Еженедельно |
 
 ### Три скорости жизни
 
-- **Стабильный контур (месяцы):** [product.md](product.md), [architecture.md](architecture.md)
+- **Стабильный контур (месяцы):** [00_product.md](00_product.md), [architecture.md](architecture.md)
 - **Тактический контур (декады):** [01_overview.md](01_overview.md)
 - **Оперативный контур (дни/недели):** [02_active.md](02_active.md), [02_backlog.md](02_backlog.md), [03_progress.md](03_progress.md)
 
@@ -121,7 +121,7 @@ plugin/            → собранный пакет для клиента (де
 
 | Задача | Куда идти | Что найдёшь |
 |--------|-----------|-------------|
-| Понять что за продукт и зачем | [product.md](product.md) | Проблема, для кого, решение, принципы, границы, бизнес-модель |
+| Понять что за продукт и зачем | [00_product.md](00_product.md) | Проблема, для кого, решение, принципы, границы, бизнес-модель |
 | Понять как продукт устроен внутри | [architecture.md](architecture.md) | Слои, компоненты, общая схема |
 | Понять где мы в стройке | [01_overview.md](01_overview.md) | Стадия шести частей, roadmap декады |
 | Узнать почему выбрано так | [04_decisions.md](04_decisions.md) | Runtime, границы, путь skills |

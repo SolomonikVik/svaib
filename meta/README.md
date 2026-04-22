@@ -25,6 +25,6 @@ meta/
 
 ## Связанные папки
 
-- **framework/** — Ядро продукта Second AI Brain: [product.md](../framework/product.md) (vision), [architecture.md](../framework/architecture.md), [04_decisions.md](../framework/04_decisions.md)
+- **framework/** — Ядро продукта Second AI Brain: [product.md](../framework/00_product.md) (vision), [architecture.md](../framework/architecture.md), [04_decisions.md](../framework/04_decisions.md)
 - **dev/** — Разработка и реализация (КАК строить публичный сайт и инфраструктуру)
 - **lab/** — AI-лаборатория (принципы, процессы, правила создания помощников)
