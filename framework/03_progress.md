@@ -1,7 +1,7 @@
 ---
 title: "Framework — хроника"
-updated: 2026-04-21
-version: 2
+updated: 2026-04-22
+version: 3
 scope: product_core
 type: log
 ---
@@ -22,6 +22,12 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-04-22 · Канонизация `scaffold/product/` под клиента
+
+Опциональная папка `scaffold/product/` имела только старый README (февраль 2025) со старой концепцией «стратегия/описания/коммерция». Установлен канонический каркас: 7 файлов-шаблонов (`product`, `architecture`, `01_overview`, `02_active`, `02_backlog`, `03_progress`, `04_decisions`) + `README.md` с навигацией, правилами развёртывания и связями с `../02_strategy/` (3 связи: vision→product, goal→overview, progress→weekly).
+
+Структура зеркалит модель framework-уровня, адаптирована под клиента: обобщена на типы бизнеса (SaaS, услуги, консалтинг, B2B-сервис, физический товар), `02_active` без Session Handoff, `architecture.md` опциональна при развёртывании у клиента, подпапки по живому триггеру. Шаблоны самодостаточны — без ссылок на framework-only документы. `scaffold/MODEL.md` раздел 8 обновлён до v2: уточнён триггер и раскладка для `product/`. Аудит Codex пройден.
+
 ## 2026-04-21 · Канонизация продуктового контура
 
 Продуктовое видение Second AI Brain было размазано по всему репо без общего канона. Установлена каноническая модель «framework = продукт»: одна точка правды о продукте.

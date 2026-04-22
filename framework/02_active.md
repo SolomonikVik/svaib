@@ -1,7 +1,7 @@
 ---
 title: "Framework — актуальное"
-updated: 2026-04-21
-version: 7
+updated: 2026-04-22
+version: 9
 scope: product_core
 priority: high
 type: plan
@@ -29,7 +29,7 @@ type: plan
 
 ## Session Handoff
 
-_Нет активной задачи._
+_Пусто — задач в передаче между чатами нет._
 
 ---
 
