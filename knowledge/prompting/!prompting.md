@@ -2,11 +2,11 @@
 title: "Промптинг — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-03-18
-review_by: 2026-05-21
+updated: 2026-04-23
+review_by: 2026-07-23
 tags: [prompting, system-prompts, prompt-optimization]
 publish: false
-version: 4
+version: 5
 ---
 
 # Промптинг — сводка знаний
@@ -58,6 +58,8 @@ version: 4
 ### Независимые
 
 **PrompTessor** (promptessor.com) — скоринг промптов по шести измерениям (clarity, specificity, context, goal orientation, structure, constraints). Генерирует варианты улучшений. Есть reverse engineering — загружаешь результат, получаешь промпт. Freemium. Учебный инструмент, не для production.
+
+**Prompt Cowboy** (promptcowboy.ai) — другая точка входа среди оптимизаторов: не улучшает готовый промпт, а вытаскивает его из потока сознания через 3 уточняющих вопроса (Socratic-интервью). Собирает результат по фреймворку SITUATION-TASK-OBJECTIVE-KNOWLEDGE. Модель-агностично. Freemium, базовое без регистрации. Авторы — Nicolas Cole и Dickie Bush (writewithai). Полезнее для пользователей, которые ещё не умеют формулировать AI-запросы, чем для инженерии system prompts.
 
 ---
 
