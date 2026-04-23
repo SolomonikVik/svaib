@@ -49,17 +49,17 @@ version: 5
 
 ### Вендорские (от создателей моделей)
 
-**Anthropic Prompt Improver** — встроен в Console (console.anthropic.com). Бесплатный. Переписывает промпт с применением: CoT-секций, XML-форматирования примеров, обогащения примеров шагами рассуждений, assistant prefill для контроля формата вывода. Самый релевантный для нас — мы строим на Claude.
+**Anthropic Prompt Improver** — встроен в Console ([console.anthropic.com](https://console.anthropic.com)). Бесплатный. Переписывает промпт с применением: CoT-секций, XML-форматирования примеров, обогащения примеров шагами рассуждений, assistant prefill для контроля формата вывода. Самый релевантный для нас — мы строим на Claude.
 
-**OpenAI Prompt Optimizer** — встроен в Playground (platform.openai.com/playground/prompts). Бесплатный. Показывает diff оригинала и оптимизированной версии. Находит противоречия, добавляет недостающую структуру. Полезен при миграции промптов между версиями моделей.
+**OpenAI Prompt Optimizer** — встроен в Playground ([platform.openai.com/playground/prompts](https://platform.openai.com/playground/prompts)). Бесплатный. Показывает diff оригинала и оптимизированной версии. Находит противоречия, добавляет недостающую структуру. Полезен при миграции промптов между версиями моделей.
 
 **Google Vertex AI Prompt Optimizer** — три режима: zero-shot (одиночный промпт), few-shot (анализ ошибок, уточнение инструкций), data-driven (batch-оптимизация по метрикам на тестовых наборах). Единственный из трёх поддерживает оптимизацию для кастомных локальных моделей.
 
 ### Независимые
 
-**PrompTessor** (promptessor.com) — скоринг промптов по шести измерениям (clarity, specificity, context, goal orientation, structure, constraints). Генерирует варианты улучшений. Есть reverse engineering — загружаешь результат, получаешь промпт. Freemium. Учебный инструмент, не для production.
+**PrompTessor** ([promptessor.com](https://promptessor.com)) — скоринг промптов по шести измерениям (clarity, specificity, context, goal orientation, structure, constraints). Генерирует варианты улучшений. Есть reverse engineering — загружаешь результат, получаешь промпт. Freemium. Учебный инструмент, не для production.
 
-**Prompt Cowboy** (promptcowboy.ai) — другая точка входа среди оптимизаторов: не улучшает готовый промпт, а вытаскивает его из потока сознания через 3 уточняющих вопроса (Socratic-интервью). Собирает результат по фреймворку SITUATION-TASK-OBJECTIVE-KNOWLEDGE. Модель-агностично. Freemium, базовое без регистрации. Авторы — Nicolas Cole и Dickie Bush (writewithai). Полезнее для пользователей, которые ещё не умеют формулировать AI-запросы, чем для инженерии system prompts.
+**Prompt Cowboy** ([promptcowboy.ai](https://www.promptcowboy.ai/)) — другая точка входа среди оптимизаторов: не улучшает готовый промпт, а вытаскивает его из потока сознания через 3 уточняющих вопроса (Socratic-интервью). Собирает результат по фреймворку SITUATION-TASK-OBJECTIVE-KNOWLEDGE. Модель-агностично. Freemium, базовое без регистрации. Авторы — Nicolas Cole и Dickie Bush (writewithai). Полезнее для пользователей, которые ещё не умеют формулировать AI-запросы, чем для инженерии system prompts.
 
 ---
 
