@@ -28,9 +28,13 @@ type: plan
 - [ ] Проверка целостности scaffold
 - [ ] Слияние [scaffold/principles.md](scaffold/principles.md) → [scaffold/MODEL.md](scaffold/MODEL.md)
 - [ ] Перенести principles.md из `scaffold/` в `methodology/` — это принципы проектирования, не scaffold. Обновить ссылки в `scaffold/clients/README.md`, `scaffold/README.md`, `framework/README.md`
+- [ ] Написать четкое определение Setup. Сейчас не очень понятно, что такое сетап, зачем он нужен, настройка папок, нужно более четкое понимание, чтобы мы понимали, для чего это. и возможно создать папку docs и перенести Setup туда.
+- [ ] добавить глоссарий в папку клиентов
+- [ ] создать папку docs для доп-доков вокруг клиента. перенести Setup туда. Также можно создать продукт про продукт клиента. 
 - [ ] В scaffold нет шаблона `product_vision` — нужен ли клиентам файл продуктового видения? См. [00_product.md](00_product.md) как референс
 
-## Meeting analysis (аналитик встреч)
+## Помощники
+### Meeting analysis (аналитик встреч)
 
 Пайплайн beta (S18, 2026-03-31). Entity-only, все файлы синхронизированы по канонической цепочке. Baseline: L1 19/20, L2 18.5/20.
 
@@ -44,6 +48,7 @@ type: plan
 - [ ] Сборка скиллов: обернуть рабочие промпты meeting-analysis в SKILL.md формат
 - [ ] FRAME-скоринг: приоритизация сущностей по значимости (отложен)
 - [ ] **Runtime-скиллы meeting-analysis не самодостаточны.** `L2-prompt-protocol-telegram.md` ссылается на `../../ontology/protocol_format.md` и `L2-prompt-protocol-full.md`; `L2-procedure-scaffold-update.md` — на `L2-procedure-client-update.md`. При копировании клиенту ссылки ломаются. Правило: runtime-скиллы должны быть самодостаточны — только ссылки на клиентские папки и другие runtime-скиллы. Обнаружено при миграции клиента 14.04, у клиента почищено вручную
+- [ ] **ркестратор встреч в Шаге 0 спрашивает путь транскрипта вручную — логично чтобы он сам дёргал `macwhisper-transcript --list` и находил**.
 
 ## Онтология / Memory / file_spec
 
