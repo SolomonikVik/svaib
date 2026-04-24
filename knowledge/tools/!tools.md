@@ -5,8 +5,8 @@ added: 2026-01-30
 review_by: 2026-04-30
 tags: [tools, automation, platforms, index]
 publish: false
-version: 14
-updated: 2026-04-15
+version: 15
+updated: 2026-04-24
 ---
 
 # Tools — AI-инструменты и платформы
@@ -30,6 +30,10 @@ updated: 2026-04-15
 ### Cowork и плагины
 
 Agent platform Anthropic для не-разработчиков. Формат плагинов идентичен Claude Code — готовый delivery mechanism для модели подписки SVAIB. → [cowork.md](cowork.md)
+
+### Buildin — клиентское no-code пространство
+
+Китайский аналог Notion, доступен в РФ. Используется командами как замена Notion, отрезанного из РФ — и значит регулярно встречается у клиентов SVAIB как уже существующее хранилище контрактов, реестров, баз сотрудников. Три пути забрать данные: REST API (`api.buildin.ai/v1`, JSON block tree, конвертация в md на нашей стороне), hosted MCP (`mcp.buildin.ai/message?token=...`, подключается одной строкой в `.mcp.json`, но список tools не документирован), UI-экспорт страницы в Markdown/PDF/CSV/Word. Ключевое: API и MCP — только с тарифа Plus (платный), Free даёт лишь UI-экспорт. Database = страница с `parent.database_id`, row БД — обычная page; permission плагина выдаётся поштучно на page (наследование с БД не подтверждено документально). Community вокруг SDK почти отсутствует — на чужие грабли опереться не получится. → [buildin.md](buildin.md)
 
 ### Web Scraping APIs
 

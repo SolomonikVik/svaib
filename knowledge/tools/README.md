@@ -18,3 +18,4 @@
 - [russian-stt-models.md](russian-stt-models.md) — STT-модели для русского: GigaAM-v3 vs Whisper vs T-one, WER-бенчмарки, рекомендации
 - [presentations.md](presentations.md) — Презентации с AI: markdown-first (Marp, Slidev) vs визуальные генераторы (Lovable, Slider AI), сравнение, Agent Skills
 - [claude-project.md](claude-project.md) — Claude Project: delivery-среда для клиентов SVAIB (Google Workspace коннекторы, ограничения Drive API)
+- [buildin.md](buildin.md) — Buildin: китайский no-code workspace (аналог Notion), REST API + hosted MCP + UI-экспорт, тарифы и риски интеграции
