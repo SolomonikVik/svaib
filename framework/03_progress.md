@@ -1,7 +1,7 @@
 ---
 title: "Framework — хроника"
-updated: 2026-04-22
-version: 3
+updated: 2026-04-25
+version: 4
 scope: product_core
 type: log
 ---
@@ -22,6 +22,10 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-04-25 · Появилась архитектура встраивания метрик в Second AI Brain
+
+В фреймворке не было методологии работы с бизнес-метриками — собрали с нуля за сутки: индустриальный синтез по теме положили в [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md) (новая категория), первую архитектуру — в [methodology/metrics.md](methodology/metrics.md) (6 слоёв + процессы, паспорта свернуты в семантический слой, метки [СЕЙЧАС]/[ПОЗЖЕ], секция «Минимальный комплект первой стадии» под «1-2 клиента, Cowork»)
+
 ## 2026-04-22 · Канонизация `scaffold/product/` под клиента
 
 Опциональная папка `scaffold/product/` имела только старый README (февраль 2025)/ Установлен канонический каркас: 7 файлов-шаблонов (`product`, `architecture`, `01_overview`, `02_active`, `02_backlog`, `03_progress`, `04_decisions`) + `README.md` с навигацией, правилами развёртывания и связями с `../02_strategy/` (3 связи: vision→product, goal→overview, progress→weekly). Структура зеркалит модель framework-уровня (наш продукт)
