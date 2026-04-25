@@ -2,11 +2,11 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-04-09
+updated: 2026-04-25
 review_by: 2026-06-20
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, graphrag]
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, graphrag, metrics]
 publish: false
-version: 17
+version: 18
 ---
 
 # Context — Context Engineering, RAG, Memory
@@ -27,6 +27,10 @@ version: 17
 
 ### RAG (Retrieval-Augmented Generation)
 Паттерн подачи AI релевантной информации из внешнего хранилища: чанкинг → эмбеддинги → vector store → retrieval → LLM. Стандартный RAG (один вектор) устарел — работающий пайплайн 2026: гибридный поиск (BM25 + vector + RRF fusion + cross-encoder reranker). Три направления эволюции: Agentic RAG (агент решает что искать), GraphRAG (поиск по графу связей), подход Karpathy (wiki-статьи вместо чанков). Для SVAIB: RAG = реализация неструктурированного поиска в контекстной архитектуре. Подробная карта подходов, реализаций (QMD, MemPalace, GraphRAG), бенчмарков → [rag.md](rag.md).
+
+### Метрики и числа — отдельный класс контекста
+
+LLM-ассистент с бизнес-метриками работает не с текстом, а с числами и таблицами — у этого класса свои контекстные правила. Что попадает в промпт (срез, а не вся таблица; пороги ~50 строк / ~2k токенов), что считается в коде через tool-use (SQL, Python), почему vector RAG плохо подходит для расчётов. Ключевые архитектурные слои: snapshot для воспроизводимости, semantic layer с курированной метадатой, verified queries как curated шаблоны, MCP как канал доступа к данным. Подробная сводка по архитектуре и индустриальным паттернам (Hex, Dust, Omni, Cortex, Genie) → [../metrics/!metrics.md](../metrics/!metrics.md).
 
 ### Extraction — извлечение сущностей из текста
 
@@ -101,3 +105,4 @@ ICM (Van Clief, McDermott, 2026) — методология, где файлов
 - [icm.md](icm.md) — ICM (Van Clief, 2026): оркестрация агентов через файловую структуру, 5 слоёв контекста, stage contracts, reference vs working
 - [llm-wiki.md](llm-wiki.md) — LLM Wiki (Karpathy): паттерн инкрементальной вики — Ingest/Query/Lint, комьюнити-реализации, связь с arscontexta и ICM
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости, зазоры чтения/записи, мосты, целевая архитектура для клиентов
+- [../metrics/!metrics.md](../metrics/!metrics.md) — архитектура метрик в LLM-ассистенте: semantic layer, snapshots, verified queries, MCP-каналы, форматы табличных данных в промпте
