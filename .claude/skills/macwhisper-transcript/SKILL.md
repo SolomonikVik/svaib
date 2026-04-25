@@ -5,13 +5,15 @@ description: "Extract transcript from MacWhisper SQLite into _transcript.md. Use
 
 # MacWhisper Transcript Extractor
 
-Двухшаговый доступ к локальной базе MacWhisper (SQLite). **Сначала ищем → подтверждаем → извлекаем.** Ноль токенов в контексте — всё через bash.
+Двухшаговый доступ к локальной базе MacWhisper (SQLite). **Сначала ищем → подтверждаем → извлекаем.** Ноль токенов в контексте — всё через python3.
 
 ## Скрипт
 
 ```
-.claude/skills/macwhisper-transcript/scripts/macwhisper_transcript.sh
+.claude/skills/macwhisper-transcript/scripts/macwhisper_transcript.py
 ```
+
+Python 3, только стандартная библиотека. Работает на Mac (Claude Code) и в Linux-sandbox (Cowork). Read-only доступ к БД.
 
 ## Контракт работы
 
@@ -25,20 +27,20 @@ description: "Extract transcript from MacWhisper SQLite into _transcript.md. Use
 
 ```bash
 # дефолт — сегодня
-bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --list
+python3 ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.py --list
 
 # конкретная дата
-bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --list 2026-04-23
-bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --list --date 2026-04-23
+python3 ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.py --list 2026-04-23
+python3 ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.py --list --date 2026-04-23
 
 # полнотекстовый поиск (FTS5 по fullText + aiSummary + userChosenTitle), без ограничения дат
-bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --list --search "дивиденды"
+python3 ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.py --list --search "дивиденды"
 
 # по спикеру
-bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --list --speaker Ефим
+python3 ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.py --list --speaker Ефим
 
 # комбинация
-bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --list --date 2026-04-23 --speaker Ефим
+python3 ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.py --list --date 2026-04-23 --speaker Ефим
 ```
 
 Вывод — блок на каждую сессию:
@@ -64,7 +66,7 @@ bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --list --date 2026-04-
 Только по `id_short` (8 hex-символов из `--list`). Никакого поиска по названию.
 
 ```bash
-bash ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.sh --extract <id_short> /path/to/_transcript.md
+python3 ${CLAUDE_SKILL_DIR}/scripts/macwhisper_transcript.py --extract <id_short> /path/to/_transcript.md
 ```
 
 В stdout — метаданные (id, date, duration, app, model, language, diarized, summary, speakers).

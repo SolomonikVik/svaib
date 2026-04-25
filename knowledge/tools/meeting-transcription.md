@@ -88,7 +88,7 @@ version: 3
 
 **Plaud Note** — встроенная функция AutoFlow: при синхронизации автоматически делает транскрипт и шлёт на email. Zapier-интеграция с триггером "Transcript Ready" — автовыгрузка в Google Drive, Notion, Slack. Без разработки, за час.
 
-**MacWhisper (наш пайплайн)** — настроен и работает. Скилл `macwhisper-transcript` автоматически подтягивает транскрипт из локальной SQLite-базы MacWhisper в Claude Code. Команда: `bash scripts/macwhisper_transcript.sh --list` → выбор сессии → экспорт в `_transcript.md` клиента.
+**MacWhisper (наш пайплайн)** — настроен и работает. Скилл `macwhisper-transcript` автоматически подтягивает транскрипт из локальной SQLite-базы MacWhisper в Claude Code и в Cowork (Linux sandbox). Команда: `python3 scripts/macwhisper_transcript.py --list` → выбор сессии → экспорт в `_transcript.md` клиента. Только стандартная библиотека python3, никаких зависимостей.
 
 ### MCP-серверы (2026)
 
