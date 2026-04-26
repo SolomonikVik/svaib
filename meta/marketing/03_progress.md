@@ -1,6 +1,6 @@
 ---
 title: "Marketing — хроника"
-updated: 2026-04-20
+updated: 2026-04-26
 version: 1
 scope: marketing
 type: log
@@ -19,6 +19,12 @@ type: log
 - [01_overview.md](01_overview.md) — обзор направления
 - [02_active.md](02_active.md) — что в работе сейчас
 - [../management/04_weekly_progress.md](../management/04_weekly_progress.md) — агрегатор по всем направлениям
+
+---
+
+## 2026-04-26 · Проведение гостевого выступления FirstBit
+
+Гостевая лекция перед 28 руководителями FirstBit на курсе ШОК ДАБЛ.
 
 ---
 
