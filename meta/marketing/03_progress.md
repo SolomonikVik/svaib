@@ -1,6 +1,6 @@
 ---
 title: "Marketing — хроника"
-updated: 2026-04-26
+updated: 2026-04-27
 version: 1
 scope: marketing
 type: log
@@ -19,6 +19,12 @@ type: log
 - [01_overview.md](01_overview.md) — обзор направления
 - [02_active.md](02_active.md) — что в работе сейчас
 - [../management/04_weekly_progress.md](../management/04_weekly_progress.md) — агрегатор по всем направлениям
+
+---
+
+## 2026-04-27 · Пост W27 «Переход на level 3»
+
+Пост-манифест перехода на L3 со шкалой levels L1-L10. Готов к публикации. [posts/2026-04-27_переход-на-level-3-или-увольнение-из-svaib.md](posts/2026-04-27_переход-на-level-3-или-увольнение-из-svaib.md)
 
 ---
 
