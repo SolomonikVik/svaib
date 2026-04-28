@@ -77,6 +77,21 @@ type: plan
 
 ## Активные задачи
 
+> **Заметка 28.04 для пересборки этого файла в новом чате:**
+> Раскладка 6 задач W1 из сессии 28.04 — 3 фокус + 2 движение к цели + 1 sidetrack.
+>
+> **Фокус** (расшивают узкое место — см. [01_overview.md](01_overview.md)):
+> 1. **Scaffold v1** — порядок в базовых файлах (Эпики 1-2 Scaffold v1 в [02_backlog.md](02_backlog.md))
+> 2. **Память v1** — вынос общих механизмов из [methodology/metrics.md](methodology/metrics.md) в `memory/`
+> 3. **Доработка meeting** — чистка пайплайна и багов на основе ОС и инсайтов клиентов
+>
+> **Движение к цели декады 1:**
+> 4. **Метрики v1** — вторая вертикаль (metrics) у клиентов с нуля до беты
+> 5. **Email v1** — первая версия атомарного скилла-помощника по почте
+>
+> **Sidetrack** (заготовка к strategy в декаде 2):
+> 6. **Vision стратегического помощника** — материал в [clients/_inbox/subagents/sm-vision-product-synthesis.md](../clients/_inbox/subagents/sm-vision-product-synthesis.md)
+
 - Навести порядок в папке Framework. Сделать vision стратегического помощника на основании созвона AS. Должна быть понятная модель goal -> product + architecture -> overview -> backlog -> active
 - Починить L2-раскидку: разваливает нарративы, фиксирует откровенную мелочь. Материал кейса — [_inbox/2026-04-22_L2-narrative-spec-dispersal-case.md](_inbox/2026-04-22_L2-narrative-spec-dispersal-case.md). Паттерн воспроизводится на разных клиентах (жалоба Виктора), не только на одной встрече. Трогает `skills/meeting-analysis/L2-procedure-client-update.md` + возможно `orchestrator-client-meeting.md` (2026-04-22)
 - Починить утечку профайла в L1: оркестратор передаёт коучинг-лог участника в L1 на 1-on-1, L1 подменяет цитаты транскрипта готовыми формулировками. Материал кейса — [_inbox/2026-04-22_L1-profile-leak-seleznev-case.md](_inbox/2026-04-22_L1-profile-leak-seleznev-case.md). Клиентский эксперимент (Лебедев) фактически валидировал fix by reducing context. Готовы правки A/B/C: `skills/meeting-analysis/orchestrator-meeting.md` (шаг 0, минимум L1-контекста), `L1-prompt-entity-extractor.md` (опора — цитата транскрипта, не контекста), `L2-procedure-scaffold-update.md` (изоляция коучинг-лога от L1). (2026-04-22)

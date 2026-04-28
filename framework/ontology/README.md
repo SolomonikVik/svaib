@@ -10,6 +10,7 @@
 - [entities.md](entities.md) — атомарные сущности (решение, задача, идея и др.)
 - [behavioral_patterns.md](behavioral_patterns.md) — поведенческие паттерны на встречах (сопротивление, увод темы и др.)
 - [rituals.md](rituals.md) — каталог ритуалов (повторяющиеся управленческие процессы)
+- [management_cycles.md](management_cycles.md) — управленческие циклы как онтологическая категория выше ритуалов
 - [protocol_format.md](protocol_format.md) — schema семейства протоколов: маппинг сущностей → секции, приоритеты, общие правила
 
 Спецификация файла как единицы памяти (YAML, секции, ограничения) → [../memory/file_spec.md](../memory/file_spec.md).
