@@ -2,11 +2,11 @@
 title: "Промптинг — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-04-23
-review_by: 2026-07-23
+updated: 2026-04-27
+review_by: 2026-07-27
 tags: [prompting, system-prompts, prompt-optimization]
 publish: false
-version: 5
+version: 6
 ---
 
 # Промптинг — сводка знаний
@@ -68,6 +68,8 @@ version: 5
 **DAIR.AI Prompt Engineering Guide** — https://github.com/dair-ai/Prompt-Engineering-Guide — крупнейший open-source справочник по техникам промптинга. Покрывает: zero-shot, few-shot, CoT, ReAct, Tree of Thoughts, RAG, adversarial prompting. Полезен как учебный ресурс для начинающих, содержание — базовые знания.
 
 **OpenAI Cookbook** — https://cookbook.openai.com — практические примеры и гайды от OpenAI. Включает model-specific guides при выходе новых моделей. Стоит проверять при миграции между моделями.
+
+**Nova Sapiens** — [novasapiens.ru/prompt](https://novasapiens.ru/prompt) — русскоязычный каталог техник промптинга из научных работ arXiv. Автор Александр Сухов ([@ainovasapiens](https://t.me/ainovasapiens)). 2200+ паттернов с фильтрацией по рейтингу, периоду, области применения; каждая техника = проблема + метод + метрики. Чтение каталога открыто, есть платная подписка (1990₽/мес или 3900₽ разово), что именно закрыто — со страницы не видно. Жанр уникальный: компилятор arXiv с готовой фильтрацией, отличается от DAIR.AI наличием метрик и фокусом на свежие исследования.
 
 ---
 
