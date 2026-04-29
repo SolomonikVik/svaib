@@ -37,7 +37,7 @@ Clockify description → session-log направление:
 | svaib разное | meta |
 | svaib лаб | lab |
 | svaib dev | dev |
-| обучение AI | не входит в session-log (личное развитие) |
+| обучение AI | knowledge |
 
 Маппинг неточный — Виктор пишет в Clockify свободным текстом. Агент должен использовать здравый смысл при соотнесении.
 
