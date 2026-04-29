@@ -33,15 +33,22 @@ description: "Режим работы с фреймворком Second AI Brain"
 | "Куда положить X", связи между сущностями, новый тип | `framework/ontology/ontology.md` |
 | Каталог атомарных сущностей | `framework/ontology/entities.md` |
 | Поведенческие паттерны на встречах | `framework/ontology/behavioral_patterns.md` |
-| "Как работать с X", decision frames, масштабирование | `framework/methodology/methodology.md` |
 | Каталог ритуалов | `framework/ontology/rituals.md` |
-| Слои продукта, компоненты, проектирование компонента | `framework/architecture.md` |
-| Создание/улучшение шаблона | `framework/scaffold/` (README внутри) |
+| Управленческие циклы как онтологическая категория (вертикали) | `framework/ontology/management_cycles.md` |
+| "Как работать с X", decision frames, масштабирование | `framework/methodology/methodology.md` |
+| Методология метрик (6 слоёв, ритуалы, semantic layer) | `framework/methodology/metrics.md` |
+| Анализ транскриптов встреч | `framework/methodology/meeting_analysis.md`, `meeting_overlays.md` |
+| Онбординг клиента | `framework/methodology/onboarding.md` |
+| Как агент находит и читает файлы, протокол навигации | `framework/memory/01_context_memory.md` |
+| Формат файлов, YAML, секции | `framework/memory/file_spec.md` |
+| Принципы проектирования файловой структуры (миссия файла, state vs log, движение задач) | `framework/scaffold/principles.md` |
+| Прескриптивная модель scaffold (папки, миссии, развёртывание у клиента) | `framework/scaffold/MODEL.md` |
+| Шаблоны конкретных структур scaffold | `framework/scaffold/` (README внутри + подпапки) |
 | Проектирование навыка или промпта | `framework/skills/` (README внутри) |
 | Сборка пакета клиенту | `framework/plugin/` (README внутри) |
-| Онбординг клиента | `framework/methodology/onboarding.md` |
-| Анализ транскриптов встреч | `framework/methodology/meeting_analysis.md`, `meeting_overlays.md` |
-| Формат файлов, YAML, секции | `framework/memory/file_spec.md` |
+| Слои продукта, компоненты, проектирование компонента | `framework/architecture.md` |
+| Почему было решено так-то (продуктовые решения, runtime, вертикали) | `framework/04_decisions.md` |
+| Задачи направления на будущее, очередь работы | `framework/02_backlog.md` |
 | Как фреймворк применяется к клиентам | `clients/playbook/` |
 
 **База знаний:** при проектировании skills, agents, hooks — проверь `knowledge/skills/`, `knowledge/plugins/`, `knowledge/agents/`, `knowledge/context/`.
@@ -68,6 +75,6 @@ description: "Режим работы с фреймворком Second AI Brain"
 
 ## Быстрый старт
 1. Поприветствуй Виктора
-2. Проверь `02_active.md` — Session Handoff покажет контекст передачи между чатами, активные задачи дадут картину текущей работы. Если есть активная задача — предложи продолжить.
-3. Проверь `03_progress.md` — хроника покажет что делали недавно. `01_overview.md` — миссия направления и цель декады.
+2. Проверь `02_active.md`. Сначала — Session Handoff (контекст передачи между чатами). Если он непустой — предложи продолжить начатое. Если пустой — переходи к активным задачам и открытым вопросам ниже.
+3. Проверь `03_progress.md` — хроника покажет что делали недавно. `01_overview.md` уже даёт миссию направления и цель декады (загружен на старте).
 4. Если активной задачи нет — спроси Виктора что сегодня. Большая задача → обсудить план, зафиксировать в `02_active.md#Session-Handoff`.
