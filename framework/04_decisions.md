@@ -1,7 +1,7 @@
 ---
 title: "Product Decisions — Second AI Brain"
-updated: 2026-04-21
-version: 1
+updated: 2026-04-29
+version: 2
 scope: product_core
 priority: high
 type: decision
@@ -249,3 +249,55 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 ### Источники
 
 Аудит Claude (general-purpose субагент через бриф «Аудит архитектурного сдвига»), параллельный аудит Codex, синтез — 27.04.2026.
+
+---
+
+## 5. Раскладка metrics в scaffold (B1 + O1/O5)
+
+**Статус:** Accepted (2026-04-29).
+
+### Решение
+
+Реализация вертикали `metrics` в слое scaffold — опциональная папка [`scaffold/metrics/`](scaffold/metrics/) с раскладкой: `README.md`, `01_metrics.md` (витрина target metrics + карта доменов), `template-domain.md` (шаблон), domain-файлы (`finance.md`, `sales.md`, `operations.md`, `people.md` — по триггеру), `source/*.xlsx`.
+
+**B1 — где жить числам:**
+- Числа живут в исходных файлах клиента (xlsx или Google Sheets) внутри `source/`. **Не дублируются в md.**
+- Семантика — в markdown.
+- Расчёты — Python через xlsx-skill (Cowork), Pandas под капотом.
+- Summary-файлы (`*.summary.md`) — не плодим по умолчанию, только под живой триггер (например, weekly snapshot).
+
+**O5 — нарезка domain-файлов:**
+- По бизнес-домену, не по источнику. Один domain-файл может агрегировать несколько источников.
+- Маршрут в md явно указывает, какой xlsx/лист считать.
+
+**O1 — имена и структура:**
+- Минимальный канон: `finance.md`, `sales.md`, `operations.md`, `people.md`. Префикс `metrics_` не используется (контекст задаёт папка).
+- Расширение по триггеру: `customer.md`, `marketing.md`, `product.md`, `strategy.md`.
+- OKR не в `metrics/` — живут в `meta/management/`.
+- Витрина CEO target metrics в `01_metrics.md` — карточки-ссылки на паспорта в доменах, не дубли.
+- Структура секций domain-файла — `datasets / relationships / metrics / routes` (формат markdown, не yaml).
+- Стабильные ID метрик (`metric_<id>`), `version` инкрементируется при изменении формулы, `synonyms` берутся из речи CEO (аудит по транскриптам обязателен).
+
+### Контекст
+
+В methodology/metrics.md (v4) описана архитектура с 6 слоями, но не зафиксированы конкретные имена файлов, нарезка и структура секций. Без этого scaffold/metrics/ собрать нельзя — каждый раз новые имена и формат. Решение закрывает реализационный пробел между методологией и работающим scaffold.
+
+### Альтернативы
+
+- **Нарезка по источнику** (один файл на xlsx) — отвергнуто. Источник — техническая деталь; CEO мыслит в доменах, не в файлах.
+- **Префикс `metrics_finance.md`** — отвергнуто. Папка уже задаёт контекст.
+- **Дублировать числа в md** (актуальные значения как snapshot в текстовом виде) — отвергнуто. Рассинхрон с источником гарантирован, LLM начнёт «помнить» устаревшие цифры.
+- **YAML-формат domain-файла** (по образцу OSI / dbt MetricFlow) — отложено. Триггер миграции на yaml — появление инструмента-валидатора. До этого — md (принцип «LLM + People centered»).
+- **OKR в `metrics/`** — отвергнуто. OKR — цели, не измерение. Живут в `meta/management/`.
+
+### Следствия
+
+- Создан [`scaffold/metrics/`](scaffold/metrics/) с 4 файлами + `source/README.md`.
+- [`scaffold/MODEL.md`](scaffold/MODEL.md) — добавлен `metrics/` в раздел 8 как опциональная папка с триггером.
+- [`scaffold/README.md`](scaffold/README.md) — `metrics/` добавлен в список опциональных.
+- [`methodology/metrics.md`](methodology/metrics.md) — добавлена сноска со ссылкой на конкретную раскладку scaffold.
+- Создан [`skills/metrics-analysis/`](skills/metrics-analysis/) — мастерская оркестратора и промптов под эту вертикаль.
+
+### Источники
+
+Опоры решения — `_inbox/metrics-scaffold/b1.md` и `o1.md` (после фиксации удалены, обоснования воплощены в скаффолде и в этой записи). Структура секций domain-файла — адаптация Open Semantic Interchange (datasets / fields / relationships / synonyms) с добавлением своего: `version`, `owner`, `formula_human`, `routes`. Что не взяли у OSI: yaml-формат, мультидиалектность `expression.dialects[]`, `custom_extensions`.

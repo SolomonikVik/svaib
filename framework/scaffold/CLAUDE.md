@@ -40,6 +40,7 @@ CLAUDE.md → README → 01_ceo/01_my_profile.md → 02_strategy
 
 ### По триггеру
 - Стратегическое обсуждение → 02_strategy/05_timeline.md, 02_strategy/06_decisions.md
+- Вопрос про метрики, цифры, KPI, состояние бизнеса → metrics/01_metrics.md → metrics/{domain}.md (если папка metrics/ развёрнута)
 
 
 ## Помощники (claude/skills/)

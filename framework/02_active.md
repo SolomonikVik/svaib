@@ -1,7 +1,7 @@
 ---
 title: "Framework — актуальное"
 updated: 2026-04-29
-version: 11
+version: 13
 scope: product_core
 priority: high
 type: plan
@@ -19,19 +19,25 @@ type: plan
 ---
 ## Session Handoff
 
+**Этап А плана metrics закрыт (2026-04-29).** Канон-каркас собран:
+
+- `framework/scaffold/metrics/` — `README.md`, `01_metrics.md`, `template-domain.md`, `source/README.md` (canonical scaffold-стиль: без YAML, без ссылок на framework-only).
+- `framework/skills/metrics-analysis/` — `README.md`, `orchestrator-metrics.md`.
+- `framework/scaffold/MODEL.md` v3 (раздел 8, `metrics/` как опциональная), `framework/scaffold/README.md`, `framework/methodology/metrics.md` v5.
+- Решение целиком зафиксировано в [`04_decisions.md`](04_decisions.md) №5 «Раскладка metrics в scaffold (B1+O1/O5)». Файлы `_inbox/metrics-scaffold/b1.md` и `o1.md` удалены — обоснования воплощены в скаффолде и в записи 04_decisions.
+
+**Next — Этап Б. Открываем новый чат с чистой головой.**
+
+Перед стартом координатор нового чата спрашивает Виктора 5 групп вопросов (пилот / данные / семантика / тест / runtime) — список в [`_inbox/metrics-scaffold/plan.md`](_inbox/metrics-scaffold/plan.md) → секция «Что мне нужно узнать у Виктора ДО старта Этапа Б». После ответов — стартуют шаги Этапа Б.
+
+Список файлов для чтения новым чатом — в последней секции `plan.md`.
 
 ---
 
 ## Активные задачи
 
-### ВСТРАИВАНИЕ АРХИТЕКТУРЫ МЕТРИК
-
-#### Встраиваем метрики у клиента (тестируем простые способы)
-- [ ] Читаем архитектуру метрик и перестраиваем план ниже (1. Читает [metrics.md](methodology/metrics.md) v3 (база) + [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md) (research).)
-- [ ] Понимаем что можем сделать экспресс для бета-теста
-- [ ] Подключаем Гугл-таблицы + Ексель клиента
-- [ ] Встраиваем в скаффолд клиента
-- [ ] Тестируем команды
+### Метрики у клиента
+- [ ] Этап Б плана: пилот у клиента — развернуть `metrics/`, подключить xlsx, заполнить domain, прогнать тест-промпт. Детали — [_inbox/metrics-scaffold/plan.md](_inbox/metrics-scaffold/plan.md)
 
 
 
