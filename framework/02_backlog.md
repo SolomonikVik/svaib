@@ -1,7 +1,7 @@
 ---
 title: "Framework — бэклог"
 updated: 2026-04-30
-version: 7
+version: 8
 scope: product_core
 type: plan
 ---
@@ -29,6 +29,8 @@ type: plan
 # Горизонталь (общие слои)
 
 ## Scaffold
+
+> ⚠️ Задачи 1 и 2 заблокированы решением по fern-модели (см. [02_active.md](02_active.md) → «Scaffold v2 — fern-модель»). Внутри fern они могут быть пересмотрены или поглощены.
 
 ### Задача 1. Внедрение канона scaffold (overview / profile / README + светофор)
 

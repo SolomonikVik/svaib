@@ -1,7 +1,7 @@
 ---
 title: "Framework — актуальное"
 updated: 2026-04-30
-version: 18
+version: 19
 scope: product_core
 priority: high
 type: plan
@@ -37,7 +37,13 @@ type: plan
 
 
 
-### Порядок в Scaffold
+### Scaffold v2 — fern-модель
+- [ ] **Фаза 3** — запрос для внешних нейросетей по fern-модели
+- [ ] **Фаза 4** — итоговая картина scaffold
+- Контекст 30.04 + карта чтения для нового чата — в [scaffold/fern-model-draft.md](scaffold/fern-model-draft.md)
+
+
+### Порядок в Scaffold (заблокировано — ждёт решения по fern-модели)
 - [ ] Понять что необходимо сделать минимально и достаточно для обновления клиентского скаффолд
 - [ ] Приступить к наведению порядка в скаффолд полного (детали в [02_backlog](02_backlog.md))
 
