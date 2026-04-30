@@ -1,7 +1,7 @@
 ---
 title: "Framework — хроника"
 updated: 2026-04-30
-version: 7
+version: 8
 scope: product_core
 type: log
 ---
@@ -22,9 +22,13 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-04-30 · Реорганизация metrics-вертикали в одно место
+
+Методология вертикали собрана в новую папку `methodology/metrics/` (README — карта вертикали, architecture, HOWTO, rollout, intake-form, open-questions). В `skills/metrics-analysis/` остался только skill: orchestrator + черновик `narrative.py` (DRAFT, open-question #1). Зафиксирован стандарт `metrics/extractors/` у клиента (без подчёркивания) + новый [`scaffold/metrics/extractors/README.md`](scaffold/metrics/extractors/README.md). Канон 8 имён domain-файлов — единый источник правды в [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md), копии в scaffold/orchestrator со ссылкой. Subagent-аудит decisions ↔ methodology: дыр нет (отчёт — [`_inbox/subagents/metrics-decisions-audit/report.md`](_inbox/subagents/metrics-decisions-audit/report.md)). Smoke-test sandbox после переименования: extractor → narrative pipeline работает, числа сходятся с Б.1.
+
 ## 2026-04-30 · Впервые потрогали управленческий цикл metrics на живых клиентских данных
 
-Стратегический переход: до этого metrics жили как методология и канон шаблонов. В Б.1 впервые прогнали полный pipeline на реальной таблице клиента в sandbox — AI собрал ответ на «что у меня по OKR1?» с числами, сходящимися с фактами клиента. Параллельно поймали 5 первых дыр (главная — отсутствие атрибута направления у метрик), зашили в канон. Документы под расширение на следующих клиентов: [`HOWTO.md`](skills/metrics-analysis/HOWTO.md), [`rollout.md`](skills/metrics-analysis/rollout.md), [`intake-form.md`](skills/metrics-analysis/intake-form.md), [`open-questions.md`](skills/metrics-analysis/open-questions.md).
+Стратегический переход: до этого metrics жили как методология и канон шаблонов. В Б.1 впервые прогнали полный pipeline на реальной таблице клиента в sandbox — AI собрал ответ на «что у меня по OKR1?» с числами, сходящимися с фактами клиента. Параллельно поймали 5 первых дыр (главная — отсутствие атрибута направления у метрик), зашили в канон. Документы под расширение на следующих клиентов: [`HOWTO.md`](methodology/metrics/HOWTO.md), [`rollout.md`](methodology/metrics/rollout.md), [`intake-form.md`](methodology/metrics/intake-form.md), [`open-questions.md`](methodology/metrics/open-questions.md).
 
 ## 2026-04-28 · Канон базовых сущностей scaffold
 
@@ -36,11 +40,11 @@ type: log
 
 ## 2026-04-27 · Введены вертикали управленческих циклов
 
-В архитектуру продукта добавлен третий разрез — вертикаль управленческого цикла, проходящая через 3 слоя продукта и 6 частей framework. Предыстория: methodology/metrics.md (v3) не помещалась в текущую модель — наполняет все три слоя одновременно. Решение: вертикаль = управленческий цикл (опора на принцип из 00_product), не «domain pack»; общие механизмы (snapshot, trace, semantic layer) — горизонтальные контракты слоёв; зависимости вертикалей — только через горизонталь по стабильным ID; вертикаль ≠ скилл; лимит 5–7. Зафиксировано: [04_decisions.md](04_decisions.md) №4, новый файл [ontology/management_cycles.md](ontology/management_cycles.md), правки в 8 связанных файлах; [02_backlog.md](02_backlog.md) переструктурирован под две оси. Аудит: Claude (general-purpose субагент) + Codex.
+В архитектуру продукта добавлен третий разрез — вертикаль управленческого цикла, проходящая через 3 слоя продукта и 6 частей framework. Предыстория: methodology/metrics/architecture.md (v3) не помещалась в текущую модель — наполняет все три слоя одновременно. Решение: вертикаль = управленческий цикл (опора на принцип из 00_product), не «domain pack»; общие механизмы (snapshot, trace, semantic layer) — горизонтальные контракты слоёв; зависимости вертикалей — только через горизонталь по стабильным ID; вертикаль ≠ скилл; лимит 5–7. Зафиксировано: [04_decisions.md](04_decisions.md) №4, новый файл [ontology/management_cycles.md](ontology/management_cycles.md), правки в 8 связанных файлах; [02_backlog.md](02_backlog.md) переструктурирован под две оси. Аудит: Claude (general-purpose субагент) + Codex.
 
 ## 2026-04-25 · Появилась архитектура встраивания метрик в Second AI Brain
 
-В фреймворке не было методологии работы с бизнес-метриками — собрали с нуля за сутки: индустриальный синтез по теме положили в [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md) (новая категория), первую архитектуру — в [methodology/metrics.md](methodology/metrics.md) (6 слоёв + процессы, паспорта свернуты в семантический слой, метки [СЕЙЧАС]/[ПОЗЖЕ], секция «Минимальный комплект первой стадии» под «1-2 клиента, Cowork»)
+В фреймворке не было методологии работы с бизнес-метриками — собрали с нуля за сутки: индустриальный синтез по теме положили в [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md) (новая категория), первую архитектуру — в [methodology/metrics/architecture.md](methodology/metrics/architecture.md) (6 слоёв + процессы, паспорта свернуты в семантический слой, метки [СЕЙЧАС]/[ПОЗЖЕ], секция «Минимальный комплект первой стадии» под «1-2 клиента, Cowork»)
 
 ## 2026-04-22 · Канонизация `scaffold/product/` под клиента
 

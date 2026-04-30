@@ -1,7 +1,7 @@
 ---
 title: "Product Decisions — Second AI Brain"
-updated: 2026-04-29
-version: 3
+updated: 2026-04-30
+version: 4
 scope: product_core
 priority: high
 type: decision
@@ -217,7 +217,7 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 
 ### Контекст
 
-Метрики, описанные в [methodology/metrics.md](methodology/metrics.md) v3, не помещаются в существующую трёхслойную модель: они добавляют свои сущности в каждый слой (snapshot, semantic layer, ветки обработки). Как «ещё одна методология рядом с meeting» не описываются. Meeting-analysis де-факто стал тем же — собственная онтология участников, behavioral_patterns, оркестратор, многоуровневый пайплайн. Кастдевы клиентов: запросы тематические (по встречам, по метрикам, по почте), не «универсальный ассистент».
+Метрики, описанные в [methodology/metrics/architecture.md](methodology/metrics/architecture.md) v3, не помещаются в существующую трёхслойную модель: они добавляют свои сущности в каждый слой (snapshot, semantic layer, ветки обработки). Как «ещё одна методология рядом с meeting» не описываются. Meeting-analysis де-факто стал тем же — собственная онтология участников, behavioral_patterns, оркестратор, многоуровневый пайплайн. Кастдевы клиентов: запросы тематические (по встречам, по метрикам, по почте), не «универсальный ассистент».
 
 Аудит двумя независимыми оптиками (Claude + Codex, 27.04.2026) подтвердил: нужен явный архитектурный термин для этого паттерна, и он должен совпасть с уже зафиксированным принципом «управленческие циклы как ядро» из [00_product.md](00_product.md).
 
@@ -233,7 +233,7 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 Архитектурный сдвиг внесён целостно в файлы:
 
 - [architecture.md](architecture.md) — раздел «Вертикали управленческих циклов» (три карты, тест границы, вертикаль ≠ скилл, зависимости через горизонталь, уровни зрелости, лимит); горизонтальные контракты в слоях Память и Помощники; footer (v9 → v10).
-- [methodology/metrics.md](methodology/metrics.md) — шапка-маяк: общие механизмы — горизонтальные контракты, переедут в `memory/` отдельной задачей (см. [02_backlog.md](02_backlog.md) → «Память v1»); v3 → v4.
+- [methodology/metrics/architecture.md](methodology/metrics/architecture.md) — шапка-маяк: общие механизмы — горизонтальные контракты, переедут в `memory/` отдельной задачей (см. [02_backlog.md](02_backlog.md) → «Память v1»); v3 → v4.
 - [00_product.md](00_product.md) — в секции «Управленческие циклы как ядро» добавлена связка «цикл = вертикаль»; v1 → v2.
 - [ontology/management_cycles.md](ontology/management_cycles.md) — создан как онтологический источник понятия (управленческий цикл выше ритуала).
 - [ontology/ontology.md](ontology/ontology.md), [ontology/README.md](ontology/README.md), [ontology/rituals.md](ontology/rituals.md) — обновлены ссылками на `management_cycles.md`.
@@ -242,7 +242,7 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 
 ### Открытые вопросы
 
-1. Полный вынос общих механизмов из `metrics.md` в `memory/` — когда и в какой форме (отдельный файл `memory/02_reproducibility.md`?).
+1. Полный вынос общих механизмов из `methodology/metrics/architecture.md` в `memory/` — когда и в какой форме (отдельный файл `memory/02_reproducibility.md`?).
 2. Формат «паспорта вертикали» — единый файл рядом со scaffold или элемент в `ontology/`?
 3. Уровни зрелости L1/L2/L3 — как явно отмечать у каждой вертикали (статус в YAML?).
 
@@ -281,7 +281,7 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 
 ### Контекст
 
-В methodology/metrics.md (v4) описана архитектура с 6 слоями, но не зафиксированы конкретные имена файлов, нарезка и структура секций. Без этого scaffold/metrics/ собрать нельзя — каждый раз новые имена и формат. Решение закрывает реализационный пробел между методологией и работающим scaffold.
+В methodology/metrics/architecture.md (v4) описана архитектура с 6 слоями, но не зафиксированы конкретные имена файлов, нарезка и структура секций. Без этого scaffold/metrics/ собрать нельзя — каждый раз новые имена и формат. Решение закрывает реализационный пробел между методологией и работающим scaffold.
 
 ### Альтернативы
 
@@ -296,7 +296,7 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 - Создан [`scaffold/metrics/`](scaffold/metrics/) с 4 файлами + `source/README.md`.
 - [`scaffold/MODEL.md`](scaffold/MODEL.md) — добавлен `metrics/` в раздел 8 как опциональная папка с триггером.
 - [`scaffold/README.md`](scaffold/README.md) — `metrics/` добавлен в список опциональных.
-- [`methodology/metrics.md`](methodology/metrics.md) — добавлена сноска со ссылкой на конкретную раскладку scaffold.
+- [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md) — добавлена сноска со ссылкой на конкретную раскладку scaffold.
 - Создан [`skills/metrics-analysis/`](skills/metrics-analysis/) — мастерская оркестратора и промптов под эту вертикаль.
 
 ### Источники

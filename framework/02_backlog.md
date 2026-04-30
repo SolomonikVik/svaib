@@ -1,7 +1,7 @@
 ---
 title: "Framework — бэклог"
-updated: 2026-04-29
-version: 6
+updated: 2026-04-30
+version: 7
 scope: product_core
 type: plan
 ---
@@ -55,7 +55,7 @@ type: plan
 
 ## Память v1
 
-- [ ] **Полный вынос общих механизмов из [methodology/metrics.md](methodology/metrics.md) в `memory/`** — snapshot, версионирование сущностей, trace ответа, semantic layer как паттерн, маршрут + думающая ветка, границы ответа. Это горизонтальные контракты слоёв, не часть metrics. Источник — [04_decisions.md](04_decisions.md), решение №4 (2026-04-27)
+- [ ] **Полный вынос общих механизмов из [methodology/metrics/architecture.md](methodology/metrics/architecture.md) в `memory/`** — snapshot, версионирование сущностей, trace ответа, semantic layer как паттерн, маршрут + думающая ветка, границы ответа. Это горизонтальные контракты слоёв, не часть metrics. Источник — [04_decisions.md](04_decisions.md), решение №4 (2026-04-27)
 - [ ] Inline-даты на volatile-данных: добавить в [memory/file_spec.md](memory/file_spec.md) (секция маркеров, рядом с `[SOURCE]`/`[REF:]`) и в [methodology/meeting_analysis.md](methodology/meeting_analysis.md) (требование к надстройке дельт). Формат — в `clients/_inbox/_todo_meeting_processor.md` секция «Требования к дельтам»
 - [ ] QMD — локальный семантический поиск по markdown (MCP для Claude Code). 19k stars, Tobi Lütke. Установить, протестировать на нашем репо (570+ файлов), оценить качество vs grep. Если работает — часть онбординга клиента. Детали: [../lab/_inbox/qmd-research.md](../lab/_inbox/qmd-research.md)
 
@@ -113,20 +113,20 @@ type: plan
 
 ## metrics
 
-**Состояние (25.04 вечер):** Архитектура метрик зафиксирована — [methodology/metrics.md](methodology/metrics.md) v3. 6 слоёв + процессы, метки [СЕЙЧАС]/[ПОЗЖЕ] на каждом слое, секция «Минимальный комплект первой стадии». Research-опора — [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md). Закрыты три драматичных гэпа (версионирование паспортов, валидация SQL, состояние разговора), 4 паспорта свернуты в семантический слой + ритуалы.
+**Состояние (25.04 вечер):** Архитектура метрик зафиксирована — [methodology/metrics/architecture.md](methodology/metrics/architecture.md) v3. 6 слоёв + процессы, метки [СЕЙЧАС]/[ПОЗЖЕ] на каждом слое, секция «Минимальный комплект первой стадии». Research-опора — [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md). Закрыты три драматичных гэпа (версионирование паспортов, валидация SQL, состояние разговора), 4 паспорта свернуты в семантический слой + ритуалы.
 
 ### Встраиваем метрики у клиента (тестируем простые способы)
 - [ ] Задача в актив
 
 ### Глубокая верификация архитектуры метрик с фреймворком целиком.
-- [ ] Читаем [metrics.md](methodology/metrics.md) v3 (база) + [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md) (research).
+- [ ] Читаем [metrics.md](methodology/metrics/architecture.md) v3 (база) + [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md) (research).
 - [ ] Проходит по всеми фреймворку и проверяет согласованность метрик с нашими файлами: [00_product.md](00_product.md) — управленческие циклы как ядро (метрики поддерживают циклы или живут параллельно?); [architecture.md](architecture.md) — три слоя (данные/память/помощники); куда ложатся 6 слоёв метрик; [ontology/entities.md](ontology/entities.md) и [ontology/rituals.md](ontology/rituals.md) — нужны ли новые сущности (метрика, маршрут, ритуал-метрик), как соотносится слой 5 с существующим каталогом ритуалов; [scaffold/clients/](scaffold/clients/) — где у клиента физически живут описание таблиц / метрики / маршруты
 	- [ ] (общие механизмы метрик — snapshot, версионирование, trace, semantic layer — переезжают в `memory/`, см. горизонталь → Память v1)
 ### Задача 3 встраиваем метрики в архитектуру (бета версия)
 * [ ]  **Подключение источника метрик у клиентов (Excel/GoogleTabs)** — как физически данные попадают в scaffold клиента. Под KR декады 1: «метрики бизнеса живут в scaffold, подтягиваются из источника, план/факт виден» ([01_overview.md](01_overview.md))
-* [ ] **Паспорта метрик в scaffold клиента** — где живут (папка, формат), как связаны с ритуалами и маршрутами. Опирается на результаты архитектурной верификации [methodology/metrics.md](methodology/metrics.md) v3 ↔ фреймворк (см. [02_active.md](02_active.md), задача 1)
+* [ ] **Паспорта метрик в scaffold клиента** — где живут (папка, формат), как связаны с ритуалами и маршрутами. Опирается на результаты архитектурной верификации [methodology/metrics/architecture.md](methodology/metrics/architecture.md) v3 ↔ фреймворк (см. [02_active.md](02_active.md), задача 1)
 - [ ] **Ритуал «разбор отклонений»** — где живёт, кто запускает, входы/выходы. Под KR декады 1: «разбор отклонений как процесс»
-- [ ] **Бриф перед встречей (ритуал слоя 5 metrics)** — горящие метрики, риски, открытые вопросы. Триггер, шаблон сообщения, 3–5 маршрутов (см. [methodology/metrics.md](methodology/metrics.md), минимальный комплект первой стадии). Под KR декады 1: «метрики попадают в контекст встреч через scaffold»
+- [ ] **Бриф перед встречей (ритуал слоя 5 metrics)** — горящие метрики, риски, открытые вопросы. Триггер, шаблон сообщения, 3–5 маршрутов (см. [methodology/metrics/architecture.md](methodology/metrics/architecture.md), минимальный комплект первой стадии). Под KR декады 1: «метрики попадают в контекст встреч через scaffold»
 
 
 

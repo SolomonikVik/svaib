@@ -37,7 +37,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 | Каталог ритуалов | `framework/ontology/rituals.md` |
 | Управленческие циклы как онтологическая категория (вертикали) | `framework/ontology/management_cycles.md` |
 | "Как работать с X", decision frames, масштабирование | `framework/methodology/methodology.md` |
-| Методология метрик (6 слоёв, ритуалы, semantic layer) | `framework/methodology/metrics.md` |
+| Вертикаль metrics (методология, HOWTO, rollout, open-questions) | `framework/methodology/metrics/` (вход — `README.md`) |
 | Анализ транскриптов встреч | `framework/methodology/meeting_analysis.md`, `meeting_overlays.md` |
 | Онбординг клиента | `framework/methodology/onboarding.md` |
 | Как агент находит и читает файлы, протокол навигации | `framework/memory/01_context_memory.md` |

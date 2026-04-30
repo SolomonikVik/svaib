@@ -1,7 +1,7 @@
 ---
 title: "Framework — overview"
-updated: 2026-04-29
-version: 8
+updated: 2026-04-30
+version: 9
 scope: product_core
 priority: high
 type: reference
@@ -72,6 +72,8 @@ scaffold собран кусочно — нет единого канона дл
 
 - Хранение: метрики бизнеса живут в scaffold клиента, подтягиваются из источника (Excel/GoogleTabs), план/факт виден.
 - Использование: разбор отклонений как процесс, метрики попадают в контекст встреч через scaffold.
+
+Полное устройство вертикали — [methodology/metrics/README.md](methodology/metrics/README.md) (точка входа в methodology/HOWTO/rollout/intake-form/open-questions).
 
 **Слои подтянуты под эти 2 цикла:** scaffold (сущности циклов живут у клиента), память (агент находит контекст), помощники (рабочий помощник в каждом цикле).
 

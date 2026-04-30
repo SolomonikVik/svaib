@@ -1,7 +1,7 @@
 ---
 title: "Развёртывание metrics-вертикали у нового клиента: playbook"
-updated: 2026-04-29
-version: 1
+updated: 2026-04-30
+version: 3
 scope: product_core
 type: procedure
 audience: "координатор сессии svaib + sub-agent, развёртывающий metrics для клиента N+1"
@@ -28,10 +28,10 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 |---|---|---|
 | Канон scaffold | [`framework/scaffold/metrics/`](../../scaffold/metrics/) | образец domain-файлов, витрины, source/README |
 | `template-domain.md` | [`framework/scaffold/metrics/template-domain.md`](../../scaffold/metrics/template-domain.md) | заполняется под клиента, не пишется с нуля |
-| `orchestrator-metrics.md` | [`orchestrator-metrics.md`](orchestrator-metrics.md) | системный промпт оркестратора у клиента |
+| `orchestrator-metrics.md` | [`orchestrator-metrics.md`](../../skills/metrics-analysis/orchestrator-metrics.md) | системный промпт оркестратора у клиента |
 | `HOWTO.md` | [`HOWTO.md`](HOWTO.md) | объяснение клиенту, как это работает |
-| Образцовый extractor | `framework/_inbox/metrics-scaffold/sandbox/_extractors/ssp_okr1.py` | шаблон per-client extractor |
-| Образцовый narrative composer | `framework/_inbox/metrics-scaffold/sandbox/_extractors/narrative.py` | переносится **как есть** (универсален) |
+| Образцовый extractor | `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py` | шаблон per-client extractor |
+| Образцовый narrative composer | `framework/_inbox/metrics-scaffold/sandbox/extractors/narrative.py` | **черновик** (DRAFT, см. open-question #1); копируется как pilot helper, статус и финальный формат под вопросом |
 | Решение №5 | [`framework/04_decisions.md`](../../04_decisions.md) | имена доменов, OKR-проекция, что не переименовывать |
 | Это playbook | [`rollout.md`](rollout.md) (этот файл) | по нему идёшь |
 
@@ -93,7 +93,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 2. Записать результат в `_findings/03_synonyms_audit.md`.
 
-**Жёсткие правила** (см. [`orchestrator-metrics.md`](orchestrator-metrics.md), Критическое правило 7):
+**Жёсткие правила** (см. [`orchestrator-metrics.md`](../../skills/metrics-analysis/orchestrator-metrics.md), Критическое правило 7):
 - Синонимы **только из речи CEO**. Не выдумывать.
 - Где синонима в речи нет — `synonyms: ["в речи не зафиксировано"]`.
 - Антисинонимы — отдельный список в паспорте (`antonyms`).
@@ -143,7 +143,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 `{client}_{sheet}.py` — Python-скрипт со списком метрик и **захардкоженными координатами**.
 
-Структура (см. шаблон `framework/_inbox/metrics-scaffold/sandbox/_extractors/ssp_okr1.py`):
+Структура (см. шаблон `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py`):
 
 1. **`METRIC_REGISTRY`** — словарь `metric_id → {strategy, row(s), label, unit, direction, plan_required, ...}`. Координаты захардкожены, не вычисляются.
 2. **Region column maps** — для каждого региона на листе (если их несколько) — словарь «период → колонка».
@@ -156,19 +156,19 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 - Любой `#DIV/0!` или пустая ячейка → `status: "div0"` или `"missing"`. Не подставлять `0` или `null` без статуса.
 - Stdout > 1 KB = ошибка скрипта.
 
-**Артефакт шага:** `sandbox/_extractors/{client}_{sheet}.py`.
+**Артефакт шага:** `sandbox/extractors/{client}_{sheet}.py`.
 
 ---
 
 ## Шаг 7. Перенести narrative composer
 
-`narrative.py` — **универсальный**, копируется как есть из `framework/_inbox/metrics-scaffold/sandbox/_extractors/narrative.py`.
+`narrative.py` — **черновик/pilot helper** (DRAFT, см. [`open-questions.md`](open-questions.md) #1). Копируется как есть из `framework/_inbox/metrics-scaffold/sandbox/extractors/narrative.py` — даёт работающую сборку narrative на пилоте, но финальный формат (Python vs LLM-сборка) ещё не зафиксирован.
 
 Что он делает: читает JSON от extractor → классифицирует метрики (`red | win | ok | blocked`) с учётом `direction` → пишет structured markdown с разделами «В красной зоне / Лучше плана / В норме / Не считается».
 
 **Если у клиента понадобится правка** (например, изменить порог 10% или добавить новый bucket) — править копию у клиента, **синхронизировать обратно в канон по триггеру** (если правка пригождается следующим клиентам).
 
-**Артефакт шага:** `sandbox/_extractors/narrative.py` (копия).
+**Артефакт шага:** `sandbox/extractors/narrative.py` (копия).
 
 ---
 
@@ -176,8 +176,8 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 В sandbox у себя (под git) прогнать pipeline на реальном тест-вопросе клиента:
 
-1. `python3 _extractors/{client}_{sheet}.py --okr okr1 --period <реальный период> --out _runs/test_v1.json`
-2. `python3 _extractors/narrative.py --in _runs/test_v1.json --out _runs/test_v1.narrative.md`
+1. `python3 extractors/{client}_{sheet}.py --okr okr1 --period <реальный период> --out _runs/test_v1.json`
+2. `python3 extractors/narrative.py --in _runs/test_v1.json --out _runs/test_v1.narrative.md`
 3. Проверить визуально: цифры сходятся со скриншотом xlsx, классификация по `direction` корректна, нет «выдуманных» значений.
 
 **Если что-то не так** — править в sandbox, не в боевом scaffold клиента. Под git, всё откатывается.
@@ -213,7 +213,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 ## Шаг 10. Cowork-чек-лист (если runtime клиента — Cowork)
 
-До переноса в боевой scaffold клиента — пройти 5 проверок (см. [`orchestrator-metrics.md`](orchestrator-metrics.md), секция «Cowork-чек-лист»):
+До переноса в боевой scaffold клиента — пройти 5 проверок (см. [`orchestrator-metrics.md`](../../skills/metrics-analysis/orchestrator-metrics.md), секция «Cowork-чек-лист»):
 
 1. `document-skills:xlsx` доступен в Cowork-агенте клиента?
 2. Per-client extractor подхватывается? `python3` доступен? Extractor читает локальный xlsx (через Drive for Desktop)?
@@ -231,7 +231,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
    - `01_metrics.md`
    - все domain-файлы
    - `source/README.md` (xlsx уже там, обычно)
-   - `_extractors/{client}_{sheet}.py` + `narrative.py`
+   - `extractors/{client}_{sheet}.py` + `narrative.py`
 2. **НЕ копировать** `_findings/`, `_runs/` — это рабочие материалы команды.
 3. Скорректировать пути если нужно (extractor использует `Path(__file__).resolve().parent.parent` — должно работать без правок).
 4. `rclone push` (или аналог синхронизации) в Google Drive клиента.
@@ -273,8 +273,8 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 |---|---|---|
 | `01_metrics.md` витрина | `clients/<client>/drive/.../metrics/` | образец витрины — `framework/scaffold/metrics/01_metrics.md` |
 | Domain-файлы | `clients/<client>/drive/.../metrics/` | шаблон — `framework/scaffold/metrics/template-domain.md` |
-| Per-client extractor | `clients/<client>/drive/.../metrics/_extractors/` | шаблон + примеры в `framework/_inbox/metrics-scaffold/sandbox/_extractors/` |
-| Narrative composer | `clients/<client>/drive/.../metrics/_extractors/narrative.py` | **универсальный канон** — `framework/skills/metrics-analysis/narrative.py` (вынести как общий после 2-3 клиентов) |
+| Per-client extractor | `clients/<client>/drive/.../metrics/extractors/` | шаблон + примеры в `framework/_inbox/metrics-scaffold/sandbox/extractors/` |
+| Narrative composer | `clients/<client>/drive/.../metrics/extractors/narrative.py` | **черновик** (DRAFT) — `framework/skills/metrics-analysis/narrative.py`; статус под open-question #1 (Python vs LLM-сборка). Кандидат в общий канон после решения вопроса и 2-3 клиентов |
 | Системный промпт оркестратора | `clients/<client>/drive/.../CLAUDE.md` или плагинный slot | `framework/skills/metrics-analysis/orchestrator-metrics.md` |
 | Уроки клиента (что нашли в его речи / xlsx-косяки) | `clients/private/<client>/drive/.../metrics/` (там) | если урок общий — обогатить `template-domain.md`, `HOWTO.md`, `orchestrator-metrics.md` |
 | Eval-набор клиента | `clients/private/<client>/eval/` | первые 2-3 клиента — собрать в `framework/_inbox/metrics-evals/` для будущего регресс-теста |
