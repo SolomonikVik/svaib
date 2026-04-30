@@ -1,7 +1,7 @@
 ---
 title: "Framework — хроника"
-updated: 2026-04-28
-version: 6
+updated: 2026-04-30
+version: 7
 scope: product_core
 type: log
 ---
@@ -22,6 +22,10 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-04-30 · Впервые потрогали управленческий цикл metrics на живых клиентских данных
+
+Стратегический переход: до этого metrics жили как методология и канон шаблонов. В Б.1 впервые прогнали полный pipeline на реальной таблице клиента в sandbox — AI собрал ответ на «что у меня по OKR1?» с числами, сходящимися с фактами клиента. Параллельно поймали 5 первых дыр (главная — отсутствие атрибута направления у метрик), зашили в канон. Документы под расширение на следующих клиентов: [`HOWTO.md`](skills/metrics-analysis/HOWTO.md), [`rollout.md`](skills/metrics-analysis/rollout.md), [`intake-form.md`](skills/metrics-analysis/intake-form.md), [`open-questions.md`](skills/metrics-analysis/open-questions.md).
+
 ## 2026-04-28 · Канон базовых сущностей scaffold
 
 Зафиксирован канон четырёх ключевых сущностей scaffold: миссия и 5 блоков 01_overview.md (Суть / Цели и КР / Команда / Фокус / Дорожная карта), опциональный profile.md как паспорт-доктрина рядом, разграничение README (вход в папку, для AI-агента) ↔ overview (вход в сущность), G/Y/R-светофор как универсальный сигнальный примитив.

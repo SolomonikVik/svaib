@@ -1,7 +1,7 @@
 ---
 title: "Product Decisions — Second AI Brain"
 updated: 2026-04-29
-version: 2
+version: 3
 scope: product_core
 priority: high
 type: decision
@@ -273,8 +273,9 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 **O1 — имена и структура:**
 - Минимальный канон: `finance.md`, `sales.md`, `operations.md`, `people.md`. Префикс `metrics_` не используется (контекст задаёт папка).
 - Расширение по триггеру: `customer.md`, `marketing.md`, `product.md`, `strategy.md`.
-- OKR не в `metrics/` — живут в `meta/management/`.
+- OKR не в `metrics/` — живут в `meta/management/` (у клиента — `02_strategy/02_goal.md`).
 - Витрина CEO target metrics в `01_metrics.md` — карточки-ссылки на паспорта в доменах, не дубли.
+- **Опциональная секция «По OKR» в витрине `01_metrics.md`** — навигационный срез поверх паспортов для клиентов с явной OKR-структурой. Формат: `OKR{N} → метрика на языке CEO → ссылка на паспорт`. Не хранит OKR и не дублирует определения метрик; только маршрут от клиентского ракурса («что с OKR3?») к паспортам. Сами OKR — в `02_strategy/02_goal.md`. Уточнение от 2026-04-29 после первого пилота: клиент мыслит метрики через структуру OKR, но переименовывать domain-файлы под OKR нельзя (OKR — цель, не бизнес-домен; одна OKR агрегирует метрики из разных доменов).
 - Структура секций domain-файла — `datasets / relationships / metrics / routes` (формат markdown, не yaml).
 - Стабильные ID метрик (`metric_<id>`), `version` инкрементируется при изменении формулы, `synonyms` берутся из речи CEO (аудит по транскриптам обязателен).
 

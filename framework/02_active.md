@@ -1,7 +1,7 @@
 ---
 title: "Framework — актуальное"
-updated: 2026-04-29
-version: 13
+updated: 2026-04-30
+version: 17
 scope: product_core
 priority: high
 type: plan
@@ -19,25 +19,24 @@ type: plan
 ---
 ## Session Handoff
 
-**Этап А плана metrics закрыт (2026-04-29).** Канон-каркас собран:
+**Б.1 metrics закрыт 2026-04-30** — впервые прогнали pipeline на живых клиентских данных в sandbox. Подробнее — [`03_progress.md`](03_progress.md) запись 30.04. Артефакты Б.1: [`_inbox/metrics-scaffold/sandbox/_b0_findings/03_results.md`](_inbox/metrics-scaffold/sandbox/_b0_findings/03_results.md).
 
-- `framework/scaffold/metrics/` — `README.md`, `01_metrics.md`, `template-domain.md`, `source/README.md` (canonical scaffold-стиль: без YAML, без ссылок на framework-only).
-- `framework/skills/metrics-analysis/` — `README.md`, `orchestrator-metrics.md`.
-- `framework/scaffold/MODEL.md` v3 (раздел 8, `metrics/` как опциональная), `framework/scaffold/README.md`, `framework/methodology/metrics.md` v5.
-- Решение целиком зафиксировано в [`04_decisions.md`](04_decisions.md) №5 «Раскладка metrics в scaffold (B1+O1/O5)». Файлы `_inbox/metrics-scaffold/b1.md` и `o1.md` удалены — обоснования воплощены в скаффолде и в записи 04_decisions.
+**Next — две задачи на свежую голову:**
 
-**Next — Этап Б. Открываем новый чат с чистой головой.**
+**Задача 1 — собрать методологическую базу metrics в одно место.** Сейчас всё растащено: что-то в [`skills/metrics-analysis/`](skills/metrics-analysis/) (HOWTO, rollout, intake-form, open-questions, README, orchestrator), что-то в [`methodology/metrics.md`](methodology/metrics.md) (архитектурный слой 6 слоёв), что-то в [`scaffold/metrics/`](scaffold/metrics/) (канон шаблонов), что-то в [`_inbox/metrics-scaffold/`](_inbox/metrics-scaffold/) (план, sandbox). Нужно навести порядок — собрать методологию в одно место (предположительно `methodology/metrics/`), оставить в skills только оркестратор + промпты, проверить ошибки и связность ссылок. По ходу — пересмотреть открытые вопросы в [`open-questions.md`](skills/metrics-analysis/open-questions.md) и понять, какие финальные вопросы задать клиенту.
 
-Перед стартом координатор нового чата спрашивает Виктора 5 групп вопросов (пилот / данные / семантика / тест / runtime) — список в [`_inbox/metrics-scaffold/plan.md`](_inbox/metrics-scaffold/plan.md) → секция «Что мне нужно узнать у Виктора ДО старта Этапа Б». После ответов — стартуют шаги Этапа Б.
+**Задача 2 — двинуть клиентскую задачу.** После того как методологическая база собрана и понятен список вопросов: дать клиенту [`intake-form.md`](skills/metrics-analysis/intake-form.md) + дополнительные вопросы → получить ответы → начать тестировать на его живой базе через Cowork (см. [`COWORK-TEST.md`](_inbox/metrics-scaffold/cowork-test/COWORK-TEST.md) как готовый pack).
 
-Список файлов для чтения новым чатом — в последней секции `plan.md`.
+Цель к концу следующей недели — pipeline работает на боевых данных клиента в его Cowork-окружении.
 
 ---
 
 ## Активные задачи
 
 ### Метрики у клиента
-- [ ] Этап Б плана: пилот у клиента — развернуть `metrics/`, подключить xlsx, заполнить domain, прогнать тест-промпт. Детали — [_inbox/metrics-scaffold/plan.md](_inbox/metrics-scaffold/plan.md)
+- [ ] **Сборка методологической базы metrics** — навести порядок (методология / skills / scaffold / inbox растащены), проверить ошибки, финализировать список вопросов клиенту
+- [ ] **Клиент-1 на живой базе** — intake-form + ответы → Cowork-тест на боевом
+- Детали — [_inbox/metrics-scaffold/plan.md](_inbox/metrics-scaffold/plan.md) и [skills/metrics-analysis/open-questions.md](skills/metrics-analysis/open-questions.md)
 
 
 

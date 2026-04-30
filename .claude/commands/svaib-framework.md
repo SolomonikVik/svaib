@@ -11,6 +11,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 @framework/02_active.md
 @framework/00_product.md
 @framework/architecture.md
+@framework/scaffold/README.md
 
 ---
 
@@ -43,7 +44,7 @@ description: "Режим работы с фреймворком Second AI Brain"
 | Формат файлов, YAML, секции | `framework/memory/file_spec.md` |
 | Принципы проектирования файловой структуры (миссия файла, state vs log, движение задач) | `framework/scaffold/principles.md` |
 | Прескриптивная модель scaffold (папки, миссии, развёртывание у клиента) | `framework/scaffold/MODEL.md` |
-| Шаблоны конкретных структур scaffold | `framework/scaffold/` (README внутри + подпапки) |
+| Шаблон конкретной подпапки scaffold (01_ceo/, 02_strategy/, 03_team/, 04_management/, опциональные) | `framework/scaffold/{подпапка}/README.md` |
 | Проектирование навыка или промпта | `framework/skills/` (README внутри) |
 | Сборка пакета клиенту | `framework/plugin/` (README внутри) |
 | Слои продукта, компоненты, проектирование компонента | `framework/architecture.md` |
