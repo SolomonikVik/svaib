@@ -27,6 +27,7 @@
 - [brand-design-presentation.md](brand-design-presentation.md) — дизайн-гайд для слайдов
 - [brand-design-pdf.md](brand-design-pdf.md) — дизайн-гайд для PDF-документов
 - [brand-design-diagrams.md](brand-design-diagrams.md) — дизайн-гайд для схем и диаграмм (HTML→Puppeteer→PDF)
+- [brand-design-html.md](brand-design-html.md) — дизайн-гайд для standalone HTML-артефактов
 - [brand-design-web.md](brand-design-web.md) — дизайн-гайд для сайта (stub, ссылка на dev/)
 
 ## Папки

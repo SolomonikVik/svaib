@@ -17,6 +17,7 @@ priority: high
 - [brand-design-presentation.md](brand-design-presentation.md) — как делаем слайды
 - [brand-design-illustrations.md](brand-design-illustrations.md) — как генерируем иллюстрации (промпт арт-директора)
 - [brand-design-pdf.md](brand-design-pdf.md) — как делаем PDF-документы
+- [brand-design-html.md](brand-design-html.md) — как делаем standalone HTML-артефакты
 - [brand-design-web.md](brand-design-web.md) — как строим сайт
 - [strategy.md](strategy.md) — маркетинговая стратегия
 
