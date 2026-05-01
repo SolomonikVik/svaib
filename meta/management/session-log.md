@@ -1,7 +1,6 @@
 ---
 title: "svaib — session log"
 updated: 2026-05-01
-last_session: "2026-05-01 11:06 clients"
 ---
 
 
@@ -24,6 +23,10 @@ last_session: "2026-05-01 11:06 clients"
 **10:24 | framework** — Создан клиентский intro для metrics-вертикали: пара артефактов (Markdown + HTML-презентация в фирменном стиле svaib, тёмная тема, по референсу son-partnership-response). 6 разделов, сжато под 5-минутный показ  (40 мин)
 
 **11:06 | clients** — Обновил скилл `macwhisper-transcript` у АС: bash → Python (Cowork-ready) + Разворачивали скилл мэйл-ассистент. (40 мин)
+
+**12:50 | lab** — Хук `rclone_safety`: блокирует `rclone sync` к/из `gdrive:` без `--dry-run`, инжектит протокол безопасности из setup_workspace.md прямо в stderr. (10 мин)
+
+**17:30 | framework+clients** — АС: переработали email-assistant по бритве Оккама. (~1 ч)
 
 ---
 ## 2026-04-30
