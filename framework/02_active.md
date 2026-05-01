@@ -1,7 +1,7 @@
 ---
 title: "Framework — актуальное"
-updated: 2026-04-30
-version: 19
+updated: 2026-05-01
+version: 20
 scope: product_core
 priority: high
 type: plan
@@ -15,8 +15,8 @@ type: plan
 
 **Работа с файлом:** Что сюда: текущие задачи направления, блокеры, открытые вопросы. Что НЕ сюда: что за продукт и зачем (→ [00_product.md](00_product.md)), как устроен внутри (→ [architecture.md](architecture.md)), состояние реализации (→ [01_overview.md](01_overview.md)), задачи на будущее (→ [02_backlog.md](02_backlog.md)), история (→ [03_progress.md](03_progress.md)), продуктовые решения (→ [04_decisions.md](04_decisions.md)), входящее на разбор (→ [_inbox/01_inbox.md](_inbox/01_inbox.md)).
 
-
 ---
+
 ## Session Handoff
 
 **Реорганизация metrics завершена 2026-04-30.** Методология вертикали собрана в `methodology/metrics/`, skill-папка очищена, стандарт `extractors/` зафиксирован, smoke-test пройден, Codex-ревью отработан. Подробнее — [`03_progress.md`](03_progress.md) запись 30.04 (вторая за день).
@@ -32,24 +32,22 @@ type: plan
 ## Активные задачи
 
 ### Метрики у клиента
+
 - [ ] **Клиент-1 на живой базе** — intake-form + ответы → Cowork-тест на боевом
+
 - Детали — [_inbox/metrics-scaffold/plan.md](_inbox/metrics-scaffold/plan.md) и [methodology/metrics/open-questions.md](methodology/metrics/open-questions.md) (секция «Что спросить у первого клиента до Б.2»)
 
+### Scaffold — поэтапное прохождение плана
 
+Идём шаг за шагом по 12 шагам финального плана в [02_backlog.md](02_backlog.md) → раздел `## Scaffold`.
 
-### Scaffold v2 — fern-модель
-- [ ] **Фаза 3** — запрос для внешних нейросетей по fern-модели
-- [ ] **Фаза 4** — итоговая картина scaffold
-- Контекст 30.04 + карта чтения для нового чата — в [scaffold/fern-model-draft.md](scaffold/fern-model-draft.md)
+- [ ] **Шаг 1 (сейчас):** обсудить [scaffold-draft-v1.md](_inbox/scaffold/2026-05-01_scaffold-draft-v1.md) + [HTML](_inbox/scaffold/2026-05-01_scaffold-draft-v1.html) с клиентами на предстоящих встречах. Собрать обратную связь.
 
-
-### Порядок в Scaffold (заблокировано — ждёт решения по fern-модели)
-- [ ] Понять что необходимо сделать минимально и достаточно для обновления клиентского скаффолд
-- [ ] Приступить к наведению порядка в скаффолд полного (детали в [02_backlog](02_backlog.md))
-
+Дальше — Шаги 2-12 из бэклога по очереди.
 
 ### Помощники
-* [ ] **Email v1** — первая версия атомарного скилла-помощника по почте
+
+- [ ] **Email v1** — первая версия атомарного скилла-помощника по почте
 
 ## Открытые вопросы
 
