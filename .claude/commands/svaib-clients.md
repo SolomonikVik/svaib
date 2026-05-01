@@ -95,7 +95,7 @@ description: "Режим работы с клиентами SVAIB"
 ### Протоколы (обязательные):
 
 - **Перед изменением в клиентском пространстве** (файлы на Drive, скиллы, CLAUDE.md) → прочитай `setup.md`. Там конфигурация, отклонения от framework, состояние системы
-- **Перед rclone push на Drive клиента** → ВСЕГДА сначала pull (клиент мог обновить файлы). Потом dry-run, проверь удаления. Для точечных операций — copy, не sync. Google Drive — не git, откатить нельзя
+- **Перед rclone push на Drive клиента** → ВСЕГДА сначала pull (клиент мог обновить файлы). Потом dry-run, проверь удаления. **Особое внимание dot-папкам** (`.claude/`, `.config/` — могут не подтягиваться pull'ом и быть удалены при sync push). Для точечных операций — `rclone copy`, не sync. Google Drive — не git, откатить нельзя. Полные правила: [clients/playbook/delivery/operations/setup_workspace.md](../../clients/playbook/delivery/operations/setup_workspace.md) → «Протокол безопасной синхронизации»
 - **Перед правкой любого файла клиента** → прочитай файл целиком (не кусок). Workflow и правила могут быть в начале файла
 - **Перед записью в файл** → проверь scope: profile (кто), company (бизнес), project (сделка), active (операционка), setup (система), decisions (почему так). См. таблицу разграничения в scaffold/README.md
 - **Отправка клиенту в Telegram** → токен бота и chat_id клиента — в `clients/private/{client}/drive/.env`. Скилл `send-telegram` запускать из этой папки.

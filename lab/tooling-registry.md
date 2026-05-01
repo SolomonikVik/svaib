@@ -1,6 +1,6 @@
 ---
 title: "Реестр инструментария svaib"
-updated: 2026-04-15
+updated: 2026-05-01
 ---
 
 # Tooling Registry
@@ -64,13 +64,14 @@ updated: 2026-04-15
 
 ---
 
-## Хуки (5)
+## Хуки (6)
 
 Автоматические проверки. Работают без вызова. Файлы: `.claude/hooks/`, конфигурация в `.claude/settings.json`.
 
 | Хук | Событие | Что делает |
 |-----|---------|-----------|
 | `remind_subagent_rules` | PreToolUse (Agent) | Инъекция правил субагентов перед запуском |
+| `rclone_safety` | PreToolUse (Bash) | Блокирует `rclone sync` к/из `gdrive:` без `--dry-run`. При блокировке выгружает в stderr секцию «Протокол безопасной синхронизации» из setup_workspace.md |
 | `inject_session_context` | SubagentStart | Инъекция контекста сессии в субагентов |
 | `check_deferred_actions` | Stop | Блокирует "в следующий раз сделаю X" — делай сейчас |
 | `enforce_rule10` | Stop | Текст отдельно от действий (правило 4 CLAUDE.md) |
