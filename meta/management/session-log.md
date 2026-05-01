@@ -1,6 +1,7 @@
 ---
 title: "svaib — session log"
 updated: 2026-05-01
+last_session: "2026-05-01 11:06 clients"
 ---
 
 
@@ -19,6 +20,10 @@ updated: 2026-05-01
 **07:43 | meta** — План дня на пятницу. (8 мин)
 
 **08:30 | framework** — SCAFFOLD Сформулировали 5 принципиальных требований к scaffold (idea.md как стержень), встроили в architecture/00_product/principles/README. Поймали кейс раздувания (95→35 строк) — разобрали 5 причин, зафиксировали в _inbox + задача в backlog (Enforcement против раздувания стержневых файлов). (40 мин)
+
+**10:24 | framework** — Создан клиентский intro для metrics-вертикали: пара артефактов (Markdown + HTML-презентация в фирменном стиле svaib, тёмная тема, по референсу son-partnership-response). 6 разделов, сжато под 5-минутный показ  (40 мин)
+
+**11:06 | clients** — Обновил скилл `macwhisper-transcript` у АС: bash → Python (Cowork-ready) + Разворачивали скилл мэйл-ассистент. (40 мин)
 
 ---
 ## 2026-04-30
