@@ -1,7 +1,7 @@
 ---
 title: "Framework — хроника"
-updated: 2026-04-30
-version: 8
+updated: 2026-05-01
+version: 9
 scope: product_core
 type: log
 ---
@@ -22,6 +22,10 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-05-01 · Сформулированы 5 принципиальных требований к scaffold
+
+Зафиксирован стержень scaffold-направления: двусторонняя читаемость, управленческая модель CEO, универсальность+адаптивность, целостность, самоподдерживаемость. Новый файл [scaffold/idea.md](scaffold/idea.md), встроен в architecture (раздел «1. Данные»), 00_product, principles.md, framework/README; в backlog (задача 2.7) зафиксирована целевая иерархия `idea (ЧТО) → principles (КАК решения) → MODEL (КАК модель)`.
+
 ## 2026-04-30 · Реорганизация metrics-вертикали в одно место
 
 Методология вертикали собрана в новую папку `methodology/metrics/` (README — карта вертикали, architecture, HOWTO, rollout, intake-form, open-questions). В `skills/metrics-analysis/` остался только skill: orchestrator + черновик `narrative.py` (DRAFT, open-question #1). Зафиксирован стандарт `metrics/extractors/` у клиента (без подчёркивания) + новый [`scaffold/metrics/extractors/README.md`](scaffold/metrics/extractors/README.md). Канон 8 имён domain-файлов — единый источник правды в [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md), копии в scaffold/orchestrator со ссылкой. Subagent-аудит decisions ↔ methodology: дыр нет (отчёт — [`_inbox/subagents/metrics-decisions-audit/report.md`](_inbox/subagents/metrics-decisions-audit/report.md)). Smoke-test sandbox после переименования: extractor → narrative pipeline работает, числа сходятся с Б.1.

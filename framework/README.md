@@ -1,7 +1,7 @@
 ---
 title: "Framework — ядро продукта Second AI Brain"
-updated: 2026-04-30
-version: 10
+updated: 2026-05-01
+version: 11
 scope: "product_core"
 priority: high
 ---
@@ -130,7 +130,8 @@ plugin/            → собранный пакет для клиента (де
 | Понять как работать с X | [methodology/](methodology/) | Протоколы, decision frames, ритуалы |
 | Добавить/изменить сущность | [ontology/entities.md](ontology/entities.md) | Каталог атомарных сущностей |
 | Создать/улучшить шаблон | [scaffold/](scaffold/) | Готовый каркас + спецификации |
-| Спроектировать структуру папок | [scaffold/principles.md](scaffold/principles.md) | Принципы: миссия файла, развёртывание, маршрутизация |
+| Понять чему scaffold должен соответствовать | [scaffold/idea.md](scaffold/idea.md) | 5 принципиальных требований к слою Данные (стержень) |
+| Спроектировать структуру папок | [scaffold/principles.md](scaffold/principles.md) | Принципы реализации: миссия файла, развёртывание, маршрутизация |
 | Развернуть scaffold для клиента | [scaffold/clients/](scaffold/clients/) | Шаблоны клиентских проектов |
 | Спроектировать навык | [skills/](skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |

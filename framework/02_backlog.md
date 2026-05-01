@@ -1,7 +1,7 @@
 ---
 title: "Framework — бэклог"
-updated: 2026-04-30
-version: 8
+updated: 2026-05-01
+version: 9
 scope: product_core
 type: plan
 ---
@@ -53,19 +53,21 @@ type: plan
 - [ ] **5. Обновить файлы scaffold под § 4** — применить решения по контекстной архитектуре к шаблонам scaffold.
 - [ ] **6. Канон развёртывания у клиента** — как scaffold разворачивается: что обязательно, что опционально, в каком порядке, где зафиксировано как канон (чтобы не забывалось при онбординге).
 - [ ] **7. Связность scaffold** — проверить, что обновлённый scaffold не противоречит онтологии и методологии. Чтобы агенты не сыпались на устаревших связях.
-    - [ ] Решить про слияние [scaffold/principles.md](scaffold/principles.md) → [scaffold/MODEL.md](scaffold/MODEL.md): где они должны лежать — в `scaffold/` или в `methodology/`
+    - [ ] Решить про слияние [scaffold/principles.md](scaffold/principles.md) → [scaffold/MODEL.md](scaffold/MODEL.md): где они должны лежать — в `scaffold/` или в `methodology/`. Плюс файл [scaffold/idea.md](scaffold/idea.md) (ЧТО — 5 требований, стержень) → `principles.md` (КАК принимать решения о структуре) → `MODEL.md` (КАК выглядит развёртываемая модель) ПОДУМАТЬ ОБСУДИТЬ РЕШИТЬ
 
 ## Память v1
 
 - [ ] **Полный вынос общих механизмов из [methodology/metrics/architecture.md](methodology/metrics/architecture.md) в `memory/`** — snapshot, версионирование сущностей, trace ответа, semantic layer как паттерн, маршрут + думающая ветка, границы ответа. Это горизонтальные контракты слоёв, не часть metrics. Источник — [04_decisions.md](04_decisions.md), решение №4 (2026-04-27)
 - [ ] Inline-даты на volatile-данных: добавить в [memory/file_spec.md](memory/file_spec.md) (секция маркеров, рядом с `[SOURCE]`/`[REF:]`) и в [methodology/meeting_analysis.md](methodology/meeting_analysis.md) (требование к надстройке дельт). Формат — в `clients/_inbox/_todo_meeting_processor.md` секция «Требования к дельтам»
 - [ ] QMD — локальный семантический поиск по markdown (MCP для Claude Code). 19k stars, Tobi Lütke. Установить, протестировать на нашем репо (570+ файлов), оценить качество vs grep. Если работает — часть онбординга клиента. Детали: [../lab/_inbox/qmd-research.md](../lab/_inbox/qmd-research.md)
+- [ ] **Enforcement против раздувания стержневых файлов.** Текстовые правила («бритва Оккама», «экономь токены» в CLAUDE.md / file_spec) не работают как фильтр в момент генерации — подтверждено живым кейсом 2026-05-01 (idea.md раздут в 5 раз вопреки всем правилам). Нужны хуки/inline-правила: лимит строк на stem-файлах, правило «копируй не интерпретируй», pre-Write пауза, канон стержневого файла. Источник: [_inbox/2026-05-01_llm-bloat-pattern.md](_inbox/2026-05-01_llm-bloat-pattern.md) — 5 причин + 5 предложений по реализации
 
 
 
 ## Помощники (Skills) — общее
 
 - [ ] Telegram-бот / аккаунт AI для асинхронной коммуникации с клиентом (идея АС). Общий канал, не привязан к одной вертикали — могут пушить ритуалы любой вертикали
+- [ ] **Вынести `send_telegram.sh` в `framework/skills/channels/telegram/`.** Сейчас скрипт лежит внутри `framework/skills/meeting-analysis/send_telegram.sh` — но используется из других скиллов (email-assistant, потенциально новые). Создать `framework/skills/channels/telegram/` (SKILL.md + скрипт), привести к канону дубль `.claude/skills/send-telegram/`. Обновить ссылки во всех скиллах и операциях (`setup_telegram_bot.md`, `setup_email_assistant.md`, `meeting-analysis/orchestrator-*`). Обнаружено при разработке email-assistant 30.04
 
 ## Мета (архитектура / онтология / методология)
 
