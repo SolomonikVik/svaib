@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>svaib — Second AI Brain · обзор продукта</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#071015;
+  --soft:#0B161B;
+  --panel:#101D23;
+  --panel-2:#13262D;
+  --line:#25444D;
+  --teal:#00B4A6;
+  --teal-soft:rgba(0,180,166,0.28);
+  --pink:#FF4D8D;
+  --yellow:#FFD600;
+  --text:#F0F8F7;
+  --muted:#A7BABD;
+  --soft-text:#789096;
+  --radius:8px;
+  --shadow:0 22px 80px rgba(0,0,0,0.34);
+}
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--text);font-family:Inter,sans-serif;letter-spacing:0}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.top-line{height:3px;background:var(--teal);box-shadow:0 0 28px rgba(0,180,166,0.55)}
+.page{width:min(1280px,calc(100vw - 36px));margin:0 auto;padding:26px 0 60px}
+
+/* nav */
+.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px}
+.logo{font-family:Sora,Inter,sans-serif;font-size:24px;font-weight:800;line-height:1;white-space:nowrap}
+.teal{color:var(--teal)}
+.pink{color:var(--pink)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--teal-soft);border-radius:999px;color:var(--muted);background:rgba(11,22,27,0.76);padding:7px 11px;font-size:12px;font-weight:600}
+.chip.pink{border-color:rgba(255,77,141,0.36);color:#ffc1d6}
+
+/* hero */
+.hero{display:grid;grid-template-columns:0.85fr 1.15fr;gap:28px;align-items:stretch;margin-bottom:26px}
+.hero-panel{position:relative;overflow:hidden;border:1px solid var(--teal-soft);border-radius:var(--radius);background:rgba(16,29,35,0.9);box-shadow:var(--shadow);padding:32px}
+.hero-panel.left h1{font-family:Sora,sans-serif;font-weight:800;font-size:clamp(34px,4vw,52px);line-height:1.06;margin:18px 0 20px}
+.hero-panel.left .lead{color:var(--muted);font-size:16px;line-height:1.55;max-width:520px}
+.hero-eyebrow{font-family:JetBrains Mono,monospace;font-size:12px;font-weight:600;color:var(--teal);letter-spacing:0.08em;text-transform:uppercase}
+
+/* matrix */
+.matrix{display:flex;flex-direction:column;gap:10px;height:100%}
+.matrix-title{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:600;color:var(--teal);text-transform:uppercase;letter-spacing:0.1em}
+.cycle-strip{display:flex;gap:4px;padding:8px 0 12px;border-bottom:1px dashed rgba(37,68,77,0.6);overflow-x:auto}
+.cycle-mini{flex:0 0 auto;border:1px solid var(--line);border-radius:6px;background:#0d1418;padding:7px 9px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:62px}
+.cycle-mini .ic{font-family:JetBrains Mono,monospace;font-size:10px;color:var(--soft-text);text-transform:uppercase}
+.cycle-mini .nm{font-family:Sora,sans-serif;font-weight:700;font-size:11px;color:var(--text)}
+.h-rows{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.h-row{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center;border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);padding:14px 16px}
+.h-row .name{font-family:Sora,sans-serif;font-weight:800;font-size:14px;color:var(--teal);text-transform:uppercase;letter-spacing:0.05em}
+.h-row.pink .name{color:var(--pink)}
+.h-row .desc{color:var(--muted);font-size:12.5px;line-height:1.45}
+.crosses{margin-top:10px;font-family:JetBrains Mono,monospace;font-size:11px;color:var(--soft-text);text-align:center;padding:8px;background:#0d1418;border-radius:6px;border:1px solid var(--line)}
+.crosses strong{color:var(--text);font-weight:700}
+
+/* part header */
+.part{margin-top:38px;padding:0 4px;display:flex;align-items:baseline;gap:14px;border-bottom:1px solid var(--line);padding-bottom:14px;flex-wrap:wrap}
+.part .pnum{font-family:JetBrains Mono,monospace;font-size:12px;font-weight:700;color:var(--pink);letter-spacing:0.12em;text-transform:uppercase}
+.part h2{font-family:Sora,sans-serif;font-weight:800;font-size:clamp(28px,3.2vw,40px);line-height:1.1;margin:0;color:var(--text)}
+.part .tagline{margin-left:auto;color:var(--soft-text);font-size:13px;font-family:JetBrains Mono,monospace}
+
+/* layers */
+.layers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.layer{border:1px solid var(--teal-soft);border-radius:var(--radius);background:var(--panel-2);padding:24px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.layer::before{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:var(--teal)}
+.layer .nm{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--bg);border:2px solid var(--teal);color:var(--teal);font-family:Sora,sans-serif;font-weight:800;font-size:14px;margin-bottom:14px}
+.layer h3{font-family:Sora,sans-serif;font-weight:800;font-size:22px;margin:0 0 8px}
+.layer .what{color:var(--text);font-size:14px;line-height:1.55;margin:0 0 16px}
+.layer ul{margin:0;padding:0;list-style:none}
+.layer li{position:relative;padding:8px 0 8px 18px;color:var(--muted);font-size:13px;line-height:1.5;border-top:1px dashed rgba(37,68,77,0.6)}
+.layer li:first-child{border-top:none}
+.layer li::before{content:"";position:absolute;left:2px;top:14px;width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.layer li strong{color:var(--text);font-weight:600}
+
+/* meta-frame */
+.meta-frame{margin-top:20px;border:1px solid var(--line);border-left:5px solid var(--teal);border-radius:var(--radius);background:#0d1418;padding:20px 24px}
+.meta-frame .label{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.08em;text-transform:uppercase}
+.meta-frame h4{font-family:Sora,sans-serif;font-weight:700;font-size:18px;margin:8px 0 8px}
+.meta-frame p{color:var(--muted);font-size:14px;line-height:1.6;margin:0;max-width:920px}
+.meta-frame strong{color:var(--text)}
+
+/* cycles intro */
+.cycles-intro{margin-top:22px;padding:24px 28px;border:1px solid var(--line);border-radius:var(--radius);background:rgba(16,29,35,0.8);display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.cycles-intro .text{color:var(--muted);font-size:14px;line-height:1.6}
+.cycles-intro .text strong{color:var(--text)}
+.cycles-intro .stat{text-align:right}
+.cycles-intro .stat .n{font-family:Sora,sans-serif;font-weight:800;font-size:48px;color:var(--pink);line-height:1}
+.cycles-intro .stat .l{font-family:JetBrains Mono,monospace;font-size:11px;color:var(--soft-text);text-transform:uppercase;letter-spacing:0.08em;margin-top:4px}
+
+/* cycle cards */
+.cycles{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:22px}
+.cyc{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);padding:22px;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.cyc::before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:var(--teal)}
+.cyc.pink::before{background:var(--pink)}
+.cyc-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;gap:14px}
+.cyc-head .num{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;color:var(--soft-text);letter-spacing:0.08em}
+.cyc-head .tag{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;color:var(--teal);letter-spacing:0.06em;background:rgba(0,180,166,0.1);padding:3px 8px;border-radius:4px}
+.cyc.pink .cyc-head .tag{color:var(--pink);background:rgba(255,77,141,0.1)}
+.cyc h4{font-family:Sora,sans-serif;font-weight:800;font-size:20px;margin:0 0 6px;color:var(--text)}
+.cyc .what{color:var(--muted);font-size:13.5px;line-height:1.5;margin:0 0 14px}
+.cyc .deploy{border-top:1px dashed rgba(37,68,77,0.6);padding-top:14px;margin-top:auto}
+.cyc .deploy .l{font-family:JetBrains Mono,monospace;font-size:10.5px;color:var(--teal);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px}
+.cyc.pink .deploy .l{color:var(--pink)}
+.cyc .deploy ul{margin:0;padding:0;list-style:none}
+.cyc .deploy li{padding:4px 0 4px 16px;position:relative;color:var(--text);font-size:12.5px;line-height:1.45}
+.cyc .deploy li::before{content:"›";position:absolute;left:2px;top:4px;color:var(--teal);font-weight:700;font-size:13px}
+.cyc.pink .deploy li::before{color:var(--pink)}
+
+/* boundaries */
+.bounds{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-top:22px}
+.bound{padding:22px 24px;background:var(--panel-2)}
+.bound:nth-child(2){border-left:1px solid var(--line);border-right:1px solid var(--line);background:#0d1418}
+.bound .lev{font-family:Sora,sans-serif;font-weight:800;font-size:12px;color:var(--teal);letter-spacing:0.1em;text-transform:uppercase}
+.bound:nth-child(2) .lev{color:var(--yellow)}
+.bound:nth-child(3) .lev{color:var(--pink)}
+.bound h4{font-family:Sora,sans-serif;font-weight:700;font-size:18px;margin:8px 0 8px}
+.bound .def{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 10px}
+.bound .ex{font-family:JetBrains Mono,monospace;font-size:12px;color:var(--text);background:#081318;padding:8px 12px;border-radius:4px;line-height:1.45}
+
+/* boost — three planes */
+.boost{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}
+.plane{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);padding:26px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.plane::before{content:"";position:absolute;top:0;left:0;width:100%;height:4px}
+.plane.A::before{background:var(--teal)}
+.plane.B::before{background:var(--yellow)}
+.plane.C::before{background:var(--pink)}
+.plane .axis{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px}
+.plane.A .axis{color:var(--teal)}
+.plane.B .axis{color:var(--yellow)}
+.plane.C .axis{color:var(--pink)}
+.plane .factor{font-family:Sora,sans-serif;font-weight:800;font-size:32px;color:var(--text);line-height:1;margin-bottom:10px}
+.plane h4{font-family:Sora,sans-serif;font-weight:800;font-size:20px;margin:0 0 10px}
+.plane .lead{color:var(--text);font-size:14px;line-height:1.55;margin:0 0 14px}
+.plane ul{margin:0;padding:0;list-style:none}
+.plane li{padding:7px 0 7px 18px;position:relative;color:var(--muted);font-size:13px;line-height:1.5;border-top:1px dashed rgba(37,68,77,0.6)}
+.plane li:first-child{border-top:none}
+.plane li::before{content:"›";position:absolute;left:2px;top:7px;color:var(--teal);font-weight:700}
+.plane.B li::before{color:var(--yellow)}
+.plane.C li::before{color:var(--pink)}
+.plane li strong{color:var(--text);font-weight:600}
+
+/* before/after table */
+.compare{margin-top:22px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--panel-2)}
+.compare .row{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:0;border-top:1px solid var(--line)}
+.compare .row:first-child{border-top:none;background:#0d1418}
+.compare .row.head{background:#0d1418}
+.compare .cell{padding:14px 18px;font-size:13.5px;line-height:1.5;color:var(--text)}
+.compare .cell.k{color:var(--text);font-weight:600;border-right:1px solid var(--line)}
+.compare .cell.before{color:var(--soft-text);border-right:1px solid var(--line);font-family:JetBrains Mono,monospace;font-size:13px}
+.compare .cell.after{color:var(--teal);font-family:JetBrains Mono,monospace;font-size:13px;font-weight:600}
+.compare .row.head .cell{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--soft-text);padding:12px 18px}
+.compare .row.head .cell.before{color:var(--soft-text)}
+.compare .row.head .cell.after{color:var(--teal)}
+
+/* integral block */
+.integral{margin-top:22px;border:1px solid var(--pink);border-left:5px solid var(--pink);border-radius:var(--radius);background:#151821;padding:26px 28px}
+.integral .label{font-family:JetBrains Mono,monospace;font-size:11px;font-weight:700;color:var(--pink);letter-spacing:0.1em;text-transform:uppercase}
+.integral h4{font-family:Sora,sans-serif;font-weight:800;font-size:22px;line-height:1.25;color:var(--text);margin:8px 0 12px}
+.integral p{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 10px;max-width:880px}
+.integral p:last-child{margin-bottom:0}
+.integral strong{color:var(--text)}
+
+/* outcomes */
+.outcomes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.out{border:1px solid var(--line);border-radius:var(--radius);background:var(--panel-2);padding:22px}
+.out .n{font-family:Sora,sans-serif;font-weight:800;font-size:32px;color:var(--teal);line-height:1;margin-bottom:8px}
+.out h4{font-family:Sora,sans-serif;font-size:16px;font-weight:700;margin:0 0 6px}
+.out p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+
+/* footer */
+.footer{margin-top:30px;display:flex;justify-content:space-between;align-items:center;color:var(--soft-text);font-family:JetBrains Mono,monospace;font-size:12px}
+.footer .meta{display:flex;gap:18px}
+
+/* responsive */
+@media (max-width:1080px){
+  .hero,.cycles,.outcomes,.boost{grid-template-columns:1fr !important}
+  .layers{grid-template-columns:1fr !important}
+  .bounds{grid-template-columns:1fr !important}
+  .bound:nth-child(2){border-left:none;border-right:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .cycles-intro{grid-template-columns:1fr;text-align:left}
+  .cycles-intro .stat{text-align:left}
+  .compare .row{grid-template-columns:1fr}
+  .compare .cell.k,.compare .cell.before{border-right:none;border-bottom:1px solid var(--line)}
+}
+@media (max-width:760px){
+  .page{width:min(100vw - 24px,1240px);padding-top:18px}
+  .nav{display:block}
+  .chips{margin-top:14px}
+  .hero-panel{padding:24px}
+  .layer,.cyc,.plane{padding:20px}
+}
+</style>
+</head>
+<body>
+<div class="top-line"></div>
+<div class="page">
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="logo"><span class="teal">sv</span><span class="pink">ai</span><span class="teal">b</span><span class="pink">.</span></div>
+    <div class="chips">
+      <span class="chip">second ai brain</span>
+      <span class="chip">обзор продукта</span>
+      <span class="chip pink">для CEO</span>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-panel left">
+      <span class="hero-eyebrow">// SECOND AI BRAIN</span>
+      <h1>Продукт собирается на пересечении трёх горизонталей и восьми вертикалей.</h1>
+      <p class="lead">Горизонтали — общая инфра: данные, память, помощники. Они одинаковы для любого CEO. Вертикали — управленческие циклы: стратегия, команда, метрики, встречи, продукт, маркетинг, продажи, проекты. Каждый цикл проходит сквозь все три горизонтали.</p>
+    </div>
+
+    <div class="hero-panel">
+      <div class="matrix">
+        <div class="matrix-title">// карта продукта</div>
+
+        <div class="cycle-strip">
+          <div class="cycle-mini"><span class="ic">01</span><span class="nm">strategy</span></div>
+          <div class="cycle-mini"><span class="ic">02</span><span class="nm">team</span></div>
+          <div class="cycle-mini"><span class="ic">03</span><span class="nm">metrics</span></div>
+          <div class="cycle-mini"><span class="ic">04</span><span class="nm">meeting</span></div>
+          <div class="cycle-mini"><span class="ic">05</span><span class="nm">product</span></div>
+          <div class="cycle-mini"><span class="ic">06</span><span class="nm">marketing</span></div>
+          <div class="cycle-mini"><span class="ic">07</span><span class="nm">sales</span></div>
+          <div class="cycle-mini"><span class="ic">08</span><span class="nm">projects</span></div>
+        </div>
+
+        <div class="h-rows">
+          <div class="h-row">
+            <div class="name">Данные</div>
+            <div class="desc">Структура клиентского пространства: цели, планы, решения, встречи, команда, метрики</div>
+          </div>
+          <div class="h-row">
+            <div class="name">Память</div>
+            <div class="desc">Протокол чтения, связи, температура, маршруты — как AI находит нужное</div>
+          </div>
+          <div class="h-row pink">
+            <div class="name">Помощники</div>
+            <div class="desc">Скиллы и автоматизации — превращают данные и память в действие</div>
+          </div>
+        </div>
+
+        <div class="crosses">
+          каждый <strong>цикл</strong> ↑ проходит сквозь все три <strong>слоя</strong> ↓
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== ЧАСТЬ 1: ГОРИЗОНТАЛИ ========== -->
+  <div class="part">
+    <span class="pnum">// часть 01</span>
+    <h2>Горизонтали — три слоя продукта</h2>
+    <span class="tagline">общая инфра для любого CEO</span>
+  </div>
+
+  <div class="layers">
+
+    <div class="layer">
+      <div class="nm">1</div>
+      <h3>Данные</h3>
+      <p class="what">Бизнес-контекст руководителя в одном месте. Не свалка файлов — связанная модель, в которой каждая папка отвечает на один вопрос.</p>
+      <ul>
+        <li><strong>scaffold</strong> — каркас папок: 01_ceo / 02_strategy / 03_team / 04_management + опциональные</li>
+        <li><strong>обвязка</strong> — YAML, говорящие H2, секция «Кратко», связи</li>
+        <li><strong>правило</strong> — миссия папки как фильтр размещения информации</li>
+        <li><strong>iron law</strong> — разворачивай только живое, пустых веток нет</li>
+        <li><strong>формат</strong> — открытый Markdown, не привязан к API</li>
+      </ul>
+    </div>
+
+    <div class="layer">
+      <div class="nm">2</div>
+      <h3>Память</h3>
+      <p class="what">Правила, по которым AI находит в данных нужное и понимает что актуально. Загружает контекст под задачу, а не всё подряд.</p>
+      <ul>
+        <li><strong>протокол чтения</strong> — что и в каком порядке читает агент</li>
+        <li><strong>3 фильтра сбора</strong> — путь → карточка файла → целевое чтение</li>
+        <li><strong>температура</strong> — hot / warm / on-demand / cold</li>
+        <li><strong>сборки</strong> — агрегации (например «всё на CEO» из секций active.md)</li>
+        <li><strong>детерминированность</strong> — критичное закрыто хуками, не текстом</li>
+      </ul>
+    </div>
+
+    <div class="layer">
+      <div class="nm">3</div>
+      <h3>Помощники</h3>
+      <p class="what">То, что превращает данные и память в действие. Два режима: по запросу руководителя и автоматически — упакованные ритуалы.</p>
+      <ul>
+        <li><strong>по запросу</strong> — «обработай встречу», «подготовь план», «разбери метрику»</li>
+        <li><strong>автоматически</strong> — бриф перед встречей, weekly progress, метрики к планёрке</li>
+        <li><strong>разработка</strong> — в skills/ по доменам (мастерская)</li>
+        <li><strong>доставка</strong> — через plugin (наш продуктовый слой)</li>
+        <li><strong>интерфейс</strong> — любой: Claude Code, Cowork, IDE, веб-морда</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- META-FRAME -->
+  <div class="meta-frame">
+    <span class="label">// мета-рамка</span>
+    <h4>Над тремя слоями — методология и онтология</h4>
+    <p>То, что удерживает всё вместе. <strong>Онтология</strong> — какие сущности существуют и как связаны. <strong>Методология</strong> — как с ними работать: протоколы, decision frames, ритуалы. Клиент их не читает напрямую — они зашиты в scaffold (структуру) и plugin (автоматизацию). Любое изменение продукта идёт сверху: методология → схемы → промпты → оркестраторы → документация.</p>
+  </div>
+
+  <!-- ========== ЧАСТЬ 2: ВЕРТИКАЛИ ========== -->
+  <div class="part">
+    <span class="pnum">// часть 02</span>
+    <h2>Вертикали — управленческие циклы</h2>
+    <span class="tagline">проходят сквозь все три горизонтали</span>
+  </div>
+
+  <div class="cycles-intro">
+    <div class="text">
+      <strong>Управленческий цикл</strong> — повторяющийся контур работы CEO: постановка направления → сбор информации → решения → контроль → обратная связь → корректировка. Цикл связывает <strong>сущности</strong> (что создаётся), <strong>scaffold</strong> (где живёт), <strong>память</strong> (как находится), <strong>помощников</strong> (кто автоматизирует). Не атомарная сущность, а контекст, в котором сущности рождаются и используются.<br><br>
+      Циклы связаны в систему: стратегия задаёт направление команде, через команду понятно какими встречами управлять, метрики распределяются на команду и подсвечиваются на встречах, продукт и маркетинг ведут к продажам, проекты пересекают функции. Ни один цикл не существует изолированно.
+    </div>
+    <div class="stat">
+      <div class="n">8</div>
+      <div class="l">циклов · ориентир 5–10</div>
+    </div>
+  </div>
+
+  <div class="cycles">
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 01</span>
+        <span class="tag">strategy</span>
+      </div>
+      <h4>Управление стратегией</h4>
+      <p class="what">Vision, цели периода, страт-сессии, пересмотр курса. Хроника по неделям, timeline план/факт, реестр стратегических решений с обоснованиями.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>vision и цели периода живут в отдельных файлах с YAML</li>
+          <li>weekly progress собирается автоматически из дельт по другим циклам</li>
+          <li>каждое стратегическое решение пишется с обоснованием — через 3 месяца виден контекст</li>
+          <li>timeline сводит план и факт по периодам</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 02</span>
+        <span class="tag">team</span>
+      </div>
+      <h4>Управление командой</h4>
+      <p class="what">Оргструктура, профайлы людей, роли, наблюдения, коучинг-лог. Стиль и сильные стороны как входные данные для встреч и делегирования.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>оргструктура маппит каждого на узел в управленческом дереве</li>
+          <li>профайл сотрудника: стиль работы, сильные стороны, рост, риски</li>
+          <li>перед каждым 1:1 AI собирает контекст — что обещал, что висит, какие тревоги</li>
+          <li>наблюдения и коучинг-лог копятся, видны паттерны на дистанции</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 03</span>
+        <span class="tag">metrics</span>
+      </div>
+      <h4>Управление по метрикам</h4>
+      <p class="what">Хранение метрик с источником и формулой, план/факт, разбор отклонений как процесс. Метрики попадают в контекст встреч автоматически.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>паспорт метрики: что считаем, как считаем, откуда берём, target/baseline</li>
+          <li>числа живут в источнике (xlsx, Google Sheets), расчёты — через скилл</li>
+          <li>отклонение фиксируется в разборе с гипотезой и решением</li>
+          <li>метрики цикла подтягиваются в бриф перед встречей</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc pink">
+      <div class="cyc-head">
+        <span class="num">// 04</span>
+        <span class="tag">meeting</span>
+      </div>
+      <h4>Управление встречами</h4>
+      <p class="what">Подготовка, анализ, протоколирование, дельты по файлам. Транскрипт → выжимка → протокол + обновления в scaffold + повестка следующей встречи.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>транскрипт после встречи разбирается AI: задачи, решения, риски, метрики</li>
+          <li>дельты разносятся по файлам — active, decisions, profile, метрики</li>
+          <li>за час до следующей встречи приходит бриф: что обещал, что сделал, что горит</li>
+          <li>longitudinal-анализ серии встреч — повторяющиеся паттерны и тренды</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 05</span>
+        <span class="tag">product</span>
+      </div>
+      <h4>Управление продуктом</h4>
+      <p class="what">Позиционирование, внутреннее устройство продукта, roadmap, релизы, продуктовые решения. Отдельно от стратегии компании — тут устройство самого продукта.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>00_product.md — позиционирование, ЦА, принципы, границы</li>
+          <li>architecture.md — внутреннее устройство продукта (если оно есть)</li>
+          <li>roadmap по декадам, релизы в timeline</li>
+          <li>продуктовые решения отделены от стратегических — не смешиваются</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 06</span>
+        <span class="tag">marketing</span>
+      </div>
+      <h4>Управление маркетингом</h4>
+      <p class="what">Бренд, каналы, контент, дистрибуция. Карта каналов с конверсиями, такт публикаций, контент-конвейер, эксперименты с гипотезами.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>карта каналов с фактическими конверсиями — какой работает</li>
+          <li>контент-такт: что выходит, когда, на каком канале</li>
+          <li>контент-конвейер из материалов — переупаковка под форматы</li>
+          <li>гипотезы тестируются с критериями и зафиксированным выводом</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 07</span>
+        <span class="tag">sales</span>
+      </div>
+      <h4>Управление продажами</h4>
+      <p class="what">Воронка, конверсии по этапам, работа с клиентами, продление. Связан с marketing на входе и с metrics через целевые показатели.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>воронка с этапами и конверсиями — видно где течь</li>
+          <li>работа с именованными клиентами, если CEO ведёт сам</li>
+          <li>продление и LTV — через цикл metrics</li>
+          <li>обратная связь от продаж в продукт и маркетинг через файлы</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 08</span>
+        <span class="tag">projects</span>
+      </div>
+      <h4>Управление проектами</h4>
+      <p class="what">Именованные проекты с горизонтом и завершением — миграции, запуски, временные инициативы. Отличие от направления: проект конечен, направление постоянно.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>каждый проект — отдельный узел: overview, active, backlog, progress, decisions</li>
+          <li>конкретные сроки, ресурсы, статус — не размывается в направления</li>
+          <li>встречи проекта собираются в meetings/ внутри узла</li>
+          <li>после завершения проект уходит в архив с timeline</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOUNDARIES -->
+  <div class="part">
+    <span class="pnum">// часть 03</span>
+    <h2>Границы понятий</h2>
+    <span class="tagline">не путать слои</span>
+  </div>
+
+  <div class="bounds">
+    <div class="bound">
+      <div class="lev">// контур работы</div>
+      <h4>Управленческий цикл</h4>
+      <p class="def">Повторяющийся контур работы CEO с собственными сущностями и маршрутами в слоях продукта.</p>
+      <div class="ex">«управление метриками»</div>
+    </div>
+    <div class="bound">
+      <div class="lev">// действие в цикле</div>
+      <h4>Ритуал</h4>
+      <p class="def">Повторяющееся действие внутри цикла. Конкретная форма, в которой цикл реализуется во времени.</p>
+      <div class="ex">«утренний брифинг», «weekly review»</div>
+    </div>
+    <div class="bound">
+      <div class="lev">// исполнитель операции</div>
+      <h4>Скилл</h4>
+      <p class="def">Атомарный помощник для одной операции. Не имеет своих сущностей в слоях — переиспользуется внутри разных циклов.</p>
+      <div class="ex">«собрать бриф», «обработать встречу»</div>
+    </div>
+  </div>
+
+  <p style="margin:14px 4px 0;color:var(--muted);font-size:13px;line-height:1.6">
+    <strong style="color:var(--text)">Лимит вертикалей — 10.</strong> Email, Telegram, документы, календарь — это не циклы, а каналы и скиллы. Если у нового помощника нет своих сущностей в слоях памяти и данных — это скилл, не вертикаль. Не размножать вертикали под каждый помощник.
+  </p>
+
+  <!-- ========== ЧАСТЬ 4: БУСТ ДЛЯ КЛИЕНТА ========== -->
+  <div class="part">
+    <span class="pnum">// часть 04</span>
+    <h2>Что это даёт клиенту</h2>
+    <span class="tagline">когда циклы работают на полную</span>
+  </div>
+
+  <div class="boost">
+
+    <div class="plane A">
+      <span class="axis">// плоскость 01</span>
+      <span class="factor">×10–50</span>
+      <h4>Скорость операций</h4>
+      <p class="lead">Конкретные операции, которые сейчас занимают часы и дни, схлопываются в минуты.</p>
+      <ul>
+        <li><strong>Подготовка к встрече</strong> — день разбора → 5 минут (бриф собирается сам)</li>
+        <li><strong>Разбор гипотезы</strong> — неделя тестов → минуты в диалоге с AI</li>
+        <li><strong>Создание контента/статьи</strong> — день работы → минуты через AI-конвейер</li>
+        <li><strong>Weekly progress</strong> — час сбора → авто из дельт по циклам</li>
+        <li><strong>«Что мы решали 3 месяца назад»</strong> — 30 минут архивов → секунды</li>
+      </ul>
+    </div>
+
+    <div class="plane B">
+      <span class="axis">// плоскость 02</span>
+      <span class="factor">+уровень</span>
+      <h4>Качество управления</h4>
+      <p class="lead">Не «быстрее то же самое» — а вещи, которые без системы CEO просто не делает.</p>
+      <ul>
+        <li><strong>Метрики честные</strong> — не «где-то 60%», а цифра + формула + источник + тренд</li>
+        <li><strong>Решения видны</strong> — через 3 месяца понятно почему повернули туда</li>
+        <li><strong>Команда видна</strong> — перед каждым 1:1 контекст, а не «как дела» вслепую</li>
+        <li><strong>Паттерны на дистанции</strong> — AI замечает, что подменяешь действие отчётом</li>
+        <li><strong>План/факт замкнут</strong> — стратегия → план → задачи → встречи → дельты</li>
+      </ul>
+    </div>
+
+    <div class="plane C">
+      <span class="axis">// плоскость 03</span>
+      <span class="factor">−нагрузка</span>
+      <h4>Освобождение головы</h4>
+      <p class="lead">Самое неочевидное и самое сильное. CEO перестаёт быть носителем оперативной памяти компании.</p>
+      <ul>
+        <li><strong>Сейчас</strong> — сотни нитей в голове: обещания, метрики, висящие задачи, риски</li>
+        <li><strong>С системой</strong> — всё в файлах, не в голове</li>
+        <li><strong>Освобождается</strong> для того, для чего CEO нужен: думать о направлении</li>
+        <li><strong>Симптом</strong> — после рабочего дня есть силы на стратегическое</li>
+        <li><strong>Это</strong> — самый ценный эффект, описать сложнее всего</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- compare table -->
+  <div class="compare">
+    <div class="row head">
+      <div class="cell k">параметр</div>
+      <div class="cell before">// без системы</div>
+      <div class="cell after">// с работающими циклами</div>
+    </div>
+    <div class="row">
+      <div class="cell k">Время на регулярку (планёрки, отчёты, подготовка)</div>
+      <div class="cell before">30–40% недели</div>
+      <div class="cell after">10–15%</div>
+    </div>
+    <div class="row">
+      <div class="cell k">От мысли до проверенной гипотезы</div>
+      <div class="cell before">1–2 недели</div>
+      <div class="cell after">часы</div>
+    </div>
+    <div class="row">
+      <div class="cell k">Глубина подготовки к 1:1</div>
+      <div class="cell before">0–10 минут</div>
+      <div class="cell after">30 минут контекста за 2 минуты</div>
+    </div>
+    <div class="row">
+      <div class="cell k">Утечка решений (повторили вопрос, забыли что решали)</div>
+      <div class="cell before">регулярно</div>
+      <div class="cell after">редко</div>
+    </div>
+    <div class="row">
+      <div class="cell k">Onboarding нового C-1 в курс дел</div>
+      <div class="cell before">недели</div>
+      <div class="cell after">дни</div>
+    </div>
+    <div class="row">
+      <div class="cell k">Поиск «что мы решали по теме X»</div>
+      <div class="cell before">30 минут архивов</div>
+      <div class="cell after">секунды</div>
+    </div>
+  </div>
+
+  <!-- integral -->
+  <div class="integral">
+    <span class="label">// главный буст — интегральный</span>
+    <h4>Циклы не дают +10% к каждому процессу. Они меняют то, как руководитель работает целиком.</h4>
+    <p>Вместо «я и мои инструменты» — <strong>«я и мой партнёр, который знает мой бизнес и видит то, что я упускаю»</strong>. Это уровень, на котором AI перестаёт быть инструментом и становится частью контура управления.</p>
+    <p>Каждый отдельный цикл — это видимая ценность (быстрее, чётче, прозрачнее). Совокупность работающих циклов — это другая модель управления компанией, в которой контекст не теряется, решения замкнуты в файлах, а голова руководителя свободна для стратегического мышления.</p>
+  </div>
+
+  <!-- OUTCOMES — техническая ценность -->
+  <div class="part">
+    <span class="pnum">// часть 05</span>
+    <h2>Почему так получается</h2>
+    <span class="tagline">архитектурные причины</span>
+  </div>
+
+  <div class="outcomes">
+    <div class="out">
+      <div class="n">01</div>
+      <h4>Каждый цикл — продуманный, не «ещё одна фича»</h4>
+      <p>Стратегия не путается с продуктом, маркетинг не размывается во встречи. У каждого цикла свои файлы, маршруты, помощники.</p>
+    </div>
+    <div class="out">
+      <div class="n">02</div>
+      <h4>Слои общие — циклы переиспользуют</h4>
+      <p>Память не изобретается под каждый цикл. Контекстный сбор, температура, протоколы чтения — общая инфра. Цикл подключается, не строит с нуля.</p>
+    </div>
+    <div class="out">
+      <div class="n">03</div>
+      <h4>Зрелость растёт уровнями</h4>
+      <p>Цикл стартует базово (один помощник + сущности в scaffold), потом обрастает ритуалами, автоматизациями, longitudinal-анализом. Не «всё или ничего».</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="logo" style="font-size:18px"><span class="teal">sv</span><span class="pink">ai</span><span class="teal">b</span><span class="pink">.</span></div>
+    <div class="meta">
+      <span>обзор · v1</span>
+      <span>2026-05-02</span>
+      <span>универсальная версия</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

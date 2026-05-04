@@ -23,3 +23,7 @@ type: log
 ---
 
 _Записи добавляются по мере завершения значимых задач. Самые свежие — сверху._
+
+## 2026-05-04
+
+- Опубликован standalone-обзор Second AI Brain для встреч с лидами: `dev/src/public/second-ai-brain-overview.html`, clean URL `/second-ai-brain-overview`. Страница закрыта от индексации через `X-Robots-Tag` и `robots.txt`; canonical HTML в `meta/marketing/` не менялся.

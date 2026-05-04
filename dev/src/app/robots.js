@@ -5,8 +5,8 @@ export default function robots() {
     rules: {
       userAgent: '*',
       allow: '/',
+      disallow: ['/second-ai-brain-overview', '/second-ai-brain-overview.html'],
     },
     sitemap: `${siteConfig.url}/sitemap.xml`,
   };
 }
-
