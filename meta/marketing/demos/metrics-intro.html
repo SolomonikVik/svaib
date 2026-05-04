@@ -1,0 +1,1235 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Метрики в Second AI Brain — client intro v2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #071015;
+      --bg-soft: #0b161b;
+      --panel: #101d23;
+      --panel-2: #13262d;
+      --panel-3: #172e35;
+      --line: #25444d;
+      --line-soft: rgba(0, 180, 166, 0.18);
+      --teal: #00b4a6;
+      --teal-dark: #008b7f;
+      --pink: #ff4d8d;
+      --yellow: #ffd600;
+      --text: #f0f8f7;
+      --muted: #a5b9bc;
+      --soft: #789096;
+      --dark: #071015;
+      --radius: 8px;
+      --shadow: 0 22px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 12% 0%, rgba(0, 180, 166, 0.16), transparent 27%),
+        radial-gradient(circle at 88% 8%, rgba(255, 77, 141, 0.12), transparent 28%),
+        var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .top-line {
+      height: 3px;
+      background: var(--teal);
+      box-shadow: 0 0 28px rgba(0, 180, 166, 0.55);
+    }
+
+    .page {
+      width: min(1180px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 26px 0 60px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 42px;
+    }
+
+    .logo {
+      font-family: Sora, Inter, sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .logo .teal {
+      color: var(--teal);
+    }
+
+    .logo .pink {
+      color: var(--pink);
+    }
+
+    .nav-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      border: 1px solid rgba(0, 180, 166, 0.28);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(11, 22, 27, 0.76);
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .chip.pink {
+      border-color: rgba(255, 77, 141, 0.36);
+      color: #ffc1d6;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.04fr 0.96fr;
+      gap: 26px;
+      align-items: stretch;
+      margin-bottom: 28px;
+    }
+
+    .hero-copy {
+      padding: 22px 0 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--pink);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: Sora, Inter, sans-serif;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(44px, 6vw, 82px);
+      line-height: 0.96;
+      font-weight: 800;
+    }
+
+    .accent {
+      color: var(--teal);
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.5;
+    }
+
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 180, 166, 0.28);
+      border-radius: var(--radius);
+      background: rgba(16, 29, 35, 0.9);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .hero-panel:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0, 180, 166, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(0, 180, 166, 0.06) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 86%);
+      pointer-events: none;
+    }
+
+    .mini-flow {
+      position: relative;
+      display: grid;
+      gap: 12px;
+      z-index: 1;
+    }
+
+    .flow-card {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 12px;
+      align-items: start;
+      border: 1px solid rgba(0, 180, 166, 0.23);
+      border-left: 5px solid var(--teal);
+      border-radius: var(--radius);
+      background: rgba(7, 16, 21, 0.78);
+      padding: 13px 14px;
+    }
+
+    .flow-card.pink {
+      border-left-color: var(--pink);
+      border-color: rgba(255, 77, 141, 0.3);
+    }
+
+    .flow-icon {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 180, 166, 0.1);
+      border: 1px solid rgba(0, 180, 166, 0.42);
+      color: var(--teal);
+      font-family: JetBrains Mono, monospace;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .flow-card.pink .flow-icon {
+      background: rgba(255, 77, 141, 0.1);
+      border-color: rgba(255, 77, 141, 0.45);
+      color: var(--pink);
+    }
+
+    .flow-title {
+      margin: 0 0 3px;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .flow-text {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 34px;
+    }
+
+    .summary {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 18px 18px 17px;
+    }
+
+    .summary b {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text);
+      font-family: Sora, Inter, sans-serif;
+      font-size: 15px;
+    }
+
+    .summary span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .section {
+      margin-top: 22px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(16, 29, 35, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .section.plain {
+      box-shadow: none;
+      background: transparent;
+      border-color: transparent;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--dark);
+      border: 2px solid var(--teal);
+      color: var(--teal);
+      font-family: Sora, Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .num.pink {
+      border-color: var(--pink);
+      color: var(--pink);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(25px, 3vw, 38px);
+      line-height: 1.08;
+      font-weight: 800;
+    }
+
+    .section-intro {
+      max-width: 820px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    p {
+      margin: 0 0 13px;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    code {
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #071217;
+      color: #bdf7ef;
+      font-family: JetBrains Mono, "SFMono-Regular", Consolas, monospace;
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+
+    .fail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .fail {
+      min-height: 126px;
+      border: 1px solid rgba(255, 77, 141, 0.25);
+      border-left: 5px solid var(--pink);
+      border-radius: var(--radius);
+      background: #151821;
+      padding: 15px 16px;
+    }
+
+    .fail b {
+      display: block;
+      margin-bottom: 7px;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 14px;
+    }
+
+    .fail span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .industry-note {
+      margin-top: 16px;
+      border: 1px solid rgba(0, 180, 166, 0.26);
+      border-left: 5px solid var(--teal);
+      border-radius: var(--radius);
+      background: #0b181e;
+      padding: 16px 18px;
+      color: var(--muted);
+    }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .pillar {
+      position: relative;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 17px 15px 16px;
+      overflow: hidden;
+    }
+
+    .pillar:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--teal);
+    }
+
+    .pillar-kicker {
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-family: JetBrains Mono, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .pillar h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+      line-height: 1.18;
+    }
+
+    .pillar p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .metric-list {
+      margin: 10px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .metric-list li {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .metric-list li:before {
+      content: "";
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      margin-right: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      vertical-align: 1px;
+    }
+
+    .properties {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .property {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: #09161b;
+      padding: 16px 18px;
+    }
+
+    .property b {
+      display: block;
+      color: var(--text);
+      font-family: Sora, Inter, sans-serif;
+      margin-bottom: 5px;
+    }
+
+    .property span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .folder-map {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 18px;
+    }
+
+    .folder-visual {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #081318;
+      padding: 18px;
+    }
+
+    .folder-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      font-family: JetBrains Mono, monospace;
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .folder-tree {
+      display: grid;
+      gap: 8px;
+      font-family: JetBrains Mono, monospace;
+      font-size: 13px;
+    }
+
+    .tree-line {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+      color: var(--muted);
+      min-height: 27px;
+    }
+
+    .tree-line.main {
+      color: var(--text);
+    }
+
+    .tree-line .path {
+      color: #d7eeee;
+    }
+
+    .tree-line .hint {
+      font-family: Inter, sans-serif;
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    .folder-copy {
+      display: grid;
+      gap: 10px;
+    }
+
+    .folder-item {
+      border: 1px solid rgba(0, 180, 166, 0.2);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 13px 15px;
+    }
+
+    .folder-item b {
+      display: block;
+      margin-bottom: 4px;
+      color: #dffbf8;
+      font-family: JetBrains Mono, monospace;
+      font-size: 13px;
+    }
+
+    .folder-item span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .principle {
+      margin-top: 15px;
+      color: var(--muted);
+      border-left: 5px solid var(--teal);
+      border-radius: 6px;
+      background: #0b181e;
+      padding: 13px 16px;
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .step {
+      min-height: 150px;
+      border: 1px solid rgba(0, 180, 166, 0.2);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 14px 13px;
+    }
+
+    .step-number {
+      display: inline-grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      margin-bottom: 13px;
+      border-radius: 50%;
+      border: 1px solid var(--teal);
+      color: var(--teal);
+      font-family: Sora, Inter, sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .step b {
+      display: block;
+      margin-bottom: 6px;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.38;
+    }
+
+    .quote {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 0.92fr 1.08fr;
+      gap: 12px;
+    }
+
+    .question,
+    .answer {
+      border-radius: var(--radius);
+      padding: 18px 20px;
+    }
+
+    .question {
+      border: 1px solid rgba(255, 77, 141, 0.3);
+      border-left: 5px solid var(--pink);
+      background: #161821;
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .answer {
+      border: 1px solid rgba(0, 180, 166, 0.28);
+      border-left: 5px solid var(--teal);
+      background: #0b181e;
+    }
+
+    .answer-label {
+      margin-bottom: 8px;
+      color: var(--teal);
+      font-family: JetBrains Mono, monospace;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .answer p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .intake {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .intake-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 15px 14px;
+    }
+
+    .intake-card b {
+      display: block;
+      min-height: 39px;
+      margin-bottom: 8px;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .intake-card span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.38;
+    }
+
+    .setup-note {
+      margin-top: 12px;
+      border: 1px solid rgba(255, 77, 141, 0.22);
+      border-left: 5px solid var(--pink);
+      border-radius: var(--radius);
+      background: #151821;
+      padding: 14px 17px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .variants {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .variant {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 20px;
+    }
+
+    .variant.recommended {
+      border-color: rgba(0, 180, 166, 0.55);
+      box-shadow: inset 0 3px 0 var(--teal);
+    }
+
+    .variant-kicker {
+      margin-bottom: 9px;
+      color: var(--soft);
+      font-family: JetBrains Mono, monospace;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .recommended .variant-kicker {
+      color: var(--teal);
+    }
+
+    .variant h3 {
+      margin: 0 0 9px;
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .variant p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .next {
+      margin-top: 14px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(0, 180, 166, 0.13), rgba(255, 77, 141, 0.08));
+      border: 1px solid var(--line);
+      padding: 20px 22px;
+    }
+
+    .next h3 {
+      margin: 0 0 13px;
+      font-size: 19px;
+    }
+
+    .next-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .next-item {
+      border-radius: 6px;
+      background: rgba(7, 16, 21, 0.62);
+      border: 1px solid rgba(0, 180, 166, 0.16);
+      padding: 11px 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.38;
+    }
+
+    .success {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 18px;
+      align-items: center;
+      border-radius: var(--radius);
+      border: 1px solid rgba(0, 180, 166, 0.34);
+      background: #09161b;
+      padding: 17px 20px;
+    }
+
+    .success p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .week {
+      white-space: nowrap;
+      color: var(--teal);
+      font-family: Sora, Inter, sans-serif;
+      font-size: 32px;
+      font-weight: 800;
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1050px) {
+      .hero,
+      .folder-map,
+      .quote {
+        grid-template-columns: 1fr;
+      }
+
+      .pillars,
+      .pipeline,
+      .intake,
+      .next-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100vw - 24px, 1180px);
+        padding-top: 18px;
+      }
+
+      .nav,
+      .footer,
+      .success {
+        display: block;
+      }
+
+      .nav-meta {
+        justify-content: flex-start;
+        margin-top: 14px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .lead {
+        font-size: 17px;
+      }
+
+      .summary-strip,
+      .fail-grid,
+      .pillars,
+      .properties,
+      .pipeline,
+      .intake,
+      .variants,
+      .next-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 22px 18px;
+      }
+
+      .section.plain {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .week {
+        margin-top: 12px;
+        font-size: 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-line"></div>
+  <div class="page">
+    <div class="nav">
+      <div class="logo">
+        <span class="teal">sv</span><span class="pink">ai</span><span class="teal">b</span><span class="pink">.</span>
+      </div>
+      <div class="nav-meta">
+        <span class="chip">Second AI Brain</span>
+        <span class="chip">Metrics cycle</span>
+        <span class="chip pink">Client intro v2</span>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Для CEO с запросом на управление по метрикам</p>
+        <h1>Метрики бизнеса в <span class="accent">Second AI Brain</span></h1>
+        <p class="lead">Документ для CEO, который хочет, чтобы AI давал обоснованные ответы на вопросы про метрики бизнеса: состояние, отклонения, подготовка к встречам.</p>
+      </div>
+
+      <div class="hero-panel">
+        <div class="mini-flow">
+          <div class="flow-card pink">
+            <div class="flow-icon">01</div>
+            <div>
+              <p class="flow-title">Почему “просто xlsx в чат” ломается</p>
+              <p class="flow-text">Разные ответы, потерянные фильтры, выдуманные колонки и отсутствие памяти контекста.</p>
+            </div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-icon">02</div>
+            <div>
+              <p class="flow-title">Как мы это решаем</p>
+              <p class="flow-text">AI переводит вопрос, Python считает, а каждая цифра имеет маршрут к источнику.</p>
+            </div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-icon">03</div>
+            <div>
+              <p class="flow-title">Что появится у тебя</p>
+              <p class="flow-text">Папка <code>metrics/</code>: витрина, domain-файлы, source и extractors.</p>
+            </div>
+          </div>
+          <div class="flow-card">
+            <div class="flow-icon">04</div>
+            <div>
+              <p class="flow-title">Что нужно от тебя</p>
+              <p class="flow-text">Цели, карта метрик, источники, типовые вопросы и связи с owners/встречами.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-strip">
+      <div class="summary">
+        <b>Данные остаются у тебя</b>
+        <span>Мы не хостим клиентские xlsx и не “причёсываем” рабочие таблицы под себя.</span>
+      </div>
+      <div class="summary">
+        <b>AI не считает в голове</b>
+        <span>Расчёт делает детерминированный Python-слой, а LLM собирает смысловой ответ.</span>
+      </div>
+      <div class="summary">
+        <b>Ответ можно расшифровать</b>
+        <span>По запросу видно маршрут, версию метрики, timestamp данных и код.</span>
+      </div>
+    </div>
+
+    <div class="section" id="problem">
+      <div class="section-head">
+        <div class="num pink">1</div>
+        <div>
+          <h2>Почему «просто загрузить xlsx в LLM» не работает</h2>
+          <p class="section-intro">Кажется, что задача простая: кинуть таблицу в Claude/GPT и спрашивать. На коротких ответах работает. На длинной дистанции система ломается.</p>
+        </div>
+      </div>
+
+      <div class="fail-grid">
+        <div class="fail">
+          <b>Один и тот же вопрос даёт разные ответы</b>
+          <span>Известный кейс: в понедельник $12M, во вторник $9.5M на тот же вопрос. Доверие CEO к системе рушится за неделю.</span>
+        </div>
+        <div class="fail">
+          <b>LLM считает «в голове» и тихо ошибается</b>
+          <span>На маленьких таблицах соблазн «прикинуть» большой, ошибки незаметны и всплывают через две недели на расхождении цифр.</span>
+        </div>
+        <div class="fail">
+          <b>Теряет фильтры и изобретает колонки</b>
+          <span>Из трёх условий в запросе одно теряется. Или модель угадывает колонку «как должно быть», а не сверяется с реальной таблицей.</span>
+        </div>
+        <div class="fail">
+          <b>Не знает, что ты называешь «выручкой»</b>
+          <span>Под одним словом могут быть отгрузка, оплата, признание выручки. Без явного определения LLM начинает гадать.</span>
+        </div>
+        <div class="fail">
+          <b>Не различает план/факт и направление</b>
+          <span>Падение оттока — хорошо. Падение выручки — плохо. Без атрибута направления «дельта 100%» интерпретируется одинаково.</span>
+        </div>
+        <div class="fail">
+          <b>Каждый чат — с чистого листа</b>
+          <span>Не помнит вчерашний контекст разговора, твои обороты речи и прошлые решения.</span>
+        </div>
+      </div>
+
+      <div class="industry-note">
+        Индустрия разошлась с подходом “таблица прямо в чат”. Победил паттерн управляемого слоя между данными и LLM: описанная семантика, проверенные маршруты, расчёты в детерминированном движке. Курирование описаний даёт больший прирост точности, чем любая смена модели.
+      </div>
+    </div>
+
+    <div class="section" id="solution">
+      <div class="section-head">
+        <div class="num">2</div>
+        <div>
+          <h2>Как решается правильно — 4 опоры</h2>
+          <p class="section-intro"><strong>AI — переводчик, Python — калькулятор.</strong> AI понимает вопрос и собирает ответ. Считает отдельный детерминированный движок. На каждой цифре есть путь к её источнику.</p>
+        </div>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar">
+          <div class="pillar-kicker">Опора 1</div>
+          <h3>Описание твоих таблиц</h3>
+          <p>Что в них лежит, что значит каждая колонка, какие косяки источника: <code>#DIV/0!</code>, объединённые ячейки, опечатки, врущие метки колонок.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-kicker">Опора 2</div>
+          <h3>Бизнес-метрики</h3>
+          <p>Что для тебя значит «выручка», «отток», «активный клиент».</p>
+          <ul class="metric-list">
+            <li>стабильный ID</li>
+            <li>формула</li>
+            <li>направление</li>
+            <li>есть ли план</li>
+            <li>версия</li>
+          </ul>
+        </div>
+        <div class="pillar">
+          <div class="pillar-kicker">Опора 3</div>
+          <h3>Маршруты</h3>
+          <p>Готовые ответы на твои типовые вопросы. «Какая выручка за март?» → один маршрут, всегда одно число.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-kicker">Опора 4</div>
+          <h3>Глоссарий и обороты</h3>
+          <p>Слова из твоей речи: «что у меня горит» = топ N метрик с худшим разрывом план/факт. И антисинонимы, которые нельзя путать.</p>
+        </div>
+      </div>
+
+      <div class="properties">
+        <div class="property">
+          <b>Воспроизводимость</b>
+          <span>Тот же вопрос на ту же дату даёт ту же цифру через день, неделю, месяц.</span>
+        </div>
+        <div class="property">
+          <b>Расшифровка ответа</b>
+          <span>На запрос «откуда цифра» — полный путь: маршрут, версия паспорта метрики, timestamp данных, код.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="space">
+      <div class="section-head">
+        <div class="num">3</div>
+        <div>
+          <h2>Как разворачивается у тебя в пространстве</h2>
+          <p class="section-intro">У тебя на Drive в рабочем пространстве появляется папка <code>metrics/</code>. Ты продолжаешь работать в xlsx как привык, а AI получает семантический слой и маршруты.</p>
+        </div>
+      </div>
+
+      <div class="folder-map">
+        <div class="folder-visual">
+          <div class="folder-title">
+            <span>metrics/</span>
+            <span class="pink">read-only data</span>
+          </div>
+          <div class="folder-tree">
+            <div class="tree-line main"><span class="path">├── 01_metrics.md</span><span class="hint">витрина</span></div>
+            <div class="tree-line main"><span class="path">├── finance.md</span><span class="hint">domain</span></div>
+            <div class="tree-line main"><span class="path">├── sales.md</span><span class="hint">domain</span></div>
+            <div class="tree-line main"><span class="path">├── operations.md</span><span class="hint">domain</span></div>
+            <div class="tree-line main"><span class="path">├── customer.md</span><span class="hint">по триггеру</span></div>
+            <div class="tree-line main"><span class="path">├── source/</span><span class="hint">xlsx как есть</span></div>
+            <div class="tree-line main"><span class="path">└── extractors/</span><span class="hint">Python</span></div>
+          </div>
+        </div>
+
+        <div class="folder-copy">
+          <div class="folder-item">
+            <b>01_metrics.md</b>
+            <span>Витрина. Точка входа AI: target metrics, карта доменов, секция «По OKR», глоссарий твоей речи.</span>
+          </div>
+          <div class="folder-item">
+            <b>Domain-файлы</b>
+            <span>Паспорта метрик по доменам: описание таблиц, паспорта метрик, готовые маршруты, известные косяки источника.</span>
+          </div>
+          <div class="folder-item">
+            <b>source/</b>
+            <span>Твой xlsx как есть. Read-only для AI. Мы не «причёсываем», не нормализуем, не учим тебя «как правильно».</span>
+          </div>
+          <div class="folder-item">
+            <b>extractors/</b>
+            <span>Python-скрипт под твою таблицу. Координаты захардкожены, не угадываются на лету.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="principle">
+        <strong>Принцип:</strong> данные у тебя, методология у нас. Мы не хостим твои данные — поставляем интеллектуальный слой поверх.
+      </div>
+    </div>
+
+    <div class="section" id="example">
+      <div class="section-head">
+        <div class="num pink">4</div>
+        <div>
+          <h2>Как это работает — реальный пример</h2>
+          <p class="section-intro">Пользовательский вопрос остаётся человеческим. Под капотом AI читает витрину, выбирает маршрут, запускает расчёт и собирает управленческий ответ.</p>
+        </div>
+      </div>
+
+      <div class="quote">
+        <div class="question">«Что у меня горит в SSP по итогам марта? Топ-5 метрик с худшим разрывом план/факт.»</div>
+        <div class="answer">
+          <div class="answer-label">Финальный ответ выглядит примерно так</div>
+          <p>По итогам марта: 4 метрики в красной зоне, 1 лучше плана, 3 в норме. Главное горит — KR1 OKR1 (отток первых 90 дней): +150% к плану, это твоя ключевая цель. Парадокс: отток ДО вывода в нашу пользу (-65%), значит проблема не на воронке внедрения, а уже после — клиенты доходят до MRR и отваливаются. Хочешь расшифровку — скажи.</p>
+        </div>
+      </div>
+
+      <div class="pipeline">
+        <div class="step">
+          <div class="step-number">1</div>
+          <b>Читает витрину</b>
+          <span>AI открывает <code>01_metrics.md</code> и понимает домен по карте.</span>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <b>Выбирает тип запроса</b>
+          <span>Это compound route: срез по нескольким метрикам.</span>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <b>Собирает метрики</b>
+          <span>Через OKR-секцию или target metrics с планом.</span>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <b>Запускает extractor</b>
+          <span>Python читает xlsx по точным координатам и пишет JSON.</span>
+        </div>
+        <div class="step">
+          <div class="step-number">5</div>
+          <b>Структурирует ответ</b>
+          <span>Красная зона, лучше плана, в норме, не считается.</span>
+        </div>
+        <div class="step">
+          <div class="step-number">6</div>
+          <b>Даёт trace</b>
+          <span>По запросу показывает маршрут, метрики, timestamp данных и код.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="input">
+      <div class="section-head">
+        <div class="num">5</div>
+        <div>
+          <h2>Что нужно от тебя</h2>
+          <p class="section-intro">Чтобы развернуть это у тебя, нужны ответы по рабочей карте твоей системы метрик. Это не теоретическая анкета, а сбор реального управленческого контекста.</p>
+        </div>
+      </div>
+
+      <div class="intake">
+        <div class="intake-card">
+          <b>OKR / структура целей</b>
+          <span>Какая структура у тебя: OKR, KPI или по-другому. Какие цели на текущий период. Где они формально записаны.</span>
+        </div>
+        <div class="intake-card">
+          <b>Карта метрик</b>
+          <span>Все метрики из таблиц: что измеряет, есть ли план, как ты называешь её в речи. Регулярные — звёздочкой.</span>
+        </div>
+        <div class="intake-card">
+          <b>Источники</b>
+          <span>Главный xlsx, где лежит, кто редактирует, как часто обновляется, известные косяки источника.</span>
+        </div>
+        <div class="intake-card">
+          <b>Типовые вопросы</b>
+          <span>Какие вопросы задаёшь регулярно своими словами. Если не формализовано — мы предложим шаблонные сценарии.</span>
+        </div>
+        <div class="intake-card">
+          <b>Связи</b>
+          <span>Кто owner каждой метрики, как метрики связаны с инициативами и встречами.</span>
+        </div>
+      </div>
+
+      <div class="setup-note">
+        Технический setup — где живёт твой AI-помощник, как настроена синхронизация с Drive, какой runtime — мы выясним отдельно с твоим тех-человеком. Тебя этим не нагружаем.
+      </div>
+    </div>
+
+    <div class="section" id="next">
+      <div class="section-head">
+        <div class="num">6</div>
+        <div>
+          <h2>Как ответить — две развилки</h2>
+          <p class="section-intro">Чтобы собрать ответы, есть два варианта. На выходе в обоих случаях один и тот же документ для развёртывания metrics.</p>
+        </div>
+      </div>
+
+      <div class="variants">
+        <div class="variant recommended">
+          <div class="variant-kicker">Рекомендуем · вариант А</div>
+          <h3>AI-агент по нашему промпту</h3>
+          <p>Мы отдаём тебе готовый промпт. Ты запускаешь его у себя в Claude/GPT. Агент проводит интервью: задаёт вопросы, фиксирует ответы, идёт по структуре. Ты отвечаешь голосом или текстом, в своём темпе. На выходе — заполненный документ.</p>
+          <p><strong>Плюсы:</strong> в своём темпе, без созвона, сразу в нужном формате.</p>
+        </div>
+        <div class="variant">
+          <div class="variant-kicker">Вариант B</div>
+          <h3>Встреча с нами</h3>
+          <p>1 час созвон. Идём по тем же блокам, мы фиксируем ответы. На выходе — тот же документ.</p>
+          <p><strong>Плюсы:</strong> живой разговор, можем уточнять прямо в моменте.</p>
+        </div>
+      </div>
+
+      <div class="next">
+        <h3>Дальше — наша работа</h3>
+        <div class="next-grid">
+          <div class="next-item">Разведка твоего xlsx: структура, косяки, что можно считать.</div>
+          <div class="next-item">Аудит синонимов в транскриптах: как ты реально говоришь о метриках.</div>
+          <div class="next-item">Проектирование 2-3 domain-файлов под твои метрики.</div>
+          <div class="next-item">Написание per-client extractor: Python-скрипт под твою таблицу.</div>
+          <div class="next-item">Прогон одного тест-вопроса в нашем sandbox.</div>
+          <div class="next-item">Перенос в твоё пространство и первый живой вопрос AI.</div>
+        </div>
+      </div>
+
+      <div class="success">
+        <p><strong>Пилот считается успешным,</strong> когда AI отвечает на твой первый типовой вопрос с воспроизводимыми числами и расшифровкой. Расширение — другие OKR, другие листы, связки с встречами — следующими итерациями.</p>
+        <div class="week">~ 1 неделя</div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>Альтернативная визуальная версия на основе <code>intro-for-client.md</code>. Текущий HTML не изменён.</div>
+      <div class="logo">
+        <span class="teal">sv</span><span class="pink">ai</span><span class="teal">b</span><span class="pink">.</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

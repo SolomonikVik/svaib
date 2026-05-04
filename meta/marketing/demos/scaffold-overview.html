@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scaffold — структурный драфт</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #071015;
+      --bg-soft: #0b161b;
+      --panel: #101d23;
+      --panel-2: #13262d;
+      --panel-3: #172e35;
+      --line: #25444d;
+      --line-soft: rgba(0, 180, 166, 0.18);
+      --teal: #00b4a6;
+      --pink: #ff4d8d;
+      --yellow: #ffd600;
+      --text: #f0f8f7;
+      --muted: #a7babd;
+      --soft: #789096;
+      --dark: #071015;
+      --radius: 8px;
+      --shadow: 0 22px 80px rgba(0, 0, 0, 0.34);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(0, 180, 166, 0.16), transparent 28%),
+        radial-gradient(circle at 90% 4%, rgba(255, 77, 141, 0.12), transparent 28%),
+        linear-gradient(180deg, #071015 0%, #091318 58%, #071015 100%);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .top-line {
+      height: 3px;
+      background: var(--teal);
+      box-shadow: 0 0 28px rgba(0, 180, 166, 0.55);
+    }
+
+    .page {
+      width: min(1240px, calc(100vw - 36px));
+      margin: 0 auto;
+      padding: 26px 0 60px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 42px;
+    }
+
+    .logo {
+      font-family: Sora, Inter, sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .logo .teal {
+      color: var(--teal);
+    }
+
+    .logo .pink {
+      color: var(--pink);
+    }
+
+    .nav-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      border: 1px solid rgba(0, 180, 166, 0.28);
+      border-radius: 999px;
+      color: var(--muted);
+      background: rgba(11, 22, 27, 0.76);
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .chip.pink {
+      border-color: rgba(255, 77, 141, 0.36);
+      color: #ffc1d6;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 28px;
+      align-items: stretch;
+      margin-bottom: 26px;
+    }
+
+    .hero-copy {
+      padding: 28px 0 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--pink);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: Sora, Inter, sans-serif;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(44px, 6vw, 82px);
+      line-height: 0.96;
+      font-weight: 800;
+    }
+
+    .accent {
+      color: var(--teal);
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 22px 0 0;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.5;
+    }
+
+    .hero-panel {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0, 180, 166, 0.28);
+      border-radius: var(--radius);
+      background: rgba(16, 29, 35, 0.9);
+      box-shadow: var(--shadow);
+      padding: 26px;
+    }
+
+    .hero-panel:before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(0, 180, 166, 0.06) 1px, transparent 1px),
+        linear-gradient(rgba(0, 180, 166, 0.06) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, black, transparent 86%);
+      pointer-events: none;
+    }
+
+    .root-map {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      z-index: 1;
+    }
+
+    .root-group {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(7, 16, 21, 0.78);
+      padding: 18px;
+    }
+
+    .root-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 15px;
+      color: var(--teal);
+      font-family: JetBrains Mono, monospace;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .root-title .pink {
+      color: var(--pink);
+    }
+
+    .root-item {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 14px;
+      align-items: baseline;
+      padding: 12px 0;
+      border-top: 1px solid rgba(37, 68, 77, 0.7);
+    }
+
+    .root-item:first-of-type {
+      border-top: 0;
+    }
+
+    .path {
+      color: #d7eeee;
+      font-family: JetBrains Mono, monospace;
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+
+    .summary {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 18px 18px 17px;
+    }
+
+    .summary b {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text);
+      font-family: Sora, Inter, sans-serif;
+      font-size: 15px;
+    }
+
+    .summary span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .section {
+      margin-top: 22px;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(16, 29, 35, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 14px;
+      align-items: start;
+      margin-bottom: 18px;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--dark);
+      border: 2px solid var(--teal);
+      color: var(--teal);
+      font-family: Sora, Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .num.pink {
+      border-color: var(--pink);
+      color: var(--pink);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(25px, 3vw, 38px);
+      line-height: 1.08;
+      font-weight: 800;
+    }
+
+    .section-intro {
+      max-width: 850px;
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    p {
+      margin: 0 0 13px;
+    }
+
+    strong {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    code {
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: #071217;
+      color: #bdf7ef;
+      font-family: JetBrains Mono, "SFMono-Regular", Consolas, monospace;
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+
+    .node-layout {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 18px;
+    }
+
+    .tree {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #081318;
+      padding: 18px;
+    }
+
+    .tree-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      font-family: JetBrains Mono, monospace;
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .tree-title .pink {
+      color: var(--pink);
+    }
+
+    .tree-code {
+      display: block;
+      margin: 0;
+      color: #d7eeee;
+      font-family: JetBrains Mono, "SFMono-Regular", Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .mission-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mission {
+      border: 1px solid rgba(0, 180, 166, 0.2);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 13px 15px;
+    }
+
+    .mission b {
+      display: block;
+      margin-bottom: 4px;
+      color: #dffbf8;
+      font-family: JetBrains Mono, monospace;
+      font-size: 13px;
+    }
+
+    .mission span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .mission.pink {
+      border-color: rgba(255, 77, 141, 0.3);
+      border-left: 5px solid var(--pink);
+      background: #151821;
+    }
+
+    .overview-blocks {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .overview-card {
+      min-height: 148px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 15px 14px;
+    }
+
+    .overview-number {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      margin-bottom: 12px;
+      border-radius: 50%;
+      border: 1px solid var(--teal);
+      color: var(--teal);
+      font-family: Sora, Inter, sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .overview-card b {
+      display: block;
+      min-height: 39px;
+      margin-bottom: 8px;
+      font-family: Sora, Inter, sans-serif;
+      font-size: 13px;
+      line-height: 1.25;
+    }
+
+    .overview-card span {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.38;
+    }
+
+    .signal {
+      margin-top: 14px;
+      border: 1px solid rgba(255, 214, 0, 0.26);
+      border-left: 5px solid var(--yellow);
+      border-radius: var(--radius);
+      background: rgba(255, 214, 0, 0.06);
+      padding: 14px 17px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .universal {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      align-items: stretch;
+      margin-top: 18px;
+    }
+
+    .pattern-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .pattern {
+      display: grid;
+      grid-template-columns: 186px 1fr;
+      gap: 12px;
+      align-items: baseline;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 13px 15px;
+    }
+
+    .pattern .path {
+      color: var(--teal);
+    }
+
+    .pattern span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.42;
+    }
+
+    .exception {
+      border: 1px solid rgba(255, 77, 141, 0.3);
+      border-left: 5px solid var(--pink);
+      border-radius: var(--radius);
+      background: #151821;
+      padding: 18px;
+    }
+
+    .exception h3 {
+      margin: 0 0 9px;
+      color: var(--pink);
+      font-size: 18px;
+    }
+
+    .exception p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .open-question {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .side {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      padding: 18px;
+    }
+
+    .side h3 {
+      margin: 0 0 9px;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .side p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .side.pink {
+      border-color: rgba(255, 77, 141, 0.3);
+      box-shadow: inset 0 3px 0 var(--pink);
+    }
+
+    .side.teal {
+      border-color: rgba(0, 180, 166, 0.38);
+      box-shadow: inset 0 3px 0 var(--teal);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 18px;
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--soft);
+      font-size: 12px;
+    }
+
+    @media (max-width: 1080px) {
+      .hero,
+      .node-layout,
+      .universal,
+      .open-question {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-blocks {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        width: min(100vw - 24px, 1240px);
+        padding-top: 18px;
+      }
+
+      .nav,
+      .footer {
+        display: block;
+      }
+
+      .nav-meta {
+        justify-content: flex-start;
+        margin-top: 14px;
+      }
+
+      h1 {
+        font-size: 42px;
+      }
+
+      .lead {
+        font-size: 17px;
+      }
+
+      .root-map,
+      .summary-strip,
+      .mission-grid,
+      .overview-blocks {
+        grid-template-columns: 1fr;
+      }
+
+      .section {
+        padding: 22px 18px;
+      }
+
+      .root-item,
+      .pattern {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-line"></div>
+  <div class="page">
+    <div class="nav">
+      <div class="logo">
+        <span class="teal">sv</span><span class="pink">ai</span><span class="teal">b</span><span class="pink">.</span>
+      </div>
+      <div class="nav-meta">
+        <span class="chip">Second AI Brain</span>
+        <span class="chip">Scaffold draft</span>
+        <span class="chip pink">Client discussion</span>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Структурный драфт для обсуждения с клиентами</p>
+        <h1>Scaffold как рабочее пространство <span class="accent">CEO и AI</span></h1>
+        <p class="lead">Карта того, какие папки появляются в клиентском пространстве, за что отвечают базовые файлы и почему один паттерн может работать для подразделения, проекта, продукта, клиента и человека.</p>
+      </div>
+
+      <div class="hero-panel">
+        <div class="root-map">
+          <div class="root-group">
+            <div class="root-title"><span>обязательные</span><span>core</span></div>
+            <div class="root-item">
+              <span class="path">01_ceo/</span>
+              <span class="desc">личность и пространство CEO</span>
+            </div>
+            <div class="root-item">
+              <span class="path">02_strategy/</span>
+              <span class="desc">куда идёт компания</span>
+            </div>
+            <div class="root-item">
+              <span class="path">03_team/</span>
+              <span class="desc">люди компании</span>
+            </div>
+            <div class="root-item">
+              <span class="path">04_company/</span>
+              <span class="desc">структура компании</span>
+            </div>
+            <div class="root-item">
+              <span class="path">metrics/</span>
+              <span class="desc">метрики бизнеса, отдельная модель</span>
+            </div>
+          </div>
+
+          <div class="root-group">
+            <div class="root-title"><span>опциональные</span><span class="pink">live trigger</span></div>
+            <div class="root-item">
+              <span class="path">projects/</span>
+              <span class="desc">инициативы с горизонтом</span>
+            </div>
+            <div class="root-item">
+              <span class="path">clients/</span>
+              <span class="desc">клиенты и операционка по ним</span>
+            </div>
+            <div class="root-item">
+              <span class="path">knowledge/</span>
+              <span class="desc">база знаний компании</span>
+            </div>
+            <div class="root-item">
+              <span class="path">processes/</span>
+              <span class="desc">регламенты и SOP</span>
+            </div>
+            <div class="root-item">
+              <span class="path">product/</span>
+              <span class="desc">продукт, если есть</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-strip">
+      <div class="summary">
+        <b>Пять обязательных точек входа</b>
+        <span>CEO, стратегия, команда, структура компании и metrics как отдельный управленческий цикл.</span>
+      </div>
+      <div class="summary">
+        <b>Опциональное раскрывается по живой работе</b>
+        <span>Проекты, клиенты, knowledge, процессы и продукт не создаются “на всякий случай”.</span>
+      </div>
+      <div class="summary">
+        <b>Один канон для разных сущностей</b>
+        <span>Раскладка файлов единая, а семантика наполнения подстраивается под природу объекта.</span>
+      </div>
+    </div>
+
+    <div class="section" id="node">
+      <div class="section-head">
+        <div class="num">1</div>
+        <div>
+          <h2>Внутри узла: полная версия</h2>
+          <p class="section-intro">На примере <code>04_company/marketing/</code>: когда сущность выросла до полноценного управленческого контура, внутри появляется карта, входящее, overview, операционка, backlog, хроника, решения, встречи и опциональный паспорт.</p>
+        </div>
+      </div>
+
+      <div class="node-layout">
+        <div class="tree">
+          <div class="tree-title">
+            <span>marketing/</span>
+            <span class="pink">full contour</span>
+          </div>
+          <pre class="tree-code">marketing/
+├── README.md          ← карта папки
+├── _inbox/            ← входящее на разбор
+├── 01_overview.md     ← смысловой вход
+├── 02_active.md       ← что в работе сейчас
+├── 02_backlog.md      ← будущая работа
+├── 03_progress.md     ← хроника
+├── 04_decisions.md    ← журнал решений
+├── meetings/          ← протоколы встреч
+└── profile.md         ← паспорт сущности (опц.)</pre>
+        </div>
+
+        <div class="mission-grid">
+          <div class="mission">
+            <b>README.md</b>
+            <span>Карта папки. Вход для AI: в той ли я папке, что здесь лежит, в каком порядке читать.</span>
+          </div>
+          <div class="mission pink">
+            <b>_inbox/</b>
+            <span>Сырьё, которое пока требует маршрутизации и не должно сразу попадать в канон.</span>
+          </div>
+          <div class="mission">
+            <b>01_overview.md</b>
+            <span>Смысловой вход в сущность: что это, в каком состоянии, куда дальше. 60-секундный вход.</span>
+          </div>
+          <div class="mission">
+            <b>02_active.md</b>
+            <span>Операционный хаб: задачи, вопросы, риски, повестка ближайшей встречи.</span>
+          </div>
+          <div class="mission">
+            <b>02_backlog.md</b>
+            <span>Будущая работа: инициативы, идеи, отложенное.</span>
+          </div>
+          <div class="mission">
+            <b>03_progress.md</b>
+            <span>Хроника по неделям: что сделали, ключевые движения, итоги встреч.</span>
+          </div>
+          <div class="mission">
+            <b>04_decisions.md</b>
+            <span>Журнал решений уровня направления: решение → контекст → последствие.</span>
+          </div>
+          <div class="mission">
+            <b>profile.md</b>
+            <span>Опциональный паспорт: стабильное идеологическое ядро, если оно не лезет в overview.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="overview">
+      <div class="section-head">
+        <div class="num">2</div>
+        <div>
+          <h2>Пять блоков <code>01_overview.md</code></h2>
+          <p class="section-intro">Overview — не карта файлов и не операционка. Это смысловой вход в сущность: человек и AI за минуту понимают, что это за объект, куда он движется и где сейчас главное напряжение.</p>
+        </div>
+      </div>
+
+      <div class="overview-blocks">
+        <div class="overview-card">
+          <div class="overview-number">1</div>
+          <b>Суть</b>
+          <span>Чем является объект, какую роль играет, в чём его специфика.</span>
+        </div>
+        <div class="overview-card">
+          <div class="overview-number">2</div>
+          <b>Цели и КР</b>
+          <span>Куда идём, как поймём что дошли: метрики и критерии успеха.</span>
+        </div>
+        <div class="overview-card">
+          <div class="overview-number">3</div>
+          <b>Команда</b>
+          <span>Owner / РП и ключевые участники.</span>
+        </div>
+        <div class="overview-card">
+          <div class="overview-number">4</div>
+          <b>Фокус</b>
+          <span>Узкое место сейчас и куда прикладываем силы.</span>
+        </div>
+        <div class="overview-card">
+          <div class="overview-number">5</div>
+          <b>Roadmap</b>
+          <span>Ключевые вехи, через которые объект движется к цели.</span>
+        </div>
+      </div>
+
+      <div class="signal">
+        <strong>Сигнал состояния:</strong> 🟢 / 🟡 / 🔴 — опциональный светофор, который может появляться в любом файле как короткий маркер состояния.
+      </div>
+    </div>
+
+    <div class="section" id="universal">
+      <div class="section-head">
+        <div class="num">3</div>
+        <div>
+          <h2>Универсальный принцип раскладки</h2>
+          <p class="section-intro">Один и тот же канон файлов работает для разных типов сущностей. Меняется не форма, а смысл наполнения и место сущности в корне.</p>
+        </div>
+      </div>
+
+      <div class="universal">
+        <div class="pattern-list">
+          <div class="pattern">
+            <span class="path">04_company/marketing/</span>
+            <span>подразделение или направление компании</span>
+          </div>
+          <div class="pattern">
+            <span class="path">projects/marketing_launch/</span>
+            <span>кросс-функциональный проект с горизонтом и завершением</span>
+          </div>
+          <div class="pattern">
+            <span class="path">product/</span>
+            <span>постоянный контур продукта, если у компании он есть</span>
+          </div>
+          <div class="pattern">
+            <span class="path">clients/{name}/</span>
+            <span>клиентская сущность с дополнением: profile + company + project</span>
+          </div>
+          <div class="pattern">
+            <span class="path">03_team/{person}</span>
+            <span>человек: от профайла до потенциальной папки с полным контуром</span>
+          </div>
+        </div>
+
+        <div class="exception">
+          <h3>Исключение — metrics/</h3>
+          <p>Метрики устроены по-другому. Числа живут в xlsx клиента, AI читает семантику и считает Python. Внутри: <code>01_metrics.md</code>, domain-файлы, <code>source/</code>, <code>extractors/</code>. Для этого уже есть отдельная презентация.</p>
+          <p>Поэтому <code>metrics/</code> находится в корне как обязательный управленческий цикл, но не следует полному канону узла выше.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="ceo">
+      <div class="section-head">
+        <div class="num pink">?</div>
+        <div>
+          <h2>Открытый вопрос: место CEO</h2>
+          <p class="section-intro">Сейчас <code>01_ceo/</code> стоит отдельно от <code>03_team/</code>. Но если CEO — тоже человек внутри команды, можно ли сделать его узлом, который разворачивается по тому же канону?</p>
+        </div>
+      </div>
+
+      <div class="open-question">
+        <div class="side teal">
+          <h3>CEO как отдельный слой</h3>
+          <p>Сохраняет особый статус CEO: личность, мысли, личные решения и пространство руководителя остаются первой точкой входа. Это ближе к текущему scaffold.</p>
+        </div>
+        <div class="side pink">
+          <h3>CEO как узел в 03_team/</h3>
+          <p>Открывает естественное масштабирование вниз: C-1 и команда получают пространства по тому же канону. Каждый человек может быть на своей стадии разворачивания.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div>HTML-версия на основе <code>2026-05-01_scaffold-draft-v1.md</code>. Рабочий драфт, не канон.</div>
+      <div class="logo">
+        <span class="teal">sv</span><span class="pink">ai</span><span class="teal">b</span><span class="pink">.</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
