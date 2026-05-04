@@ -1,7 +1,7 @@
 ---
 title: "Framework — хроника"
-updated: 2026-05-01
-version: 11
+updated: 2026-05-04
+version: 12
 scope: product_core
 type: log
 ---
@@ -22,6 +22,10 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-05-04 · L2-prompt-protocol-telegram переведён на эмодзи-маркеры задач
+
+Telegram-сводка теперь использует ⭕️ / ✅ вместо markdown-чекбоксов `- [ ]` / `- [x]` — Telegram их режет, задачи читались куце. Добавлено правило отступов между задачами. Версия 3 → 4. [L2-prompt-protocol-telegram.md](skills/meeting-analysis/L2-prompt-protocol-telegram.md)
+
 ## 2026-05-01 · Фазы 3-4 fern-модели scaffold завершены, бэклог переструктурирован
 
 Получены 4 внешних ревью fern-модели от нейросетей, синтезированы во внутренний draft с 10 открытыми вопросами + раздел «Фундаментальное напряжение» — [_inbox/scaffold/2026-05-01_scaffold-model-draft.md](_inbox/scaffold/2026-05-01_scaffold-model-draft.md). На его основе собран клиентский структурный draft + HTML-презентация для предстоящих встреч — [_inbox/scaffold/2026-05-01_scaffold-draft-v1.md](_inbox/scaffold/2026-05-01_scaffold-draft-v1.md). Раздел `## Scaffold` в [02_backlog.md](02_backlog.md) переструктурирован: 12 шагов финального плана (старые 7 пунктов поглощены, добавлены пропущенные: канон развёртывания у клиента, цепочки файлов внутри направлений, profile.md в каноне базовых файлов, контекстная архитектура как отдельный шаг, 10 концептуальных открытых вопросов).
