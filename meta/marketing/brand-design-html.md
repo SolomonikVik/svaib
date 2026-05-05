@@ -20,7 +20,7 @@ priority: high
 - [brand-design-web.md](brand-design-web.md) — сайт svaib.com и web-дизайн продукта
 - [brand-design-diagrams.md](brand-design-diagrams.md) — схемы-картинки через HTML → Puppeteer → PNG/PDF
 - [../../framework/methodology/metrics/intro-for-client-v2.html](../../framework/methodology/metrics/intro-for-client-v2.html) — пример клиентского intro
-- [../../framework/_inbox/scaffold/2026-05-01_scaffold-draft-v1.html](../../framework/_inbox/scaffold/2026-05-01_scaffold-draft-v1.html) — пример структурного one-pager
+- [demos/scaffold-overview.html](demos/scaffold-overview.html) — пример структурного one-pager
 
 ---
 
@@ -309,7 +309,7 @@ Hero должен сразу показывать объект страницы,
 5. Универсальный принцип.
 6. Открытый вопрос или next step.
 
-Пример: [2026-05-01_scaffold-draft-v1.html](../../framework/_inbox/scaffold/2026-05-01_scaffold-draft-v1.html).
+Пример: [scaffold-overview.html](demos/scaffold-overview.html).
 
 ### 3. Growth / staged model
 
@@ -323,7 +323,7 @@ Hero должен сразу показывать объект страницы,
 4. Пример одной ветки.
 5. Правила, которые удерживают модель.
 
-Пример: [2026-04-30_fern-scaffold-growth.html](../../framework/_inbox/scaffold/2026-04-30_fern-scaffold-growth.html).
+Живой пример для staged model пока не зафиксирован.
 
 ## Responsive
 
@@ -408,5 +408,4 @@ tidy -utf8 -q -e path/to/file.html
 | Артефакт | Путь | Тип |
 |---|---|---|
 | Metrics intro v2 | [../../framework/methodology/metrics/intro-for-client-v2.html](../../framework/methodology/metrics/intro-for-client-v2.html) | Client intro |
-| Scaffold draft v1 | [../../framework/_inbox/scaffold/2026-05-01_scaffold-draft-v1.html](../../framework/_inbox/scaffold/2026-05-01_scaffold-draft-v1.html) | Structural map |
-| Fern scaffold growth | [../../framework/_inbox/scaffold/2026-04-30_fern-scaffold-growth.html](../../framework/_inbox/scaffold/2026-04-30_fern-scaffold-growth.html) | Staged model |
+| Scaffold overview | [demos/scaffold-overview.html](demos/scaffold-overview.html) | Structural map |

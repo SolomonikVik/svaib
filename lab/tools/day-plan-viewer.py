@@ -97,19 +97,29 @@ HTML_PAGE = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>План дня</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #FAFBFC;
-  --surface: #FFFFFF;
-  --border: rgba(0, 0, 0, 0.08);
-  --text: #1A1A1A;
-  --muted: #6B7280;
+  --bg: #071015;
+  --soft: #0B161B;
+  --surface: #101D23;
+  --surface-2: #13262D;
+  --border: #25444D;
+  --border-soft: rgba(0, 180, 166, 0.24);
+  --text: #F0F8F7;
+  --muted: #A7BABD;
+  --soft-text: #789096;
   --accent: #00B4A6;
   --pink: #FF4D8D;
-  --done-text: #9CA3AF;
-  --radius: 16px;
+  --yellow: #FFD600;
+  --done-text: #789096;
+  --radius: 8px;
+  --shadow: 0 22px 80px rgba(0, 0, 0, 0.28);
   --font-ui: "Inter", "Roboto", "Segoe UI", sans-serif;
-  --font-display: "Montserrat", "Inter", sans-serif;
+  --font-display: "Sora", "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -117,47 +127,63 @@ HTML_PAGE = """<!DOCTYPE html>
 body {
   font-family: var(--font-ui);
   color: var(--text);
-  background: var(--bg);
+  background:
+    linear-gradient(180deg, rgba(0, 180, 166, 0.07) 0%, rgba(7, 16, 21, 0) 300px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.026) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    var(--bg);
+  background-size: auto, 72px 72px, 72px 72px, auto;
   border-top: 3px solid var(--accent);
   min-height: 100vh;
-  padding: 32px 20px;
+  padding: 36px 20px 48px;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .container {
-  max-width: 520px;
+  max-width: 680px;
   margin: 0 auto;
 }
 
 .header {
   font-family: var(--font-display);
   margin-bottom: 28px;
+  padding: 26px 28px;
+  background: linear-gradient(180deg, rgba(19, 38, 45, 0.92), rgba(11, 22, 27, 0.9));
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
 }
 
 .header h1 {
-  font-size: 28px;
-  font-weight: 600;
+  font-size: clamp(34px, 7vw, 48px);
+  line-height: 1.04;
+  font-weight: 800;
   color: var(--text);
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
 
 .header .date {
-  font-size: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
   color: var(--muted);
-  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .group {
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 .group-title {
-  font-family: var(--font-display);
-  font-size: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--muted);
-  margin-bottom: 10px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 12px;
   padding-left: 4px;
 }
 
@@ -166,7 +192,7 @@ body {
 }
 
 .group-title.meetings {
-  color: #5B6ABF;
+  color: var(--yellow);
 }
 
 .group-title.done-group {
@@ -177,13 +203,13 @@ body {
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 14px 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  padding: 16px 18px;
+  background: linear-gradient(180deg, rgba(19, 38, 45, 0.96), rgba(16, 29, 35, 0.96));
+  border: 1px solid rgba(37, 68, 77, 0.9);
   border-radius: var(--radius);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
   cursor: pointer;
-  transition: transform 0.12s, box-shadow 0.12s;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background 0.12s;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
@@ -193,11 +219,13 @@ body {
 }
 
 .task:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 180, 166, 0.42);
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.22);
 }
 
 .task.done {
-  opacity: 0.6;
+  background: rgba(11, 22, 27, 0.66);
+  border-color: rgba(37, 68, 77, 0.62);
 }
 
 .task.done .task-text {
@@ -213,13 +241,14 @@ body {
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  border-radius: 7px;
-  border: 2px solid var(--border);
+  border-radius: 6px;
+  border: 2px solid rgba(0, 180, 166, 0.34);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 1px;
   transition: background 0.15s, border-color 0.15s;
+  background: rgba(7, 16, 21, 0.78);
 }
 
 .task.done .checkbox {
@@ -240,22 +269,70 @@ body {
 
 .task-text {
   font-size: 16px;
-  line-height: 1.45;
+  line-height: 1.55;
   padding-top: 1px;
+  color: var(--text);
+}
+
+.task-text strong {
+  color: var(--text);
+  font-weight: 800;
+}
+
+.task:not(.done) .task-text strong {
+  color: #ffffff;
+}
+
+.task-text code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--accent);
+  background: rgba(0, 180, 166, 0.1);
+  border: 1px solid rgba(0, 180, 166, 0.18);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.task-text a {
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 180, 166, 0.42);
 }
 
 .status {
   text-align: center;
   font-size: 12px;
   color: var(--muted);
-  margin-top: 32px;
-  opacity: 0.6;
+  margin-top: 34px;
+  opacity: 0.68;
 }
 
 .loading {
   text-align: center;
   padding: 40px;
   color: var(--muted);
+  background: rgba(16, 29, 35, 0.72);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 18px 12px 34px;
+    background-size: auto, 54px 54px, 54px 54px, auto;
+  }
+
+  .header {
+    padding: 22px;
+  }
+
+  .task {
+    padding: 15px 14px;
+  }
+
+  .task.sub {
+    margin-left: 18px;
+  }
 }
 </style>
 </head>
@@ -303,7 +380,7 @@ function render(data) {
       const subClass = task.indent > 0 ? ' sub' : '';
       html += `<div class="task${doneClass}${subClass}" data-line="${task.line}" onclick="toggle(this)">`;
       html += `<div class="checkbox"><span class="checkmark">✓</span></div>`;
-      html += `<div class="task-text">${esc(task.text)}</div>`;
+      html += `<div class="task-text">${renderInline(task.text)}</div>`;
       html += `</div>`;
     }
     html += `</div>`;
@@ -334,6 +411,13 @@ function esc(s) {
   const d = document.createElement('div');
   d.textContent = s;
   return d.innerHTML;
+}
+
+function renderInline(s) {
+  return esc(s)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\\*\\*([^*]+)\\*\\*/g, '<strong>$1</strong>')
+    .replace(/\\[([^\\]]+)\\]\\((https?:\\/\\/[^\\s)]+)\\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">$1</a>');
 }
 
 function updateStatus() {

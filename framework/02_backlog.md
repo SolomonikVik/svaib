@@ -26,66 +26,24 @@ type: plan
 
 ---
 
-# Горизонталь (общие слои)
+# 🔵 Горизонталь (общие слои)
 
-## Scaffold
+## 🔸 Scaffold
 
-Финальный список задач после Фазы 3-4 fern-модели (внешний review + внутренний синтез сделаны 1.05). Источник — [_inbox/scaffold/2026-05-01_scaffold-model-draft.md](_inbox/scaffold/2026-05-01_scaffold-model-draft.md). Полный список черновиков по fern — в _inbox/scaffold/.
 
-### Шаг 1. Обсудить scaffold-draft-v1 с клиентами
 
-Презентовать [_inbox/scaffold/2026-05-01_scaffold-draft-v1.md](_inbox/scaffold/2026-05-01_scaffold-draft-v1.md) и [_inbox/scaffold/2026-05-01_scaffold-draft-v1.html](_inbox/scaffold/2026-05-01_scaffold-draft-v1.html) на предстоящих встречах. Собрать обратную связь — что зашло, что ломается, что переоформить.
+- [ ] удалить файлы из клиентского 
 
-### Шаг 2. Фаза 6: принять решения и собрать всё в единый канон
-
-#### 2.1. Принять решения по форме канона
-
-- [ ] **Где живёт канон**: `principles.md` / `MODEL.md` / отдельный `canon.md` / папка `canon/`
-- [ ] **Имя корневой обязательной папки** — `04_management/` → `04_company/` (или иное)
-- [ ] **Место CEO** — `01_ceo/` отдельно или узел `03_team/`
-
-#### 2.2. Интегрировать в единый канон ВСЕ источники
-
-Стержневые рабочие файлы scaffold:
-- [scaffold/idea.md](scaffold/idea.md) — 5 требований, стержень
-- [scaffold/principles.md](scaffold/principles.md) — 9 принципов проектирования
-- [scaffold/MODEL.md](scaffold/MODEL.md) — текущая прескриптивная модель
-- [scaffold/README.md](scaffold/README.md) — клиентский вход
-
-Главный артефакт fern:
-- [scaffold/fern-model-draft.md](scaffold/fern-model-draft.md) — гипотеза, 5 стадий, 14 открытых вопросов (α-ξ + κ-λ-μ)
-
-Черновики из `_inbox/scaffold/`:
-- [2026-04-28_overview-canon-draft.md](_inbox/scaffold/2026-04-28_overview-canon-draft.md) — 5 блоков overview, profile, README, светофор
-- [2026-04-30_fern-scaffold-growth.html](_inbox/scaffold/2026-04-30_fern-scaffold-growth.html) — визуализация роста по стадиям
-- [2026-05-01_fern-external-review-request.md](_inbox/scaffold/2026-05-01_fern-external-review-request.md) — внешний запрос
-- [2026-05-01_scaffold-model-draft.md](_inbox/scaffold/2026-05-01_scaffold-model-draft.md) — синтез 4 ревью, 10 открытых вопросов
-- [2026-05-01_scaffold-draft-v1.md](_inbox/scaffold/2026-05-01_scaffold-draft-v1.md) + [.html](_inbox/scaffold/2026-05-01_scaffold-draft-v1.html) — клиентский драфт
-
-Опорные чужие архитектуры:
-- [_inbox/scaffold/ARCHITECTURE_maxim.md](_inbox/scaffold/ARCHITECTURE_maxim.md)
-- [_inbox/scaffold/ARCHITECTURE_rinat.md](_inbox/scaffold/ARCHITECTURE_rinat.md)
-
-Соседние слои framework — что взять в scaffold:
-- [memory/01_context_memory.md](memory/01_context_memory.md) — протоколы памяти, хуки, Rule Injection, [SOURCE]/[REF:]
-- [memory/file_spec.md](memory/file_spec.md) — формат файла, YAML, секции
-- [ontology/entities.md](ontology/entities.md) — каталог сущностей (композиции человека и проекта)
-- [ontology/ontology.md](ontology/ontology.md) — связи сущностей
-- [methodology/methodology.md](methodology/methodology.md) — протоколы и decision frames
-
-Уже применённые подагентские ревью (источник для архива):
-- `_inbox/subagents/2026-04-30-fern-model-review/report.md` — ревью fern-модели на самодостаточность
-
-#### 2.3. Перевести зафиксированный канон из `_inbox/scaffold/` в `scaffold/`
-
-Архивировать черновики, поглощённые каноном. Оставить только живые источники.
 
 ### Шаг 3. Канон каждого базового файла scaffold
 
 Для каждого — миссия файла + миссия канонических блоков внутри. То же, что сделали для overview в этой сессии, — по остальным.
 
-- [ ] `README.md`
-- [ ] `01_overview.md` (5 блоков уже зафиксированы в [_inbox/scaffold/2026-04-28_overview-canon-draft.md](_inbox/scaffold/2026-04-28_overview-canon-draft.md))
+- [ ] `README.md` - 
+- [ ] `01_overview.md`
+	- [ ] АС предлагаем - Overview содержит KP/KR с текущими значениями (не только цели). Альтернатива: только цели — отвергли.
+	- [ ] - `scaffold/product/01_overview.md` — пересобрать под 5 блоков канона.
+	- [ ] `scaffold/projects/{name}/01_overview.md` — пересобрать под 5 блоков; паспортную часть вынести в `profile.md`.
 - [ ] `profile.md`
 - [ ] `02_active.md`
 - [ ] `02_backlog.md` — **Направление (Track) и Задача (Task). Подзадача = задача внутри задачи, глубина вложенности любая**
@@ -104,13 +62,13 @@ type: plan
 
 ### Шаг 5. Канон README
 
-Содержательный шаблон `README.md` по типам папок (глубже разграничения README ↔ overview из § 3 принятых решений в overview-canon-draft).
+Содержательный шаблон `README.md` по типам папок (глубже разграничения README ↔ overview, зафиксированного в [methodology/scaffold/02_readme-spec.md](methodology/scaffold/02_readme-spec.md)).
 
 ### Шаг 6. Что забираем из контекстной архитектуры и чужих архитектурных документов
 
 Внимательно прочитать [memory/01_context_memory.md](memory/01_context_memory.md) и решить, что взять в scaffold на первый заход: YAML / front-matter, правила, хуки и т.д.
 
-- [ ] Посмотреть какие инсайты можно взять из [ARCHITECTURE_maxim](_inbox/scaffold/ARCHITECTURE_maxim.md) и [ARCHITECTURE_rinat](_inbox/scaffold/ARCHITECTURE_rinat.md) (материалы в [_inbox/scaffold/](_inbox/scaffold/)) при ревизии scaffold
+- [ ] Посмотреть какие инсайты можно взять из [ARCHITECTURE_maxim](_inbox/scaffold/ARCHITECTURE_maxim.md) при ревизии scaffold
 - [ ] [memory/file_spec.md](memory/file_spec.md) — формат файла
 
 ### Шаг 7. Обновить файлы scaffold под Шаг 6
@@ -142,12 +100,12 @@ type: plan
 
 Проверить, что обновлённый scaffold не противоречит онтологии и методологии. Чтобы агенты не сыпались на устаревших связях.
 
-- [ ] **Решить про слияние [scaffold/principles.md](scaffold/principles.md) → [scaffold/MODEL.md](scaffold/MODEL.md)**: где они должны лежать — в `scaffold/` или в `methodology/`. Плюс файл [scaffold/idea.md](scaffold/idea.md) (ЧТО — 5 требований, стержень) → `principles.md` (КАК принимать решения о структуре) → `MODEL.md` (КАК выглядит развёртываемая модель). **ПОДУМАТЬ ОБСУДИТЬ РЕШИТЬ**
+- [x] **Перенести методологию scaffold из клиентского `scaffold/` в `methodology/scaffold/`**: старые `idea.md`, `principles.md`, `MODEL.md` поглощены новым рабочим каноном.
 - [ ] Связность с [memory/](memory/), [ontology/](ontology/), [methodology/](methodology/)
 
 ### Шаг 12. Закрыть 10 концептуальных открытых вопросов
 
-Из [_inbox/scaffold/2026-05-01_scaffold-model-draft.md](_inbox/scaffold/2026-05-01_scaffold-model-draft.md):
+Открытые вопросы, перенесённые в [methodology/scaffold/open-questions.md](methodology/scaffold/open-questions.md):
 
 1. **Identity сущности** — явный `id` в frontmatter или `[SOURCE]/[REF:]` + Rename Guard
 2. **Природа vs стадия** — маркетинг-как-файл и маркетинг-как-проект: одна сущность на разных стадиях или две разные
@@ -160,19 +118,25 @@ type: plan
 9. **Стратегия — fern или каноническая зона** — где граница между 6 фиксированными файлами и прогрессивным разворотом
 10. **Темпоральность** — когда сущность считать «холодной»
 
-## Память v1
+
+- [ ] Посмотреть архитектуры Максима:
+      [_inbox/scaffold/ARCHITECTURE_maxim.md](_inbox/scaffold/ARCHITECTURE_maxim.md) **Идея Maxim'а — connecting tree: 
+      Aim                    (зачем компания вообще существует) ─ Strategy Goal   (стратегическая цель) -> Objective     (что должны сделать) -> Key Result    (как поймём что сделали) -> Initiative    (что делаем чтобы получить KR) -> Task          (конкретное действие)
+
+
+## 🔸 Память v1
 
 - [ ] **Полный вынос общих механизмов из [methodology/metrics/architecture.md](methodology/metrics/architecture.md) в `memory/`** — snapshot, версионирование сущностей, trace ответа, semantic layer как паттерн, маршрут + думающая ветка, границы ответа. Это горизонтальные контракты слоёв, не часть metrics. Источник — [04_decisions.md](04_decisions.md), решение №4 (2026-04-27)
 - [ ] Inline-даты на volatile-данных: добавить в [memory/file_spec.md](memory/file_spec.md) (секция маркеров, рядом с `[SOURCE]`/`[REF:]`) и в [methodology/meeting_analysis.md](methodology/meeting_analysis.md) (требование к надстройке дельт). Формат — в `clients/_inbox/_todo_meeting_processor.md` секция «Требования к дельтам»
 - [ ] QMD — локальный семантический поиск по markdown (MCP для Claude Code). 19k stars, Tobi Lütke. Установить, протестировать на нашем репо (570+ файлов), оценить качество vs grep. Если работает — часть онбординга клиента. Детали: [../lab/_inbox/qmd-research.md](../lab/_inbox/qmd-research.md)
 - [ ] **Enforcement против раздувания стержневых файлов.** Текстовые правила («бритва Оккама», «экономь токены» в CLAUDE.md / file_spec) не работают как фильтр в момент генерации — подтверждено живым кейсом 2026-05-01 (idea.md раздут в 5 раз вопреки всем правилам). Нужны хуки/inline-правила: лимит строк на stem-файлах, правило «копируй не интерпретируй», pre-Write пауза, канон стержневого файла. Источник: [_inbox/2026-05-01_llm-bloat-pattern.md](_inbox/2026-05-01_llm-bloat-pattern.md) — 5 причин + 5 предложений по реализации
 
-## Помощники (Skills) — общее
+## 🔸 Помощники (Skills) — общее
 
 - [ ] Telegram-бот / аккаунт AI для асинхронной коммуникации с клиентом (идея АС). Общий канал, не привязан к одной вертикали — могут пушить ритуалы любой вертикали
 - [ ] **Вынести `send_telegram.sh` в `framework/skills/channels/telegram/`.** Сейчас скрипт лежит внутри `framework/skills/meeting-analysis/send_telegram.sh` — но используется из других скиллов (email-assistant, потенциально новые). Создать `framework/skills/channels/telegram/` (SKILL.md + скрипт), привести к канону дубль `.claude/skills/send-telegram/`. Обновить ссылки во всех скиллах и операциях (`setup_telegram_bot.md`, `setup_email_assistant.md`, `meeting-analysis/orchestrator-*`). Обнаружено при разработке email-assistant 30.04
 
-## Мета (архитектура / онтология / методология)
+## 🔸 Мета (архитектура / онтология / методология)
 
 - [ ] **Карта храма: definition of done для Second AI Brain.** Взять vision + architecture, приземлить на реальность: что конкретно должно существовать в готовом продукте. Результат — чеклист готовности, по которому можно оценивать направление. Без этого статус — счёт кирпичей без чертежа
 - [ ] Композиции Человек и Проект — раскрыть состав частей в [ontology/entities.md](ontology/entities.md) (A.13). Человек → my_profile.md + team.md. Проект → весь фреймворк вокруг проектов/подпроектов
@@ -181,9 +145,9 @@ type: plan
 
 ---
 
-# Вертикали (управленческие циклы)
+# 🔵 Вертикали (управленческие циклы)
 
-## meeting (аналитик встреч)
+## 🔸 meeting (аналитик встреч)
 
 Первая задача разобрать все задачи ниже и собрать из них единый план действий
 
@@ -217,13 +181,14 @@ type: plan
 - [ ] **Оркестратор встреч в Шаге 0** спрашивает путь транскрипта вручную — логично чтобы он сам дёргал `macwhisper-transcript --list` и находил
 - [ ] L1/L2: различать "подумаю" vs "решил" — агент превращает размышление в задачу (кейс Паши у КЛ2, встреча 17.04). Нужен фильтр reflective vs committed при извлечении задач/решений
 
-## metrics
+## 🔸 metrics
 
 **Состояние (25.04 вечер):** Архитектура метрик зафиксирована — [methodology/metrics/architecture.md](methodology/metrics/architecture.md) v3. 6 слоёв + процессы, метки [СЕЙЧАС]/[ПОЗЖЕ] на каждом слое, секция «Минимальный комплект первой стадии». Research-опора — [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md). Закрыты три драматичных гэпа (версионирование паспортов, валидация SQL, состояние разговора), 4 паспорта свернуты в семантический слой + ритуалы.
 
 ### Встраиваем метрики у клиента (тестируем простые способы)
 
-- [ ] Задача в актив
+- [ ] Задача в [02_active](02_active.md)
+- [ ] Читаем https://novasapiens.ru/prompt/2604.25149
 
 ### Глубокая верификация архитектуры метрик с фреймворком целиком.
 
@@ -238,12 +203,8 @@ type: plan
 - [ ] **Ритуал «разбор отклонений»** — где живёт, кто запускает, входы/выходы. Под KR декады 1: «разбор отклонений как процесс»
 - [ ] **Бриф перед встречей (ритуал слоя 5 metrics)** — горящие метрики, риски, открытые вопросы. Триггер, шаблон сообщения, 3–5 маршрутов (см. [methodology/metrics/architecture.md](methodology/metrics/architecture.md), минимальный комплект первой стадии). Под KR декады 1: «метрики попадают в контекст встреч через scaffold»
 
-## strategy (не активна, заготовка к декаде 2)
+## 🔸 strategy (не активна, заготовка к декаде 2)
 
 - [ ] **Vision стратегического помощника (sidetrack)** — материал-заготовка к будущей вертикали strategy. Не задача декады 1, делается параллельно по возможности. Источник: [clients/_inbox/subagents/sm-vision-product-synthesis.md](../clients/_inbox/subagents/sm-vision-product-synthesis.md) (синтез по созвону АС). При активации вертикали strategy в декаде 2 — этот материал станет первым входом
 
 ---
-
-# Прочее
-
-- (свободная зона для задач, не вписывающихся в горизонталь/вертикаль)
