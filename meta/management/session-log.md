@@ -1,6 +1,6 @@
 ---
 title: "svaib — session log"
-updated: 2026-05-05
+updated: 2026-05-07
 
 ---
 
@@ -15,11 +15,31 @@ updated: 2026-05-05
 **Стиль записи:** Пиши кратко, но понятно. Не как отчёт для машины. Что было → в чём проблема → что сделали → что получили. Не указывай имен клиентов только абревиатуры имени
 
 ---
+## 2026-05-07
+
+**17:59 | framework** — Доработали 02_file-spec и 02_readme-spec под канон scaffold. (2ч)
+
+---
+## 2026-05-06
+
+**09:54 | framework** — Закрыли методологическую сборку scaffold v3: пять файлов методологии (02_folder-templates, 02_file-spec, 02_file-templates, 02_readme-spec, deployment) собраны и приведены к канону (2 ч)
+
+**11:10 | framework** — Закрыли 10 open-questions, выполнили миграции зон. (~2 ч)
+
+**16:43 | framework** — Methodology scaffold: переписаны 02_file-spec, 02_readme-spec, 02_file-templates, 02_folder-spec под новый канон обвязки. (~5 ч)
+
+**19:32 | framework** — в рамках обновления Methodology scaffold: навели порядок в 02_file-templates (~2 ч).
+
+---
 ## 2026-05-05
 
 **14:23 | clients** — Собрал HTML-deliverable для знакомой ТР (бухгалтерское агентство) с архитектурой AI-помощника на агентском стеке (function calling, российская LLM). (15 мин)
 
-**18:30 | framework** — Из 20+ разрозненных черновиков (_inbox/scaffold/, MODEL, idea, principles, fern-model и др.) собрали первую чистую архитектуру scaffold в одном файле — methodology/scaffold/01_architecture.md. До этого scaffold был кусочным, агентам не на что опереться — теперь есть твёрдая опора. Закрытие одного из узких мест декады 1. (7 ч 40 мин)
+**18:30 | framework** — Из 20+ разрозненных черновиков (_inbox/scaffold/, MODEL, idea, principles, fern-model и др.) собрали первую чистую архитектуру scaffold в одном файле — methodology/scaffold/01_architecture.md. До этого scaffold был кусочным, агентам не на что опереться — теперь есть твёрдая опора. Закрытие одного из узких мест декады 1. (8 ч 45 мин)
+
+**22:10 | framework** — Собрали общие правила для 02 folder-spec папки scaffold. (2 ч 40 мин)
+
+**23:10 | framework** — запустили агентов на сборку остальных файлов. 5 файлов методологии собраны (2 ч 40 мин)
 
 ---
 ## 2026-05-04
