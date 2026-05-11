@@ -1,6 +1,6 @@
 ---
 title: "Lab — хроника"
-updated: 2026-05-01
+updated: 2026-05-08
 version: 1
 scope: lab
 type: log
@@ -14,6 +14,9 @@ type: log
 
 **Работа с файлом:** log — дописывать при завершении значимой задачи по направлению или релизе помощника. Не менять старые записи. Формат: дата → 1-3 строки (что сделано, ссылка на артефакт если есть).
 
+
+## 2026-05-08 · Day-plan-viewer вёрстка
+Day-plan-viewer: компактные карточки, фирменные цвета, читаемее на iPad.
 
 ## 2026-05-01 · Хук rclone_safety
 PreToolUse (Bash) хук, блокирующий `rclone sync` к/из `gdrive:` без `--dry-run`. При блокировке инжектит в stderr живую секцию «Протокол безопасной синхронизации» из [clients/playbook/delivery/operations/setup_workspace.md](../clients/playbook/delivery/operations/setup_workspace.md) — агент видит правила в момент ошибки, source of truth один. Артефакт: [.claude/hooks/rclone_safety.py](../.claude/hooks/rclone_safety.py). Принцип: ландшафт важнее инструкции.

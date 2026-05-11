@@ -21,6 +21,11 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-05-12 · Methodology scaffold финализирована: единый канон шести файлов
+
+Шесть файлов методологии scaffold ([01_architecture.md](methodology/scaffold/01_architecture.md), [02_file-spec.md](methodology/scaffold/02_file-spec.md), [02_folder-spec.md](methodology/scaffold/02_folder-spec.md), [02_readme-spec.md](methodology/scaffold/02_readme-spec.md), [03_node-files.md](methodology/scaffold/03_node-files.md), [03_contours.md](methodology/scaffold/03_contours.md)) сведены в единый согласованный непротиворечивый канон. `03_contours.md` (v4) — 10 контуров в единой форме («Что это» + дерево + контурно-специфичные миссии), 14 контурно-специфичных файлов вынесены в SOT этого файла. По `person.md` принят Вариант 3: рамка (миссия + 6 канонических разделов) остаётся в `03_node-files.md`, имена и контекст применения распределены по контурам — `01_ceo/01_my-profile.md`, `03_team/{person}.md`, `clients/{client}/{person}.md`. Аудит трёх независимых субагентов (консистентность между файлами, внутренние ошибки, dogfood самим каноном) — драм не нашёл.
+
+---
 ## 2026-05-12 · Добавлен 9-й управленческий цикл — finance
 
 Финансы выделены из metrics как отдельный предметный контур: финмодель, бюджет, кэш, юнит-экономика, сценарии. Финансовые метрики (revenue, gross margin, CAC, runway) остаются в metrics, бюджет и финмодель — в finance. Обновлены [ontology/management_cycles.md](ontology/management_cycles.md) (v3), [architecture.md](architecture.md) (v13), [01_overview.md](01_overview.md) (v10, цель экватора: 7 циклов в бете), [methodology/scaffold/open-questions.md](methodology/scaffold/open-questions.md) (v5 — где finance живёт в scaffold, отложено до первого клиента). На сайте `dev/src/public/second-ai-brain-overview.html` карта продукта и блоки циклов обновлены до 9.

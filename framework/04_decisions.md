@@ -1,7 +1,7 @@
 ---
 title: "Product Decisions — Second AI Brain"
-updated: 2026-04-30
-version: 4
+updated: 2026-05-06
+version: 5
 scope: product_core
 priority: high
 type: decision
@@ -294,7 +294,7 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 ### Следствия
 
 - Создан [`scaffold/metrics/`](scaffold/metrics/) с 4 файлами + `source/README.md`.
-- [`scaffold/MODEL.md`](scaffold/MODEL.md) — добавлен `metrics/` в раздел 8 как опциональная папка с триггером.
+- `metrics/` добавлен в scaffold как опциональная папка с триггером.
 - [`scaffold/README.md`](scaffold/README.md) — `metrics/` добавлен в список опциональных.
 - [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md) — добавлена сноска со ссылкой на конкретную раскладку scaffold.
 - Создан [`skills/metrics-analysis/`](skills/metrics-analysis/) — мастерская оркестратора и промптов под эту вертикаль.
@@ -302,3 +302,17 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 ### Источники
 
 Опоры решения — `_inbox/metrics-scaffold/b1.md` и `o1.md` (после фиксации удалены, обоснования воплощены в скаффолде и в этой записи). Структура секций domain-файла — адаптация Open Semantic Interchange (datasets / fields / relationships / synonyms) с добавлением своего: `version`, `owner`, `formula_human`, `routes`. Что не взяли у OSI: yaml-формат, мультидиалектность `expression.dialects[]`, `custom_extensions`.
+
+---
+
+## 6. Триплет доставки README агенту
+
+**Статус:** accepted (2026-05-06)
+
+**Решение.** В каждой значимой папке scaffold размещаем триплет: `README.md` (единственный источник) + `AGENTS.md` (`@README.md`, pointer-only) + `CLAUDE.md` (`@README.md`, pointer-only, временный костыль). В обычных подпапках триплет не ставим — агент опирается на ближайший README выше по дереву.
+
+**Контекст.** README — warm on-demand, агент не всегда подтягивает его в момент работы. У каждого агента (Claude Code, Codex, Gemini CLI) свой нативный файл инструкций.
+
+**Следствия.** Один источник правды (README). При удалении CLAUDE.md ничего не ломается. Когда Claude Code добавит нативную поддержку AGENTS.md — все CLAUDE.md удаляются.
+
+**Канон:** [methodology/scaffold/02_readme-spec.md § Доставка README агенту](methodology/scaffold/02_readme-spec.md).

@@ -28,12 +28,12 @@ type: reference
 
 ## Что НЕ живёт здесь
 
-- **Per-client extractor** (типа `ssp_okr1.py`) — это код клиента, лежит в `metrics/extractors/` клиентского scaffold, не в общей библиотеке skill. Шаблон-паттерн — в [`../../scaffold/metrics/extractors/README.md`](../../scaffold/metrics/extractors/README.md), пример — в `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py`.
+- **Per-client extractor** (типа `ssp_okr1.py`) — это код клиента, лежит в `metrics/extractors/` клиентского scaffold, не в общей библиотеке skill. Шаблон-паттерн — в [`../../scaffold/05_metrics/extractors/README.md`](../../scaffold/05_metrics/extractors/README.md), пример — в `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py`.
 - **Методология цикла** (HOWTO, rollout, intake-form, open-questions, architecture) — в [`../../methodology/metrics/`](../../methodology/metrics/).
-- **Шаблоны клиента** (витрина, template-domain, source-README, extractors-README) — в [`../../scaffold/metrics/`](../../scaffold/metrics/).
+- **Шаблоны клиента** (витрина, template-domain, source-README, extractors-README) — в [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/).
 
 ## Связи
 
 - [`../../methodology/metrics/README.md`](../../methodology/metrics/README.md) — карта всей вертикали (точка входа)
 - [`../../methodology/metrics/architecture.md`](../../methodology/metrics/architecture.md) — источник правды по архитектуре и канону доменов
-- [`../../scaffold/metrics/`](../../scaffold/metrics/) — каркас, который разворачивается у клиента
+- [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/) — каркас, который разворачивается у клиента

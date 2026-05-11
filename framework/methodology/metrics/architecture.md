@@ -8,7 +8,7 @@ priority: high
 
 > **Архитектурный сдвиг 2026-04-27.** Часть механизмов этого документа — `snapshot`, версионирование сущностей, trace ответа, **semantic layer** как паттерн, **маршрут + думающая ветка**, границы ответа — это **горизонтальные контракты слоёв** (память и помощники), общие для всех вертикалей. См. [architecture.md](../../architecture.md), раздел «Вертикали управленческих циклов». Этот файл описывает конкретную вертикаль `metrics`. Полный вынос общих частей в `memory/` — отдельной задачей.
 
-> **Реализация в scaffold (2026-04-29).** Конкретная раскладка слоя 4 (семантический слой) у клиента — папка [`../../scaffold/metrics/`](../../scaffold/metrics/). Решения по нарезке (по домену, не по источнику), именам файлов (`finance.md`, `sales.md`, `operations.md`, `people.md`), структуре domain-файла (`datasets / relationships / metrics / routes` по OSI), хранению чисел (xlsx + Python через xlsx-skill, не дублируем в md) — целиком зафиксированы в [`../../04_decisions.md`](../../04_decisions.md) №5 «Раскладка metrics в scaffold (B1+O1/O5)». Скиллы — [`../../skills/metrics-analysis/`](../../skills/metrics-analysis/).
+> **Реализация в scaffold (2026-04-29).** Конкретная раскладка слоя 4 (семантический слой) у клиента — папка [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/). Решения по нарезке (по домену, не по источнику), именам файлов (`finance.md`, `sales.md`, `operations.md`, `people.md`), структуре domain-файла (`datasets / relationships / metrics / routes` по OSI), хранению чисел (xlsx + Python через xlsx-skill, не дублируем в md) — целиком зафиксированы в [`../../04_decisions.md`](../../04_decisions.md) №5 «Раскладка metrics в scaffold (B1+O1/O5)». Скиллы — [`../../skills/metrics-analysis/`](../../skills/metrics-analysis/).
 
 # Метрики
 
@@ -140,7 +140,7 @@ priority: high
 
 В индустрии это **semantic layer** — паттерн, на котором сошлись Hex (semantic models), Snowflake Cortex, Omni: один объект, в котором живут описания, метрики и verified queries.
 
-**На первой стадии.** Семантический слой у клиента — папка `scaffold/metrics/`: `01_metrics.md` (витрина target metrics + карта доменов) + один-два domain-файла по живому триггеру + `source/*.xlsx`. Стабильные ID метрик (`metric_<id>`) есть с самого начала, версионирование через `version` в паспорте — тоже. Структура секций domain-файла — `datasets / relationships / metrics / routes` (адаптация Open Semantic Interchange, формат markdown). Полная раскладка — [`../../scaffold/metrics/`](../../scaffold/metrics/), решение целиком — [`../../04_decisions.md`](../../04_decisions.md) №5.
+**На первой стадии.** Семантический слой у клиента — папка `scaffold/05_metrics/`: `01_metrics.md` (витрина target metrics + карта доменов) + один-два domain-файла по живому триггеру + `source/*.xlsx`. Стабильные ID метрик (`metric_<id>`) есть с самого начала, версионирование через `version` в паспорте — тоже. Структура секций domain-файла — `datasets / relationships / metrics / routes` (адаптация Open Semantic Interchange, формат markdown). Полная раскладка — [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/), решение целиком — [`../../04_decisions.md`](../../04_decisions.md) №5.
 
 ### Канонические имена domain-файлов
 
@@ -274,7 +274,7 @@ priority: high
 - `source/<file>.xlsx` — клиентские xlsx как есть, read-only для AI.
 - `extractors/<client>_<sheet>.py` — per-client Python-скрипты, которые читают `source/` и пишут JSON по запросу AI-агента (см. слой 6, Ветка А — исполнение маршрута).
 
-**Per-client extractor живёт у клиента, не в общей библиотеке skills.** У каждого клиента xlsx свой → координаты свои → extractor свой. В [`../../skills/metrics-analysis/`](../../skills/metrics-analysis/) лежит только то, что универсально (системный промпт оркестратора + черновик narrative composer). Шаблон-паттерн для extractor — в [`../../scaffold/metrics/extractors/README.md`](../../scaffold/metrics/extractors/README.md), полные правила написания — в [`rollout.md`](rollout.md) шаг 6.
+**Per-client extractor живёт у клиента, не в общей библиотеке skills.** У каждого клиента xlsx свой → координаты свои → extractor свой. В [`../../skills/metrics-analysis/`](../../skills/metrics-analysis/) лежит только то, что универсально (системный промпт оркестратора + черновик narrative composer). Шаблон-паттерн для extractor — в [`../../scaffold/05_metrics/extractors/README.md`](../../scaffold/05_metrics/extractors/README.md), полные правила написания — в [`rollout.md`](rollout.md) шаг 6.
 
 ---
 
@@ -416,5 +416,5 @@ CEO в чате задаёт не одиночные вопросы, а цепо
 Решения, которые нужно принять с архитектором до старта работы:
 
 1. **Topic-слой явный или неявный.** Сейчас неявно через описание таблиц и витрину `01_metrics.md`. На MVP с одним клиентом — приемлемо. Когда количество маршрутов перевалит за ~50 — придётся вводить явно (паттерн Omni: «определи область вопроса до выбора маршрута»). Решить сейчас: вводим сразу, чтобы потом не переделывать, или откладываем под нагрузку.
-1. **Гранулярность семантического слоя.** Закрыто решением [`04_decisions.md`](../../04_decisions.md) №5: на первой стадии — `01_metrics.md` (витрина) + domain-файлы по живому триггеру в `scaffold/metrics/`. Расширение за пределы канона `finance/sales/operations/people` — по триггеру, описанному в [`scaffold/metrics/README.md`](../../scaffold/metrics/README.md).
+1. **Гранулярность семантического слоя.** Закрыто решением [`04_decisions.md`](../../04_decisions.md) №5: на первой стадии — `01_metrics.md` (витрина) + domain-файлы по живому триггеру в `scaffold/05_metrics/`. Расширение за пределы канона `finance/sales/operations/people` — по триггеру, описанному в [`scaffold/05_metrics/README.md`](../../scaffold/05_metrics/README.md).
 1. **Где физически хранятся snapshots и trace.** DuckDB / Parquet / Postgres / отдельные листы Google Sheets. Решение зависит от того, насколько критична скорость на старте и насколько просто хочется деплоить. На первой стадии — отложено: snapshot в [ПОЗЖЕ], отдельный trace в [ПОЗЖЕ].

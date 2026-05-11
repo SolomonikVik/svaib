@@ -130,8 +130,8 @@ plugin/            → собранный пакет для клиента (де
 | Понять как работать с X | [methodology/](methodology/) | Протоколы, decision frames, ритуалы |
 | Добавить/изменить сущность | [ontology/entities.md](ontology/entities.md) | Каталог атомарных сущностей |
 | Создать/улучшить шаблон | [scaffold/](scaffold/) | Готовый каркас + спецификации |
-| Понять чему scaffold должен соответствовать | [scaffold/idea.md](scaffold/idea.md) | 5 принципиальных требований к слою Данные (стержень) |
-| Спроектировать структуру папок | [scaffold/principles.md](scaffold/principles.md) | Принципы реализации: миссия файла, развёртывание, маршрутизация |
+| Понять архитектуру scaffold | [methodology/scaffold/01_architecture.md](methodology/scaffold/01_architecture.md) | Требования, принципы, модель верхнего уровня |
+| Спроектировать структуру папок | [methodology/scaffold/02_folder-spec.md](methodology/scaffold/02_folder-spec.md) | Спецификация папок scaffold |
 | Развернуть scaffold для клиента | [scaffold/clients/](scaffold/clients/) | Шаблоны клиентских проектов |
 | Спроектировать навык | [skills/](skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |

@@ -41,7 +41,7 @@ README → 01_ceo/01_my_profile.md → 02_strategy/01_vision.md → 02_strategy/
 | Стратегическое обсуждение, пересмотр целей | `02_strategy/05_timeline.md`, `02_strategy/06_decisions.md` |
 | Подведение итогов, ретроспектива | `02_strategy/04_weekly_progress.md` |
 | Планирование периода | `02_strategy/03_plan.md`, `02_strategy/02_goal.md` |
-| Обсуждение задач с участием людей | `03_team/`, `04_management/` |
+| Обсуждение задач с участием людей | `03_team/`, `04_company/` |
 | Анализ состояния, энергии, паттернов | `01_ceo/03_thoughts.md` |
 
 ---
@@ -108,7 +108,7 @@ README → 01_ceo/01_my_profile.md → 02_strategy/01_vision.md → 02_strategy/
 - Metrics расширяется (CEO отслеживает больше метрик)
 - Strategy может выноситься в отдельный файл
 - Подпроекты для ключевых направлений
-- Выжимки встреч — в meetings/ наименьшей общей родительской папки (внутри подразделения → 04_management/{org_node}/meetings/, между дочерними одной группировки → 04_management/{parent}/meetings/, между верхнеуровневыми → 04_management/meetings/ — → scaffold/04_management/README.md)
+- Выжимки встреч — в meetings/ наименьшей общей родительской папки (внутри подразделения → 04_company/{org_node}/meetings/, между дочерними одной группировки → 04_company/{parent}/meetings/, между верхнеуровневыми → 04_company/meetings/ — → scaffold/04_company/README.md)
 
 **Принцип:** система не усложняется для клиента. CEO не должен вести больше файлов, чем соло-предприниматель. Разница — в глубине наполнения, не в количестве.
 

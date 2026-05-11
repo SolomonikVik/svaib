@@ -1,6 +1,6 @@
 ---
 title: "svaib — дизайн-гайд для standalone HTML-артефактов"
-updated: 2026-05-01
+updated: 2026-05-11
 version: 1
 scope: "publications, client_materials, internal_artifacts"
 priority: high
@@ -237,6 +237,295 @@ Hero должен сразу показывать объект страницы,
 }
 ```
 
+### Preferred option / базовый ориентир
+
+Паттерн для коридора из 3 сценариев: `минимум / базовый / максимум`, `conservative / base / upside`, варианты оценки, пакеты, горизонты. Смысл — показать не “самый красивый” вариант, а рабочую базу, на которую мы ориентируемся.
+
+Правило:
+
+- боковые варианты остаются спокойными;
+- базовый вариант получает светлый teal/green highlight;
+- pink не использовать для базового сценария, чтобы не смешивать “ориентир” с “проблемой / риском / эмоциональным фокусом”;
+- текст не сокращать ради карточек: карточки дают быстрый выбор, таблица или memo ниже сохраняют полную логику.
+
+HTML:
+
+```html
+<div class="option-range">
+  <div class="option-card">
+    <b>минимум</b>
+    <strong>pre-money $600K</strong>
+    <p>доля 7.69%</p>
+  </div>
+  <div class="option-card base-option">
+    <b>базовый</b>
+    <strong>pre-money $700K</strong>
+    <p>доля 6.67%</p>
+  </div>
+  <div class="option-card">
+    <b>максимум</b>
+    <strong>pre-money $800K</strong>
+    <p>доля 5.88%</p>
+  </div>
+</div>
+```
+
+CSS:
+
+```css
+.option-range {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.option-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(7, 16, 21, 0.72);
+  padding: 15px;
+}
+
+.option-card b {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--teal);
+  font-family: JetBrains Mono, monospace;
+  font-size: 12px;
+}
+
+.option-card strong {
+  display: block;
+  font-family: Sora, Inter, sans-serif;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.option-card p {
+  margin: 8px 0 0;
+  color: var(--muted);
+}
+
+.option-card.base-option {
+  border-color: rgba(120, 255, 242, 0.48);
+  border-left: 5px solid #78fff2;
+  background: linear-gradient(180deg, rgba(0, 180, 166, 0.15), rgba(7, 16, 21, 0.78));
+  box-shadow: inset 0 0 0 1px rgba(120, 255, 242, 0.08), 0 0 24px rgba(0, 180, 166, 0.09);
+}
+
+.option-card.base-option b {
+  color: #78fff2;
+}
+```
+
+Responsive:
+
+```css
+@media (max-width: 760px) {
+  .option-range {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+### Mode switcher / переключатель сценариев
+
+Для интерактивных калькуляторов и сравнительных артефактов не использовать “плоские” кнопки без явного состояния. Переключатель должен считываться как выбор режима с первого взгляда.
+
+Правило:
+
+- использовать `role="radiogroup"` и карточки-кнопки `role="radio"`;
+- каждая карточка содержит круглый маркер выбора, короткий статус (`базовый`, `компромиссный`, `рискованный`, `стресс-сценарий`) и понятное название;
+- активный режим получает светлый teal highlight, контрастную рамку и glowing radio-dot;
+- `pink` использовать только для рискованного режима, `yellow` — для stress/warning;
+- не прятать важную разницу в подписи: название режима должно само объяснять суть.
+
+HTML:
+
+```html
+<div class="mode-kicker">Выберите режим расчёта</div>
+<div class="mode-switcher" role="radiogroup" aria-label="Режим защиты">
+  <button class="mode-btn" data-mode="none" data-active="true" aria-checked="true" role="radio" type="button">
+    <span class="mode-dot"></span>
+    <span class="mode-text">
+      <b class="mode-tag">базовый</b>
+      <strong>Без защиты</strong>
+      <span class="mode-desc">Все доли размываются пропорционально.</span>
+    </span>
+  </button>
+  <button class="mode-btn" data-mode="i1-one" data-active="false" aria-checked="false" role="radio" type="button">
+    <span class="mode-dot"></span>
+    <span class="mode-text">
+      <b class="mode-tag">компромиссный</b>
+      <strong>I1 защищён на Series A</strong>
+      <span class="mode-desc">Не размывается только на первом следующем раунде.</span>
+    </span>
+  </button>
+</div>
+```
+
+CSS:
+
+```css
+.mode-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  color: #78fff2;
+  font-family: JetBrains Mono, monospace;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.mode-kicker:before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--teal);
+  box-shadow: 0 0 18px rgba(0, 180, 166, 0.8);
+}
+
+.mode-switcher {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(0, 180, 166, 0.3);
+  border-radius: var(--radius);
+  background: linear-gradient(180deg, rgba(0, 180, 166, 0.12), rgba(7, 16, 21, 0.9));
+}
+
+.mode-btn {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  min-height: 96px;
+  border: 1px solid rgba(0, 180, 166, 0.18);
+  border-radius: var(--radius);
+  background: rgba(11, 22, 27, 0.72);
+  color: var(--muted);
+  padding: 13px 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mode-dot {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(167, 186, 189, 0.45);
+  border-radius: 999px;
+  background: rgba(7, 16, 21, 0.9);
+}
+
+.mode-dot:after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.mode-tag {
+  display: inline-block;
+  margin-bottom: 7px;
+  color: #78fff2;
+  font-family: JetBrains Mono, monospace;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.mode-tag.warning { color: #ffc1d6; }
+.mode-tag.stress { color: var(--yellow); }
+
+.mode-btn[data-active="true"] {
+  border-color: rgba(120, 255, 242, 0.68);
+  background: linear-gradient(180deg, rgba(0, 180, 166, 0.25), rgba(7, 16, 21, 0.88));
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px rgba(120, 255, 242, 0.12), 0 0 24px rgba(0, 180, 166, 0.12);
+}
+
+.mode-btn[data-active="true"] .mode-dot {
+  border-color: #78fff2;
+  box-shadow: 0 0 18px rgba(0, 180, 166, 0.45);
+}
+
+.mode-btn[data-active="true"] .mode-dot:after {
+  background: #78fff2;
+}
+```
+
+### Metrics, bars, cap table
+
+Для калькуляторов, где главный объект — цифры и сценарии, использовать рабочую структуру:
+
+1. Компактный заголовок без вводной “презентации”.
+2. Сразу калькулятор: mode switcher → sliders/inputs → metric cards.
+3. Визуальная динамика: stacked bars по состояниям.
+4. Полная таблица: cap table / расчётные значения.
+5. Нижняя интерпретация: плюсы/минусы для ключевых сторон.
+
+Правила:
+
+- metric cards показывают только 2-4 главных числа; не превращать их в текстовые карточки;
+- stacked bars должны иметь легенду и подписи состояний слева;
+- таблицу держать в `overflow-x: auto`, чтобы она не ломала mobile;
+- нижняя интерпретация должна быть динамической, если режимы меняют смысл;
+- если JS генерирует HTML-строки, экранировать закрывающие теги внутри `<script>` как `<\/div>`, `<\/li>`, чтобы `xmllint --html` не давал ложные ошибки.
+
+CSS-ориентир:
+
+```css
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.metric-card {
+  min-height: 124px;
+  border: 1px solid rgba(0, 180, 166, 0.2);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+  padding: 15px;
+}
+
+.metric-card.warning {
+  border-color: rgba(255, 77, 141, 0.3);
+  border-left: 5px solid var(--pink);
+  background: #151821;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.bar-track {
+  display: flex;
+  height: 34px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 180, 166, 0.14);
+  border-radius: var(--radius);
+  background: rgba(7, 16, 21, 0.72);
+}
+
+.table-wrap {
+  margin-top: 18px;
+  overflow-x: auto;
+  border: 1px solid rgba(0, 180, 166, 0.2);
+  border-radius: var(--radius);
+  background: rgba(7, 16, 21, 0.5);
+}
+```
+
 ### Folder / code blocks
 
 Для структур папок использовать JetBrains Mono и увеличенный размер, если структура — главный объект страницы.
@@ -325,6 +614,30 @@ Hero должен сразу показывать объект страницы,
 
 Живой пример для staged model пока не зафиксирован.
 
+### 4. Interactive calculator / scenario tool
+
+Подходит для инвестиционных калькуляторов, pricing-моделей, unit economics, сравнения сценариев, размывания долей, runway и других рабочих инструментов.
+
+Порядок:
+
+1. Компактная шапка: логотип + H1 + короткий подзаголовок. Без длинного hero, если инструмент уже понятен.
+2. Первый блок сразу рабочий: переключатель сценариев, затем sliders/inputs.
+3. Metric cards: 2-4 числа, которые отвечают на главный вопрос.
+4. Stacked bars / line chart / scenario grid: визуальное сравнение.
+5. Таблица: полная расчётная база с точностью, если она нужна для доверия.
+6. Интерпретация: плюсы/минусы или выводы для каждой стороны. Для переговорных артефактов это обязательный слой.
+7. Footer: короткое ограничение модели, если расчёт упрощённый.
+
+Правила:
+
+- не начинать с длинного объяснения, если пользователь пришёл “посчитать”;
+- дефолты должны быть реалистичным базовым сценарием, а не крайним примером;
+- названия режимов пишутся человечески: `I1 защищён на Series A`, а не `mode i1-one`;
+- рискованные сценарии маркируются явно (`рискованный`, `стресс-сценарий`), но без визуальной истерики;
+- если артефакт нужен для переговоров, нижняя интерпретация должна помогать говорить, а не только показывать числа.
+
+Пример: [../investment/dilution_calculator_4_rounds.html](../investment/dilution_calculator_4_rounds.html).
+
 ## Responsive
 
 Минимальные правила:
@@ -335,6 +648,7 @@ Hero должен сразу показывать объект страницы,
   .two-col {
     grid-template-columns: 1fr;
   }
+  .mode-switcher,
   .cards-4,
   .cards-5,
   .pipeline {
@@ -355,11 +669,18 @@ Hero должен сразу показывать объект страницы,
   .cards-3,
   .cards-4,
   .cards-5,
+  .mode-switcher,
+  .metrics-grid,
+  .controls-grid,
+  .pros-cons,
   .pipeline {
     grid-template-columns: 1fr;
   }
   .section {
     padding: 22px 18px;
+  }
+  .bar-row {
+    grid-template-columns: 1fr;
   }
 }
 ```
@@ -371,17 +692,21 @@ Hero должен сразу показывать объект страницы,
 3. **Собрать один standalone HTML.** CSS внутри `<style>`, без dev-сервера.
 4. **Сделать первый экран содержательным.** Главный объект должен быть виден сразу: папки, pipeline, стадии, карта.
 5. **Проверить размеры ключевого объекта.** Если структура папок — главное, она должна быть крупной, не служебной.
-6. **Прогнать `xmllint`.**
-7. **Открыть через `open path/to/file.html` и посмотреть глазами.**
+6. **Для интерактивного артефакта проверить JS.** Встроенный скрипт должен проходить `node --check`.
+7. **Прогнать `xmllint`.**
+8. **Открыть через `open path/to/file.html` и посмотреть глазами.**
 
 Команды проверки:
 
 ```bash
 xmllint --html --noout path/to/file.html
 tidy -utf8 -q -e path/to/file.html
+perl -0ne 'print $1 if /<script>(.*?)<\/script>/s' path/to/file.html | node --check -
 ```
 
 `tidy` может ругаться на HTML5-атрибуты (`charset`, `crossorigin`, `style type`). Это warnings, не блокер. Блокер — незакрытые теги, неэкранированные `&` в ссылках Google Fonts, сломанная структура.
+
+Для JS-строк внутри `<script>` экранировать закрывающие HTML-теги: `"<\/div>"`, `"<\/li>"`, `"<\/td>"`. Иначе HTML-парсер может принять строку за настоящий закрывающий тег и дать ложную ошибку.
 
 ## Антипаттерны
 
@@ -395,6 +720,8 @@ tidy -utf8 -q -e path/to/file.html
 | Карточки внутри карточек | Визуальный шум и тяжесть | Секции как контейнеры, карточки только для повторяемых элементов |
 | Маленький mono-текст | Пути файлов становятся нечитаемыми | Для важных путей 15px+, line-height 1.45+ |
 | Новый смысл в HTML | Появляется вторая правда рядом с markdown | Новые решения сначала фиксировать в source `.md` |
+| Неочевидный переключатель | Пользователь не понимает, что режимы кликабельны | Делать radio-card switcher с маркером, статусом и active-state |
+| Калькулятор без интерпретации | Цифры есть, переговорного вывода нет | Добавить нижний блок плюсов/минусов или выводов по сторонам |
 
 ## Что не покрывает этот гайд
 
@@ -409,3 +736,5 @@ tidy -utf8 -q -e path/to/file.html
 |---|---|---|
 | Metrics intro v2 | [../../framework/methodology/metrics/intro-for-client-v2.html](../../framework/methodology/metrics/intro-for-client-v2.html) | Client intro |
 | Scaffold overview | [demos/scaffold-overview.html](demos/scaffold-overview.html) | Structural map |
+| Investment memo | [../investment/2026-05-07_pitch.html](../investment/2026-05-07_pitch.html) | Investor memo / preferred option |
+| Dilution calculator | [../investment/dilution_calculator_4_rounds.html](../investment/dilution_calculator_4_rounds.html) | Interactive calculator / scenario tool |

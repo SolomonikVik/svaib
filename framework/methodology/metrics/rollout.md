@@ -26,8 +26,8 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 | Артефакт | Где живёт | Зачем |
 |---|---|---|
-| Канон scaffold | [`framework/scaffold/metrics/`](../../scaffold/metrics/) | образец domain-файлов, витрины, source/README |
-| `template-domain.md` | [`framework/scaffold/metrics/template-domain.md`](../../scaffold/metrics/template-domain.md) | заполняется под клиента, не пишется с нуля |
+| Канон scaffold | [`framework/scaffold/05_metrics/`](../../scaffold/05_metrics/) | образец domain-файлов, витрины, source/README |
+| `template-domain.md` | [`framework/scaffold/05_metrics/template-domain.md`](../../scaffold/05_metrics/template-domain.md) | заполняется под клиента, не пишется с нуля |
 | `orchestrator-metrics.md` | [`orchestrator-metrics.md`](../../skills/metrics-analysis/orchestrator-metrics.md) | системный промпт оркестратора у клиента |
 | `HOWTO.md` | [`HOWTO.md`](HOWTO.md) | объяснение клиенту, как это работает |
 | Образцовый extractor | `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py` | шаблон per-client extractor |
@@ -113,7 +113,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 **На каждый создаваемый domain-файл:**
 
-1. Скопировать `framework/scaffold/metrics/template-domain.md` как отправную точку.
+1. Скопировать `framework/scaffold/05_metrics/template-domain.md` как отправную точку.
 2. Заполнить:
    - `datasets` — источники + `regions` (если на листе несколько таблиц) + `fields` со синонимами/антисинонимами/`is_time`.
    - `metrics` — паспорта со всеми обязательными полями: `direction`, `formula_human`, `synonyms` из речи CEO, `antonyms`, `plan_required`.
@@ -250,7 +250,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 **Артефакт шага:** `clients/private/<client>/eval/01_first_run.md`.
 
-Дыры — двигают канон (Этап С): обновить `framework/scaffold/metrics/template-domain.md`, `orchestrator-metrics.md`, `HOWTO.md` если урок общий для всех клиентов.
+Дыры — двигают канон (Этап С): обновить `framework/scaffold/05_metrics/template-domain.md`, `orchestrator-metrics.md`, `HOWTO.md` если урок общий для всех клиентов.
 
 ---
 
@@ -271,8 +271,8 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 | Артефакт | Где живёт у клиента | Источник правды у svaib |
 |---|---|---|
-| `01_metrics.md` витрина | `clients/<client>/drive/.../metrics/` | образец витрины — `framework/scaffold/metrics/01_metrics.md` |
-| Domain-файлы | `clients/<client>/drive/.../metrics/` | шаблон — `framework/scaffold/metrics/template-domain.md` |
+| `01_metrics.md` витрина | `clients/<client>/drive/.../metrics/` | образец витрины — `framework/scaffold/05_metrics/01_metrics.md` |
+| Domain-файлы | `clients/<client>/drive/.../metrics/` | шаблон — `framework/scaffold/05_metrics/template-domain.md` |
 | Per-client extractor | `clients/<client>/drive/.../metrics/extractors/` | шаблон + примеры в `framework/_inbox/metrics-scaffold/sandbox/extractors/` |
 | Narrative composer | `clients/<client>/drive/.../metrics/extractors/narrative.py` | **черновик** (DRAFT) — `framework/skills/metrics-analysis/narrative.py`; статус под open-question #1 (Python vs LLM-сборка). Кандидат в общий канон после решения вопроса и 2-3 клиентов |
 | Системный промпт оркестратора | `clients/<client>/drive/.../CLAUDE.md` или плагинный slot | `framework/skills/metrics-analysis/orchestrator-metrics.md` |

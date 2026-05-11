@@ -135,20 +135,21 @@ body {
   background-size: auto, 72px 72px, 72px 72px, auto;
   border-top: 3px solid var(--accent);
   min-height: 100vh;
-  padding: 36px 20px 48px;
+  padding: 36px 44px 48px;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 .container {
-  max-width: 680px;
+  width: 100%;
+  max-width: 500px;
   margin: 0 auto;
 }
 
 .header {
   font-family: var(--font-display);
-  margin-bottom: 28px;
-  padding: 26px 28px;
+  margin-bottom: 18px;
+  padding: 12px 18px;
   background: linear-gradient(180deg, rgba(19, 38, 45, 0.92), rgba(11, 22, 27, 0.9));
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
@@ -156,11 +157,11 @@ body {
 }
 
 .header h1 {
-  font-size: clamp(34px, 7vw, 48px);
-  line-height: 1.04;
+  font-size: 24px;
+  line-height: 1.1;
   font-weight: 800;
   color: var(--text);
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .header .date {
@@ -178,12 +179,12 @@ body {
 
 .group-title {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.06em;
   color: var(--accent);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   padding-left: 4px;
 }
 
@@ -192,7 +193,7 @@ body {
 }
 
 .group-title.meetings {
-  color: var(--yellow);
+  color: var(--pink);
 }
 
 .group-title.done-group {
@@ -202,12 +203,12 @@ body {
 .task {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
-  padding: 16px 18px;
+  gap: 12px;
+  padding: 8px 14px;
   background: linear-gradient(180deg, rgba(19, 38, 45, 0.96), rgba(16, 29, 35, 0.96));
   border: 1px solid rgba(37, 68, 77, 0.9);
   border-radius: var(--radius);
-  margin-bottom: 10px;
+  margin-bottom: 7px;
   cursor: pointer;
   transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background 0.12s;
   -webkit-tap-highlight-color: transparent;
@@ -239,9 +240,9 @@ body {
 
 .checkbox {
   flex-shrink: 0;
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
   border: 2px solid rgba(0, 180, 166, 0.34);
   display: flex;
   align-items: center;
@@ -268,19 +269,19 @@ body {
 }
 
 .task-text {
-  font-size: 16px;
-  line-height: 1.55;
+  font-size: 17px;
+  line-height: 1.3;
   padding-top: 1px;
   color: var(--text);
 }
 
 .task-text strong {
-  color: var(--text);
+  color: var(--accent);
   font-weight: 800;
 }
 
-.task:not(.done) .task-text strong {
-  color: #ffffff;
+.task.done .task-text strong {
+  color: var(--done-text);
 }
 
 .task-text code {
@@ -323,11 +324,11 @@ body {
   }
 
   .header {
-    padding: 22px;
+    padding: 12px 18px;
   }
 
   .task {
-    padding: 15px 14px;
+    padding: 8px 14px;
   }
 
   .task.sub {
@@ -372,8 +373,8 @@ function render(data) {
 
   let html = '';
   for (const group of data.groups) {
-    html += `<div class="group">`;
     const titleClass = group.title.match(/[Сс]делано/) ? 'done-group' : group.title.match(/[Вв]стреч/) ? 'meetings' : 'doing';
+    html += `<div class="group ${titleClass}">`;
     html += `<div class="group-title ${titleClass}">${esc(group.title)}</div>`;
     for (const task of group.tasks) {
       const doneClass = task.done ? ' done' : '';

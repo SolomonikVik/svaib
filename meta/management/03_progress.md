@@ -1,6 +1,6 @@
 ---
 title: "svaib — meta-направление, хроника сделанного"
-updated: 2026-05-08
+updated: 2026-05-11
 ---
 
 # Meta · Progress
@@ -12,6 +12,12 @@ updated: 2026-05-08
 - [session-log.md](session-log.md) — единый лог сессий по проекту
 - [decisions.md](decisions.md) — реестр стратегических решений
 - [04_weekly_progress.md](04_weekly_progress.md) — недельная летопись (агрегатор)
+
+---
+
+## 2026-05-11 · Ангельский раунд от инвестора закрыт
+
+Зафиксированы условия раунда и ударили по рукам Условия и хроника — в [meta/investment/](../investment/). Стратегическое решение — в [decisions.md](decisions.md).
 
 ---
 

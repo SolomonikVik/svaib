@@ -17,7 +17,7 @@ type: procedure
 
 ## Связанные файлы
 
-- [framework/scaffold/MODEL.md](../framework/scaffold/MODEL.md) — Iron Law, единица развёртывания
+- [framework/methodology/scaffold/01_architecture.md](../framework/methodology/scaffold/01_architecture.md) — архитектура scaffold
 - [framework/memory/file_spec.md](../framework/memory/file_spec.md) — канон формата файлов (YAML, секции, размер)
 - [.claude/skills/close-session/SKILL.md](../.claude/skills/close-session/SKILL.md) — закрытие сессии (контракт в разделе ниже)
 - [.claude/skills/plan/SKILL.md](../.claude/skills/plan/SKILL.md) — быстрые операции над `02_backlog`
@@ -131,7 +131,7 @@ _inbox → (разбор) → 02_backlog → 02_active → 03_progress
 
 ### Для клиентских шаблонов
 
-Session Handoff — **только для направлений svaib.** В клиентских шаблонах (`framework/scaffold/04_management/{org_node}/`, `framework/scaffold/projects/`) секции нет — у клиента другой режим работы.
+Session Handoff — **только для направлений svaib.** В клиентских шаблонах (`framework/scaffold/04_company/{org_node}/`, `framework/scaffold/projects/`) секции нет — у клиента другой режим работы.
 
 ---
 

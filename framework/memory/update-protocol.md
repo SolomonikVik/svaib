@@ -19,7 +19,7 @@ scope: product_core
 Не сюда:
 - модель папок scaffold → `../methodology/scaffold/01_architecture.md`
 - спецификация файла → `file_spec.md`
-- канон файлов scaffold → `../methodology/scaffold/02_file-templates.md`
+- канон файлов scaffold → `../methodology/scaffold/03_node-files.md`
 - исполняемые шаги конкретного помощника → `../skills/`
 
 ## Черновик

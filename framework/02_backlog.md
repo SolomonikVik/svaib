@@ -30,83 +30,22 @@ type: plan
 
 ## 🔸 Scaffold
 
+### Связность scaffold
 
+Проверить, что обновлённый scaffold не противоречит онтологии и методологии. Чтобы агенты не сыпались на устаревших связях.
+- [ ] Связность с [memory/](memory/), [ontology/](ontology/), [methodology/](methodology/)
 
-- [ ] удалить файлы из клиентского 
-
-
-### Шаг 3. Канон каждого базового файла scaffold
-
-Для каждого — миссия файла + миссия канонических блоков внутри. То же, что сделали для overview в этой сессии, — по остальным.
-
-- [ ] `README.md` - 
-- [ ] `01_overview.md`
-	- [ ] АС предлагаем - Overview содержит KP/KR с текущими значениями (не только цели). Альтернатива: только цели — отвергли.
-	- [ ] - `scaffold/product/01_overview.md` — пересобрать под 5 блоков канона.
-	- [ ] `scaffold/projects/{name}/01_overview.md` — пересобрать под 5 блоков; паспортную часть вынести в `profile.md`.
-- [ ] `profile.md`
-- [ ] `02_active.md`
-- [ ] `02_backlog.md` — **Направление (Track) и Задача (Task). Подзадача = задача внутри задачи, глубина вложенности любая**
-- [ ] `03_progress.md`
-- [ ] `04_decisions.md`
-- [ ] **Глоссарий**
-
-### Шаг 4. Канон файлов и папок внутри направлений (от общего к частному)
-
-Внутри типов сущностей scaffold (`04_management/{org_node}/`, `product/`, `projects/{name}/`) — цепочки файлов конкретных типов сущностей и их связки.
-
-- [ ] **Глоссарий — где должен быть**
-- [ ] **Папка [scaffold/clients/](scaffold/clients/)** — чёткое определение Setup: что это, зачем, для чего настройка папок
-- [ ] **Определиться с папкой `docs/`** для доп-доков в направлениях
-- [ ] **Определиться с папкой `wiki/`** по методу Karpathy (можно позже)
-
-### Шаг 5. Канон README
-
-Содержательный шаблон `README.md` по типам папок (глубже разграничения README ↔ overview, зафиксированного в [methodology/scaffold/02_readme-spec.md](methodology/scaffold/02_readme-spec.md)).
-
-### Шаг 6. Что забираем из контекстной архитектуры и чужих архитектурных документов
-
-Внимательно прочитать [memory/01_context_memory.md](memory/01_context_memory.md) и решить, что взять в scaffold на первый заход: YAML / front-matter, правила, хуки и т.д.
-
-- [ ] Посмотреть какие инсайты можно взять из [ARCHITECTURE_maxim](_inbox/scaffold/ARCHITECTURE_maxim.md) при ревизии scaffold
-- [ ] [memory/file_spec.md](memory/file_spec.md) — формат файла
-
-### Шаг 7. Обновить файлы scaffold под Шаг 6
-
-Применить решения по контекстной архитектуре (YAML, хуки, правила) к шаблонам scaffold.
-
-### Шаг 8. Применить канон 5 блоков overview к шаблонам scaffold
-
-- [ ] `scaffold/product/01_overview.md` — пересобрать под 5 блоков
-- [ ] `scaffold/projects/{name}/01_overview.md` — пересобрать, паспорт вынести в `profile.md`
-- [ ] `scaffold/04_management/{org_node}/01_overview.md` — пересобрать
-- [ ] Добавить отсутствующий `scaffold/04_management/{org_node}/README.md`
-- [ ] Однострочный README в архивных/служебных подпапках
-- [ ] `scaffold/projects/{name}/README.md` — вынести методологию проекта в `principles.md` / `methodology.md`
-- [ ] `scaffold/metrics/` — оставить отдельной парадигмой, но сверить терминологию
-
-### Шаг 9. Применить канон к самому `framework/svaib` (живой пример)
+### Применить канон к самому `framework/svaib` (живой пример)
 
 - [ ] `framework/00_product.md` → `framework/profile.md` (переименовать)
 - [ ] Поправить ссылки: [README.md](README.md), [01_overview.md](01_overview.md), [architecture.md](architecture.md), [../meta/management/01_vision.md](../meta/management/01_vision.md)
 - [ ] Проверить тело `profile.md` — блок «Стадия и горизонт» (операционка) — переехать в overview
 - [ ] [01_overview.md](01_overview.md) — выровнять под 5 блоков
 
-### Шаг 10. Канон развёртывания у клиента
-
-Как scaffold разворачивается: что обязательно, что опционально, в каком порядке, где зафиксировано как канон (чтобы не забывалось при онбординге).
-
-### Шаг 11. Связность scaffold
-
-Проверить, что обновлённый scaffold не противоречит онтологии и методологии. Чтобы агенты не сыпались на устаревших связях.
-
-- [x] **Перенести методологию scaffold из клиентского `scaffold/` в `methodology/scaffold/`**: старые `idea.md`, `principles.md`, `MODEL.md` поглощены новым рабочим каноном.
-- [ ] Связность с [memory/](memory/), [ontology/](ontology/), [methodology/](methodology/)
-
-### Шаг 12. Закрыть 10 концептуальных открытых вопросов
+### Закрыть  открытые вопросы 
 
 Открытые вопросы, перенесённые в [methodology/scaffold/open-questions.md](methodology/scaffold/open-questions.md):
-
+Пересмотреть те, что ниже
 1. **Identity сущности** — явный `id` в frontmatter или `[SOURCE]/[REF:]` + Rename Guard
 2. **Природа vs стадия** — маркетинг-как-файл и маркетинг-как-проект: одна сущность на разных стадиях или две разные
 3. **Lifecycle архивации** — формальные операции `archive / pause / merge / split` для умерших / слившихся / разделившихся сущностей
@@ -180,6 +119,7 @@ type: plan
 - [ ] **Runtime-скиллы meeting-analysis не самодостаточны.** `L2-prompt-protocol-telegram.md` ссылается на `../../ontology/protocol_format.md` и `L2-prompt-protocol-full.md`; `L2-procedure-scaffold-update.md` — на `L2-procedure-client-update.md`. При копировании клиенту ссылки ломаются. Правило: runtime-скиллы должны быть самодостаточны — только ссылки на клиентские папки и другие runtime-скиллы. Обнаружено при миграции клиента 14.04, у клиента почищено вручную
 - [ ] **Оркестратор встреч в Шаге 0** спрашивает путь транскрипта вручную — логично чтобы он сам дёргал `macwhisper-transcript --list` и находил
 - [ ] L1/L2: различать "подумаю" vs "решил" — агент превращает размышление в задачу (кейс Паши у КЛ2, встреча 17.04). Нужен фильтр reflective vs committed при извлечении задач/решений
+- [ ] Telegram-бот шлет вместо плюс пробел: Скрипт [send_telegram.sh:37](vscode-webview://02914pishrsn5pihe9dqlt249vcpu4d54q3kj7dhjjv070c597ft/svaib/framework/skills/meeting-analysis/send_telegram.sh#L37) шлёт текст через curl `-d text="$1"`. Флаг `-d` использует `application/x-www-form-urlencoded`, а в этом формате `+` означает пробел (стандарт RFC 3986). curl сам не кодирует — отправляет байты как есть, и сервер Telegram честно расшифровывает `+` как пробел.
 
 ## 🔸 metrics
 

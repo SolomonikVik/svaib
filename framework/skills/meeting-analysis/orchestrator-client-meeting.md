@@ -155,7 +155,7 @@ Use only simple, single bash commands - no &&, no ||, no pipes, no ;, no redirec
 
 ## Связанные файлы
 
-- orchestrator-meeting.md -- аналогичный оркестратор для внутренних встреч (04_management/ + 03_team/)
+- orchestrator-meeting.md -- аналогичный оркестратор для внутренних встреч (04_company/ + 03_team/)
 - L1-prompt-entity-extractor.md -- промпт выжимки
 - L2-procedure-client-update.md -- обновление досье контрагента (шаг 2)
 - L2-prompt-protocol-telegram.md -- Telegram-сводка (шаг 3)

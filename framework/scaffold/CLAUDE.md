@@ -18,13 +18,16 @@
 | 01_ceo/01_my_profile.md | Личность CEO | Всегда |
 | 02_strategy/01_vision.md | Идентичность: кто мы, зачем | Всегда |
 | 02_strategy/02_goal.md | Цели: куда идём, KR | Всегда |
-| 02_strategy/03_plan.md | Оперативка: что делаем сейчас | Всегда |
-| 02_strategy/04_weekly_progress.md | Детальный лог | По запросу |
-| 02_strategy/05_timeline.md | История проекта | При стратегии |
-| 02_strategy/06_decisions.md | Принятые решения | При стратегии |
+| 02_strategy/03_plan.md | Оперативка: что делаем сейчас | По триггеру, если файл развёрнут |
+| 02_strategy/04_weekly_progress.md | Детальный лог | По триггеру, если файл развёрнут |
+| 02_strategy/05_timeline.md | История проекта | При стратегии, если файл развёрнут |
+| 02_strategy/06_decisions.md | Принятые решения | При стратегии, если файл развёрнут |
 | 01_ceo/03_thoughts.md | Парковка идей и размышлений | По запросу |
 | 01_ceo/04_decisions.md | Личные решения CEO | По запросу |
 | 03_team/{person}.md | Профайлы людей | При встречах, коучинге |
+| 04_company/{node}/ | Подразделения и направления | При обсуждении подразделения, встречах |
+| 05_metrics/01_metrics.md | Витрина target metrics, карта доменов | При вопросах о цифрах, KPI |
+| 05_metrics/{domain}.md | Метрики по домену (finance, sales, ...) | При вопросах про конкретный домен |
 
 
 
@@ -35,12 +38,13 @@
 
 ### По умолчанию (каждый сеанс)
 ```
-CLAUDE.md → README → 01_ceo/01_my_profile.md → 02_strategy
+README.md → CLAUDE.md → 01_ceo/01_my_profile.md → 02_strategy/01_vision.md → 02_strategy/02_goal.md
 ```
 
 ### По триггеру
 - Стратегическое обсуждение → 02_strategy/05_timeline.md, 02_strategy/06_decisions.md
-- Вопрос про метрики, цифры, KPI, состояние бизнеса → metrics/01_metrics.md → metrics/{domain}.md (если папка metrics/ развёрнута)
+- Обсуждение подразделения → 04_company/{node}/01_overview.md, 02_active.md, 03_progress.md
+- Вопрос про метрики, цифры, KPI, состояние бизнеса → 05_metrics/01_metrics.md → 05_metrics/{domain}.md
 
 
 ## Помощники (claude/skills/)

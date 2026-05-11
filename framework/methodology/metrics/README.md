@@ -41,15 +41,15 @@ type: reference
 
 ### Scaffold — каркас, который разворачивается у клиента
 
-[`../../scaffold/metrics/`](../../scaffold/metrics/)
+[`../../scaffold/05_metrics/`](../../scaffold/05_metrics/)
 
 | Файл | Что внутри |
 |---|---|
-| [`README.md`](../../scaffold/metrics/README.md) | Устройство папки `metrics/` у клиента, правила уровня папки |
-| [`01_metrics.md`](../../scaffold/metrics/01_metrics.md) | Шаблон витрины: target metrics CEO, карта доменов, OKR-секция, глоссарий |
-| [`template-domain.md`](../../scaffold/metrics/template-domain.md) | Шаблон domain-файла: `datasets / regions / fields / metrics / routes / known_issues` |
-| [`source/README.md`](../../scaffold/metrics/source/README.md) | Правила работы с xlsx-источниками клиента |
-| [`extractors/README.md`](../../scaffold/metrics/extractors/README.md) | Правила работы с per-client extractors у клиента |
+| [`README.md`](../../scaffold/05_metrics/README.md) | Устройство папки `metrics/` у клиента, правила уровня папки |
+| [`01_metrics.md`](../../scaffold/05_metrics/01_metrics.md) | Шаблон витрины: target metrics CEO, карта доменов, OKR-секция, глоссарий |
+| [`template-domain.md`](../../scaffold/05_metrics/template-domain.md) | Шаблон domain-файла: `datasets / regions / fields / metrics / routes / known_issues` |
+| [`source/README.md`](../../scaffold/05_metrics/source/README.md) | Правила работы с xlsx-источниками клиента |
+| [`extractors/README.md`](../../scaffold/05_metrics/extractors/README.md) | Правила работы с per-client extractors у клиента |
 
 ### Pilot / Sandbox — рабочая площадка пилота (Лебедев)
 
