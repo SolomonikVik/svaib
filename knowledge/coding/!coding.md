@@ -2,11 +2,11 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: processed
 added: 2026-01-30
-updated: 2026-02-28
-review_by: 2026-05-28
-tags: [coding, ai-coding, ide, claude-code, index, methodology, testing]
+updated: 2026-05-11
+review_by: 2026-08-11
+tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp]
 publish: false
-version: 18
+version: 19
 ---
 
 # Coding — AI-кодинг и разработка
@@ -51,7 +51,7 @@ version: 18
 
 ## UI-дизайн
 
-Всё про создание интерфейсов с AI: workflow, инструменты, кейсы, фишки. Проверенный подход: референсы (Mobbin) → описание текущего состояния → параллельный запуск генераторов (Lovable, v0, Bolt) → выбор лучшего → интеграция через Claude Code. Скриншоты работают лучше текстовых описаний. Новый тренд: **design-in-IDE** — Pencil.dev встраивает Figma-подобный canvas прямо в IDE, дизайн в .pen файлах (JSON) живёт в git, код генерируется через MCP по точным координатам (не по скриншотам). Детали: [ui-design.md](ui-design.md).
+Всё про создание интерфейсов с AI: workflow, инструменты, кейсы, фишки. Проверенный подход: референсы (Mobbin) → описание текущего состояния → параллельный запуск генераторов (Lovable, v0, Bolt) → выбор лучшего → интеграция через Claude Code. Скриншоты работают лучше текстовых описаний. Два свежих сдвига: (1) **design-in-IDE** — Pencil.dev встраивает Figma-подобный canvas прямо в IDE, дизайн в .pen файлах (JSON) живёт в git, код генерируется через MCP по точным координатам (не по скриншотам); (2) **design references-as-MCP** — дизайн-каталоги становятся MCP-сервисами (Lazyweb 257K+ скринов бесплатно, Refero MCP с DESIGN.md), агент сам поднимает референсы под задачу — заземление на реальные паттерны вместо generic-дизайна. Детали: [ui-design.md](ui-design.md).
 
 ## Engineering Harness — проектирование среды для агентов
 
