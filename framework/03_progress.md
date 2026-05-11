@@ -1,7 +1,6 @@
 ---
 title: "Framework — хроника"
-updated: 2026-05-05
-version: 13
+updated: 2026-05-12
 scope: product_core
 type: log
 ---
@@ -20,6 +19,35 @@ type: log
 - [02_active.md](02_active.md) — что в работе сейчас, Session Handoff
 - [02_backlog.md](02_backlog.md) — задачи направления на будущее
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
+
+---
+## 2026-05-12 · Добавлен 9-й управленческий цикл — finance
+
+Финансы выделены из metrics как отдельный предметный контур: финмодель, бюджет, кэш, юнит-экономика, сценарии. Финансовые метрики (revenue, gross margin, CAC, runway) остаются в metrics, бюджет и финмодель — в finance. Обновлены [ontology/management_cycles.md](ontology/management_cycles.md) (v3), [architecture.md](architecture.md) (v13), [01_overview.md](01_overview.md) (v10, цель экватора: 7 циклов в бете), [methodology/scaffold/open-questions.md](methodology/scaffold/open-questions.md) (v5 — где finance живёт в scaffold, отложено до первого клиента). На сайте `dev/src/public/second-ai-brain-overview.html` карта продукта и блоки циклов обновлены до 9.
+
+---
+## 2026-05-11 · Methodology scaffold: 01_architecture финален + ревью пятёрки применено
+
+[01_architecture.md](methodology/scaffold/01_architecture.md) переработан как обзорный слой (v4) — 7 H2-секций, дубли с spec убраны. Параллельно прошли два ревью (Claude × 4 субагента + Codex), сведены в action items, применены P1+P2: триплет AGENTS/CLAUDE в методологической папке, `archive/`→`zz_archive/`, инвариант «сущность ↔ файл, узел ↔ папка», унифицирована «служебная папка» с root-level, разведены H1 и аннотация в readme-spec. Коммит `dd1d780`.
+
+---
+## 2026-05-06 · Methodology scaffold v6: file-templates и folder-spec
+
+Переписаны [03_node-files.md](methodology/scaffold/03_node-files.md) (v3, с примерами аннотаций для каждого канонического файла) и [02_folder-spec.md](methodology/scaffold/02_folder-spec.md) (v3, упрощены типы узлов, README под новый канон). Параллельно Кодекс отработал замену «зона»→«контур» в methodology/scaffold/ и architecture.md.
+
+---
+## 2026-05-06 · Methodology scaffold v5: file-spec и readme-spec упрощены
+
+Сжали обвязку md-файла. В [02_file-spec.md](methodology/scaffold/02_file-spec.md) (v3, 315→238 строк) выкинуты «Миссия файла», обязательные «Кратко» и «Связанные файлы», поля `type`/`scope`/`priority`/`status`/`tags`/`source`, маркеры `[SOURCE]`/`[REF:]`, секции «Анатомия», «Уровни соответствия», «Чеклист», «Антипаттерны». Добавлены § «Title и H1» (формула, лимит ≤120), § «Лид» (опц.), § «Summary» (опц., для больших файлов), § «Правило файла / Правило блока» с enforcement через хук Rule Injection ([memory/01_context_memory.md § 5.5](memory/01_context_memory.md)).
+
+В [02_readme-spec.md](methodology/scaffold/02_readme-spec.md) переработан YAML (минимум: `title`, `description`, `created`, `updated`; убран `version`); `description` сформулирован как «дешёвая карточка релевантности», не миссия. Добавлен раздел «README — место описания миссии файлов внутри папки» (миссия каждого файла теперь живёт в колонке таблицы `## Что лежит` README, а не внутри файлов). Каркас README обновлён: `## Назначение` (миссия папки) + `## Что лежит` с колонкой «Миссия» + `## Маршруты` (опц.) + `## Связи` (обязательный для README). Добавлен § «Доставка README агенту» — триплет `README.md` + `AGENTS.md` + `CLAUDE.md` (последние два — pointer-only на `@README.md`) для гарантии доставки агенту.
+
+Закрыт open-question про `claude/agents/gemini` в каждой папке: канон триплета зафиксирован в [02_readme-spec.md](methodology/scaffold/02_readme-spec.md). CLAUDE.md — временный костыль до нативной поддержки AGENTS.md в Claude Code.
+
+---
+## 2026-05-06 · Methodology scaffold v4
+
+10 open-questions закрыты, миграции `04_company` и `05_metrics` выполнены.
 
 ---
 ## 2026-05-05 · Первая чистая архитектура scaffold

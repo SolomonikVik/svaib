@@ -237,8 +237,8 @@ body{margin:0;min-height:100vh;background:
   <div class="hero">
     <div class="hero-panel left">
       <span class="hero-eyebrow">// SECOND AI BRAIN</span>
-      <h1>Продукт собирается на пересечении трёх горизонталей и восьми вертикалей.</h1>
-      <p class="lead">Горизонтали — общая инфра: данные, память, помощники. Они одинаковы для любого CEO. Вертикали — управленческие циклы: стратегия, команда, метрики, встречи, продукт, маркетинг, продажи, проекты. Каждый цикл проходит сквозь все три горизонтали.</p>
+      <h1>Продукт собирается на пересечении трёх горизонталей и девяти вертикалей.</h1>
+      <p class="lead">Горизонтали — общая инфра: данные, память, помощники. Они одинаковы для любого CEO. Вертикали — управленческие циклы: стратегия, финансы, команда, метрики, встречи, продукт, маркетинг, продажи, проекты. Каждый цикл проходит сквозь все три горизонтали.</p>
     </div>
 
     <div class="hero-panel">
@@ -247,13 +247,14 @@ body{margin:0;min-height:100vh;background:
 
         <div class="cycle-strip">
           <div class="cycle-mini"><span class="ic">01</span><span class="nm">strategy</span></div>
-          <div class="cycle-mini"><span class="ic">02</span><span class="nm">team</span></div>
-          <div class="cycle-mini"><span class="ic">03</span><span class="nm">metrics</span></div>
-          <div class="cycle-mini"><span class="ic">04</span><span class="nm">meeting</span></div>
-          <div class="cycle-mini"><span class="ic">05</span><span class="nm">product</span></div>
-          <div class="cycle-mini"><span class="ic">06</span><span class="nm">marketing</span></div>
-          <div class="cycle-mini"><span class="ic">07</span><span class="nm">sales</span></div>
-          <div class="cycle-mini"><span class="ic">08</span><span class="nm">projects</span></div>
+          <div class="cycle-mini"><span class="ic">02</span><span class="nm">finance</span></div>
+          <div class="cycle-mini"><span class="ic">03</span><span class="nm">team</span></div>
+          <div class="cycle-mini"><span class="ic">04</span><span class="nm">metrics</span></div>
+          <div class="cycle-mini"><span class="ic">05</span><span class="nm">meeting</span></div>
+          <div class="cycle-mini"><span class="ic">06</span><span class="nm">product</span></div>
+          <div class="cycle-mini"><span class="ic">07</span><span class="nm">marketing</span></div>
+          <div class="cycle-mini"><span class="ic">08</span><span class="nm">sales</span></div>
+          <div class="cycle-mini"><span class="ic">09</span><span class="nm">projects</span></div>
         </div>
 
         <div class="h-rows">
@@ -345,10 +346,10 @@ body{margin:0;min-height:100vh;background:
   <div class="cycles-intro">
     <div class="text">
       <strong>Управленческий цикл</strong> — повторяющийся контур работы CEO: постановка направления → сбор информации → решения → контроль → обратная связь → корректировка. Цикл связывает <strong>сущности</strong> (что создаётся), <strong>scaffold</strong> (где живёт), <strong>память</strong> (как находится), <strong>помощников</strong> (кто автоматизирует). Не атомарная сущность, а контекст, в котором сущности рождаются и используются.<br><br>
-      Циклы связаны в систему: стратегия задаёт направление команде, через команду понятно какими встречами управлять, метрики распределяются на команду и подсвечиваются на встречах, продукт и маркетинг ведут к продажам, проекты пересекают функции. Ни один цикл не существует изолированно.
+      Циклы связаны в систему: стратегия задаёт направление команде, финансы переводят стратегию в бюджет и кэш-горизонт, через команду понятно какими встречами управлять, метрики распределяются на команду и подсвечиваются на встречах, продукт и маркетинг ведут к продажам, проекты пересекают функции. Ни один цикл не существует изолированно.
     </div>
     <div class="stat">
-      <div class="n">8</div>
+      <div class="n">9</div>
       <div class="l">циклов · ориентир 5–10</div>
     </div>
   </div>
@@ -376,6 +377,24 @@ body{margin:0;min-height:100vh;background:
     <div class="cyc">
       <div class="cyc-head">
         <span class="num">// 02</span>
+        <span class="tag">finance</span>
+      </div>
+      <h4>Управление финансами</h4>
+      <p class="what">Финансовая модель, бюджет, кэш, юнит-экономика. Сценарное моделирование, разбор отклонений P&L, ключевые финансовые решения с горизонтом и аргументацией.</p>
+      <div class="deploy">
+        <div class="l">// как разворачивается</div>
+        <ul>
+          <li>финмодель: доходы / расходы / маржа / кэш по периодам, план/факт</li>
+          <li>бюджет на горизонт привязан к стратегическим целям</li>
+          <li>сценарии (base / opt / pess) живут отдельно — видно последствия решений</li>
+          <li>финансовые метрики (revenue, gross margin, CAC, runway) попадают в цикл metrics, бюджет и финмодель остаются здесь</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cyc">
+      <div class="cyc-head">
+        <span class="num">// 03</span>
         <span class="tag">team</span>
       </div>
       <h4>Управление командой</h4>
@@ -393,7 +412,7 @@ body{margin:0;min-height:100vh;background:
 
     <div class="cyc">
       <div class="cyc-head">
-        <span class="num">// 03</span>
+        <span class="num">// 04</span>
         <span class="tag">metrics</span>
       </div>
       <h4>Управление по метрикам</h4>
@@ -411,7 +430,7 @@ body{margin:0;min-height:100vh;background:
 
     <div class="cyc pink">
       <div class="cyc-head">
-        <span class="num">// 04</span>
+        <span class="num">// 05</span>
         <span class="tag">meeting</span>
       </div>
       <h4>Управление встречами</h4>
@@ -429,7 +448,7 @@ body{margin:0;min-height:100vh;background:
 
     <div class="cyc">
       <div class="cyc-head">
-        <span class="num">// 05</span>
+        <span class="num">// 06</span>
         <span class="tag">product</span>
       </div>
       <h4>Управление продуктом</h4>
@@ -447,7 +466,7 @@ body{margin:0;min-height:100vh;background:
 
     <div class="cyc">
       <div class="cyc-head">
-        <span class="num">// 06</span>
+        <span class="num">// 07</span>
         <span class="tag">marketing</span>
       </div>
       <h4>Управление маркетингом</h4>
@@ -465,7 +484,7 @@ body{margin:0;min-height:100vh;background:
 
     <div class="cyc">
       <div class="cyc-head">
-        <span class="num">// 07</span>
+        <span class="num">// 08</span>
         <span class="tag">sales</span>
       </div>
       <h4>Управление продажами</h4>
@@ -483,7 +502,7 @@ body{margin:0;min-height:100vh;background:
 
     <div class="cyc">
       <div class="cyc-head">
-        <span class="num">// 08</span>
+        <span class="num">// 09</span>
         <span class="tag">projects</span>
       </div>
       <h4>Управление проектами</h4>
