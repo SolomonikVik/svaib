@@ -30,8 +30,9 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 | `template-domain.md` | [`framework/scaffold/05_metrics/template-domain.md`](../../scaffold/05_metrics/template-domain.md) | заполняется под клиента, не пишется с нуля |
 | `orchestrator-metrics.md` | [`orchestrator-metrics.md`](../../skills/metrics-analysis/orchestrator-metrics.md) | системный промпт оркестратора у клиента |
 | `HOWTO.md` | [`HOWTO.md`](HOWTO.md) | объяснение клиенту, как это работает |
-| Образцовый extractor | `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py` | шаблон per-client extractor |
-| Образцовый narrative composer | `framework/_inbox/metrics-scaffold/sandbox/extractors/narrative.py` | **черновик** (DRAFT, см. open-question #1); копируется как pilot helper, статус и финальный формат под вопросом |
+| Probe helper | [`../../skills/metrics-analysis/probe_xlsx.py`](../../skills/metrics-analysis/probe_xlsx.py) | одноразовая разведка xlsx: листы, размеры, merged cells, formula errors |
+| Extractor template | [`../../scaffold/05_metrics/extractors/extractor_template.py`](../../scaffold/05_metrics/extractors/extractor_template.py) | обезличенный шаблон per-client extractor |
+| Narrative composer | [`../../skills/metrics-analysis/narrative.py`](../../skills/metrics-analysis/narrative.py) | **черновик** (DRAFT, см. open-question #1); статус и финальный формат под вопросом |
 | Решение №5 | [`framework/04_decisions.md`](../../04_decisions.md) | имена доменов, OKR-проекция, что не переименовывать |
 | Это playbook | [`rollout.md`](rollout.md) (этот файл) | по нему идёшь |
 
@@ -59,7 +60,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 1. Положить копию xlsx клиента в **рабочее sandbox-пространство под git** (например, `framework/_inbox/metrics-rollout/{client}/sandbox/source/`). Не работать сразу в `clients/private/<client>/drive/` — там нет git, ошибки не откатить.
 
-2. Через `document-skills:xlsx` или Python-скрипт `probe.py` (см. шаблон в `_inbox/metrics-scaffold/sandbox/_b0_findings/probe.py`) собрать отчёт о структуре:
+2. Через `document-skills:xlsx` или [`probe_xlsx.py`](../../skills/metrics-analysis/probe_xlsx.py) собрать отчёт о структуре:
    - Имена всех листов.
    - Для каждого ключевого листа: размер (rows × cols), первые 10-20 строк целиком, заполненность колонок.
    - **Через openpyxl** — формулы, объединённые ячейки, кэшированные ошибки (`#DIV/0!`, `#REF!`).
@@ -141,9 +142,9 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 ## Шаг 6. Написать per-client extractor
 
-`{client}_{sheet}.py` — Python-скрипт со списком метрик и **захардкоженными координатами**.
+`{client}_{sheet}.py` — Python-скрипт со списком метрик и **захардкоженными координатами**. Стартовая точка — [`../../scaffold/05_metrics/extractors/extractor_template.py`](../../scaffold/05_metrics/extractors/extractor_template.py).
 
-Структура (см. шаблон `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py`):
+Структура:
 
 1. **`METRIC_REGISTRY`** — словарь `metric_id → {strategy, row(s), label, unit, direction, plan_required, ...}`. Координаты захардкожены, не вычисляются.
 2. **Region column maps** — для каждого региона на листе (если их несколько) — словарь «период → колонка».
@@ -162,7 +163,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 
 ## Шаг 7. Перенести narrative composer
 
-`narrative.py` — **черновик/pilot helper** (DRAFT, см. [`open-questions.md`](open-questions.md) #1). Копируется как есть из `framework/_inbox/metrics-scaffold/sandbox/extractors/narrative.py` — даёт работающую сборку narrative на пилоте, но финальный формат (Python vs LLM-сборка) ещё не зафиксирован.
+`narrative.py` — **черновик/pilot helper** (DRAFT, см. [`open-questions.md`](open-questions.md) #1). Сейчас лежит в [`../../skills/metrics-analysis/narrative.py`](../../skills/metrics-analysis/narrative.py) и даёт работающую сборку narrative, но финальный формат (Python vs LLM-сборка) ещё не зафиксирован.
 
 Что он делает: читает JSON от extractor → классифицирует метрики (`red | win | ok | blocked`) с учётом `direction` → пишет structured markdown с разделами «В красной зоне / Лучше плана / В норме / Не считается».
 
@@ -273,7 +274,7 @@ audience: "координатор сессии svaib + sub-agent, развёрт
 |---|---|---|
 | `01_metrics.md` витрина | `clients/<client>/drive/.../metrics/` | образец витрины — `framework/scaffold/05_metrics/01_metrics.md` |
 | Domain-файлы | `clients/<client>/drive/.../metrics/` | шаблон — `framework/scaffold/05_metrics/template-domain.md` |
-| Per-client extractor | `clients/<client>/drive/.../metrics/extractors/` | шаблон + примеры в `framework/_inbox/metrics-scaffold/sandbox/extractors/` |
+| Per-client extractor | `clients/<client>/drive/.../metrics/extractors/` | шаблон — `framework/scaffold/05_metrics/extractors/extractor_template.py` |
 | Narrative composer | `clients/<client>/drive/.../metrics/extractors/narrative.py` | **черновик** (DRAFT) — `framework/skills/metrics-analysis/narrative.py`; статус под open-question #1 (Python vs LLM-сборка). Кандидат в общий канон после решения вопроса и 2-3 клиентов |
 | Системный промпт оркестратора | `clients/<client>/drive/.../CLAUDE.md` или плагинный slot | `framework/skills/metrics-analysis/orchestrator-metrics.md` |
 | Уроки клиента (что нашли в его речи / xlsx-косяки) | `clients/private/<client>/drive/.../metrics/` (там) | если урок общий — обогатить `template-domain.md`, `HOWTO.md`, `orchestrator-metrics.md` |

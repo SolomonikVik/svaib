@@ -48,25 +48,20 @@ type: plan
 
 ## ✅ Активные задачи
 
-### Порядок в scaffold v3
+### Порядок в scaffold v4
 
 #### Методология scaffold выверена
-- [x] file folder-spec
-- [x] file file-spec
-- [x] file readme-spec
-- [x] file architecture
-	- [x] выносим узлы в folder-spec
-	- [x] даем общее описание архитектуры
-	- [x] выверяем
-	- [x] после прочтения темпейтс - надо что-то менять?
-- [x] folder-tamplates
-- [x] file-tamplates
+- [ ] обновляем все в связи с диллемой
+- [ ] file architecture
+	- [ ] нужно ли ее пересмотреть в целом теперь
+- [ ] file folder-spec
+- [ ] file file-spec
+- [ ] file readme-spec
+- [ ] folder-tamplates - как его теперь называть?
+- [ ] file-tamplates - как их теперь называть
 - [ ] deployment
 - [ ] open questions
-- [x] переименовать tamplates 02 -> 03
 ---
-- [x] переименовать zz_archive
-- [x] решить нужен ли docs на верхнем уровне
 - [ ] решить глоссарий и словарь терминов (например каноническое название метрики) 
 	- [ ] в т.ч. для нас
 - [ ] решить про стратегию - маркетинговую, продуктовую, конкурентную
@@ -130,22 +125,20 @@ type: plan
 - [ ] `scaffold/projects/{name}/README.md` — вынести методологию проекта в `principles.md` / `methodology.md`
 - [ ] `scaffold/05_metrics/` — оставить отдельной парадигмой, но сверить терминологию
 
-
-
 ### Метрики у клиента
-- [ ] Возможно сперва нужно сделать какую-то единую сводную задачу и сперва навести порядок методологии, а потом вернуться к клиенту (подумать)
-- [ ] **Клиент-1 на живой базе** — intake-form + ответы → Cowork-тест на боевом
 
-- Детали — [_inbox/metrics-scaffold/plan.md](_inbox/metrics-scaffold/plan.md) и [methodology/metrics/open-questions.md](methodology/metrics/open-questions.md) (секция «Что спросить у первого клиента до Б.2»)
-- [ ] Определить технику внедрения канонического ID метрики в Excel-таблицу (колонка между B и C, видимая или скрытая, требования к заполнению).
+**Цель:** запустить у Клиента 1 регулярный `metrics/`-слой, через который Second AI Brain каждую неделю становится умнее: видит источник метрик, понимает семантику, считает через extractor, помогает CEO быстрее проводить изменения в бизнесе.
 
-**Реорганизация metrics завершена 2026-04-30.** Методология вертикали собрана в `methodology/metrics/`, skill-папка очищена, стандарт `extractors/` зафиксирован, smoke-test пройден, Codex-ревью отработан. Подробнее — [`03_progress.md`](03_progress.md) запись 30.04 (вторая за день).
+**Статус:** старый `_inbox/metrics-scaffold/` удалён из framework как черновой пилот. Универсальное поднято в канон: [`skills/metrics-analysis/probe_xlsx.py`](skills/metrics-analysis/probe_xlsx.py), [`scaffold/05_metrics/extractors/extractor_template.py`](scaffold/05_metrics/extractors/extractor_template.py), [`methodology/metrics/`](methodology/metrics/).
 
-**Next — двинуть клиентскую задачу.** Дать клиенту [`intake-form.md`](methodology/metrics/intake-form.md) + дополнительные вопросы из [`open-questions.md`](methodology/metrics/open-questions.md) секция «Что спросить у первого клиента до Б.2» → получить ответы → начать тестировать на его живой базе через Cowork (см. [`COWORK-TEST.md`](_inbox/metrics-scaffold/cowork-test/COWORK-TEST.md) как готовый pack).
+**Ближайшие шаги:**
+- [ ] Выравнять методологию metrics после удаления pilot-inbox: README, open-questions, orchestrator, rollout.
+- [ ] Сформулировать цель и MVP по Клиенту 1: регулярная загрузка метрик по месяцам, текущий год + прошлый год если есть в источнике.
+- [ ] Проверить клиентскую систему данных: где лежит реальный xlsx, какие листы/периоды есть, что уже устарело.
+- [ ] Подготовить текст для нового чата: что читать, что не читать, первый шаг.
+- [ ] Определить технику внедрения канонического ID метрики в Excel/Sheets: колонка, формат ID, правило пустых ячеек.
 
-Цель к концу следующей недели — pipeline работает на боевых данных клиента в его Cowork-окружении.
-
-Точка входа в вертикаль для нового чата — [`methodology/metrics/README.md`](methodology/metrics/README.md).
+**Точка входа в вертикаль:** [`methodology/metrics/README.md`](methodology/metrics/README.md).
 
 
 ### Помощники

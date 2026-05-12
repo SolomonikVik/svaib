@@ -99,10 +99,10 @@ AI выбирает Ветку В.
 
 ### Шаг 3 — запустить extractor
 
-AI вызывает `extractors/ssp_okr1.py`:
+AI вызывает per-client extractor:
 
 ```bash
-python3 extractors/ssp_okr1.py --metrics metric_a,metric_b,... --period mar --out _runs/2026-04-29_top5.json
+python3 extractors/<client>_<sheet>.py --metrics metric_a,metric_b,... --period mar --out _runs/2026-04-29_top5.json
 ```
 
 Extractor:
@@ -113,7 +113,9 @@ Extractor:
 4. Если в ячейке `#DIV/0!` — помечает `status: "div0"`. Если пусто — `status: "missing"`.
 5. Пишет JSON в файл. **В stdout — только короткий статус** (`OK: wrote N metrics ...`), не дамп. Это критично: иначе stdout засоряет контекст агента.
 
-### Шаг 4 — собрать narrative (ВИКТОР - ОБСУДИТЬ!)
+### Шаг 4 — собрать narrative
+
+> **Открытый вопрос:** кто собирает финальный narrative — Python или LLM. Сейчас описан рабочий pilot-helper. Решение не принято; см. [`open-questions.md`](open-questions.md), вопрос #1.
 
 AI вызывает `narrative.py`:
 
@@ -191,4 +193,3 @@ AI читает narrative.md и возвращает Клиенту:
 - **Top-N с временным анализом** («стоит на месте 3 недели») — нужен временной анализ weekly_implementation, отложено.
 - **Связка метрика↔инициатива через контракт с сотрудником** — отдельный поток
 - **Несколько источников у одной вертикали** — пока опыт только с одним xlsx. Когда появится клиент с метриками из CRM + базы + xlsx одновременно — обогатим `regions` и/или extractor.
-

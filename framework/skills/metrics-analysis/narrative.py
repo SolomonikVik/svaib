@@ -2,13 +2,9 @@
 DRAFT — судьба этого файла под открытым вопросом #1 (narrative.py vs LLM-сборка).
 См. ../../methodology/metrics/open-questions.md, вопрос #1.
 
-Сейчас: универсальный narrative composer (Ветка В оркестратора, Шаг 4).
+Сейчас: draft narrative composer (Ветка В оркестратора, Шаг 4).
 Может стать: общим skill svaib после решения вопроса #1, либо упростится до
 classify_direction (если сборку narrative заберёт LLM), либо исчезнет целиком.
-
-До решения — копия живёт здесь, рабочий оригинал — в
-framework/_inbox/metrics-scaffold/sandbox/extractors/narrative.py
-(пилот Лебедева, smoke-test работает оттуда).
 
 ---
 

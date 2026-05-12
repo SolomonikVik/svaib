@@ -20,6 +20,7 @@ type: reference
 | [`README.md`](README.md) | index | Этот файл |
 | [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Системный промпт оркестратора AI-агента: ветки А/В/Б, обработка ошибок, Cowork-чек-лист, критические правила |
 | [`narrative.py`](narrative.py) | code (draft) | Универсальный narrative composer (классификация red/win/ok/blocked + сборка markdown). **Черновик** — судьба под открытым вопросом #1 (vs LLM-сборка), см. [`../../methodology/metrics/open-questions.md`](../../methodology/metrics/open-questions.md) |
+| [`probe_xlsx.py`](probe_xlsx.py) | code | Универсальный helper для одноразовой разведки xlsx: листы, размеры, объединённые ячейки, формулы, cached errors, заполненность колонок |
 
 ## Запланировано (когда дойдёт очередь)
 
@@ -28,7 +29,7 @@ type: reference
 
 ## Что НЕ живёт здесь
 
-- **Per-client extractor** (типа `ssp_okr1.py`) — это код клиента, лежит в `metrics/extractors/` клиентского scaffold, не в общей библиотеке skill. Шаблон-паттерн — в [`../../scaffold/05_metrics/extractors/README.md`](../../scaffold/05_metrics/extractors/README.md), пример — в `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py`.
+- **Per-client extractor** — это код клиента, лежит в `metrics/extractors/` клиентского scaffold, не в общей библиотеке skill. Шаблон-паттерн — в [`../../scaffold/05_metrics/extractors/extractor_template.py`](../../scaffold/05_metrics/extractors/extractor_template.py).
 - **Методология цикла** (HOWTO, rollout, intake-form, open-questions, architecture) — в [`../../methodology/metrics/`](../../methodology/metrics/).
 - **Шаблоны клиента** (витрина, template-domain, source-README, extractors-README) — в [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/).
 

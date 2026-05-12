@@ -4,12 +4,13 @@
 
 **Где лежит у клиента:** `metrics/extractors/` (рядом с `metrics/source/`). Не в `claude/skills/` — extractor не общий skill, у каждого клиента свой.
 
-**Где лежат пример и шаблон-паттерн:** пример — `framework/_inbox/metrics-scaffold/sandbox/extractors/ssp_okr1.py`; полные правила написания — [`../../../methodology/metrics/rollout.md`](../../../methodology/metrics/rollout.md) шаг 6.
+**Где лежит шаблон-паттерн:** [`extractor_template.py`](extractor_template.py). Полные правила написания — [`../../../methodology/metrics/rollout.md`](../../../methodology/metrics/rollout.md) шаг 6.
 
 ## Что лежит
 
 | Файл | Что |
 |------|-----|
+| `extractor_template.py` | обезличенный шаблон per-client extractor; копируется и переименовывается при rollout |
 | `<client>_<sheet>.py` | per-client extractor: знает координаты метрик в xlsx именно этого клиента |
 
 > Заполняется при rollout (шаг 6 playbook).
