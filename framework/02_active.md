@@ -127,18 +127,31 @@ type: plan
 
 ### Метрики у клиента
 
-**Цель:** запустить у Клиента 1 регулярный `metrics/`-слой, через который Second AI Brain каждую неделю становится умнее: видит источник метрик, понимает семантику, считает через extractor, помогает CEO быстрее проводить изменения в бизнесе.
+**Цель сессии 2026-05-12.** Запустить первый слой metrics-вертикали у Клиента 1: каноническое имя метрики, колонка с этим именем в его xlsx, помощник по колонке. Без extractor, без narrative, без compound — это второй слой, разворачивается по живому триггеру.
 
-**Статус:** старый `_inbox/metrics-scaffold/` удалён из framework как черновой пилот. Универсальное поднято в канон: [`skills/metrics-analysis/probe_xlsx.py`](skills/metrics-analysis/probe_xlsx.py), [`scaffold/05_metrics/extractors/extractor_template.py`](scaffold/05_metrics/extractors/extractor_template.py), [`methodology/metrics/`](methodology/metrics/).
+**Статус (после сессии 2026-05-12).**
 
-**Ближайшие шаги:**
-- [ ] Выравнять методологию metrics после удаления pilot-inbox: README, open-questions, orchestrator, rollout.
-- [ ] Сформулировать цель и MVP по Клиенту 1: регулярная загрузка метрик по месяцам, текущий год + прошлый год если есть в источнике.
-- [ ] Проверить клиентскую систему данных: где лежит реальный xlsx, какие листы/периоды есть, что уже устарело.
-- [ ] Подготовить текст для нового чата: что читать, что не читать, первый шаг.
-- [ ] Определить технику внедрения канонического ID метрики в Excel/Sheets: колонка, формат ID, правило пустых ячеек.
+Методология первого слоя сведена в канон:
+- [x] [`methodology/metrics/first-layer.md`](methodology/metrics/first-layer.md) — рамка, DoD, формат `canonical_metrics.md`, граница со вторым слоем.
+- [x] [`methodology/metrics/rollout.md`](methodology/metrics/rollout.md) — playbook (6 шагов вместо 12-шагового pilot).
+- [x] [`methodology/metrics/HOWTO.md`](methodology/metrics/HOWTO.md) — сценарий «вопрос → каноническое имя → число из xlsx».
+- [x] [`methodology/metrics/README.md`](methodology/metrics/README.md) — карта без статусности, точка входа теперь `first-layer.md`.
+- [x] [`methodology/metrics/intake-form.md`](methodology/metrics/intake-form.md) — понижен до внутреннего чек-листа координатора.
+- [x] [`scaffold/05_metrics/canonical_metrics.md`](scaffold/05_metrics/canonical_metrics.md) — шаблон под клиента.
+- [x] [`scaffold/05_metrics/README.md`](scaffold/05_metrics/README.md) — `canonical_metrics.md` отмечен как стартовая точка.
+- [x] [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md) — маяк на `first-layer.md` в «Кратко», остальное не переписывалось.
 
-**Точка входа в вертикаль:** [`methodology/metrics/README.md`](methodology/metrics/README.md).
+**Клиентский трек (вне framework, идёт параллельно).** 2026-05-12: подготовлен черновик `clients/private/lebedev/docs/canonical_metrics_ssp.md` и бриф для CEO. Отправлен на правки. До возвращения правок колонку в xlsx и помощника не делаем — каноническое имя может измениться.
+
+**Ближайшие шаги.**
+- [ ] Получить правки CEO по черновику `canonical_metrics_ssp.md`.
+- [ ] Внести колонку с каноническими названиями в главный лист xlsx (правило: пустое поле = метрика для помощника не существует).
+- [ ] Положить финализированный `canonical_metrics.md` в scaffold клиента (точное место — по текущему канону scaffold).
+- [ ] Smoke-test: 2–3 типовых вопроса CEO → помощник идёт в xlsx через каноническую колонку → возвращает число.
+
+**Что не делаем в этом цикле (явно).** Per-client extractor, narrative composer, паспорта с `direction`/synonyms/antonyms, OKR-проекция, compound route, regular loop, история по месяцам, weekly metrics-ритуал, open-question #1 «narrative.py vs LLM-сборка». Все они — второй и третий слои; включаются по живому триггеру (см. [`methodology/metrics/first-layer.md`](methodology/metrics/first-layer.md), раздел «Триггеры перехода ко второму слою»).
+
+**Точка входа в вертикаль:** [`methodology/metrics/README.md`](methodology/metrics/README.md) → [`methodology/metrics/first-layer.md`](methodology/metrics/first-layer.md).
 
 
 ### Помощники
