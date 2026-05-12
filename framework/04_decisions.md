@@ -255,10 +255,11 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 ## 5. Раскладка metrics в scaffold (B1 + O1/O5)
 
 **Статус:** Accepted (2026-04-29).
+**Update 2026-05-12:** часть решения (имена domain-файлов + ID-формат) обновлена — см. секцию «Update 2026-05-12 — канон имён получил суффикс `-metrics`» ниже. Inline-маркеры `[ОБНОВЛЕНО 2026-05-12]` стоят на конкретных местах в теле решения. Тело сохранено as-is по принципу append-only decision log.
 
 ### Решение
 
-Реализация вертикали `metrics` в слое scaffold — опциональная папка [`scaffold/metrics/`](scaffold/metrics/) с раскладкой: `README.md`, `01_metrics.md` (витрина target metrics + карта доменов), `template-domain.md` (шаблон), domain-файлы (`finance.md`, `sales.md`, `operations.md`, `people.md` — по триггеру), `source/*.xlsx`.
+Реализация вертикали `metrics` в слое scaffold — опциональная папка [`scaffold/metrics/`](scaffold/metrics/) с раскладкой: `README.md`, `01_metrics.md` (витрина target metrics + карта доменов), `template-domain.md` (шаблон), domain-файлы (`finance.md`, `sales.md`, `operations.md`, `people.md` — по триггеру) `[ОБНОВЛЕНО 2026-05-12 — суффикс -metrics, см. Update ниже]`, `source/*.xlsx`.
 
 **B1 — где жить числам:**
 - Числа живут в исходных файлах клиента (xlsx или Google Sheets) внутри `source/`. **Не дублируются в md.**
@@ -271,13 +272,13 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 - Маршрут в md явно указывает, какой xlsx/лист считать.
 
 **O1 — имена и структура:**
-- Минимальный канон: `finance.md`, `sales.md`, `operations.md`, `people.md`. Префикс `metrics_` не используется (контекст задаёт папка).
-- Расширение по триггеру: `customer.md`, `marketing.md`, `product.md`, `strategy.md`.
+- Минимальный канон: `finance.md`, `sales.md`, `operations.md`, `people.md`. Префикс `metrics_` не используется (контекст задаёт папка). `[ОБНОВЛЕНО 2026-05-12 — суффикс -metrics, добавлен базовый business-metrics.md; см. Update ниже]`
+- Расширение по триггеру: `customer.md`, `marketing.md`, `product.md`, `strategy.md`. `[ОБНОВЛЕНО 2026-05-12 — суффикс -metrics; см. Update ниже]`
 - OKR не в `metrics/` — живут в `meta/management/` (у клиента — `02_strategy/02_goal.md`).
 - Витрина CEO target metrics в `01_metrics.md` — карточки-ссылки на паспорта в доменах, не дубли.
 - **Опциональная секция «По OKR» в витрине `01_metrics.md`** — навигационный срез поверх паспортов для клиентов с явной OKR-структурой. Формат: `OKR{N} → метрика на языке CEO → ссылка на паспорт`. Не хранит OKR и не дублирует определения метрик; только маршрут от клиентского ракурса («что с OKR3?») к паспортам. Сами OKR — в `02_strategy/02_goal.md`. Уточнение от 2026-04-29 после первого пилота: клиент мыслит метрики через структуру OKR, но переименовывать domain-файлы под OKR нельзя (OKR — цель, не бизнес-домен; одна OKR агрегирует метрики из разных доменов).
 - Структура секций domain-файла — `datasets / relationships / metrics / routes` (формат markdown, не yaml).
-- Стабильные ID метрик (`metric_<id>`), `version` инкрементируется при изменении формулы, `synonyms` берутся из речи CEO (аудит по транскриптам обязателен).
+- Стабильные ID метрик (`metric_<id>`), `version` инкрементируется при изменении формулы, `synonyms` берутся из речи CEO (аудит по транскриптам обязателен). `[ОБНОВЛЕНО 2026-05-12 — ID метрики = её каноническое имя, никаких отдельных metric_<id>; см. Update ниже]`
 
 ### Контекст
 
