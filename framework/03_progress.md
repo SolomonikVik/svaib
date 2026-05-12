@@ -1,6 +1,6 @@
 ---
 title: "Framework — хроника"
-updated: 2026-05-12
+updated: 2026-05-13
 scope: product_core
 type: log
 ---
@@ -19,6 +19,11 @@ type: log
 - [02_active.md](02_active.md) — что в работе сейчас, Session Handoff
 - [02_backlog.md](02_backlog.md) — задачи направления на будущее
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
+
+---
+## 2026-05-13 · Metrics: закрыта спецификация формата + промпт-помощник
+
+Закрыта спецификация [metrics-spec.md](methodology/metrics/metrics-spec.md), переписан шаблон [scaffold/05_metrics/business-metrics.md](scaffold/05_metrics/business-metrics.md), добавлен скилл [business-metrics-intake.md](skills/metrics-analysis/business-metrics-intake.md) — помощник заполнения метрик клиентом.
 
 ---
 ## 2026-05-12 · Metrics: выделен первый слой вертикали (canonical_metrics + колонка в xlsx + помощник по колонке)

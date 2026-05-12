@@ -1,7 +1,7 @@
 ---
 title: "metrics-analysis — skill (системный промпт + черновик narrative)"
-updated: 2026-04-30
-version: 5
+updated: 2026-05-13
+version: 6
 scope: product_core
 priority: high
 type: reference
@@ -18,6 +18,7 @@ type: reference
 | Файл | Тип | Что делает |
 |------|-----|-----------|
 | [`README.md`](README.md) | index | Этот файл |
+| [`business-metrics-intake.md`](business-metrics-intake.md) | procedure | Промпт-помощник для заполнения клиентского `business-metrics.md`: ведёт диалог с CEO по vision/goal, собирает каноническое имя / бизнес-смысл / правило расчёта / единицу / направление по каждой метрике, фиксирует набор в шаблон по спеке [`metrics-spec.md`](../../methodology/metrics/metrics-spec.md) |
 | [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Системный промпт оркестратора AI-агента: ветки А/В/Б, обработка ошибок, Cowork-чек-лист, критические правила |
 | [`narrative.py`](narrative.py) | code (draft) | Универсальный narrative composer (классификация red/win/ok/blocked + сборка markdown). **Черновик** — судьба под открытым вопросом #1 (vs LLM-сборка), см. [`../../methodology/metrics/open-questions.md`](../../methodology/metrics/open-questions.md) |
 | [`probe_xlsx.py`](probe_xlsx.py) | code | Универсальный helper для одноразовой разведки xlsx: листы, размеры, объединённые ячейки, формулы, cached errors, заполненность колонок |
