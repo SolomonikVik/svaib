@@ -21,6 +21,11 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-05-12 · Scaffold: принята матричная модель вместо Аспект > Домен
+
+Главная ось scaffold переосмыслена: вместо корня по типам сущностей (`01_ceo / 02_strategy / 03_team / 04_company / 05_metrics`) принята **матрица** — компанийный уровень в `01_company/` и доменные области (`marketing/`, `sales/`, `finance/`, …) на корне. Аспекты (strategy, team, metrics, projects, processes) разворачиваются на двух уровнях по правилу **владелец первый, наименьший общий предок второй**. Принцип опирается на индустриальные паттерны (DDD bounded context, React lift state up, нормализация БД, каскад). ADR с обоснованием, корневой раскладкой, определением домена и планом трансформации канона — [methodology/scaffold/00_dilemma.md](methodology/scaffold/00_dilemma.md). Зафиксировано в [04_decisions.md § 7](04_decisions.md). Следующий шаг — переписать канон методологии scaffold по цепочке (Трек 1: `01_architecture → 02_folder-spec → 03_node-files → 03_contours → deployment → open-questions → README`); затем связанные слои (Трек 2) и миграция клиентского `framework/scaffold/` v1 → v2 (Трек 3).
+
+---
 ## 2026-05-12 · Methodology scaffold финализирована: единый канон шести файлов
 
 Шесть файлов методологии scaffold ([01_architecture.md](methodology/scaffold/01_architecture.md), [02_file-spec.md](methodology/scaffold/02_file-spec.md), [02_folder-spec.md](methodology/scaffold/02_folder-spec.md), [02_readme-spec.md](methodology/scaffold/02_readme-spec.md), [03_node-files.md](methodology/scaffold/03_node-files.md), [03_contours.md](methodology/scaffold/03_contours.md)) сведены в единый согласованный непротиворечивый канон. `03_contours.md` (v4) — 10 контуров в единой форме («Что это» + дерево + контурно-специфичные миссии), 14 контурно-специфичных файлов вынесены в SOT этого файла. По `person.md` принят Вариант 3: рамка (миссия + 6 канонических разделов) остаётся в `03_node-files.md`, имена и контекст применения распределены по контурам — `01_ceo/01_my-profile.md`, `03_team/{person}.md`, `clients/{client}/{person}.md`. Аудит трёх независимых субагентов (консистентность между файлами, внутренние ошибки, dogfood самим каноном) — драм не нашёл.

@@ -1,6 +1,6 @@
 ---
 title: "Framework — актуальное"
-updated: 2026-05-06
+updated: 2026-05-12
 scope: product_core
 priority: high
 type: plan
@@ -20,26 +20,29 @@ type: plan
 
 ### Что делаем
 
-Финальный проход по `methodology/scaffold/` 
+Интеграция матричной модели scaffold в канон методологии. Старая модель Аспект>Домен (`01_ceo / 02_strategy / 03_team / 04_company / 05_metrics`) заменена на матрицу (`00_ceo / 01_company / домены`). ADR с обоснованием, корневой раскладкой, распределительным принципом (владелец > НОП) и планом работ — в [00_dilemma.md](methodology/scaffold/00_dilemma.md).
 
 ### Что прочитать в новом чате
 
-**Канон и контекст (SOT, не правим):**
-- [02_file-spec.md](methodology/scaffold/02_file-spec.md) — канон md-файла
-- [02_folder-spec.md](methodology/scaffold/02_folder-spec.md) — канон папки
-- [02_readme-spec.md](methodology/scaffold/02_readme-spec.md) — канон README
-- [01_architecture.md](methodology/scaffold/01_architecture.md) — модель контуров
-- [README.md](methodology/scaffold/README.md) — карта контура
-- [03_contours.md](methodology/scaffold/03_contours.md) — обвязка под канон 06.05 + досверка анатомии контуров
-- [deployment.md](methodology/scaffold/deployment.md) — обвязка под канон 06.05
-- [open-questions.md](methodology/scaffold/open-questions.md) — обвязка + что закрылось
-- [03_node-files](methodology/scaffold/03_node-files.md)
+**ОБЯЗАТЕЛЬНО первым — ADR:**
+- [methodology/scaffold/00_dilemma.md](methodology/scaffold/00_dilemma.md) — дилемма, варианты, выбор матрицы, раскладка `01_company/` и домена, что считается доменом, распределительный принцип, план трансформации канона
 
-**Клиентский scaffold (для досверки):**
-- [framework/scaffold/README.md](scaffold/README.md)
-- структура контуров `01_ceo/`, `02_strategy/`, `03_team/`, `04_company/`, `05_metrics/`, `product/`, `projects/`, `clients/`, `knowledge/`, `processes/` — пробежать (`ls`), читать конкретные файлы по ходу досверки
+**Канон (старая модель, будет переписан в этом сеансе):**
+- [01_architecture.md](methodology/scaffold/01_architecture.md)
+- [02_folder-spec.md](methodology/scaffold/02_folder-spec.md)
+- [02_file-spec.md](methodology/scaffold/02_file-spec.md)
+- [02_readme-spec.md](methodology/scaffold/02_readme-spec.md)
+- [03_node-files.md](methodology/scaffold/03_node-files.md)
+- [03_contours.md](methodology/scaffold/03_contours.md)
+- [deployment.md](methodology/scaffold/deployment.md)
+- [open-questions.md](methodology/scaffold/open-questions.md)
+- [README.md](methodology/scaffold/README.md)
 
-Спроси у Виктора - что делать
+### Что делать
+
+По плану 00_dilemma § План трансформации канона, Трек 1, шаг 1: переписать [01_architecture.md](methodology/scaffold/01_architecture.md) — корневая модель под матрицу, определение домена, распределительный принцип, стадии развёртывания. Дальше — по цепочке (02_folder-spec → 03_node-files → 03_contours → deployment → open-questions → README), ломать порядок нельзя.
+
+Параллельные треки (после канона): связанные слои (Трек 2 — `.claude/commands/svaib-scaffold.md`, `framework/README.md`, `memory/`, `ontology/`, ТЗ strategy redesign) и миграция клиентского `framework/scaffold/` v1 → v2 (Трек 3).
 
 ---
 

@@ -22,6 +22,10 @@ updated: 2026-05-12
 ---
 ## 2026-05-12
 
+**22:00 | framework** — Scaffold: принята матричная модель вместо Аспект>Домен, ADR в 00_dilemma.md + план трансформации канона (3 трека). (5 ч)
+
+**02:14 | framework** — ТЗ на пересборку 02_strategy: новый strategy с 6 блоками, упразднены plan/weekly/timeline (45 мин)
+
 **02:01 | framework** — Scaffold methodology: шесть файлов сведены в единый согласованный непротиворечивый канон — 01_architecture, 02_file-spec, 02_folder-spec, 02_readme-spec, 03_node-files, 03_contours. (4 ч)
 
 **01:35 | framework+dev** — Добавлен 9-й управленческий цикл finance — онтология, архитектура, сайт. (20 мин)
