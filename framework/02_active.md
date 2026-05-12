@@ -127,31 +127,58 @@ type: plan
 
 ### Метрики у клиента
 
-**Цель сессии 2026-05-12.** Запустить первый слой metrics-вертикали у Клиента 1: каноническое имя метрики, колонка с этим именем в его xlsx, помощник по колонке. Без extractor, без narrative, без compound — это второй слой, разворачивается по живому триггеру.
+**Цель.** Первый слой metrics-вертикали — AI-аналитик контура базовых target metrics CEO. Не поисковик ячейки. Полноценный собеседник по этому контуру: понимает речь CEO, читает семантику метрик, идёт в источник, считает, анализирует, отвечает в формате, который подходит вопросу.
 
-**Статус (после сессии 2026-05-12).**
+**Что умеет.**
 
-Методология первого слоя сведена в канон:
-- [x] [`methodology/metrics/first-layer.md`](methodology/metrics/first-layer.md) — рамка, DoD, формат `canonical_metrics.md`, граница со вторым слоем.
-- [x] [`methodology/metrics/rollout.md`](methodology/metrics/rollout.md) — playbook (6 шагов вместо 12-шагового pilot).
-- [x] [`methodology/metrics/HOWTO.md`](methodology/metrics/HOWTO.md) — сценарий «вопрос → каноническое имя → число из xlsx».
-- [x] [`methodology/metrics/README.md`](methodology/metrics/README.md) — карта без статусности, точка входа теперь `first-layer.md`.
-- [x] [`methodology/metrics/intake-form.md`](methodology/metrics/intake-form.md) — понижен до внутреннего чек-листа координатора.
-- [x] [`scaffold/05_metrics/canonical_metrics.md`](scaffold/05_metrics/canonical_metrics.md) — шаблон под клиента.
-- [x] [`scaffold/05_metrics/README.md`](scaffold/05_metrics/README.md) — `canonical_metrics.md` отмечен как стартовая точка.
-- [x] [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md) — маяк на `first-layer.md` в «Кратко», остальное не переписывалось.
+- **Ad-hoc вопросы CEO** своими словами: «растём или нет?», «что просело в марте?», «почему MRR не вырос?», «покажи динамику за квартал», «сравни с прошлым годом», «где разрыв план/факт».
+- **Анализ:** сравнивает периоды и годы, считает дельты, видит динамику, подсвечивает аномалии, формулирует управленческий вывод — а не сырое число.
+- **Подача:** число / narrative / таблица / HTML с графиком — выбирает по вопросу.
+- **Регулярные ритуалы** — если CEO просит: недельная сводка в Telegram, утренний бриф к понедельнику, отчёт на C-level встречу. Это технически не сложнее ad-hoc.
 
-**Клиентский трек (вне framework, идёт параллельно).** 2026-05-12: подготовлен черновик `clients/private/lebedev/docs/canonical_metrics_ssp.md` и бриф для CEO. Отправлен на правки. До возвращения правок колонку в xlsx и помощника не делаем — каноническое имя может измениться.
+**На чём работает.**
+
+- Один канонический список метрик контура (базовые target metrics, как их называет CEO в речи и в xlsx).
+- Один главный источник (xlsx/Sheets клиента) с месячной/годовой динамикой и планом/фактом, где они есть в источнике.
+
+**Принцип масштабируемости.**
+
+Единица расширения = **domain** (соответствует канону имён в [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md), раздел «Канонические имена domain-файлов»). Domain = канонический список метрик одного управленческого фокуса CEO + его источник + аналитические функции над ними.
+
+Сейчас domain один — базовый `business-metrics.md` (то, что у CEO держится в голове как «весь бизнес одной картинкой»).
+
+Когда CEO скажет «теперь подключай финансы как отдельный фокус» / «теперь маркетинг» / «теперь продажи команды X» — добавляется новый функциональный domain (`finance-metrics.md`, `marketing-metrics.md`, ...) рядом, без переписывания базы. Помощник умеет работать с несколькими domain одновременно. Связи между domain — через канонические имена метрик (горизонтальные контракты из [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md) + решение №4 в [`04_decisions.md`](04_decisions.md)).
+
+С первого дня мы строим не «единичный пример», а архитектурный шаблон domain, которым потом наращивается весь бизнес.
+
+**Принцип реализации.** Помощник детерминирован в данных (не считает в голове, всё через инструмент), свободен в подаче (формат ответа выбирает под вопрос). Знание + думание + инструменты + подача.
+
+---
+
+**DoD.**
+- У Клиента 1 в scaffold лежит `business-metrics.md` со списком его target metrics.
+- В источнике есть привязка, по которой помощник детерминированно находит данные метрики (служебная колонка с каноническими именами; контракт — [`methodology/metrics/metrics-spec.md`](methodology/metrics/metrics-spec.md)).
+- Системный промпт оркестратора metrics настроен под думающую аналитику базового domain.
+- Помощник отвечает содержательно на 3–5 типовых вопросов CEO («растём или нет», «что просело в марте», «динамика за квартал», «сравни с прошлым годом», «где разрыв план/факт»).
+
+**Шаг 1 закрыт (2026-05-12).** Формат `business-metrics.md` согласован, спецификация формата создана: [`methodology/metrics/metrics-spec.md`](methodology/metrics/metrics-spec.md) (общие правила + L1-раскладка + L2-заглушка). Канон 9 имён domain-файлов получил суффикс `-metrics`: `business-metrics.md` / `finance-metrics.md` / `sales-metrics.md` / `operations-metrics.md` / `people-metrics.md` + `customer-metrics.md` / `marketing-metrics.md` / `product-metrics.md` / `strategy-metrics.md`. Правило «ID метрики = её каноническое имя» зафиксировано в принципах architecture.md. Контракт привязки к источнику — имя служебной колонки в шапке metrics-файла + fallback на поиск по содержимому. Update в [`04_decisions.md`](04_decisions.md) №5.
+
+**Что под пересмотр (Шаг 2).**
+- [`methodology/metrics/rollout.md`](methodology/metrics/rollout.md), [`HOWTO.md`](methodology/metrics/HOWTO.md), [`README.md`](methodology/metrics/README.md), [`intake-form.md`](methodology/metrics/intake-form.md) — содержат старую формулировку «помощник по колонке достаёт число» и битые ссылки на удалённый `first-layer.md`. Переписать под новую формулировку (AI-аналитик target metrics) и под спеку `metrics-spec.md`.
+- Полная спека L2-формата (`{domain}-metrics.md`): структура секций `datasets / relationships / metrics / routes`, поля паспорта L2. Сейчас в `metrics-spec.md` это заглушка со ссылкой на решение №5.
+- Системный промпт оркестратора metrics под думающую аналитику базового domain (без compound, без готовой библиотеки маршрутов на старте). Скилл-помощник, который ведёт CEO через формирование `business-metrics.md`.
+
+**Клиентский трек.** Черновик `business-metrics.md` под Клиента 1 (на основе живой структуры его SSP из транскрипта 2026-05-01) — в личной папке клиента, вне git-tracked framework. Бриф CEO с инструкцией: проверить формулировки, добавить служебную колонку с каноническими именами в xlsx, подтвердить блок «не вошло». Бриф готовится отдельным шагом после фиксации формата (Шаг 1.5).
 
 **Ближайшие шаги.**
-- [ ] Получить правки CEO по черновику `canonical_metrics_ssp.md`.
-- [ ] Внести колонку с каноническими названиями в главный лист xlsx (правило: пустое поле = метрика для помощника не существует).
-- [ ] Положить финализированный `canonical_metrics.md` в scaffold клиента (точное место — по текущему канону scaffold).
-- [ ] Smoke-test: 2–3 типовых вопроса CEO → помощник идёт в xlsx через каноническую колонку → возвращает число.
+- [ ] Шаг 1.5: подготовить бриф CEO Клиента 1 + промпт-помощник работы с метриками (скилл для формирования `business-metrics.md` у нового клиента).
+- [ ] Получить правки CEO по черновику `business-metrics.md`, привести к согласованному формату.
+- [ ] Внести служебную колонку с каноническими именами метрик в источник Клиента 1.
+- [ ] Перенести финализированный `business-metrics.md` в scaffold Клиента 1.
+- [ ] Smoke-test 3–5 типовых вопросов CEO — содержательные ответы, не сырые цифры.
+- [ ] Шаг 2: переписать методологию metrics под новую формулировку и спеку.
 
-**Что не делаем в этом цикле (явно).** Per-client extractor, narrative composer, паспорта с `direction`/synonyms/antonyms, OKR-проекция, compound route, regular loop, история по месяцам, weekly metrics-ритуал, open-question #1 «narrative.py vs LLM-сборка». Все они — второй и третий слои; включаются по живому триггеру (см. [`methodology/metrics/first-layer.md`](methodology/metrics/first-layer.md), раздел «Триггеры перехода ко второму слою»).
-
-**Точка входа в вертикаль:** [`methodology/metrics/README.md`](methodology/metrics/README.md) → [`methodology/metrics/first-layer.md`](methodology/metrics/first-layer.md).
+**Точка входа в вертикаль:** [`methodology/metrics/README.md`](methodology/metrics/README.md) → [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md) → [`methodology/metrics/metrics-spec.md`](methodology/metrics/metrics-spec.md).
 
 
 ### Помощники

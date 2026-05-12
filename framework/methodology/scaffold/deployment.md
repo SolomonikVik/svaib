@@ -85,7 +85,7 @@ scope: product_core
     └── README.md           ← объяснение, какие xlsx/Sheets сюда класть
 ```
 
-Базовый каркас контура создаётся сразу — `05_metrics/` обязательный контур по архитектуре. Domain-файлы (`finance.md`, `sales.md`, `operations.md`, `people.md`) — **по триггеру живой работы в домене**, не все сразу. `extractors/` — по триггеру (когда клиент даёт первый источник). Числа не дублируются в md — живут в `source/*.xlsx`. Расчёты — Python через xlsx-skill.
+Базовый каркас контура создаётся сразу — `05_metrics/` обязательный контур по архитектуре, базовый `business-metrics.md` разворачивается первым (target metrics CEO одним списком). Функциональные domain-файлы (`finance-metrics.md`, `sales-metrics.md`, `operations-metrics.md`, `people-metrics.md`) — **по триггеру живой работы в домене**, не все сразу. `extractors/` — по триггеру (когда клиент даёт первый источник). Числа не дублируются в md — живут в `source/*.xlsx`. Расчёты — Python через xlsx-skill.
 
 ### 2.6. Опциональные контуры
 

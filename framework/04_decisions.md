@@ -303,6 +303,22 @@ Runtime, интерфейс, orchestration engine и конкретный AI-hos
 
 Опоры решения — `_inbox/metrics-scaffold/b1.md` и `o1.md` (после фиксации удалены, обоснования воплощены в скаффолде и в этой записи). Структура секций domain-файла — адаптация Open Semantic Interchange (datasets / fields / relationships / synonyms) с добавлением своего: `version`, `owner`, `formula_human`, `routes`. Что не взяли у OSI: yaml-формат, мультидиалектность `expression.dialects[]`, `custom_extensions`.
 
+### Update 2026-05-12 — канон имён получил суффикс `-metrics`
+
+**Что изменилось.** Имена 9 domain-файлов получили суффикс `-metrics`: `business-metrics.md` / `finance-metrics.md` / `sales-metrics.md` / `operations-metrics.md` / `people-metrics.md` / `customer-metrics.md` / `marketing-metrics.md` / `product-metrics.md` / `strategy-metrics.md`. Базовый `business-metrics.md` добавлен как точка входа CEO в собственные target metrics (раньше канон был из 8 функциональных имён; базовый файл существовал, но его имя было `canonical_metrics.md`, потом `business.md`).
+
+**Почему.** Имя файла должно нести семантику само, без опоры на путь. LLM (Claude Code, Codex, любой агент) не всегда подгружает папку в окно — файл может быть прочитан напрямую через grep, @-mention или прямой Read. С `business.md` без пути непонятно, что внутри; с `business-metrics.md` — понятно сразу. Это LLM-first парадигма: имя файла = семантический якорь. Прежний аргумент «папка задаёт контекст, префикс не нужен» сохраняет силу для префикса (`metrics_finance.md` отвергнут — при алфавитной сортировке группирует под одним началом, избыточно), но не против суффикса: суффикс читается как уточнение типа, первичный смысл — функция.
+
+**Дополнительно зафиксировано.** Правило «ID метрики = её каноническое имя» — никаких отдельных `metric_<id>` полей. Имя метрики, записанное заголовком `### {имя}` в metrics-файле, одновременно является идентификатором, привязкой к источнику (через служебную колонку в xlsx) и якорем для маршрутов. Контракт привязки к источнику с fallback на поиск по содержимому, рекомендация Google Sheets паттерна (служебный лист канон-имён + data validation dropdown + ImportRange) — спецификация формата metrics-файлов в новом файле [`methodology/metrics/metrics-spec.md`](methodology/metrics/metrics-spec.md).
+
+**Следствия (зафиксированы в этот заход).**
+- [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md) — таблицы канон-имён переписаны под новый канон, принципы обновлены под «ID = имя метрики», добавлены ссылки на `metrics-spec.md`. v9 → v10.
+- [`methodology/metrics/metrics-spec.md`](methodology/metrics/metrics-spec.md) — создан как source of truth по формату metrics-файлов (общие правила + L1-раскладка + L2-заглушка).
+- [`scaffold/05_metrics/business.md`](scaffold/05_metrics/) → переименован в `business-metrics.md`, переписан под минимальный template со ссылкой на спеку.
+- [`scaffold/05_metrics/README.md`](scaffold/05_metrics/README.md), [`methodology/scaffold/03_contours.md`](methodology/scaffold/03_contours.md), [`methodology/scaffold/deployment.md`](methodology/scaffold/deployment.md), [`skills/metrics-analysis/orchestrator-metrics.md`](skills/metrics-analysis/orchestrator-metrics.md), [`02_active.md`](02_active.md) — упоминания старых имён обновлены под новый канон.
+
+**Что НЕ переписано в этот заход** (Шаг 2 пересмотра методологии metrics): [`methodology/metrics/rollout.md`](methodology/metrics/rollout.md), [`HOWTO.md`](methodology/metrics/HOWTO.md), [`README.md`](methodology/metrics/README.md), [`intake-form.md`](methodology/metrics/intake-form.md), [`scaffold/05_metrics/template-domain.md`](scaffold/05_metrics/template-domain.md), [`scaffold/05_metrics/01_metrics.md`](scaffold/05_metrics/01_metrics.md) — содержат старую формулировку «помощник по колонке достаёт число» и старые имена. Под пересмотр после согласования формата L2.
+
 ---
 
 ## 6. Триплет доставки README агенту

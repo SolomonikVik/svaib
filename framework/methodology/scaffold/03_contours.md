@@ -172,18 +172,19 @@ version: 4
 **Контурно-специфичные файлы** (SOT миссии — здесь):
 
 - **`01_metrics.md`** — карта системы метрик: витрина target metrics CEO, карта доменов, навигационные срезы (OKR). AI читает первым при вопросах о цифрах — чтобы определить домен и перейти к паспорту метрики. Не дублирует значения и формулы — только карточки-ссылки на паспорта в `{domain}.md`. Сами OKR — в `02_strategy/02_goal.md`.
-- **`template-domain.md`** — шаблон domain-файла: как описывать бизнес-домен для AI — источники, поля, метрики, маршруты типовых вопросов, known issues. Копируется как `{domain}.md`. Числа не хранит, только семантику.
-- **`{domain}.md`** — семантическая модель бизнес-домена (finance, sales, operations, people, customer, marketing, product, strategy): источники, поля, метрики, маршруты вопросов CEO. Один паспорт метрики — в одном domain-файле. Числа остаются в `source/`, расчёты — extractor/Python.
+- **`template-domain.md`** — шаблон functional domain-файла L2: как описывать бизнес-домен для AI — источники, поля, метрики, маршруты типовых вопросов, known issues. Копируется как `{domain}-metrics.md`. Числа не хранит, только семантику.
+- **`{domain}-metrics.md`** — семантическая модель бизнес-домена (finance, sales, operations, people, customer, marketing, product, strategy): источники, поля, метрики, маршруты вопросов CEO. Один паспорт метрики — в одном metrics-файле. Числа остаются в `source/`, расчёты — extractor/Python.
+- **`business-metrics.md`** — базовый файл L1 metrics-вертикали: target metrics CEO одним списком (пять полей метрики). У каждого клиента ровно один. На нём работает AI-аналитик target metrics. Появляется первым, до функциональных domain-файлов.
 
 **Принципы контура:**
 
 - **Числа живут в `source/`, семантика — в md.** Никакого дублирования значений в markdown.
-- **Нарезка domain-файлов — по бизнес-домену, не по источнику.** Один `{domain}.md` может агрегировать несколько источников.
-- **Минимальный канон domain-файлов:** `finance.md`, `sales.md`, `operations.md`, `people.md`. Расширение по триггеру: `customer.md`, `marketing.md`, `product.md`, `strategy.md`. Префикс `metrics_` не используется — папка уже задаёт контекст.
-- **Стабильные ID метрик** (`metric_<id>`), `version` инкрементируется при изменении формулы.
+- **Нарезка domain-файлов — по бизнес-домену, не по источнику.** Один `{domain}-metrics.md` может агрегировать несколько источников.
+- **Канон 9 имён metrics-файлов с суффиксом `-metrics`:** базовый `business-metrics.md` + минимальный функциональный (`finance-metrics.md`, `sales-metrics.md`, `operations-metrics.md`, `people-metrics.md`) + расширение по триггеру (`customer-metrics.md`, `marketing-metrics.md`, `product-metrics.md`, `strategy-metrics.md`). Префикс `metrics_` не используется.
+- **ID метрики = её каноническое имя** (заголовок `### {имя}` в metrics-файле). Никаких отдельных `metric_<id>` полей. На L2 `version` инкрементируется при изменении формулы.
 - **Расчёты — Python (xlsx-skill / Pandas)**. Summary-файлы (`*.summary.md`) не плодим по умолчанию, только под живой триггер.
 
-Полная архитектура вертикали — в [../metrics/architecture.md](../metrics/architecture.md). Текущий клиентский каркас [`framework/scaffold/05_metrics/`](../../scaffold/05_metrics/) — практическая реализация v1, не SOT (нужна миграция к канону контура — см. [open-questions.md](open-questions.md)).
+Полная архитектура вертикали — в [../metrics/architecture.md](../metrics/architecture.md). Спецификация формата metrics-файлов — [../metrics/metrics-spec.md](../metrics/metrics-spec.md). Текущий клиентский каркас [`framework/scaffold/05_metrics/`](../../scaffold/05_metrics/) — практическая реализация v1, не SOT (нужна миграция к канону контура — см. [open-questions.md](open-questions.md)).
 
 ### `projects/` — универсальная анатомия
 
