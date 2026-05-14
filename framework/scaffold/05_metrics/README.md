@@ -8,18 +8,11 @@ Metrics-вертикаль у клиента: семантика метрик б
 
 - `README.md` — этот файл
 - `business-metrics.md` — базовый файл метрик: ключевые метрики бизнеса с паспортами. Точка входа
+- `{domain}-metrics.md` — шаблон функционального файла метрик по домену; копируется и переименовывается в `finance-metrics.md`, `sales-metrics.md` и т.п.
 - `source/` — исходные файлы-источники клиента (xlsx и пр.), read-only для AI
 - `extractors/` — per-client Python-скрипты извлечения значений из источников
 
 Функциональные `{domain}-metrics.md` (finance, sales, …) добавляются позже, по живому триггеру — когда у CEO появилась реальная работа в домене.
-
-## Методология — не здесь
-
-В этой папке только клиентский каркас. Как устроена вертикаль и как с ней работать:
-
-- [`../../methodology/metrics/architecture.md`](../../methodology/metrics/architecture.md) — устройство вертикали
-- [`../../methodology/metrics/metrics-spec.md`](../../methodology/metrics/metrics-spec.md) — формат metrics-файлов
-- [`../../methodology/metrics/extractor.md`](../../methodology/metrics/extractor.md) — построение extractor'ов
 
 ## Связи наружу
 

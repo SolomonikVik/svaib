@@ -5,5 +5,3 @@
 - Read-only для AI: не нормализуем, не «причёсываем».
 - Для удалённых источников (Google Sheets, API) файла здесь нет — адрес указан в metrics-файле.
 - Структуру источника читает extractor (`../extractors/`), он же ловит её изменения.
-
-Как extractor работает с источниками — [`../../../methodology/metrics/extractor.md`](../../../methodology/metrics/extractor.md).

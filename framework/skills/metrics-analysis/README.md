@@ -1,8 +1,7 @@
 ---
 title: "metrics-analysis — skill (промпты + код вертикали metrics)"
 updated: 2026-05-14
-version: 7
-status: draft
+version: 2
 scope: product_core
 priority: high
 type: reference
@@ -20,7 +19,7 @@ type: reference
 |------|-----|-----------|
 | [`README.md`](README.md) | index | Этот файл |
 | [`business-metrics-intake.md`](business-metrics-intake.md) | procedure | Промпт-помощник заполнения клиентского `business-metrics.md`: ведёт диалог с CEO, собирает каноническое имя / бизнес-смысл / правило расчёта / единицу / направление по каждой метрике, по спеке [`metrics-spec.md`](../../methodology/metrics/metrics-spec.md) |
-| [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Системный промпт оркестратора AI-агента. **Под переписывание с нуля** под `architecture.md` v2 (старый текст на отменённой модели — ветки А/В/Б, `01_metrics.md`) |
+| [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Операционный пайплайн оркестратора: чем исполняется каждый шаг потока обработки запроса в проде. Приведён к `architecture.md` v2 |
 | [`probe_xlsx.py`](probe_xlsx.py) | code | Универсальный helper разведки xlsx: листы, размеры, объединённые ячейки, формулы, cached errors, заполненность колонок |
 
 ## Что НЕ живёт здесь

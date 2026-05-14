@@ -2,7 +2,7 @@
 title: "Metrics: спецификация формата файлов"
 created: 2026-05-12
 updated: 2026-05-14
-version: 1
+version: 2
 status: final
 ---
 

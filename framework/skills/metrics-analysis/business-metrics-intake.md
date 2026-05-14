@@ -1,8 +1,8 @@
 ---
 title: "business-metrics-intake — skill (помощник заполнения business-metrics.md)"
 created: 2026-05-13
-updated: 2026-05-13
-version: 1
+updated: 2026-05-14
+version: 2
 status: final
 ---
 
