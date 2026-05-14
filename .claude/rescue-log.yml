@@ -366,7 +366,7 @@
     Структурное решение: PreToolUse hook guard_client_names.py на Write|Edit.
     Перехватывает запись в git-tracked файлы, сканирует на фамилии из client_names.txt.
     Блокирует с сообщением "use initials only". Дополнительно: git commit-msg hook
-    (фамилия Смолянинов уже в коммите 387d0bf). Статус: НЕ РЕАЛИЗОВАНО, в бэклоге.
+    (фамилия клиента уже попала в git-историю). Статус: НЕ РЕАЛИЗОВАНО, в бэклоге.
   pattern: "Confidentiality Enforcement Gap — текстовое правило конфиденциальности без механизма enforcement. Контекстное давление побеждает текстовый запрет."
   severity: critical
   recurring: true
