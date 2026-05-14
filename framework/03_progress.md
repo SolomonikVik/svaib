@@ -1,6 +1,6 @@
 ---
 title: "Framework — хроника"
-updated: 2026-05-13
+updated: 2026-05-14
 scope: product_core
 type: log
 ---
@@ -19,6 +19,11 @@ type: log
 - [02_active.md](02_active.md) — что в работе сейчас, Session Handoff
 - [02_backlog.md](02_backlog.md) — задачи направления на будущее
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
+
+---
+## 2026-05-14 · Metrics: чистка методологии вертикали под актуальную модель
+
+Методология metrics-вертикали приведена к выверенному ядру: архитектура сведена из трёх файлов в один [architecture.md](methodology/metrics/architecture.md) с дедупликацией и закрытыми гэпами аудита, создан черновик [extractor.md](methodology/metrics/extractor.md), удалён старый слой на отменённой модели (10 файлов). Опора вертикали — 5 выверенных файлов. Стройка (orchestrator-metrics, доводка extractor.md) — отдельной сессией.
 
 ---
 ## 2026-05-13 · Metrics: закрыта спецификация формата + промпт-помощник

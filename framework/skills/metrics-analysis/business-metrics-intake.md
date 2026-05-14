@@ -3,9 +3,7 @@ title: "business-metrics-intake — skill (помощник заполнения
 created: 2026-05-13
 updated: 2026-05-13
 version: 1
-scope: product_core
-priority: high
-type: procedure
+status: final
 ---
 
 # business-metrics-intake — skill

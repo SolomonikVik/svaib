@@ -1,7 +1,8 @@
 ---
-title: "metrics-analysis — skill (системный промпт + черновик narrative)"
-updated: 2026-05-13
-version: 6
+title: "metrics-analysis — skill (промпты + код вертикали metrics)"
+updated: 2026-05-14
+version: 7
+status: draft
 scope: product_core
 priority: high
 type: reference
@@ -9,7 +10,7 @@ type: reference
 
 # metrics-analysis — skill
 
-Здесь живёт **только собственно skill** вертикали `metrics`. Методология, HOWTO, rollout, intake-form, открытые вопросы, карта вертикали — переехали в [`../../methodology/metrics/`](../../methodology/metrics/).
+Здесь живёт **только собственно skill** вертикали `metrics` — промпты и код. Методология вертикали и карта — в [`../../methodology/metrics/`](../../methodology/metrics/).
 
 **Точка входа в вертикаль:** [`../../methodology/metrics/README.md`](../../methodology/metrics/README.md).
 
@@ -18,24 +19,18 @@ type: reference
 | Файл | Тип | Что делает |
 |------|-----|-----------|
 | [`README.md`](README.md) | index | Этот файл |
-| [`business-metrics-intake.md`](business-metrics-intake.md) | procedure | Промпт-помощник для заполнения клиентского `business-metrics.md`: ведёт диалог с CEO по vision/goal, собирает каноническое имя / бизнес-смысл / правило расчёта / единицу / направление по каждой метрике, фиксирует набор в шаблон по спеке [`metrics-spec.md`](../../methodology/metrics/metrics-spec.md) |
-| [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Системный промпт оркестратора AI-агента: ветки А/В/Б, обработка ошибок, Cowork-чек-лист, критические правила |
-| [`narrative.py`](narrative.py) | code (draft) | Универсальный narrative composer (классификация red/win/ok/blocked + сборка markdown). **Черновик** — судьба под открытым вопросом #1 (vs LLM-сборка), см. [`../../methodology/metrics/open-questions.md`](../../methodology/metrics/open-questions.md) |
-| [`probe_xlsx.py`](probe_xlsx.py) | code | Универсальный helper для одноразовой разведки xlsx: листы, размеры, объединённые ячейки, формулы, cached errors, заполненность колонок |
-
-## Запланировано (когда дойдёт очередь)
-
-- `prompt-route-resolver.md` — классификатор: вопрос → ветка А/В/Б
-- `prompt-thinking-branch.md` — ветка Б (думающая): план → валидация → исполнение → сборка
+| [`business-metrics-intake.md`](business-metrics-intake.md) | procedure | Промпт-помощник заполнения клиентского `business-metrics.md`: ведёт диалог с CEO, собирает каноническое имя / бизнес-смысл / правило расчёта / единицу / направление по каждой метрике, по спеке [`metrics-spec.md`](../../methodology/metrics/metrics-spec.md) |
+| [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Системный промпт оркестратора AI-агента. **Под переписывание с нуля** под `architecture.md` v2 (старый текст на отменённой модели — ветки А/В/Б, `01_metrics.md`) |
+| [`probe_xlsx.py`](probe_xlsx.py) | code | Универсальный helper разведки xlsx: листы, размеры, объединённые ячейки, формулы, cached errors, заполненность колонок |
 
 ## Что НЕ живёт здесь
 
-- **Per-client extractor** — это код клиента, лежит в `metrics/extractors/` клиентского scaffold, не в общей библиотеке skill. Шаблон-паттерн — в [`../../scaffold/05_metrics/extractors/extractor_template.py`](../../scaffold/05_metrics/extractors/extractor_template.py).
-- **Методология цикла** (HOWTO, rollout, intake-form, open-questions, architecture) — в [`../../methodology/metrics/`](../../methodology/metrics/).
-- **Шаблоны клиента** (витрина, template-domain, source-README, extractors-README) — в [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/).
+- **Per-client extractor** — код клиента, лежит в `metrics/extractors/` клиентского scaffold, не в общей библиотеке skill. Как строится — [`../../methodology/metrics/extractor.md`](../../methodology/metrics/extractor.md).
+- **Методология цикла** (architecture, metrics-spec, extractor) — в [`../../methodology/metrics/`](../../methodology/metrics/).
+- **Шаблоны клиента** (`business-metrics.md`, READMEs папок) — в [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/).
 
 ## Связи
 
 - [`../../methodology/metrics/README.md`](../../methodology/metrics/README.md) — карта всей вертикали (точка входа)
-- [`../../methodology/metrics/architecture.md`](../../methodology/metrics/architecture.md) — источник правды по архитектуре и канону доменов
+- [`../../methodology/metrics/architecture.md`](../../methodology/metrics/architecture.md) — источник правды по устройству вертикали
 - [`../../scaffold/05_metrics/`](../../scaffold/05_metrics/) — каркас, который разворачивается у клиента

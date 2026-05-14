@@ -135,7 +135,7 @@ plugin/            → собранный пакет для клиента (де
 | Развернуть scaffold для клиента | [scaffold/clients/](scaffold/clients/) | Шаблоны клиентских проектов |
 | Спроектировать навык | [skills/](skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |
-| Вертикаль metrics (методология цикла) | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md` (карта вертикали); внутри: `architecture.md`, `HOWTO.md`, `rollout.md`, `intake-form.md`, `open-questions.md` |
+| Вертикаль metrics (методология цикла) | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md` (карта вертикали); внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
 | Работа со встречами | [methodology/meeting_analysis.md](methodology/meeting_analysis.md) | Пайплайн анализа транскриптов |
 | Онбординг клиента | [methodology/onboarding.md](methodology/onboarding.md) | Последовательность освоения |
 | Формат файлов | [memory/file_spec.md](memory/file_spec.md) | YAML, секции, ограничения |

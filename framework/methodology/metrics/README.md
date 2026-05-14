@@ -1,57 +1,52 @@
 ---
-title: "Metrics — управленческий цикл (вертикаль)"
-updated: 2026-05-12
-version: 2
-scope: product_core
-priority: high
-type: reference
+title: Metrics — карта вертикали
+updated: 2026-05-14
+version: 4
+status: draft
 ---
 
-# Metrics — точка входа в вертикаль
+# Metrics — карта вертикали
 
-Управленческий цикл `metrics` в Second AI Brain. Эта папка — карта вертикали: куда смотреть за рамкой первого слоя, базовой архитектурой, скиллом, шаблонами клиента, развёртыванием, открытыми вопросами. Сюда заходит любой новый чат / новый инженер / архитектор перед работой с метриками.
+Карта управленческого цикла `metrics`: где лежит актуальный канон, что выверено, что под пересмотром, в каком порядке читать файлы перед работой.
 
-**Суть вертикали.** Метрики бизнеса CEO живут в xlsx/Sheets. Цель — CEO задаёт помощнику вопрос своими словами и получает воспроизводимый ответ из источника. Принцип: помощник не считает в голове.
+## Текущая рамка
 
-**С чего стартовать у клиента — первый слой.** Минимум, который ставится у каждого нового клиента: каноническое имя метрики, колонка с этим именем в xlsx, помощник по колонке. Без паспортов, без extractor-а, без narrative. Рамка и DoD — [`first-layer.md`](first-layer.md). Полная архитектура — [`architecture.md`](architecture.md), она остаётся базой; над первым слоем по триггерам надстраивается второй и третий.
+Цель вертикали — AI-аналитик базовых target metrics CEO: помощник понимает вопрос CEO, читает семантику метрик, идёт в источник, считает через детерминированный инструмент и отвечает управленчески, а не просто достаёт ячейку.
 
-Архитектурный контекст: вертикаль проходит сквозь 3 слоя продукта (данные / память / помощники) и 6 частей framework — см. [`../../architecture.md`](../../architecture.md), раздел «Вертикали управленческих циклов».
+## Методология
 
----
+| Файл | Статус | Роль сейчас |
+|---|---|---|
+| [README.md](README.md) | draft | Эта карта вертикали |
+| [architecture.md](architecture.md) | draft | Опорный документ вертикали: линия данных, линия анализа, оркестратор, надёжность |
+| [metrics-spec.md](metrics-spec.md) | final | Source of truth для формата `business-metrics.md` и `{domain}-metrics.md` |
+| [extractor.md](extractor.md) | draft | Построение per-client extractor'а: probe, раскладка, патологии источников, контракт реализации |
 
-## Карта вертикали — где что лежит
+## Skills
 
-### Методология (эта папка)
+| Файл | Статус | Роль сейчас |
+|---|---|---|
+| [business-metrics-intake.md](../../skills/metrics-analysis/business-metrics-intake.md) | final | Промпт-помощник заполнения `business-metrics.md` с CEO |
+| [README.md](../../skills/metrics-analysis/README.md) | draft | Карта skill-папки |
+| [orchestrator-metrics.md](../../skills/metrics-analysis/orchestrator-metrics.md) | draft | Промпт оркестратора — под переписывание с нуля под `architecture.md` v2 |
+| [probe_xlsx.py](../../skills/metrics-analysis/probe_xlsx.py) | code | Helper разведки xlsx — выверен, архитектурно-нейтрален |
 
-| Файл | Что внутри |
+## Scaffold
+
+| Файл | Роль сейчас |
 |---|---|
-| [`README.md`](README.md) | Этот файл — карта вертикали |
-| [`first-layer.md`](first-layer.md) | Рамка и DoD первого слоя, формат `canonical_metrics.md`, граница со вторым слоем |
-| [`architecture.md`](architecture.md) | База: 6 слоёв (snapshot, canonical, semantic, ритуалы, обработка запроса), ветки А/В/Б, канон 8 имён domain-файлов |
-| [`HOWTO.md`](HOWTO.md) | Сценарий первого слоя на пальцах: «CEO спрашивает → помощник идёт через каноническое имя → возвращает число» |
-| [`rollout.md`](rollout.md) | Playbook первого слоя у нового клиента |
-| [`intake-form.md`](intake-form.md) | Внутренний чек-лист координатора: что собрать у клиента до Шага 3 rollout |
-| [`open-questions.md`](open-questions.md) | Архитектурные вопросы и решения, отложенные на потом |
+| [business-metrics.md](../../scaffold/05_metrics/business-metrics.md) | Шаблон базового файла метрик, собран по `metrics-spec.md` (обрезка инструктива — отдельный заход) |
+| [README.md](../../scaffold/05_metrics/README.md) | Каркас-индекс папки `05_metrics/` |
+| [source/README.md](../../scaffold/05_metrics/source/README.md) | Краткий README папки источников клиента |
+| [extractors/README.md](../../scaffold/05_metrics/extractors/README.md) | Краткий README папки per-client extractor'ов |
 
-### Skill — что компилируется в системный промпт помощника
+## Правило обновления карты
 
-[`../../skills/metrics-analysis/`](../../skills/metrics-analysis/)
+При изменении любого файла вертикали `metrics` нужно обновить эту карту, если изменилась:
+- роль файла;
+- статус (`draft` / `review` / `final`);
+- порядок чтения;
+- связь с другими файлами;
+- место файла в процессе доставки клиенту.
 
-| Файл | Что внутри |
-|---|---|
-| [`orchestrator-metrics.md`](../../skills/metrics-analysis/orchestrator-metrics.md) | Системный промпт оркестратора для второго слоя: ветки А/В/Б, обработка ошибок, критические правила. На первом слое используется ограниченное подмножество — только Ветка А в редуцированной форме |
-| [`probe_xlsx.py`](../../skills/metrics-analysis/probe_xlsx.py) | Одноразовая разведка xlsx: листы, размеры, объединённые ячейки, кэшированные ошибки |
-| [`narrative.py`](../../skills/metrics-analysis/narrative.py) | Narrative composer — второй слой; роль Python vs LLM-сборки обсуждается в [`open-questions.md`](open-questions.md) №1 |
-
-### Scaffold — каркас, который разворачивается у клиента
-
-[`../../scaffold/05_metrics/`](../../scaffold/05_metrics/)
-
-| Файл | Что внутри |
-|---|---|
-| [`README.md`](../../scaffold/05_metrics/README.md) | Устройство папки `metrics/` у клиента, правила уровня папки |
-| [`canonical_metrics.md`](../../scaffold/05_metrics/canonical_metrics.md) | Шаблон первого слоя: каноническое имя + бизнес-смысл + как считается |
-| [`01_metrics.md`](../../scaffold/05_metrics/01_metrics.md) | Шаблон витрины второго слоя: target metrics CEO, карта доменов, OKR-секция, глоссарий |
-| [`template-domain.md`](../../scaffold/05_metrics/template-domain.md) | Шаблон domain-файла второго слоя: `datasets / regions / fields / metrics / routes / known_issues` |
-| [`source/README.md`](../../scaffold/05_metrics/source/README.md) | Правила работы с xlsx-источниками клиента |
-| [`extractors/README.md`](../../scaffold/05_metrics/extractors/README.md) | Правила работы с per-client extractors (второй слой) |
+README не дублирует содержание файлов, а фиксирует навигацию: чему верить, что читать, что под пересмотром.
