@@ -79,13 +79,14 @@ scope: product_core
 ```
 05_metrics/
 ├── README.md
-├── 01_metrics.md           ← витрина target metrics (пустая на старте)
-├── template-domain.md      ← шаблон domain-файла
-└── source/
-    └── README.md           ← объяснение, какие xlsx/Sheets сюда класть
+├── business-metrics.md     ← базовый файл target metrics CEO
+├── source/
+│   └── README.md           ← источники клиента, read-only
+└── extractors/
+    └── README.md           ← per-client extractor'ы; скрипты появляются по триггеру
 ```
 
-Базовый каркас контура создаётся сразу — `05_metrics/` обязательный контур по архитектуре, базовый `business-metrics.md` разворачивается первым (target metrics CEO одним списком). Функциональные domain-файлы (`finance-metrics.md`, `sales-metrics.md`, `operations-metrics.md`, `people-metrics.md`) — **по триггеру живой работы в домене**, не все сразу. `extractors/` — по триггеру (когда клиент даёт первый источник). Числа не дублируются в md — живут в `source/*.xlsx`. Расчёты — Python через xlsx-skill.
+Базовый каркас контура создаётся сразу — `05_metrics/` обязательный контур текущей v1-реализации scaffold, базовый `business-metrics.md` разворачивается первым (target metrics CEO одним списком). Функциональные domain-файлы (`finance-metrics.md`, `sales-metrics.md`, `operations-metrics.md`, `people-metrics.md`) — **по триггеру живой работы в домене**, не все сразу. Конкретные extractor-скрипты появляются по триггеру, когда клиент даёт первый источник. Числа не дублируются в md — живут в `source/` или удалённых источниках клиента. Расчёты — через детерминированный инструмент.
 
 ### 2.6. Опциональные контуры
 

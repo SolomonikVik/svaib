@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>svaib scaffold matrix visual</title>
+  <style>
+    :root {
+      --teal: #00B4A6;
+      --teal-dark: #008B7F;
+      --teal-light: #E0F7F5;
+      --teal-subtle: #F0FDFB;
+      --pink: #FF4D8D;
+      --pink-light: #FFE5ED;
+      --ink: #1A1A1A;
+      --blue: #2C3E50;
+      --gray: #6B7280;
+      --gray-light: #E5E7EB;
+      --bg: #FAFBFC;
+      --surface: #FFFFFF;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 12px 24px rgba(0, 0, 0, 0.06);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    .brand-strip {
+      height: 6px;
+      background: var(--teal);
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+    }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      font-family: Sora, Inter, sans-serif;
+      font-weight: 800;
+      font-size: 24px;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .logo .teal {
+      color: var(--teal);
+    }
+
+    .logo .pink {
+      color: var(--pink);
+    }
+
+    h1, h2, h3 {
+      font-family: Sora, Inter, sans-serif;
+      letter-spacing: 0;
+      color: var(--blue);
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(30px, 4vw, 56px);
+      line-height: 1.05;
+      max-width: 980px;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 17px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .subtitle {
+      max-width: 900px;
+      margin-top: 14px;
+      color: var(--gray);
+      font-size: 17px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 24px 0;
+    }
+
+    button {
+      appearance: none;
+      border: 1px solid var(--teal);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--teal-dark);
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.18s ease;
+    }
+
+    button:hover {
+      background: var(--teal-subtle);
+      transform: translateY(-1px);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 1.4fr) minmax(320px, 0.9fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--gray-light);
+      border-left: 6px solid var(--teal);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .panel.accent {
+      border-left-color: var(--pink);
+    }
+
+    .stack {
+      display: grid;
+      gap: 20px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid var(--gray-light);
+      background: #fff;
+      color: var(--blue);
+    }
+
+    .pill.teal {
+      border-color: var(--teal);
+      color: var(--teal-dark);
+      background: var(--teal-subtle);
+    }
+
+    .pill.pink {
+      border-color: var(--pink);
+      color: var(--pink);
+      background: #fff;
+    }
+
+    .pill.gray {
+      color: var(--gray);
+      background: #F3F4F6;
+    }
+
+    .tree {
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 14px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    details {
+      margin: 6px 0;
+    }
+
+    summary {
+      list-style: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: var(--blue);
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::before {
+      content: "+";
+      display: inline-grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 5px;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    details[open] > summary::before {
+      content: "-";
+      background: var(--teal);
+      color: #fff;
+    }
+
+    summary:hover {
+      background: var(--teal-subtle);
+    }
+
+    .children {
+      margin-left: 24px;
+      padding-left: 16px;
+      border-left: 1px solid var(--gray-light);
+    }
+
+    .file,
+    .folder-note {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      min-height: 28px;
+      padding: 2px 6px 2px 32px;
+      white-space: nowrap;
+    }
+
+    .file::before {
+      content: "md";
+      display: inline-grid;
+      place-items: center;
+      min-width: 22px;
+      height: 18px;
+      border-radius: 5px;
+      background: #F3F4F6;
+      color: var(--gray);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .folder-note::before {
+      content: "dir";
+      display: inline-grid;
+      place-items: center;
+      min-width: 22px;
+      height: 18px;
+      border-radius: 5px;
+      background: var(--teal-subtle);
+      color: var(--teal-dark);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .muted {
+      color: var(--gray);
+      font-size: 13px;
+      white-space: normal;
+    }
+
+    .optional {
+      color: var(--pink);
+      font-weight: 750;
+    }
+
+    .rule {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .rule-row {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border-radius: var(--radius);
+      background: var(--teal-subtle);
+    }
+
+    .rule-num {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .callout {
+      padding: 16px;
+      border-radius: var(--radius);
+      background: var(--teal-subtle);
+      border: 1px solid var(--teal-light);
+    }
+
+    .callout strong {
+      color: var(--teal-dark);
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .matrix-card {
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      padding: 14px;
+      background: #fff;
+    }
+
+    .matrix-card strong {
+      display: block;
+      color: var(--blue);
+      margin-bottom: 4px;
+    }
+
+    .tasks {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .task {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 12px;
+      border: 1px solid var(--gray-light);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .task-index {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--teal-light);
+      color: var(--teal-dark);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .footer {
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--gray-light);
+      color: var(--gray);
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      .grid,
+      header,
+      .matrix {
+        grid-template-columns: 1fr;
+      }
+
+      .page {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="brand-strip"></div>
+  <main class="page">
+    <header>
+      <div>
+        <h1>Scaffold Matrix: как выглядит новая структура</h1>
+        <p class="subtitle">Наглядная сборка решения из <strong>00_dilemma.md</strong>: компания как отдельный уровень, домены на корне, саморазворачивающиеся узлы и одно правило размещения фактов.</p>
+        <div class="legend">
+          <span class="pill teal">company-level</span>
+          <span class="pill">domain</span>
+          <span class="pill gray">optional</span>
+          <span class="pill pink">SOT rule</span>
+        </div>
+      </div>
+      <div class="logo" aria-label="svaib logo"><span class="teal">sv</span><span class="pink">ai</span><span class="teal">b</span><span class="pink">.</span></div>
+    </header>
+
+    <div class="toolbar" aria-label="tree controls">
+      <button type="button" data-action="expand">Раскрыть всё</button>
+      <button type="button" data-action="collapse">Свернуть всё</button>
+      <button type="button" data-action="core">Показать ядро</button>
+    </div>
+
+    <section class="grid">
+      <div class="stack">
+        <section class="panel">
+          <h2>Дерево scaffold</h2>
+          <div class="tree" data-tree>
+            <details open data-core>
+              <summary>scaffold/</summary>
+              <div class="children">
+                <details open data-core>
+                  <summary>00_ceo/ <span class="muted">личный контекст CEO</span></summary>
+                  <div class="children">
+                    <div class="file">01_my-profile.md <span class="muted">кто я, ценности, стиль</span></div>
+                    <div class="file">02_active.md <span class="muted">личные задачи</span></div>
+                    <div class="file">03_thoughts.md <span class="muted">мысли впрок</span></div>
+                    <div class="file">04_decisions.md <span class="muted">личные решения</span></div>
+                    <div class="file">README.md</div>
+                  </div>
+                </details>
+
+                <details open data-core>
+                  <summary>01_company/ <span class="muted">уровень всей компании</span></summary>
+                  <div class="children">
+                    <div class="folder-note">_inbox/</div>
+                    <details open data-core>
+                      <summary>01_strategy/ <span class="muted">vision, цели, стратегия, история решений</span></summary>
+                      <div class="children">
+                        <div class="file">01_vision.md <span class="muted">куда устремлены</span></div>
+                        <div class="file">02_goal.md <span class="muted">какая цель</span></div>
+                        <div class="file">03_strategy.md <span class="muted">какая стратегия</span></div>
+                        <div class="file">04_progress.md <span class="muted">как двигались</span></div>
+                        <div class="file">05_decisions.md <span class="muted">стратегические решения</span></div>
+                        <div class="file">README.md</div>
+                      </div>
+                    </details>
+                    <details open data-core>
+                      <summary>02_team/ <span class="muted">люди уровня компании</span></summary>
+                      <div class="children">
+                        <div class="file">org-structure.md</div>
+                        <div class="file">{person}.md</div>
+                        <div class="file">README.md</div>
+                      </div>
+                    </details>
+                    <details open data-core>
+                      <summary>03_metrics/ <span class="muted">target metrics</span></summary>
+                      <div class="children">
+                        <div class="file">01_metrics.md</div>
+                        <div class="folder-note">source/</div>
+                        <div class="folder-note"><span class="optional">extractors/</span></div>
+                        <div class="file">README.md</div>
+                      </div>
+                    </details>
+                    <div class="file">glossary.md <span class="muted">словарь для meeting-analysis</span></div>
+                    <div class="folder-note">meetings/ <span class="muted">стратсессии и cross-functional встречи</span></div>
+                    <div class="folder-note"><span class="optional">docs/</span></div>
+                    <div class="folder-note"><span class="optional">processes/</span> <span class="muted">кросс-функциональные</span></div>
+                    <div class="folder-note"><span class="optional">projects/</span> <span class="muted">кросс-функциональные</span></div>
+                    <div class="folder-note">zz_archive/</div>
+                    <div class="file">README.md</div>
+                  </div>
+                </details>
+
+                <details open data-core>
+                  <summary>marketing/ <span class="muted">домен, если есть у клиента</span></summary>
+                  <div class="children">
+                    <div class="folder-note">_inbox/</div>
+                    <div class="folder-note">meetings/</div>
+                    <div class="folder-note"><span class="optional">docs/</span></div>
+                    <div class="folder-note"><span class="optional">knowledge/</span></div>
+                    <div class="folder-note"><span class="optional">metrics/</span></div>
+                    <div class="folder-note"><span class="optional">processes/</span></div>
+                    <div class="folder-note"><span class="optional">projects/</span></div>
+                    <div class="folder-note"><span class="optional">team/</span></div>
+                    <div class="folder-note">zz_archive/</div>
+                    <div class="file">01_overview.md</div>
+                    <div class="file">02_active.md</div>
+                    <div class="file">02_backlog.md</div>
+                    <div class="file">03_progress.md</div>
+                    <div class="file">04_decisions.md</div>
+                    <div class="file"><span class="optional">profile.md</span></div>
+                    <div class="file"><span class="optional">strategy.md</span></div>
+                    <div class="file">README.md</div>
+                  </div>
+                </details>
+
+                <details>
+                  <summary>commercial/ <span class="muted">родительский домен с поддоменами</span></summary>
+                  <div class="children">
+                    <div class="file">01_overview.md <span class="muted">зачем sales и marketing вместе</span></div>
+                    <div class="folder-note"><span class="optional">meetings/</span> <span class="muted">если есть общие встречи</span></div>
+                    <div class="folder-note"><span class="optional">metrics/</span> <span class="muted">если есть общие метрики</span></div>
+                    <div class="folder-note"><span class="optional">projects/</span> <span class="muted">если есть общие проекты</span></div>
+                    <div class="file">README.md</div>
+                    <details>
+                      <summary>marketing/</summary>
+                      <div class="children">
+                        <div class="file">01_overview.md</div>
+                        <div class="file">README.md</div>
+                      </div>
+                    </details>
+                    <details>
+                      <summary>sales/ <span class="muted">может быть полным поддоменом</span></summary>
+                      <div class="children">
+                        <div class="folder-note">meetings/</div>
+                        <div class="folder-note"><span class="optional">metrics/</span></div>
+                        <div class="folder-note"><span class="optional">projects/</span></div>
+                        <div class="file">01_overview.md</div>
+                        <div class="file">02_active.md</div>
+                        <div class="file">02_backlog.md</div>
+                        <div class="file">03_progress.md</div>
+                        <div class="file">04_decisions.md</div>
+                        <div class="file"><span class="optional">strategy.md</span></div>
+                        <div class="file">README.md</div>
+                      </div>
+                    </details>
+                    <div class="file">partnerships.md <span class="muted">стадия 1: пока один файл</span></div>
+                  </div>
+                </details>
+
+                <div class="folder-note"><span class="optional">clients/</span> <span class="muted">домен, если клиентская работа отдельная</span></div>
+                <div class="folder-note"><span class="optional">finance/</span></div>
+                <div class="folder-note"><span class="optional">operations/</span></div>
+                <div class="folder-note"><span class="optional">product/</span></div>
+                <div class="folder-note"><span class="optional">sales/</span></div>
+                <div class="folder-note"><span class="optional">support/</span></div>
+                <div class="folder-note">_inbox/ <span class="muted">верхний уровень</span></div>
+                <div class="folder-note">zz_archive/ <span class="muted">общий архив</span></div>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>План трансформации канона</h2>
+          <p class="muted">Последовательность после принятия матрицы: сначала методология, потом клиентский scaffold.</p>
+          <div class="tasks">
+            <div class="task"><div class="task-index">1</div><div><strong>01_architecture.md</strong><br><span class="muted">заменить корневую модель, добавить matrix, domain, owner/LCA.</span></div></div>
+            <div class="task"><div class="task-index">2</div><div><strong>02_folder-spec.md</strong><br><span class="muted">пересобрать типы папок: company, domain, subdomain, служебные.</span></div></div>
+            <div class="task"><div class="task-index">3</div><div><strong>03_node-files.md</strong><br><span class="muted">оставить доменное ядро, добавить optional strategy.md.</span></div></div>
+            <div class="task"><div class="task-index">4</div><div><strong>03_contours.md</strong><br><span class="muted">переписать старые контуры в company + generic domain.</span></div></div>
+            <div class="task"><div class="task-index">5</div><div><strong>deployment.md</strong><br><span class="muted">новый стартовый scaffold и триггеры появления доменов.</span></div></div>
+            <div class="task"><div class="task-index">6</div><div><strong>framework/scaffold/</strong><br><span class="muted">после канона перестроить клиентские болванки.</span></div></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="stack">
+        <section class="panel accent">
+          <h2>Главное решение</h2>
+          <div class="callout">
+            <strong>Matrix:</strong> компания и домены существуют как разные уровни одной системы. На каждом уровне разворачивается только то, для чего есть живая работа.
+          </div>
+          <div class="matrix">
+            <div class="matrix-card"><strong>Company</strong><span class="muted">01_company: стратегия, team, target metrics, cross-functional.</span></div>
+            <div class="matrix-card"><strong>Domain</strong><span class="muted">marketing, sales, finance: рабочие области клиента.</span></div>
+            <div class="matrix-card"><strong>Subdomain</strong><span class="muted">commercial/sales: ветвление по реальной модели.</span></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Правило размещения</h2>
+          <p class="muted">Один факт — один дом. Остальные места получают ссылку, выжимку или view.</p>
+          <div class="rule">
+            <div class="rule-row">
+              <div class="rule-num">1</div>
+              <div><strong>Есть операционный владелец?</strong><br><span class="muted">Сущность живёт у владельца, даже если видна другим.</span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rule-num">2</div>
+              <div><strong>Владельца нет?</strong><br><span class="muted">Сущность живёт на наименьшем общем предке тех, кому она нужна.</span></div>
+            </div>
+            <div class="rule-row">
+              <div class="rule-num">3</div>
+              <div><strong>Затрагивает несколько корневых доменов?</strong><br><span class="muted">Сущность уходит на уровень 01_company.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Что считается доменом</h2>
+          <p>Устойчивая область управления бизнесом, у которой есть собственная ответственность и регулярное управленческое внимание.</p>
+          <div class="legend">
+            <span class="pill teal">marketing</span>
+            <span class="pill teal">sales</span>
+            <span class="pill teal">product</span>
+            <span class="pill teal">finance</span>
+            <span class="pill teal">operations</span>
+            <span class="pill teal">clients</span>
+          </div>
+          <div class="footer">
+            Не домен сами по себе: разовая кампания, регулярная процедура, конкретный сотрудник, отдельный KPI.
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Открытые вопросы</h2>
+          <div class="tasks">
+            <div class="task"><div class="task-index">T</div><div><strong>Терминология</strong><br><span class="muted">узел / домен / поддомен / контур / аспект.</span></div></div>
+            <div class="task"><div class="task-index">V</div><div><strong>Cross-domain navigation</strong><br><span class="muted">ссылки, YAML, generated views.</span></div></div>
+            <div class="task"><div class="task-index">K</div><div><strong>Knowledge</strong><br><span class="muted">корневой knowledge vs доменный knowledge.</span></div></div>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const allDetails = () => Array.from(document.querySelectorAll("details"));
+    const setOpen = (value) => allDetails().forEach((node) => { node.open = value; });
+    const showCore = () => {
+      allDetails().forEach((node) => { node.open = Boolean(node.dataset.core); });
+    };
+
+    document.querySelector("[data-action='expand']").addEventListener("click", () => setOpen(true));
+    document.querySelector("[data-action='collapse']").addEventListener("click", () => setOpen(false));
+    document.querySelector("[data-action='core']").addEventListener("click", showCore);
+  </script>
+</body>
+</html>

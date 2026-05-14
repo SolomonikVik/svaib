@@ -162,29 +162,28 @@ version: 4
 ```
 05_metrics/
 ├── README.md             ← карта папки
-├── 01_metrics.md         ← витрина target metrics + карта доменов
-├── template-domain.md    ← шаблон domain-файла
-├── {domain}.md           ← домен-файл (finance, sales, operations, people, ...)
+├── business-metrics.md   ← базовый файл target metrics CEO
+├── {domain}-metrics.md   ← функциональный файл метрик, по живому триггеру
 ├── source/               ← исходные xlsx/Sheets-выгрузки клиента (числа здесь)
-└── extractors/           ← клиентские скрипты обработки источников (опц.)
+└── extractors/           ← per-client extractor'ы для источников
 ```
 
 **Контурно-специфичные файлы** (SOT миссии — здесь):
 
-- **`01_metrics.md`** — карта системы метрик: витрина target metrics CEO, карта доменов, навигационные срезы (OKR). AI читает первым при вопросах о цифрах — чтобы определить домен и перейти к паспорту метрики. Не дублирует значения и формулы — только карточки-ссылки на паспорта в `{domain}.md`. Сами OKR — в `02_strategy/02_goal.md`.
-- **`template-domain.md`** — шаблон functional domain-файла L2: как описывать бизнес-домен для AI — источники, поля, метрики, маршруты типовых вопросов, known issues. Копируется как `{domain}-metrics.md`. Числа не хранит, только семантику.
-- **`{domain}-metrics.md`** — семантическая модель бизнес-домена (finance, sales, operations, people, customer, marketing, product, strategy): источники, поля, метрики, маршруты вопросов CEO. Один паспорт метрики — в одном metrics-файле. Числа остаются в `source/`, расчёты — extractor/Python.
-- **`business-metrics.md`** — базовый файл L1 metrics-вертикали: target metrics CEO одним списком (пять полей метрики). У каждого клиента ровно один. На нём работает AI-аналитик target metrics. Появляется первым, до функциональных domain-файлов.
+- **`business-metrics.md`** — базовый файл metrics-вертикали: target metrics CEO одним списком. У каждого клиента ровно один. AI читает первым при вопросах о цифрах, чтобы понять семантику ключевых метрик бизнеса. Появляется первым, до функциональных domain-файлов.
+- **`{domain}-metrics.md`** — функциональный файл метрик (finance, sales, operations, people, customer, marketing, product): более подробная семантика метрик одного управленческого фокуса. Создаётся по живому триггеру, когда CEO реально работает с доменом. Один паспорт метрики — в одном metrics-файле.
+- **`source/`** — источники клиента: xlsx, выгрузки, экспорты или локальные копии. Числа остаются здесь или в удалённых источниках клиента; markdown-файлы значения не дублируют.
+- **`extractors/`** — per-client extractor'ы: скрипты или процедуры, которые достают сырые значения из конкретного источника по зафиксированной раскладке. Производные не считают.
 
 **Принципы контура:**
 
 - **Числа живут в `source/`, семантика — в md.** Никакого дублирования значений в markdown.
 - **Нарезка domain-файлов — по бизнес-домену, не по источнику.** Один `{domain}-metrics.md` может агрегировать несколько источников.
-- **Канон 9 имён metrics-файлов с суффиксом `-metrics`:** базовый `business-metrics.md` + минимальный функциональный (`finance-metrics.md`, `sales-metrics.md`, `operations-metrics.md`, `people-metrics.md`) + расширение по триггеру (`customer-metrics.md`, `marketing-metrics.md`, `product-metrics.md`, `strategy-metrics.md`). Префикс `metrics_` не используется.
-- **ID метрики = её каноническое имя** (заголовок `### {имя}` в metrics-файле). Никаких отдельных `metric_<id>` полей. На L2 `version` инкрементируется при изменении формулы.
-- **Расчёты — Python (xlsx-skill / Pandas)**. Summary-файлы (`*.summary.md`) не плодим по умолчанию, только под живой триггер.
+- **Канонические имена metrics-файлов:** базовый `business-metrics.md` + функциональные `{domain}-metrics.md` по списку из metrics-spec. Префикс `metrics_` не используется.
+- **ID метрики = её каноническое имя** (заголовок `### {имя}` в metrics-файле). Никаких отдельных `metric_<id>` полей.
+- **Расчёты — через детерминированный инструмент.** LLM не считает в голове; extractor достаёт сырые значения, calculator считает производные.
 
-Полная архитектура вертикали — в [../metrics/architecture.md](../metrics/architecture.md). Спецификация формата metrics-файлов — [../metrics/metrics-spec.md](../metrics/metrics-spec.md). Текущий клиентский каркас [`framework/scaffold/05_metrics/`](../../scaffold/05_metrics/) — практическая реализация v1, не SOT (нужна миграция к канону контура — см. [open-questions.md](open-questions.md)).
+Полная архитектура вертикали — в [../metrics/architecture.md](../metrics/architecture.md). Спецификация формата metrics-файлов — [../metrics/metrics-spec.md](../metrics/metrics-spec.md). Построение extractor'ов — [../metrics/extractor.md](../metrics/extractor.md). Текущий клиентский каркас [`framework/scaffold/05_metrics/`](../../scaffold/05_metrics/) — практическая реализация v1; будущая миграция к матрице описана в [00_dilemma.md](00_dilemma.md).
 
 ### `projects/` — универсальная анатомия
 

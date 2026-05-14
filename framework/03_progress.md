@@ -21,6 +21,11 @@ type: log
 - [../meta/management/04_weekly_progress.md](../meta/management/04_weekly_progress.md) — агрегатор по всем направлениям
 
 ---
+## 2026-05-14 · Metrics: вертикаль достроена и выверена
+
+Стройка завершена: [orchestrator-metrics.md](skills/metrics-analysis/orchestrator-metrics.md) вычищен от отменённой модели в операционный пайплайн под architecture v2, [extractor.md](methodology/metrics/extractor.md) доведён (probe-процедура, формат JSON-выхода, schema-hash). Разведены роли: оркестратор отвечает на вопросы CEO и источник не трогает, сборку extractor'а делегирует отдельному скиллу-писателю (контракт зафиксирован, реализация — отдельным заходом). [architecture.md](methodology/metrics/architecture.md) → `final`, вся вертикаль синхронизирована на `version: 2`. Два прохода субагентами в чистой истории: консистентность чистая, остатков старой модели нет. Веха ~2 дней работы.
+
+---
 ## 2026-05-14 · Metrics: чистка методологии вертикали под актуальную модель
 
 Методология metrics-вертикали приведена к выверенному ядру: архитектура сведена из трёх файлов в один [architecture.md](methodology/metrics/architecture.md) с дедупликацией и закрытыми гэпами аудита, создан черновик [extractor.md](methodology/metrics/extractor.md), удалён старый слой на отменённой модели (10 файлов). Опора вертикали — 5 выверенных файлов. Стройка (orchestrator-metrics, доводка extractor.md) — отдельной сессией.

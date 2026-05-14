@@ -104,7 +104,7 @@ scaffold/
 │   └── README.md
 │
 ├── 03_metrics/
-│   ├── 01_metrics.md
+│   ├── business-metrics.md
 │   ├── extractors/          ← опц.
 │   ├── source/
 │   └── README.md
