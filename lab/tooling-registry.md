@@ -64,7 +64,7 @@ updated: 2026-05-01
 
 ---
 
-## Хуки (6)
+## Хуки (7)
 
 Автоматические проверки. Работают без вызова. Файлы: `.claude/hooks/`, конфигурация в `.claude/settings.json`.
 
@@ -72,6 +72,7 @@ updated: 2026-05-01
 |-----|---------|-----------|
 | `remind_subagent_rules` | PreToolUse (Agent) | Инъекция правил субагентов перед запуском |
 | `rclone_safety` | PreToolUse (Bash) | Блокирует `rclone sync` к/из `gdrive:` без `--dry-run`. При блокировке выгружает в stderr секцию «Протокол безопасной синхронизации» из setup_workspace.md |
+| `pii_commit_guard` | PreToolUse (Bash) | Блокирует `git commit` от Claude, инжектит инструкцию проверить staged-дифф на персональные данные. Проходит с префиксом `PII_REVIEWED=1` |
 | `inject_session_context` | SubagentStart | Инъекция контекста сессии в субагентов |
 | `check_deferred_actions` | Stop | Блокирует "в следующий раз сделаю X" — делай сейчас |
 | `enforce_rule10` | Stop | Текст отдельно от действий (правило 4 CLAUDE.md) |
