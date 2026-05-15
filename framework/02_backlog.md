@@ -1,7 +1,7 @@
 ---
 title: "Framework — бэклог"
-updated: 2026-05-01
-version: 10
+updated: 2026-05-15
+version: 11
 scope: product_core
 type: plan
 ---
@@ -74,6 +74,7 @@ type: plan
 
 - [ ] Telegram-бот / аккаунт AI для асинхронной коммуникации с клиентом (идея АС). Общий канал, не привязан к одной вертикали — могут пушить ритуалы любой вертикали
 - [ ] **Вынести `send_telegram.sh` в `framework/skills/channels/telegram/`.** Сейчас скрипт лежит внутри `framework/skills/meeting-analysis/send_telegram.sh` — но используется из других скиллов (email-assistant, потенциально новые). Создать `framework/skills/channels/telegram/` (SKILL.md + скрипт), привести к канону дубль `.claude/skills/send-telegram/`. Обновить ссылки во всех скиллах и операциях (`setup_telegram_bot.md`, `setup_email_assistant.md`, `meeting-analysis/orchestrator-*`). Обнаружено при разработке email-assistant 30.04
+- [ ] **Баг в send_telegram.sh:37** — `curl -d text="..."` ломает HTML при наличии `&` в тексте (пример: `Vivo&amp;Jolly` → Telegram получает `<b>` без пары). Лечится заменой `-d text="$1"` на `--data-urlencode "text=$1"`. Обход через curl с urlencode сработал
 
 ## 🔸 Мета (архитектура / онтология / методология)
 
@@ -112,7 +113,6 @@ type: plan
 - [ ] Верифицировать автообновление `team/` из результатов встречи — на этапе анализа, не по отдельной команде (идея, согласована с АС): `org_structure.md`, `glossary.md` и т.д. — создавать записи о людях, которых раньше не было
 - [ ] Behavioral extractor: определиться v1 vs v2, протестировать на 2+ транскриптах, подключить к оркестратору
 - [ ] Оптимизация пайплайна: L1 по ссылкам (не inline) + L2 ревизия-first (не append-only). Детали: [_inbox/meeting-analysis/task-pipeline-optimization.md](_inbox/meeting-analysis/task-pipeline-optimization.md)
-- [ ] **Баг в send_telegram.sh:37** — `curl -d text="..."` ломает HTML при наличии `&` в тексте (пример: `Vivo&amp;Jolly` → Telegram получает `<b>` без пары). Лечится заменой `-d text="$1"` на `--data-urlencode "text=$1"`. Обход через curl с urlencode сработал
 - [ ] Разобрать обратную связь от Опилкина по аналитику
 - [ ] Сборка скиллов meeting-analysis: обернуть рабочие промпты в SKILL.md формат
 - [ ] FRAME-скоринг: приоритизация сущностей по значимости (отложен)
