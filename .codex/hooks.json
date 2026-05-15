@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/usr/bin/python3 \"$(git rev-parse --show-toplevel)/.agents/hooks/pii_commit_guard.py\"",
+            "timeout": 10,
+            "statusMessage": "Checking staged diff for PII before git commit"
+          }
+        ]
+      }
+    ]
+  }
+}
