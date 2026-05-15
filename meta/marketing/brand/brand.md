@@ -19,7 +19,7 @@ priority: high
 - [brand-design-pdf.md](brand-design-pdf.md) — как делаем PDF-документы
 - [brand-design-html.md](brand-design-html.md) — как делаем standalone HTML-артефакты
 - [brand-design-web.md](brand-design-web.md) — как строим сайт
-- [strategy.md](strategy.md) — маркетинговая стратегия
+- [../strategy.md](../strategy.md) — маркетинговая стратегия
 
 ---
 

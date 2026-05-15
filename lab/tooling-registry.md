@@ -57,7 +57,7 @@ updated: 2026-05-01
 **Про `marp-slides`:**
 - Основан на [robonuggets/marp-slides](https://github.com/robonuggets/marp-slides) v2.0
 - Кастомизирован под svaib brand: SVAIB Theme добавлена как третий стартер рядом с Dark/Light, плюс эталонный пример `examples/marp_svaib-sample.md`
-- Brand-источник: [meta/marketing/brand-design-presentation.md](../meta/marketing/brand-design-presentation.md) — все цвета/шрифты/маркеры в SKILL.md повторяют его
+- Brand-источник: [meta/marketing/brand/brand-design-presentation.md](../meta/marketing/brand/brand-design-presentation.md) — все цвета/шрифты/маркеры в SKILL.md повторяют его
 - **Мы форк** — когда автор выпускает новую версию, смотрим diff и мержим вручную
 - **Prerequisites:** VS Code extension `marp-team.marp-vscode` + два settings (глобальные, user-level) — `markdown.marp.html: "all"`, `markdown.marp.allowLocalFiles: true`
 - **Когда использовать:** быстрые рабочие decks, markdown-first workflow, git-версионирование слайдов, AI редактирует напрямую. Альтернатива — скилл `presentation` (PPTX) для брендированных PPTX-файлов

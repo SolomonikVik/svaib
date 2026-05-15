@@ -1,39 +1,50 @@
-# Marketing
+---
+title: "marketing — внешнее лицо svaib"
+updated: 2026-05-15
+version: 2
+scope: marketing
+type: reference
+---
 
-Маркетинг проекта svaib: каналы, контент, бренд, события.
+# marketing — внешнее лицо svaib
 
-**Три потока контента:**
-1. **Публикации** — Telegram (основной), дублирование в X/Threads
-2. **Knowledge → SEO/GEO** — статьи из knowledge/ с publish: true → сайт (механизм в dev/)
-3. **События** — семинары, конференции, записи на YouTube
+Бренд, контент, каналы и события svaib: Telegram (основной), семинары, конференции, YouTube, knowledge → SEO/GEO. Превращает методологию Second AI Brain в узнаваемый бренд и поток клиентов.
 
-**Границы:** SEO/GEO механизм публикации — в dev/, не здесь. Стратегия продукта — в management/.
+## Содержимое папки
 
-> **⚠️ Бренд-система в проработке.** Источники правды (`brand.md`, `brand-design-*`) сейчас расходятся между собой. Идёт переход на новую визуальную систему — см. `Brandbook.html` (черновик v2). Главная svaib.com уже переведена на v2 как тестовый прогон, остальные страницы и документы пока на старой системе.
+| Файл / папка | Миссия | Когда читать |
+|---|---|---|
+| [01_overview.md](01_overview.md) | Миссия направления, стадия, цель декады, части | Заход в направление, контекст состояния |
+| [02_active.md](02_active.md) | Активные задачи, Session Handoff, открытые вопросы | Что в работе прямо сейчас |
+| [02_backlog.md](02_backlog.md) | Задачи направления на будущее | Планирование недели, выбор следующего |
+| [03_progress.md](03_progress.md) | Хроника завершённых задач и релизов | Что было сделано когда |
+| [strategy.md](strategy.md) | Позиционирование, каналы, воронка (stub — наполнить) | Стратегические решения по каналам |
+| [brand/](brand/) | Ядро бренда + канальные дизайн-гайды (слайды, PDF, схемы, HTML, сайт, иллюстрации) | Любая визуальная задача |
+| [posts/](posts/) | Черновики и опубликованные посты для Telegram «освAIваемся» | Пишешь / редактируешь пост |
+| [seminars/](seminars/) | Программы, подготовка, лог проведённых семинаров | Подготовка / разбор семинара |
+| [conferences/](conferences/) | Внешние выступления и гостевые лекции (Liga, FirstBit) | Готовишь выступление |
+| [demos/](demos/) | Переиспользуемые HTML-демо продукта (для встреч и переписки) | Нужно показать «как устроено» |
+| [telegram/](telegram/) | Зарезервировано под канал-специфичные материалы (сейчас пусто) | — |
+| [youtube/](youtube/) | Сценарии и ролики YouTube (записи семинаров — в `seminars/`) | Готовишь ролик |
+| [_examples/](_examples/) | Эталонные HTML-шаблоны: оффер, многостраничный, диаграмма | Стартовая точка для PDF и схем |
+| [_inbox/](_inbox/) | Входящее на разбор: черновики, исследования, промпты | При разборе нового материала |
 
-## Навигация по направлению
+## Маршруты чтения
 
-- [01_overview.md](01_overview.md) — миссия направления, стадия, цель декады
-- [02_active.md](02_active.md) — что в работе сейчас, Session Handoff
-- [02_backlog.md](02_backlog.md) — задачи направления на будущее
-- [03_progress.md](03_progress.md) — хроника сделанного
-- [_inbox/01_inbox.md](_inbox/01_inbox.md) — входящее на разбор
+| Триггер задачи | Что читать |
+|---|---|
+| Зашёл в направление впервые | [01_overview.md](01_overview.md) → [02_active.md](02_active.md) |
+| Что делаем сейчас / на неделе | [02_active.md](02_active.md) → [02_backlog.md](02_backlog.md) |
+| Любая визуальная задача (слайды, PDF, схема, HTML) | [brand/README.md](brand/README.md) |
+| Пишу пост в Telegram | [posts/](posts/) + [brand/brand.md](brand/brand.md) |
+| Готовлю / разбираю семинар | [seminars/README.md](seminars/README.md) |
+| Готовлю внешнее выступление | [conferences/README.md](conferences/README.md) |
+| Стратегические решения по каналам | [strategy.md](strategy.md) |
 
-## Файлы
+## Связанные контексты
 
-- [strategy.md](strategy.md) — позиционирование, каналы, воронка
-- [Brandbook.html](Brandbook.html) — черновик брендбука v2 (WIP). Главная сайта уже работает по нему.
-- [brand.md](brand.md) — ядро бренда: палитра, логотип, философия, tone of voice, правила
-- [brand-design-presentation.md](brand-design-presentation.md) — дизайн-гайд для слайдов
-- [brand-design-pdf.md](brand-design-pdf.md) — дизайн-гайд для PDF-документов
-- [brand-design-diagrams.md](brand-design-diagrams.md) — дизайн-гайд для схем и диаграмм (HTML→Puppeteer→PDF)
-- [brand-design-html.md](brand-design-html.md) — дизайн-гайд для standalone HTML-артефактов
-- [brand-design-web.md](brand-design-web.md) — дизайн-гайд для сайта (stub, ссылка на dev/)
-
-## Папки
-
-- [telegram/](telegram/) — посты (основной канал, дублируется в X/Threads)
-- [seminars/](seminars/) — программы, записи, материалы
-- [conferences/](conferences/) — Liga и т.д.
-- [youtube/](youtube/) — сценарии, ролики
-- [_inbox/](_inbox/) — входящие задачи и материалы на разбор
+- [../management/02_goal.md](../management/02_goal.md) — цели декады svaib, раздел «Публикации и маркетинг»
+- [../management/01_vision.md](../management/01_vision.md) — миссия и идентичность проекта
+- [../../framework/00_product.md](../../framework/00_product.md) — позиционирование продукта Second AI Brain
+- [../../dev/](../../dev/) — код сайта и техническая инфраструктура (SEO/GEO механизм публикации — там, не здесь)
+- [../../lab/work-model.md](../../lab/work-model.md) — универсальная модель направления (`_inbox → backlog → active → progress`)

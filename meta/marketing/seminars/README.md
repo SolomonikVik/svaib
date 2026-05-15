@@ -15,5 +15,5 @@
 
 ## Связанные файлы
 
-- [../brand.md](../brand.md) — оформление материалов семинара
+- [../brand/brand.md](../brand/brand.md) — оформление материалов семинара
 - [Презентации (Google Drive)](https://drive.google.com/drive/u/0/folders/1IP-c4kWss_BmZhypqOs30nZFoy9Ph4w7) — материалы для демо

@@ -17,7 +17,7 @@ priority: medium
 - [brand.md](brand.md) — палитра, логотип, философия, универсальные правила
 - [brand-design-illustrations.md](brand-design-illustrations.md) — промпт арт-директора, шаблон для генерации картинок
 - `.claude/skills/presentation/references/design-guide.md` — PptxGenJS-реализация для PPTX (ссылается сюда)
-- `~/.claude/skills/marp-slides/SKILL.md` — markdown-first реализация этого бренда (Marp SVAIB theme). Глобальный скилл, зарегистрирован в [../../lab/tooling-registry.md](../../lab/tooling-registry.md)
+- `~/.claude/skills/marp-slides/SKILL.md` — markdown-first реализация этого бренда (Marp SVAIB theme). Глобальный скилл, зарегистрирован в [../../../lab/tooling-registry.md](../../../lab/tooling-registry.md)
 
 ---
 

@@ -5,7 +5,7 @@ description: "Create branded PPTX presentations in svaib style. Trigger when use
 
 # Presentation — svaib branded slides
 
-**Every slide follows svaib brand AND has a visual element.** No plain bullets on white. Brand rules: `meta/marketing/brand-design-presentation.md`.
+**Every slide follows svaib brand AND has a visual element.** No plain bullets on white. Brand rules: `meta/marketing/brand/brand-design-presentation.md`.
 
 ---
 
@@ -70,7 +70,7 @@ Icons: any from react-icons (fa, md, hi, bi, fi) — e.g., `FaCheckCircle`, `FaT
 
 **Option B: Custom PptxGenJS code** (for non-standard layouts).
 
-Write inline Node.js using `document-skills:pptx` workflow. Read `meta/marketing/brand-design-presentation.md` for exact colors, fonts, sizes. Key rules:
+Write inline Node.js using `document-skills:pptx` workflow. Read `meta/marketing/brand/brand-design-presentation.md` for exact colors, fonts, sizes. Key rules:
 - HEX colors WITHOUT `#` prefix (e.g., `008B7F`)
 - Never reuse option objects — create fresh each time
 - `bullet: true`, never unicode "•"

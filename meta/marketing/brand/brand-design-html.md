@@ -19,8 +19,8 @@ priority: high
 - [brand.md](brand.md) — палитра, логотип, философия, tone of voice
 - [brand-design-web.md](brand-design-web.md) — сайт svaib.com и web-дизайн продукта
 - [brand-design-diagrams.md](brand-design-diagrams.md) — схемы-картинки через HTML → Puppeteer → PNG/PDF
-- [../../framework/methodology/metrics/intro-for-client-v2.html](../../framework/methodology/metrics/intro-for-client-v2.html) — пример клиентского intro
-- [demos/scaffold-overview.html](demos/scaffold-overview.html) — пример структурного one-pager
+- [../../framework/methodology/metrics/intro-for-client-v2.html](../../../framework/methodology/metrics/intro-for-client-v2.html) — пример клиентского intro
+- [demos/scaffold-overview.html](../demos/scaffold-overview.html) — пример структурного one-pager
 
 ---
 
@@ -583,7 +583,7 @@ CSS-ориентир:
 7. Что нужно от клиента.
 8. Следующий шаг.
 
-Пример: [intro-for-client-v2.html](../../framework/methodology/metrics/intro-for-client-v2.html).
+Пример: [intro-for-client-v2.html](../../../framework/methodology/metrics/intro-for-client-v2.html).
 
 ### 2. Structural map
 
@@ -598,7 +598,7 @@ CSS-ориентир:
 5. Универсальный принцип.
 6. Открытый вопрос или next step.
 
-Пример: [scaffold-overview.html](demos/scaffold-overview.html).
+Пример: [scaffold-overview.html](../demos/scaffold-overview.html).
 
 ### 3. Growth / staged model
 
@@ -636,7 +636,7 @@ CSS-ориентир:
 - рискованные сценарии маркируются явно (`рискованный`, `стресс-сценарий`), но без визуальной истерики;
 - если артефакт нужен для переговоров, нижняя интерпретация должна помогать говорить, а не только показывать числа.
 
-Пример: [../investment/dilution_calculator_4_rounds.html](../investment/dilution_calculator_4_rounds.html).
+Пример: [../investment/dilution_calculator_4_rounds.html](../../investment/dilution_calculator_4_rounds.html).
 
 ## Responsive
 
@@ -734,7 +734,7 @@ perl -0ne 'print $1 if /<script>(.*?)<\/script>/s' path/to/file.html | node --ch
 
 | Артефакт | Путь | Тип |
 |---|---|---|
-| Metrics intro v2 | [../../framework/methodology/metrics/intro-for-client-v2.html](../../framework/methodology/metrics/intro-for-client-v2.html) | Client intro |
-| Scaffold overview | [demos/scaffold-overview.html](demos/scaffold-overview.html) | Structural map |
-| Investment memo | [../investment/2026-05-07_pitch.html](../investment/2026-05-07_pitch.html) | Investor memo / preferred option |
-| Dilution calculator | [../investment/dilution_calculator_4_rounds.html](../investment/dilution_calculator_4_rounds.html) | Interactive calculator / scenario tool |
+| Metrics intro v2 | [../../framework/methodology/metrics/intro-for-client-v2.html](../../../framework/methodology/metrics/intro-for-client-v2.html) | Client intro |
+| Scaffold overview | [demos/scaffold-overview.html](../demos/scaffold-overview.html) | Structural map |
+| Investment memo | [../investment/2026-05-07_pitch.html](../../investment/2026-05-07_pitch.html) | Investor memo / preferred option |
+| Dilution calculator | [../investment/dilution_calculator_4_rounds.html](../../investment/dilution_calculator_4_rounds.html) | Interactive calculator / scenario tool |

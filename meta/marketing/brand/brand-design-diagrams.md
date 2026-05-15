@@ -16,7 +16,7 @@ priority: high
 
 - [brand.md](brand.md) — палитра, логотип, философия
 - [brand-design-pdf.md](brand-design-pdf.md) — дизайн-гайд для PDF-документов
-- Эталон HTML: [_examples/diagram-meeting-analytics.html](_examples/diagram-meeting-analytics.html)
+- Эталон HTML: [_examples/diagram-meeting-analytics.html](../_examples/diagram-meeting-analytics.html)
 
 ---
 
@@ -172,7 +172,7 @@ padding-top = (block_height - content_height) / 2
 - Какие аннотации внутри блоков
 
 ### 2. Бренд-гайд
-Прочитать `meta/marketing/brand.md` + этот файл. Ключевое:
+Прочитать `meta/marketing/brand/brand.md` + этот файл. Ключевое:
 - Montserrat + Roboto
 - Teal + Pink (pink = один акцентный блок)
 - Утолщённая левая полоса на карточках
@@ -212,4 +212,4 @@ cd /tmp && node convert-pdf.js
 
 | Схема | HTML-исходник | PDF | Дата |
 |-------|-------------|-----|------|
-| Архитектура аналитика встреч | [_examples/diagram-meeting-analytics.html](_examples/diagram-meeting-analytics.html) | [posts/2026-03-19_фиаско-аналитик-встреч_диаграмма.pdf](posts/2026-03-19_фиаско-аналитик-встреч_диаграмма.pdf) | 2026-03-19 |
+| Архитектура аналитика встреч | [_examples/diagram-meeting-analytics.html](../_examples/diagram-meeting-analytics.html) | [posts/2026-03-19_фиаско-аналитик-встреч_диаграмма.pdf](../posts/2026-03-19_фиаско-аналитик-встреч_диаграмма.pdf) | 2026-03-19 |

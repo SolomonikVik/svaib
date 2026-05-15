@@ -15,7 +15,7 @@ priority: low
 ## Связанные файлы
 
 - [brand.md](brand.md) — палитра, логотип, философия, универсальные правила
-- [../../dev/dev_context/design_system.md](../../dev/dev_context/design_system.md) — полный технический гайд (555 строк: CSS-переменные, компоненты, HTML-сниппеты)
+- [../../../dev/dev_context/design_system.md](../../../dev/dev_context/design_system.md) — полный технический гайд (555 строк: CSS-переменные, компоненты, HTML-сниппеты)
 
 ---
 

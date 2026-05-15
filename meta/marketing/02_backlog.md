@@ -28,9 +28,9 @@ type: plan
 
 ## Бренд — переход на v2
 
-- [ ] **Brandbook.html** — доработать черновик до утверждённой версии. Сейчас WIP, главная сайта уже на нём.
-- [ ] **brand.md** — синхронизировать с v2 либо явно пометить как устаревший. Расходится: Sora vs Montserrat, gradient vs flat, нет Fraunces и Blue ink `#2C3E50`.
-- [ ] **brand-design-\*.md** (presentation, pdf, diagrams, web, illustrations) — пересобрать под v2 или пометить устаревшими.
+- [ ] **brand/Brandbook.html** — доработать черновик до утверждённой версии. Сейчас WIP, главная сайта уже на нём.
+- [ ] **brand/brand.md** — синхронизировать с v2 либо явно пометить как устаревший. Расходится: Sora vs Montserrat, gradient vs flat, нет Fraunces и Blue ink `#2C3E50`.
+- [ ] **brand/brand-design-\*.md** (presentation, pdf, diagrams, web, illustrations) — пересобрать под v2 или пометить устаревшими.
 - [ ] **dev/dev_context/design_system.md** — обновить под v2. Сейчас описывает старую систему (Sora, gradient). Можно удалить и оставить только источник в marketing (пересекается с задачей в [dev/02_backlog.md](../../dev/02_backlog.md) → Ревизия `dev_context/`).
 
 ## Семинары — навести порядок в документации

@@ -1,7 +1,7 @@
 ---
 title: "Marketing — обзор направления"
-updated: 2026-04-20
-version: 1
+updated: 2026-05-15
+version: 2
 scope: marketing
 priority: high
 type: reference
@@ -22,7 +22,7 @@ Marketing — бренд, каналы, контент, события svaib. Т
 - [03_progress.md](03_progress.md) — хроника сделанного
 - [README.md](README.md) — навигация по файлам и папкам marketing
 - [strategy.md](strategy.md) — позиционирование, каналы, воронка
-- [brand.md](brand.md) — ядро бренда (в процессе перехода на v2 → `Brandbook.html`)
+- [brand/](brand/) — ядро бренда + канальные дизайн-гайды (v1 живёт, v2 в `Brandbook.html`)
 - [../management/02_goal.md](../management/02_goal.md) — общая цель декады
 - [../../framework/00_product.md](../../framework/00_product.md) — видение продукта
 
@@ -34,9 +34,9 @@ Marketing отвечает за **внешнее лицо** svaib: как про
 
 **Входит в scope:**
 - Позиционирование и стратегия каналов (`strategy.md`)
-- Бренд-система — палитра, типографика, логотип, tone of voice (`brand.md`, `Brandbook.html`, `brand-design-*.md`)
+- Бренд-система — палитра, типографика, логотип, tone of voice (`brand/`)
 - Контент по каналам: Telegram (`posts/`, `telegram/`), YouTube (`youtube/`), семинары (`seminars/`), конференции (`conferences/`)
-- Дизайн артефактов — слайды, PDF, диаграммы, иллюстрации
+- Дизайн артефактов — слайды, PDF, диаграммы, HTML, иллюстрации (`brand/brand-design-*.md`)
 
 **НЕ входит:** механизм публикации SEO/GEO на сайт (→ `dev/`), код сайта (→ `dev/`), стратегия продукта и метрики (→ `meta/management/`), позиционирование и устройство продукта Second AI Brain (→ `framework/`).
 
@@ -44,7 +44,7 @@ Marketing отвечает за **внешнее лицо** svaib: как про
 
 ## Рамка
 
-**Стадия:** бренд в переходе на v2. Источник правды — `Brandbook.html` (WIP-черновик), главная svaib.com уже на v2 как тестовый прогон. Старые документы (`brand.md`, `brand-design-*.md`) расходятся с v2 и ждут синхронизации. Telegram-канал «освAIваемся» идёт регулярно. Серия семинаров запущена — три проведены в W21, W23, W25. YouTube-записи публикуются с задержкой.
+**Стадия:** бренд в переходе на v2. Источник правды — `brand/Brandbook.html` (WIP-черновик), главная svaib.com уже на v2 как тестовый прогон. Старые документы (`brand/brand.md`, `brand/brand-design-*.md`) расходятся с v2 и ждут синхронизации. Telegram-канал «освAIваемся» идёт регулярно. Серия семинаров запущена — три проведены в W21, W23, W25. YouTube-записи публикуются с задержкой.
 
 **Каналы:**
 - **Telegram** (`posts/`, `telegram/`) — основной канал, контент из клиентской практики и инсайтов, регулярно
@@ -73,8 +73,8 @@ Marketing отвечает за **внешнее лицо** svaib: как про
 | Часть | Что внутри | Где |
 |-------|------------|-----|
 | **Стратегия** | Позиционирование, каналы, воронка | `strategy.md` |
-| **Бренд** | Палитра, типографика, логотип, ToV (v1 + v2 WIP) | `brand.md`, `Brandbook.html` |
-| **Дизайн-гайды** | Артефакты: слайды, PDF, диаграммы, standalone HTML, web, иллюстрации | `brand-design-*.md` |
+| **Бренд** | Палитра, типографика, логотип, ToV (v1 + v2 WIP) | `brand/` |
+| **Дизайн-гайды** | Артефакты: слайды, PDF, диаграммы, standalone HTML, web, иллюстрации | `brand/brand-design-*.md` |
 | **Каналы** | Telegram-посты, YouTube, семинары, конференции | `posts/`, `telegram/`, `youtube/`, `seminars/`, `conferences/` |
 | **Примеры** | Образцы по бренду | `_examples/` |
 
@@ -82,4 +82,4 @@ Marketing отвечает за **внешнее лицо** svaib: как про
 
 ## Модель работы
 
-У marketing нет отдельной slash-команды (на 2026-04-20). Работа через общие режимы (`/svaib-strategy`, `/svaib-lab` для контентных скиллов), задачи берутся из [02_backlog.md](02_backlog.md) и `03_plan#Бэклог#Публикации`. Публикации идут через [/weekly-planning](../../.claude/skills/weekly-planning/) и отдельные скиллы (например, `presentation`, `telegram-post-writer`).
+Направление работает через slash-команду `/svaib-marketing` — режим маркетолога-партнёра (позиционирование, каналы, бренд, контент-план). Задачи берутся из [02_backlog.md](02_backlog.md). Публикации идут через [/weekly-planning](../../.claude/skills/weekly-planning/) и исполнительские скиллы (`presentation`, `telegram-post-writer`, `send-telegram`).
