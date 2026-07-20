@@ -1,0 +1,217 @@
+---
+title: "Product — хроника"
+scope: product_core
+type: log
+---
+
+# Product — хроника
+
+## Кратко
+
+Журнал сделанного по направлению. Завершённые задачи, ключевые сдвиги, значимые релизы частей фреймворка. Не дублирует [02_active.md](02_active.md) (текущая работа и Session Handoff) и не дублирует meta `session-log.md` (процесс работы с Claude). Даёт **результат** в домене — что было готово когда.
+
+**Работа с файлом:** log — дописывать при завершении значимой задачи по направлению или релизе части фреймворка. Не менять старые записи. Формат: дата → 1-3 строки (что сделано, ссылка на артефакт если есть).
+
+## Связанные файлы
+
+- [02_active.md](02_active.md) — что в работе сейчас, Session Handoff
+- [02_backlog.md](02_backlog.md) — задачи направления на будущее
+- ../meta/management/04_weekly_progress.md — агрегатор по всем направлениям
+
+---
+## 2026-07-20 · Оркестратор встреч приведён к scaffold v4.1
+
+Восемь исходных расхождений scaffold-v4.1-compliance исправлены в v7. Сравнение с v6 на 22 парах golden-set v2 дало первую ненулевую capability-delta: 5 улучшений и 1 регрессию. Продуктовый этап закрыт; дозавершение N=3 и техническая классификация оставшихся находок переданы в dev/02_active.md.
+
+---
+## 2026-07-16 · Разбор summary Виктор+Codex: карточки multi-project-routing и calendar-automation
+
+Диктовка Виктора + разбор Codex по доработке аналитика встреч разложена на карточки issues/meeting-analysis: заведена multi-project-routing (п.3, следующий релиз), расширена calendar-automation из узкого auto-transcript до полного календарного контура (п.4, backlog). Обновлены все точки маршрутизации (02_backlog, issues/README, features/README, release-0.1-scope). Коммит `66c4dd7`.
+
+---
+## 2026-07-16 · l1-profile-leak: харнес был сломан, перепроверено честно
+
+Step0-runner имел два скрытых бага, искажавших измерение (не поведение оркестратора): `grade.py`/`grade_generic.py` резолвили референс-файлы по несуществующему пути и молча читали пустоту вместо профилей/org-structure (резолв делегации не работал, детект материализованной утечки в регрессе был слеп); `run_regression.sh` терял сообщение руководителя для сценария с пустым полем участников (bash схлопывал поле при `IFS=tab`-парсинге TSV). Оба пофикшены, харнес сделан переносимым (hardcoded-пути → `git rev-parse`/`BASH_SOURCE`). Полный честный перепрогон подтвердил закрытие l1-profile-leak: лик коучинг-лога 0/5 у обеих версий, регресс 10/10 на всех 10 сценариях. Артефакты: runs/results.md, regression/results.md.
+
+---
+## 2026-07-16 · /release: изоляция от приватных данных + анонимизация ужесточены
+
+`assemble` теперь собирает публичный релиз из git-снапшота (`git archive HEAD`), не с живой ФС — untracked/gitignored (`_private/`, `clients-scaffold/`) физически не может попасть в сборку; правила `.gitignore` подмешиваются в rsync-exclude на лету (defense-in-depth против force-add). `anonymize.py`: denylist/allowlist в meta/glossary.md заполнены, три раунда адверсариального ревью закрыли механизм исключений (демо-персона в шаблоне vs реальный контакт) и три скрытых бага (IndexError на пустом denylist, тихая порча при рассинхроне ключа исключений, primary-в-allowlist молча превращал денилист-ряд в no-op — теперь громкая ошибка при загрузке glossary). 55/55 тестов зелёные.
+
+---
+## 2026-07-14 · operating-model.md пересобран как интерфейс CEO
+
+Переписан [шаблон operating-model.md](plugin/skills/scaffold/template/01_company/operating-model.md): вместо методологической спецификации — простой вопросник по шести областям, через который CEO самостоятельно или с AI описывает реальную модель управления. Шаблон допускает короткие и неформальные ответы, не дублирует текущие данные; в слепом клиентском тесте все 28 вопросов получили понятные ответы.
+
+---
+## 2026-07-12 · Scaffold v4.1 — модель доведена до поставки
+
+Закрыт план доводки v4 → v4.1: 9 сессий за два дня. Клиентский пакет стал самодостаточным — агент клиента разворачивает узлы, не видя методологии. README — единственный SOT навигации (вход: корневые AGENTS/CLAUDE), отражает только созданное, рост — в 🔧. Канонизирован [operating-model.md](plugin/skills/scaffold/template/01_company/operating-model.md): система управления компании, читается первым; цели связаны с проектами. Встречи размещает одно правило клиента. Плюс `_private/` как примитив, «объект управления» вместо «территории», `product/` — сам продукт. Гейт слепыми агентами: 8 косяков доставки закрыты, канон и пакет версионированы 4.1.
+
+---
+## 2026-07-10 · Шаг 0 meeting-analysis: жёсткий контекст L1
+
+Ужесточён сбор контекста L1 (Шаг 0) в `orchestrator-meeting` / `orchestrator-client-meeting`: срез профиля до первого `##` через `awk` (механизм против дампа файла или ссылки), `target_unit` по зоне ответственности участников (+ «не выдумывай узел»), закрытый список источников. Утечка коучинг-лога в L1 устранена. Верифицировано изолированным харнесом step0-runner: реальный лик **0/5** (plugin+client), регресс на 10 разных типах встреч (1-on-1, OKR, планёрки, топ-синк, кросс-функц) не сломан. Закрывает l1-profile-leak; определение типа встречи (жанр) — методология → бэклог.
+
+---
+## 2026-07-10 · Telegram-канал: хардёнинг + вынос в channels/
+
+Хардёнинг `send_telegram.sh` (нарезка по строкам ДО конвертации, проверка `ok`→exit, `.env`: env→pwd→git-root) + оба скрипта (plain+rich) вынесены в общий [channels/telegram/](plugin/skills/channels/telegram/SKILL.md) с каноном в SKILL.md. Закрыты 2 карточки релиза 0.1. Проверено: 8 юнит-тестов + live-бот. Коммит `8a7681d`.
+
+---
+## 2026-07-09 · meeting-analysis: пайплайн под scaffold v4 + изоляция от непубличного
+
+Закрыты 2 карточки-фундамент релиза 0.1. scaffold-adaptation (`e24f3a1`): scaffold-пути L1/L2/orchestrator под template v4. isolate-from-nonpublic-data (`d61220f`): рантайм-промпты самодостаточны — убраны висячие `methodology/`/`clients/`-ссылки (функциональный контент уже был инлайн).
+
+---
+## 2026-07-07 · Операционная модель разработки продукта
+
+Создан [development-operating-model.md](development-operating-model.md) — как команда версионирует и ведёт разработку
+
+---
+## 2026-07-06 · Product: структурная миграция из framework
+
+Продуктовый контур переехал из `framework/` в `product/`: `00_product.md` стал [01_overview.md](01_overview.md), Product Vision вынесен в [vision/](vision/), ontology включена в [methodology/ontology/](methodology/ontology/). Обновлены рабочие маршруты, README и Claude-команды; основной вход команды теперь `.claude/commands/svaib-product.md`.
+
+---
+## 2026-06-10 · Клиентский scaffold-конфигуратор
+
+Разработан интерактивный конфигуратор для сборки scaffold с клиентом на встрече, выложен на svaib.com/tools/scaffold (исходник в `dev/`).
+
+---
+## 2026-05-25 · Scaffold v4: клиентский каркас пересобран и оставлен handoff
+
+Клиентский scaffold в scaffold/ пересобран под composable management architecture: стартовый `01_company/`, корневые агентские инструкции, `_templates/` и thin-шаблоны узлов. В methodology/scaffold/_plan.md собран handoff после паузы: TODO/VERIFY/DECIDE/PARKED, стартовый порядок и сырьё находок.
+
+---
+## 2026-05-21 · Scaffold v4 final: composable management architecture
+
+Канон `methodology/scaffold/` доведён до `version: 4` / `status: final`: architecture, unit/aspect/kit, folder/file/readme spec, deployment, open questions и evolution log синхронизированы. Старые `03_node-files.md`, `03_contours.md` и strategy-redesign draft убраны; верхняя `product/architecture.md` приведена к v4. Два субагента подтвердили: greenfield-развёртывание по канону возможно, блокер остаётся только в пересборке `product/scaffold/` templates.
+
+---
+## 2026-05-14 · Metrics: вертикаль достроена и выверена
+
+Стройка завершена: orchestrator-metrics.md вычищен от отменённой модели в операционный пайплайн под architecture v2, [extractor.md](methodology/metrics/extractor.md) доведён (probe-процедура, формат JSON-выхода, schema-hash). Разведены роли: оркестратор отвечает на вопросы CEO и источник не трогает, сборку extractor'а делегирует отдельному скиллу-писателю (контракт зафиксирован, реализация — отдельным заходом). [architecture.md](methodology/metrics/architecture.md) → `final`, вся вертикаль синхронизирована на `version: 2`. Два прохода субагентами в чистой истории: консистентность чистая, остатков старой модели нет. Веха ~2 дней работы.
+
+---
+## 2026-05-14 · Metrics: чистка методологии вертикали под актуальную модель
+
+Методология metrics-вертикали приведена к выверенному ядру: архитектура сведена из трёх файлов в один [architecture.md](methodology/metrics/architecture.md) с дедупликацией и закрытыми гэпами аудита, создан черновик [extractor.md](methodology/metrics/extractor.md), удалён старый слой на отменённой модели (10 файлов). Опора вертикали — 5 выверенных файлов. Стройка (orchestrator-metrics, доводка extractor.md) — отдельной сессией.
+
+---
+## 2026-05-13 · Metrics: закрыта спецификация формата + промпт-помощник
+
+Закрыта спецификация [metrics-spec.md](methodology/metrics/metrics-spec.md), переписан шаблон scaffold/05_metrics/business-metrics.md, добавлен скилл business-metrics-intake.md — помощник заполнения метрик клиентом.
+
+---
+## 2026-05-12 · Metrics: выделен первый слой вертикали (canonical_metrics + колонка в xlsx + помощник по колонке)
+
+Methodology metrics переосмыслена через рамку слоёв. **Первый слой** (минимум у любого клиента) — каноническое имя метрики, колонка с этим именем в xlsx, помощник, который по этой колонке достаёт число. Без паспортов, без `direction`, без extractor-скрипта, без narrative. Появился новый файл methodology/metrics/first-layer.md с рамкой, DoD и форматом `canonical_metrics.md`. rollout.md переписан с 12-шагового pilot на 6-шаговый playbook первого слоя. HOWTO.md переписан под сценарий «вопрос CEO → каноническое имя → число». [README.md](methodology/metrics/README.md) — карта без статусности, точка входа `first-layer.md`. intake-form.md понижен до внутреннего чек-листа координатора. В scaffold/05_metrics/ добавлен шаблон canonical_metrics.md; README папки помечает его как стартовую точку. В [methodology/metrics/architecture.md](methodology/metrics/architecture.md) поставлен маяк на `first-layer.md` в «Кратко»; основное тело архитектуры (паспорта, маршруты, snapshot, eval) сохранено как база для второго и третьего слоёв.
+
+---
+## 2026-05-12 · Scaffold: принята матричная модель вместо Аспект > Домен
+
+Главная ось scaffold переосмыслена: вместо корня по типам сущностей (`01_ceo / 02_strategy / 03_team / 04_company / 05_metrics`) принята **матрица** — компанийный уровень в `01_company/` и доменные области (`marketing/`, `sales/`, `finance/`, …) на корне. Аспекты (strategy, team, metrics, projects, processes) разворачиваются на двух уровнях по правилу **владелец первый, наименьший общий предок второй**. Принцип опирается на индустриальные паттерны (DDD bounded context, React lift state up, нормализация БД, каскад). ADR с обоснованием, корневой раскладкой, определением домена и планом трансформации канона — methodology/scaffold/00_dilemma.md. Зафиксировано в [04_decisions.md § 7](04_decisions.md). Следующий шаг — переписать канон методологии scaffold по цепочке (Трек 1: `01_architecture → 02_folder-spec → 03_node-files → 03_contours → deployment → open-questions → README`); затем связанные слои (Трек 2) и миграция клиентского `product/scaffold/` v1 → v2 (Трек 3).
+
+---
+## 2026-05-12 · Methodology scaffold финализирована: единый канон шести файлов
+
+Шесть файлов методологии scaffold ([01_architecture.md](methodology/scaffold/01_architecture.md), [02_file-spec.md](methodology/scaffold/02_file-spec.md), [02_folder-spec.md](methodology/scaffold/02_folder-spec.md), [02_readme-spec.md](methodology/scaffold/02_readme-spec.md), 03_node-files.md, 03_contours.md) сведены в единый согласованный непротиворечивый канон. `03_contours.md` (v4) — 10 контуров в единой форме («Что это» + дерево + контурно-специфичные миссии), 14 контурно-специфичных файлов вынесены в SOT этого файла. По `person.md` принят Вариант 3: рамка (миссия + 6 канонических разделов) остаётся в `03_node-files.md`, имена и контекст применения распределены по контурам — `01_ceo/01_my-profile.md`, `03_team/{person}.md`, `clients/{client}/{person}.md`. Аудит трёх независимых субагентов (консистентность между файлами, внутренние ошибки, dogfood самим каноном) — драм не нашёл.
+
+---
+## 2026-05-12 · Добавлен 9-й управленческий цикл — finance
+
+Финансы выделены из metrics как отдельный предметный контур: финмодель, бюджет, кэш, юнит-экономика, сценарии. Финансовые метрики (revenue, gross margin, CAC, runway) остаются в metrics, бюджет и финмодель — в finance. Обновлены [methodology/ontology/management_cycles.md](methodology/ontology/management_cycles.md) (v3), [architecture.md](architecture.md) (v13), [01_overview.md](01_overview.md) (v10, цель экватора: 7 циклов в бете), [methodology/scaffold/open-questions.md](methodology/scaffold/open-questions.md) (v5 — где finance живёт в scaffold, отложено до первого клиента). На сайте `dev/src/public/second-ai-brain-overview.html` карта продукта и блоки циклов обновлены до 9.
+
+---
+## 2026-05-11 · Methodology scaffold: 01_architecture финален + ревью пятёрки применено
+
+[01_architecture.md](methodology/scaffold/01_architecture.md) переработан как обзорный слой (v4) — 7 H2-секций, дубли с spec убраны. Параллельно прошли два ревью (Claude × 4 субагента + Codex), сведены в action items, применены P1+P2: триплет AGENTS/CLAUDE в методологической папке, `archive/`→`zz_archive/`, инвариант «сущность ↔ файл, узел ↔ папка», унифицирована «служебная папка» с root-level, разведены H1 и аннотация в readme-spec. Коммит `dd1d780`.
+
+---
+## 2026-05-06 · Methodology scaffold v6: file-templates и folder-spec
+
+Переписаны 03_node-files.md (v3, с примерами аннотаций для каждого канонического файла) и [02_folder-spec.md](methodology/scaffold/02_folder-spec.md) (v3, упрощены типы узлов, README под новый канон). Параллельно Кодекс отработал замену «зона»→«контур» в methodology/scaffold/ и architecture.md.
+
+---
+## 2026-05-06 · Methodology scaffold v5: file-spec и readme-spec упрощены
+
+Сжали обвязку md-файла. В [02_file-spec.md](methodology/scaffold/02_file-spec.md) (v3, 315→238 строк) выкинуты «Миссия файла», обязательные «Кратко» и «Связанные файлы», поля `type`/`scope`/`priority`/`status`/`tags`/`source`, маркеры `[SOURCE]`/`[REF:]`, секции «Анатомия», «Уровни соответствия», «Чеклист», «Антипаттерны». Добавлены § «Title и H1» (формула, лимит ≤120), § «Лид» (опц.), § «Summary» (опц., для больших файлов), § «Правило файла / Правило блока» с enforcement через хук Rule Injection ([methodology/memory/01_context_memory.md § 5.5](methodology/memory/01_context_memory.md)).
+
+В [02_readme-spec.md](methodology/scaffold/02_readme-spec.md) переработан YAML (минимум: `title`, `description`, `created`, `updated`; убран `version`); `description` сформулирован как «дешёвая карточка релевантности», не миссия. Добавлен раздел «README — место описания миссии файлов внутри папки» (миссия каждого файла теперь живёт в колонке таблицы `## Что лежит` README, а не внутри файлов). Каркас README обновлён: `## Назначение` (миссия папки) + `## Что лежит` с колонкой «Миссия» + `## Маршруты` (опц.) + `## Связи` (обязательный для README). Добавлен § «Доставка README агенту» — триплет `README.md` + `AGENTS.md` + `CLAUDE.md` (последние два — pointer-only на `@README.md`) для гарантии доставки агенту.
+
+Закрыт open-question про `claude/agents/gemini` в каждой папке: канон триплета зафиксирован в [02_readme-spec.md](methodology/scaffold/02_readme-spec.md). CLAUDE.md — временный костыль до нативной поддержки AGENTS.md в Claude Code.
+
+---
+## 2026-05-06 · Methodology scaffold v4
+
+10 open-questions закрыты, миграции `04_company` и `05_metrics` выполнены.
+
+---
+## 2026-05-05 · Первая чистая архитектура scaffold
+
+Из 20+ разрозненных черновиков собрали первую чистую архитектуру в одном файле — [methodology/scaffold/01_architecture.md](methodology/scaffold/01_architecture.md). До этого scaffold был кусочным, агенты путались, единой опоры не было — теперь есть базовый source of truth для всего scaffold-направления. Закрытие одного из узких мест декады 1 (см. [01_overview.md](01_overview.md) → Фокус).
+
+---
+## 2026-05-05 · Каркас methodology/scaffold/ из 8 файлов
+
+Переутверждена структура папки (8 скелетов: 01_architecture + 4 spec'а + deployment + open-questions + README); 
+
+---
+## 2026-05-04 · L2-prompt-protocol-telegram переведён на эмодзи-маркеры задач
+
+Telegram-сводка теперь использует ⭕️ / ✅ вместо markdown-чекбоксов `- [ ]` / `- [x]` — Telegram их режет, задачи читались куце. Добавлено правило отступов между задачами. Версия 3 → 4. L2-prompt-protocol-telegram.md
+
+## 2026-05-01 · Фазы 3-4 fern-модели scaffold завершены, бэклог переструктурирован
+
+Получены 4 внешних ревью fern-модели от нейросетей, синтезированы во внутренний draft с 10 открытыми вопросами + раздел «Фундаментальное напряжение». На его основе собран клиентский структурный draft + HTML-презентация для предстоящих встреч. Раздел `## Scaffold` в [02_backlog.md](02_backlog.md) переструктурирован: 12 шагов финального плана (старые 7 пунктов поглощены, добавлены пропущенные: канон развёртывания у клиента, цепочки файлов внутри направлений, profile.md в каноне базовых файлов, контекстная архитектура как отдельный шаг, 10 концептуальных открытых вопросов).
+
+## 2026-05-01 · Клиентское intro для metrics-вертикали
+
+Создан client-facing документ для CEO с запросом на metrics: почему «загрузить xlsx в LLM» не работает. HTML-презентация в фирменном стиле svaib (тёмная тема, для 5-минутного показа). Хранится в локальном `_inbox/` клиента, готов к выдаче.
+
+## 2026-05-01 · Сформулированы 5 принципиальных требований к scaffold
+
+Зафиксирован стержень scaffold-направления: двусторонняя читаемость, управленческая модель CEO, универсальность+адаптивность, целостность, самоподдерживаемость. Позже перенесено в [methodology/scaffold/01_architecture.md](methodology/scaffold/01_architecture.md) как рабочий канон scaffold.
+
+## 2026-04-30 · Реорганизация metrics-вертикали в одно место
+
+Методология вертикали собрана в новую папку `methodology/metrics/` (README — карта вертикали, architecture, HOWTO, rollout, intake-form, open-questions). В `skills/metrics-analysis/` остался только skill: orchestrator + черновик `narrative.py` (DRAFT, open-question #1). Зафиксирован стандарт `metrics/extractors/` у клиента (без подчёркивания) + новый `scaffold/metrics/extractors/README.md`. Канон 8 имён domain-файлов — единый источник правды в [`methodology/metrics/architecture.md`](methodology/metrics/architecture.md), копии в scaffold/orchestrator со ссылкой. Subagent-аудит decisions ↔ methodology: дыр нет (отчёт — `_inbox/subagents/metrics-decisions-audit/report.md`). Smoke-test sandbox после переименования: extractor → narrative pipeline работает, числа сходятся с Б.1.
+
+## 2026-04-30 · Впервые потрогали управленческий цикл metrics на живых клиентских данных
+
+Стратегический переход: до этого metrics жили как методология и канон шаблонов. В Б.1 впервые прогнали полный pipeline на реальной таблице клиента в sandbox — AI собрал ответ на «что у меня по OKR1?» с числами, сходящимися с фактами клиента. Параллельно поймали 5 первых дыр (главная — отсутствие атрибута направления у метрик), зашили в канон. Документы под расширение на следующих клиентов: `HOWTO.md`, `rollout.md`, `intake-form.md`, `open-questions.md`.
+
+## 2026-04-28 · Канон базовых сущностей scaffold
+
+Зафиксирован канон четырёх ключевых сущностей scaffold: миссия и 5 блоков 01_overview.md (Суть / Цели и КР / Команда / Фокус / Дорожная карта), опциональный profile.md как паспорт-доктрина рядом, разграничение README (вход в папку, для AI-агента) ↔ overview (вход в сущность), G/Y/R-светофор как универсальный сигнальный примитив.
+
+## 2026-04-28 · Цели и overview переразложены под вертикали управленческих циклов
+
+Продолжение архитектурного сдвига [27.04](#2026-04-27--введены-вертикали-управленческих-циклов): применили новую оптику сверху вниз через цепочку vision → goal → overview → backlog. Цель экватора и декады 1 по продукту переписаны через управленческие циклы (от принципа «циклы как ядро»). К экватору — все 8 циклов представлены в бете (strategy, team, metrics, meeting, product, marketing, sales, projects), sales и marketing опционально по тяге клиентов. К 22.05 — 2 цикла (meeting, metrics) на уровне early-adopter beta у 2-3 клиентов; выбор циклов — pull от запросов первых клиентов через клиентского субагента. Зафиксирован принцип иерархии: goal — короткая рамка, overview — детальная развёртка. Overview пересобран под канон 5 блоков (Суть/Цели/Команда/Фокус/Roadmap)
+
+## 2026-04-27 · Введены вертикали управленческих циклов
+
+В архитектуру продукта добавлен третий разрез — вертикаль управленческого цикла, проходящая через 3 слоя продукта и 6 частей framework. Предыстория: methodology/metrics/architecture.md (v3) не помещалась в текущую модель — наполняет все три слоя одновременно. Решение: вертикаль = управленческий цикл (опора на принцип из 01_overview), не «domain pack»; общие механизмы (snapshot, trace, semantic layer) — горизонтальные контракты слоёв; зависимости вертикалей — только через горизонталь по стабильным ID; вертикаль ≠ скилл; лимит 5–7. Зафиксировано: [04_decisions.md](04_decisions.md) №4, новый файл [methodology/ontology/management_cycles.md](methodology/ontology/management_cycles.md), правки в 8 связанных файлах; [02_backlog.md](02_backlog.md) переструктурирован под две оси. Аудит: Claude (general-purpose субагент) + Codex.
+
+## 2026-04-25 · Появилась архитектура встраивания метрик в Second AI Brain
+
+В фреймворке не было методологии работы с бизнес-метриками — собрали с нуля за сутки: индустриальный синтез по теме положили в [knowledge/metrics/!metrics.md](../knowledge/metrics/!metrics.md) (новая категория), первую архитектуру — в [methodology/metrics/architecture.md](methodology/metrics/architecture.md) (6 слоёв + процессы, паспорта свернуты в семантический слой, метки [СЕЙЧАС]/[ПОЗЖЕ], секция «Минимальный комплект первой стадии» под «1-2 клиента, Cowork»)
+
+## 2026-04-22 · Канонизация `scaffold/product/` под клиента
+
+Опциональная папка `scaffold/product/` имела только старый README (февраль 2025)/ Установлен канонический каркас: 7 файлов-шаблонов (`product`, `architecture`, `01_overview`, `02_active`, `02_backlog`, `03_progress`, `04_decisions`) + `README.md` с навигацией, правилами развёртывания и связями с `../02_strategy/` (3 связи: vision→product, goal→overview, progress→weekly). Структура зеркалит модель framework-уровня (наш продукт)
+
+## 2026-04-21 · Канонизация продуктового контура
+
+Продуктовое видение Second AI Brain было размазано по всему репо без общего канона. Установлена каноническая модель «framework = продукт»: одна точка правды о продукте.
+
+Движение сверху вниз: vision проекта (куда идём) → product (какой продукт и для кого) → architecture (как устроен внутри) → 01_overview (где мы в стройке) → 02_active (что горит сейчас) → 02_backlog (что дальше) → 03_progress (что сделано) + 04_decisions (почему так решили).
+
+## 2026-04-21 · Шаблон scaffold/projects/ 
+В scaffold (каркас, который клиент разворачивает у себя) появился готовый шаблон "проект клиента" — папка для именованного проекта с командой, метриками, задачами, решениями и хроникой встреч. Overview → backlog → active → progress → decisions.
+Это другая природа, чем "подразделения" в scaffold: проекты живут параллельно и могут пересекать оргструктуру.
+
+## 2026-04-15 · Создан слой memory/ (6-я часть фреймворка)
+
+Перенесён workbench контекстной памяти → `01_context_memory.md`. `file_spec.md` переехал из `methodology/ontology/` в `methodology/memory/`. Обновлены `architecture.md` v8, `README.md` v7 («шесть частей» + memory в диаграмме и таблице), 5 сервисных файлов.
