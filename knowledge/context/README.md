@@ -22,6 +22,9 @@
 - [lightrag.md](lightrag.md) — LightRAG: облегчённый GraphRAG через LLM-экстракцию сущностей — как работает, найденные дефекты и фиксы, реальная экономика (эмпирика svaib)
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости форматов, зазоры чтения/записи, варианты мостов, целевая архитектура для клиента
 
+- [md-data-systems.md](md-data-systems.md) — **архитектурный синтез**: markdown-native системы знаний для AI — четыре плоскости (содержимое / контекст / права / действия), терминология класса, развилки и проверки
+- [permission-aware-retrieval.md](permission-aware-retrieval.md) — как права доступа доезжают до выдачи AI: synced/direct/live, задержка ACL→индекс, чтение ≠ действие, edge cases зрелости
+
 - [skill-graphs/](skill-graphs/) — Skill Graphs (arscontexta): навигация агента по знаниям, progressive disclosure, wikilinks, архитектура контекста. **Вложенная под-папка — крупный блок (7 файлов, свой README)**
 
 **Как файлы связаны:** agent-memory.md — входная карта; остальные по памяти — углубления (temporal-graphs → Graphiti, практика в temporal-graphs-doronin). context-graphs.md решает свой открытый вопрос темпоральности через temporal-graphs. markdown-for-llm.md (КАК писать) и search-mechanics.md (КАК находят) — пара.

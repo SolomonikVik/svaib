@@ -8,7 +8,6 @@ updated: 2026-02-16
 review_by: 2026-05-16
 tags: [subagents, multi-agent, agent-sdk, orchestration, patterns, hosting, deployment]
 publish: false
-version: 3
 ---
 
 # Субагенты и мульти-агентные архитектуры

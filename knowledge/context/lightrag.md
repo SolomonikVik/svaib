@@ -8,7 +8,6 @@ updated: 2026-07-06
 review_by: 2026-10-06
 tags: [lightrag, graphrag, knowledge-graph, rag, entity-extraction, llm, memory-tools]
 publish: false
-version: 1
 ---
 
 # LightRAG — лёгкий GraphRAG

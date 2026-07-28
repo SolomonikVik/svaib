@@ -3,23 +3,24 @@ title: "Google Drive + Claude Projects: матрица совместимост�
 source_type: docs
 status: raw
 added: 2026-03-20
-updated: 2026-03-20
-review_by: 2026-06-20
-tags: [claude-projects, google-drive, cowork, integrations, svaib-clients]
+updated: 2026-07-27
+review_by: 2026-10-25
+tags: [claude-projects, google-drive, cowork, integrations, svaib-clients, mcp]
 publish: false
-version: 1
 ---
 
 # Google Drive + Claude Projects: результаты тестирования
 
 ## Кратко
 
-Тестирование интеграции Google Drive с Claude Projects и Cowork для клиентов SVAIB. Ключевой зазор: что Cowork умеет писать — Claude в Projects не видит автоматически, и наоборот. Матрица совместимости форматов, варианты мостов (автоконвертация, Drive → GitHub → RAG), целевая архитектура для клиента-CEO без технических навыков.
+Тестирование интеграции Google Drive с Claude Projects и Cowork для клиентов SVAIB. Ключевой зазор: что Cowork умеет писать — Claude в Projects не видит автоматически, и наоборот. Матрица совместимости форматов, варианты мостов (автоконвертация, Drive → GitHub → RAG, прямой мост через Google Drive MCP), целевая архитектура для клиента-CEO без технических навыков.
 
 ## Связанные файлы
 
 - [../tools/claude-project.md](../tools/claude-project.md) — Claude Project как delivery-среда (Drive Fetch, PK sync, уровни доступа)
 - [../tools/cowork.md](../tools/cowork.md) — Cowork: возможности и ограничения
+- [../agents/mcp.md](../agents/mcp.md) — MCP-серверы: официальный Google Drive MCP и OSS-сервер с записью
+- [../tools/obsidian.md](../tools/obsidian.md) — Obsidian + Relay/MCP: альтернативный слой хранения с командной коллаборацией
 - [search-mechanics.md](search-mechanics.md) — механики поиска в Claude Projects
 - ../../clients/playbook/delivery/operations/setup_claude/claude_setup_guide.md — гайд по настройке Claude для клиента
 
@@ -90,6 +91,16 @@ version: 1
 
 **Статус:** архитектурно проработано, прототип не собран.
 
+### Google Drive MCP — прямой мост чтения/записи (ещё один вариант)
+
+Отдельный от GitHub-моста путь: подключить Drive к ассистенту через MCP-сервер — тогда чтение и запись идут прямо в Drive, без промежуточного репозитория. **Дополняет, а не заменяет** GitHub-мост.
+
+- **Официальный Google Drive MCP** (Google, remote, OAuth) — на момент записи умеет **только read + create**: поиск, чтение, создание файлов, но **без правки существующих** (нет `update`). Для «ассистент дописывает в файл-миссию» этого мало.
+- **OSS-сервер с записью** (напр. `piotr-agier/google-drive-mcp`, MIT) — закрывает зазор: `updateTextFile` = правка .md/текста по `fileId` (read-modify-write, как в локальном редакторе), поддержка **Shared Drives** (`supportsAllDrives`), история версий/откат, блокировки файлов, управление правами. Разворачивается в **team-режиме за HTTPS + OAuth** и подключается к **claude.ai / Cowork как custom connector** — работает с планшета/телефона, каждый юзер под своей Google-личностью (естественное разделение приват/общее).
+- **Ограничение:** запись = last-write-wins (перезапись целиком), автослияния одновременных правок нет. Несколько ассистентов на один файл → `lockFile` либо структура «один писатель на файл»; истинный CRDT-мерж — только вне Drive (Obsidian + Relay/Yjs → [../tools/obsidian.md](../tools/obsidian.md)).
+
+**Статус:** вариант проработан по исходникам сервера; не собран под клиента. Требует self-host MCP-сервера и проверки, что тариф Claude/Cowork разрешает кастомные коннекторы. Детали MCP-серверов → [../agents/mcp.md](../agents/mcp.md).
+
 ---
 
 ## 4. Архитектура для клиента: целевая схема
@@ -128,6 +139,7 @@ Claude Project клиента — видит всё
 4. **Задержка PK sync** — баг или фича? Стабилизируется ли со временем?
 5. **Cowork + Google интеграции** — появятся ли в ближайших релизах? (на март 2026 — официально нет)
 6. **Подгрузка .md в Project Knowledge** — время появления после загрузки? (не протестировано до конца)
+7. **Google Drive MCP как мост** — собрать прототип на OSS-сервере с записью, проверить подключение к Cowork/claude.ai как custom connector и лимиты тарифа на кастомные коннекторы. Сравнить с GitHub-мостом по надёжности и порогу поддержки.
 
 ---
 
@@ -137,3 +149,35 @@ Claude Project клиента — видит всё
 - [ ] Проверить задержку появления загруженного .md в Project Knowledge
 - [ ] Собрать прототип моста Google Drive → GitHub (Google Apps Script)
 - [ ] Протестировать полную цепочку на одном клиентском файле
+
+---
+
+## 7. Ownership и orphaned-файлы — риск для multi-tenant Drive
+
+Отдельный от матрицы совместимости риск, всплывший на клиентских Drive-структурах (несколько клиентов/сотрудников создают файлы в общей иерархии): когда файл создан внутри чужой/шаренной папки (создатель файла ≠ владелец папки), а эта родительская папка удаляется, перемещается или теряет права доступа — Google Drive не может физически удалить чужой файл. Вместо этого он помечает файл как orphaned ("unorganized"), и файл остаётся у **фактического создателя** в его `My Drive` root — а не у владельца дерева папок, в которой он раньше лежал. Подтверждено и для веб-интерфейса Drive, и для `rclone` (`rclone delete` файла, которым не владеешь, физически файл не удаляет — Drive откатывает его в root настоящего владельца). Это документированное поведение Google Drive API/permissions model, не баг rclone.
+
+**Практическое значение:** это не утечка контента между аккаунтами в смысле "чужие данные стали видны не тому" — файл возвращается к тому, кто его физически создал, просто теряет папку-контекст. Риск гигиенический (файлы копятся в root создателя), не риск раскрытия чужих данных.
+
+**Поиск и уборка:** запрос `is:unorganized owner:me` в поиске Drive находит такие файлы у текущего владельца. Восстановить в исходную папку ("Add to My Drive") или удалить может только фактический владелец файла.
+
+---
+
+## 8. Модель прав Drive: что можно и чего нельзя закрыть
+
+Практические границы, которые определяют, какие приватные зоны вообще реализуемы на Google Drive.
+
+**Личное vs командное.** Личные материалы Google рекомендует держать в My Drive, командные — в Shared Drives: последние существуют, чтобы контент оставался у организации после ухода сотрудника.
+
+**Ограничение подпапки.** Папки с limited access — единственный способ сузить доступ к конкретной подпапке (работает и в My Drive, и в shared drives): открыть её могут только явно добавленные пользователи. Остальные участники видят, что папка существует (серая, с иконкой), и могут запросить доступ. По умолчанию доступ в shared drive «расширяющийся» — унаследованный сверху.
+
+**Чего закрыть нельзя.** Manager shared drive всегда имеет доступ к limited-папке внутри этого диска, снять это нельзя. Для Content Manager возможность управлять limited-папками включается настройкой диска.
+
+**Организация видит всё.** Super admin может экспортировать данные организации, Google Vault — удерживать, искать и выгружать данные Drive. То есть «приватно от коллег» на Drive достижимо, «приватно от администратора организации» — нет. Если требование строгое, личная зона должна жить вне корпоративного tenant (отдельный аккаунт или отдельное хранилище), а не отдельной папкой внутри него.
+
+**Следствие для агента.** Gemini в Workspace работает в правах пользователя; для внешнего AI (Claude, MCP-мост) права определяются тем аккаунтом, под которым выдан OAuth-доступ. Персональные зоны, которые не должны попасть в контекст ассистента, надёжнее не подключать к нему вовсе, чем полагаться на фильтрацию на стороне промпта.
+
+Общая механика прав в AI-выдаче → [permission-aware-retrieval.md](permission-aware-retrieval.md); сравнение платформ → [../tools/team-content-platforms.md](../tools/team-content-platforms.md).
+
+Источники: [Google Drive — папки с limited и expansive access](https://developers.google.com/workspace/drive/api/guides/limited-expansive-access) · [обновление опыта доступа в Drive (Workspace Updates)](https://workspaceupdates.googleblog.com/2025/02/updating-access-experience-in-google-drive.html)
+
+Источники: [Orphaned Files in Google Drive — MakeUseOf](https://www.makeuseof.com/what-are-orphaned-files-google-drive/) · [Google Drive Orphaned Files — Patronum](https://www.patronum.io/google-drive-file-management-how-to-find-and-fix-orphaned-files) · [rclone forum — places deleted files in the root directory](https://forum.rclone.org/t/rclone-google-drive-places-deleted-files-in-the-root-directory/33100)

@@ -8,7 +8,6 @@ updated: 2026-07-07
 review_by: 2026-05-21
 tags: [agents, manus, meta, telegram, autonomous-agent, multi-agent]
 publish: false
-version: 2
 ---
 
 # Manus

@@ -2,11 +2,10 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: processed
 added: 2026-01-30
-updated: 2026-07-18
-review_by: 2026-10-18
-tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp]
+updated: 2026-07-21
+review_by: 2026-10-21
+tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code]
 publish: false
-version: 20
 ---
 
 # Coding — AI-кодинг и разработка
@@ -80,6 +79,12 @@ version: 20
 - **C4-подобная иерархия** — подсистемы → компоненты → модули, каждый уровень понятен автономно
 
 Связь с практиками: ai-dev-practices — про **процесс** (как работать с AI), ai-ready-architecture — про **структуру** (как писать код для AI). Взаимодополняют. Детали: [ai-ready-architecture.md](ai-ready-architecture.md).
+
+## LikeC4 — архитектура-как-код
+
+Open-source DSL (MIT, с 2023): одна текстовая модель `.c4` → множество интерактивных views (structural + dynamic с `alt/when/else`), валидация, MCP-сервер (20+ query-инструментов: поиск по тегам/метаданным, граф зависимостей, batch-read) для агентного доступа к архитектуре. В отличие от «просто DSL для рисования» (Mermaid, D2 без слоя модели) — элементы типизируются свободно под свой домен, поэтому ложится и на процессные/агентные схемы, не только на software C4.
+
+Ключевое для практики: **фильтрация views** через include/exclude/tags/`where`/style-muting решает задачу «не захламлять схему» без ручного дублирования диаграмм под разные уровни детализации. Сравнение с альтернативами (Structurizr DSL — строже дисциплинирует C4, D2 — сильнее для отдельных выразительных схем, Mermaid C4 — experimental-статус, PlantUML C4 — многословный) и найденные шероховатости молодого DSL — в файле. Наш пилот на контуре meeting-analysis (svaib) технически провалидирован, решение о принятии стандартом не принято. Детали: [likec4.md](likec4.md).
 
 ## Тестирование AI-generated кода
 

@@ -8,7 +8,6 @@ updated: 2026-02-11
 review_by: 2026-05-11
 tags: [temporal-graphs, knowledge-graph, agent-memory, graphiti, hindsight, rag]
 publish: false
-version: 2
 ---
 
 # Temporal Knowledge Graphs — память AI-агентов с пониманием времени

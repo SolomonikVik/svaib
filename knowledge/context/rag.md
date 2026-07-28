@@ -8,7 +8,6 @@ updated: 2026-07-06
 review_by: 2026-07-09
 tags: [rag, hybrid-search, vector-search, bm25, reranking, graphrag, lightrag, agentic-rag, chunking, benchmarks]
 publish: false
-version: 3
 ---
 
 # RAG — Retrieval-Augmented Generation

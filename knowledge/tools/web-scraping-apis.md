@@ -8,7 +8,6 @@ updated: 2026-02-07
 review_by: 2026-05-01
 tags: [tools, scraping, proxy, api, firecrawl, mcp]
 publish: false
-version: 2
 ---
 
 # Web Scraping APIs

@@ -7,7 +7,6 @@ updated: 2026-03-18
 review_by: 2026-06-18
 tags: [prompting, extraction, meeting-analysis, anti-hallucination, behavioral-analysis, NVC]
 publish: false
-version: 2
 ---
 
 # Extraction prompts — best practices

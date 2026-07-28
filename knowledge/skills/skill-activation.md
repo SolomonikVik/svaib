@@ -7,7 +7,6 @@ added: 2026-02-01
 review_by: 2026-05-01
 tags: [skills, claude-code, activation, hooks, reliability]
 publish: false
-version: 1
 ---
 
 # Механика активации скиллов в Claude Code

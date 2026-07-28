@@ -4,11 +4,10 @@ source: "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f"
 source_type: article
 status: processed
 added: 2026-04-07
-updated: 2026-04-07
-review_by: 2026-07-07
-tags: [knowledge-management, file-based-memory, markdown, wiki, context-engineering]
+updated: 2026-07-25
+review_by: 2026-10-25
+tags: [knowledge-management, file-based-memory, markdown, wiki, context-engineering, basic-memory]
 publish: false
-version: 1
 ---
 
 # LLM Wiki — персональная база знаний, поддерживаемая LLM
@@ -75,6 +74,8 @@ LLM обрабатывает один источник за раз. Извлек
 - **sage-wiki** — multi-format extraction (PDF, видео, аудио)
 - **memex** — filesystem-sandboxed daemon (работает в фоне)
 - **atomic-knowledge** — markdown-first протокол (ближе к Zettelkasten)
+- **Basic Memory** — OSS-ядро (MIT) + облачный sync: agent-writable md-база через MCP с индексом поверх plain-файлов (full-text + семантика + knowledge-graph). Более «продуктовая» реализация паттерна, чем гисты-прототипы
+- **OpenKnowledge** (Inkeep, GPL-3.0) — продуктовая реализация паттерна: WYSIWYG-редактор над .md/.mdx + нативный MCP для агентов (Claude/Codex/Cursor), Yjs/CRDT синхронит вид↔файл локально, командная синхра через git. Подробнее → [../tools/openknowledge.md](../tools/openknowledge.md)
 - Специализированные: для fiction writing, enterprise service delivery, semiconductor research
 
 Паттерн намеренно абстрактный — seed, а не prescription. Каждая реализация адаптирует под свой контекст.

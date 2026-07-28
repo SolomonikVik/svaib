@@ -8,7 +8,6 @@ updated: 2026-02-21
 review_by: 2026-05-21
 tags: [context-graphs, decision-traces, agent-trajectories, enterprise-ai, memory]
 publish: false
-version: 2
 ---
 
 # Context Graphs

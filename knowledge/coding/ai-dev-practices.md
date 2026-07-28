@@ -8,7 +8,6 @@ updated: 2026-07-18
 review_by: 2026-10-18
 tags: [ai-coding, methodology, best-practices, spec-driven, harness, delegation, engineering, review-bottleneck, cross-model-review, metr]
 publish: false
-version: 7
 ---
 
 # AI Development Practices

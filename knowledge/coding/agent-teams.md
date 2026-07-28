@@ -8,7 +8,6 @@ updated: 2026-02-07
 review_by: 2026-05-07
 tags: [claude-code, agent-teams, multi-agent, orchestration]
 publish: false
-version: 2
 ---
 
 # Agent Teams — координация команды AI-агентов в Claude Code

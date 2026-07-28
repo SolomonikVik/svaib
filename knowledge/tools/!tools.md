@@ -2,11 +2,10 @@
 title: "AI-инструменты и платформы автоматизации — сводка"
 status: processed
 added: 2026-01-30
-review_by: 2026-04-30
+review_by: 2026-10-21
 tags: [tools, automation, platforms, index]
 publish: false
-version: 19
-updated: 2026-07-07
+updated: 2026-07-27
 ---
 
 # Tools — AI-инструменты и платформы
@@ -29,11 +28,23 @@ updated: 2026-07-07
 
 ### Cowork и плагины
 
-Agent platform Anthropic для не-разработчиков. Формат плагинов идентичен Claude Code — готовый delivery mechanism для модели подписки SVAIB. → [cowork.md](cowork.md)
+Agent platform Anthropic для не-разработчиков. Формат плагинов идентичен Claude Code, **кроме hooks** — они молча не срабатывают в sandboxed VM Cowork (открытый баг Anthropic), значит enforcement-логика на хуках для этого канала delivery не годится. → [cowork.md](cowork.md)
 
 ### Buildin — клиентское no-code пространство
 
 Китайский аналог Notion, доступен в РФ. Используется командами как замена Notion, отрезанного из РФ — и значит регулярно встречается у клиентов SVAIB как уже существующее хранилище контрактов, реестров, баз сотрудников. Три пути забрать данные: REST API (`api.buildin.ai/v1`, JSON block tree, конвертация в md на нашей стороне), hosted MCP (`mcp.buildin.ai/message?token=...`, подключается одной строкой в `.mcp.json`, но список tools не документирован), UI-экспорт страницы в Markdown/PDF/CSV/Word. Ключевое: API и MCP — только с тарифа Plus (платный), Free даёт лишь UI-экспорт. Database = страница с `parent.database_id`, row БД — обычная page; permission плагина выдаётся поштучно на page (наследование с БД не подтверждено документально). Community вокруг SDK почти отсутствует — на чужие грабли опереться не получится. → [buildin.md](buildin.md)
+
+### Obsidian — md-платформа с командной коллаборацией
+
+Локальный редактор базы знаний на обычных .md-файлах (данные у пользователя, кросс-девайс). Для SVAIB — альтернативный слой хранения/рантайма к Google Drive + Claude Project, закрывающий то, что у Drive болит: командную коллаборацию с приватными/общими зонами и одновременную запись — через плагин **Relay** (real-time на Yjs/CRDT, слияние правок без конфликтов, шаринг отдельных папок, роли). Agent-writable — через **Obsidian MCP** (read/write в vault, правка frontmatter). CRDT-движок Relay (Yjs) — open-source, тот же класс лежит в OSS-альтернативах (Nextcloud Text, HedgeDoc). → [obsidian.md](obsidian.md)
+
+### OpenKnowledge (Inkeep) — AI-native md IDE / LLM-wiki
+
+Открытый (GPL-3.0) редактор базы знаний от Inkeep: WYSIWYG над обычными .md/.mdx, которые агент (Claude, Codex, Cursor, OpenClaw и др.) правит **нативно через MCP + skills**, без облака. Продуктовая реализация паттерна LLM Wiki (Карпатый) с фокусом «company/second brain» — то же направление, что SVAIB. Dual-observer Yjs/CRDT синхронит WYSIWYG↔сырой md **локально** (человек↔агент↔файл, не мультиплеер); командный шаринг — через git/GitHub auto-sync; поиск — Orama (гибрид). Local-first. Смотреть на copyleft GPL-3.0 и свежесть проекта. → [openknowledge.md](openknowledge.md)
+
+### Командные контентные платформы с AI
+
+Класс, к которому клиент приходит с вопросом «где команде хранить данные, с которыми работает AI». Два устройства рынка: интегрированный контур, где документы, пространства, поиск и AI живут внутри одной платформы (Microsoft 365, Google Workspace, Box, Notion, Nextcloud), и AI-слой поверх чужих систем, подчиняющийся их правам (Atlassian Rovo, Glean). Зрелость определяется не качеством чата, а синхронизацией прав, аудитом и контролем действий агента. Три вещи, которые важно знать заранее: (1) **приватность от организации не даёт ни одна централизованная платформа** — owner в Notion находит приватные страницы через Content Search, Google super admin и Vault экспортируют данные, Box Content Manager открывает контент managed users; это обратная сторона offboarding и legal hold; (2) чтение агентом контролируется отдельно от скачивания — Box исключает классифицированный контент из чтения/поиска AI, Slack запрещает AI отдельные каналы; (3) политика владельца данных меняется росчерком пера — Salesforce ограничил Slack API до «query-by-query», выбив Slack-данные из индексов сторонних AI-платформ. Выход наружу без копирования файлов — через MCP (Box MCP Server с admin-guardrails, инструменты Nextcloud). → [team-content-platforms.md](team-content-platforms.md)
 
 ### Web Scraping APIs
 
@@ -41,11 +52,11 @@ Agent platform Anthropic для не-разработчиков. Формат п
 
 ### Запись и транскрибация встреч
 
-Дерево решений по сценариям: онлайн (Granola, Fireflies, Krisp, Fellow, Circleback), офлайн (MacWhisper, Vibe, Plaud Note Pro), real-time (Groq API + Whisper Turbo), звонки (Plaud VCS, iOS 18.1, Cube ACR), приватность (локальный Whisper/GigaAM). Автоматизация: Zoom webhook, Контур Толк API/F5AI, Plaud AutoFlow/Zapier, наш MacWhisper-скилл. MCP-серверы у 6 из 9 инструментов. Ключевое: ни один софт не закрывает все сценарии — комбинация софт + Plaud покрывает 95%. → [meeting-transcription.md](meeting-transcription.md)
+Выбор идёт не по сценарию записи, а по **контуру данных**: может ли аудио покидать периметр → отдаёт ли ВКС клиента машинный транскрипт сама (Teams Graph, Zoom webhook) → чем записывать → тест русского. Второй ключ отбора — **машинный доступ без ручного копирования**, в трёх классах: автоматический push (webhook, watch folder), управляемый pull (API, MCP, CLI, чтение локальной базы) и только ручной UI-экспорт — не проходит лишь третий. MCP при этом не доказывает автоматизацию: это чтение по запросу, а не доставка. Канонический артефакт — сырой транскрипт со спикерами, не саммари вендора. Кандидаты на пилот: зарубежное облако — Krisp Core ($8, botless, Mac/Win/mobile, webhook), российское — mymeet.ai либо нативные Толк/Телемост/MTS Link, локально — MacWhisper (€64) / Vibe, без ноутбука — Plaud. Circleback — премиум-альтернатива Krisp втрое дороже без доказанной дельты. Всё собрано по документации вендоров; живьём проверены только MacWhisper и Plaud, качество русского не измерено ни у кого — отсюда приёмочный тест в файле. → [meeting-transcription.md](meeting-transcription.md)
 
 ### STT-модели для русского языка
 
-Сравнение движков распознавания русской речи по WER-бенчмаркам. GigaAM-v3 (Сбер, MIT) доминирует с двукратным отрывом от Whisper (~8% vs ~16% средний WER). На зашумлённом аудио (дальний микрофон) разрыв 4x. Три бэкенда исполнения Whisper: C++ (GGML, универсальный), WhisperKit (Apple Silicon, ANE-оптимизация), Parakeet v3 (NVIDIA, скорость). Для повседневной диктовки на русском — Whisper Turbo через Groq API (надёжно, $0). Облачные: Groq (real-time, free), Soniox (WER 6,2%, code-switching), ElevenLabs Scribe v2, Yandex SpeechKit. → [russian-stt-models.md](russian-stt-models.md)
+Сравнение движков распознавания русской речи. В бенчмарке AlphaCephei (11 датасетов, 13 моделей) GigaAM-v3 (Сбер, MIT) — лидер с двукратным отрывом от Whisper (~8% vs ~16% средний WER), на зашумлённом аудио разрыв 4x. Важно: WER сопоставим только внутри одного замера — цифры из разных источников (fine-tuned antony66, облачные API, заявления вендоров) сравнивать с этой таблицей нельзя. Три бэкенда исполнения Whisper: C++ (GGML, универсальный), WhisperKit (Apple Silicon, ANE), Parakeet v3 (NVIDIA, скорость). Облачные: Groq (быстрый и бесплатный, но это инфраструктурный STT-слой, а не продукт для руководителя), Soniox (code-switching рус+англ), ElevenLabs Scribe v2, Yandex SpeechKit. → [russian-stt-models.md](russian-stt-models.md)
 
 ### n8n — платформа автоматизации
 

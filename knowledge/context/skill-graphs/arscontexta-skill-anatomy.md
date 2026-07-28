@@ -8,7 +8,6 @@ updated: 2026-03-03
 review_by: 2026-06-03
 tags: [skill-graph, arscontexta, skill-design, patterns]
 publish: false
-version: 1
 ---
 
 # Анатомия скилла arscontexta

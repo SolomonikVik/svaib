@@ -4,11 +4,10 @@ source: "https://modelcontextprotocol.io"
 source_type: docs
 status: processed
 added: 2026-02-05
-updated: 2026-02-21
-review_by: 2026-05-05
-tags: [mcp, protocol, tools, integration, anthropic, linux-foundation]
+updated: 2026-07-25
+review_by: 2026-10-25
+tags: [mcp, protocol, tools, integration, anthropic, linux-foundation, google-drive]
 publish: false
-version: 3
 ---
 
 # Model Context Protocol (MCP)
@@ -237,6 +236,9 @@ Production-ready или перспективные MCP-серверы, кото�
 | **n8n-MCP** | czlonkowski | Knowledge server: документация 1236 нод n8n, 2709 шаблонов, 265 AI-capable tools. Учит AI строить n8n workflow правильно. Hosted-сервис + self-hosted. | [czlonkowski/n8n-mcp](https://github.com/czlonkowski/n8n-mcp) |
 | **Supabase MCP** | supabase-community | Управление Supabase: SQL, миграции, Edge Functions, TypeScript types, логи. OAuth через браузер. Remote HTTP-сервер. | [supabase-community/supabase-mcp](https://github.com/supabase-community/supabase-mcp) |
 | **n8n Instance-Level MCP** | n8n (нативная фича) | n8n v1.76+ выставляет workflow как MCP-тулы. Любой MCP-клиент подключается по URL + token. Self-hosted и cloud. Beta. | [docs](https://docs.n8n.io/advanced-ai/accessing-n8n-mcp-server/) |
+| **Google Drive MCP (официальный)** | Google | Remote-доступ к Drive из claude.ai/Cowork: поиск, чтение, создание файлов. Read + create, **без правки существующих** (нет `update`). OAuth, наследует права юзера. Early-stage. | [docs](https://developers.google.com/workspace/drive/api/guides/configure-mcp-server) |
+| **google-drive-mcp** | piotr-agier | OSS/MIT-сервер с полноценной записью: правка .md/текста по `fileId` (read-modify-write, как в локальном редакторе), Shared Drives (`supportsAllDrives`), версии/откат, блокировки файлов, права. Team-режим за HTTPS+OAuth → подключается к claude.ai/Cowork как custom connector. Закрывает зазор записи официального сервера. | [github](https://github.com/piotr-agier/google-drive-mcp) |
+| **Filesystem MCP** | Anthropic (официальный) | Чтение/запись локальных файлов. База для agent-writable файловой KB — поверх смонтированной Drive-папки или Obsidian-vault. | [servers](https://github.com/modelcontextprotocol/servers) |
 
 ## Ограничения
 
@@ -245,7 +247,7 @@ Production-ready или перспективные MCP-серверы, кото�
 3. **Нет sandboxing** — протокол не определяет модель изоляции, зависит от хоста
 4. **STDIO — один клиент** — не масштабируется, нет авторизации, нет remote discovery
 5. **Фрагментация поддержки** — ChatGPT только Tools, VS Code Copilot почти всё
-6. **Нет permission model** — нет понятия "этот инструмент опасен, требуй подтверждения"
+6. **Слабая permission model** — в самом протоколе нет понятия "этот инструмент опасен, требуй подтверждения". Частично закрыто на уровне авторизации: MCP-серверы формально стали OAuth 2.1 resource servers (Protected Resource Metadata RFC 9728, audience-bound токены через Resource Indicators RFC 8707, делегирование через Token Exchange RFC 8693, обязательные PKCE и DCR). Это даёт идентичность и scope вызова, но не риск-классификацию инструментов. Подробнее → [agent-authorization.md](agent-authorization.md)
 7. **Registry в preview** — не production-ready, нет compliance test suites
 8. **Resources и Prompts underused** — большинство клиентов реализуют только Tools
 
@@ -256,8 +258,11 @@ Production-ready или перспективные MCP-серверы, кото�
 
 ## Связанные файлы
 
+- [agent-authorization.md](agent-authorization.md) — авторизация агентов и MCP-серверов: OAuth 2.1, authorization plane, agent gateway
 - [subagents.md](subagents.md) — агентные фреймворки и A2A протокол
 - [../tools/openclaw.md](../tools/openclaw.md) — OpenClaw использует MCP для интеграций
 - [../coding/claude-code.md](../coding/claude-code.md) — MCP как механизм расширения Claude Code
 - [../tools/cowork.md](../tools/cowork.md) — MCP-серверы в Cowork
 - [../coding/n8n-claude-code.md](../coding/n8n-claude-code.md) — Claude Code + n8n через MCP
+- [../context/claude_integrations_gdrive.md](../context/claude_integrations_gdrive.md) — Google Drive MCP как мост чтения/записи для клиентов SVAIB (варианты, зазоры)
+- [../tools/obsidian.md](../tools/obsidian.md) — Obsidian MCP как agent-writable доступ к md-vault

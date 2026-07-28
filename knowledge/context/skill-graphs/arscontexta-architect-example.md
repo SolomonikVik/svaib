@@ -8,7 +8,6 @@ updated: 2026-03-03
 review_by: 2026-06-03
 tags: [skill-graph, arscontexta, skill-example, architect]
 publish: false
-version: 1
 ---
 
 # Пример скилла: /architect из arscontexta

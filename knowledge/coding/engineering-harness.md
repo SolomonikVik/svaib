@@ -8,7 +8,6 @@ updated: 2026-06-14
 review_by: 2026-05-28
 tags: [ai-coding, agents, harness, engineering-practices, codex, mitchell-hashimoto, openai, anthropic, llm-under-hood]
 publish: false
-version: 6
 ---
 
 # Engineering Harness

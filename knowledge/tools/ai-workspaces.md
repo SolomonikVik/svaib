@@ -7,7 +7,6 @@ updated: 2026-06-14
 review_by: 2026-09-14
 tags: [tools, ai-workspace, shells, catalog]
 publish: false
-version: 5
 ---
 
 # AI-оболочки — где работать с AI
@@ -118,6 +117,7 @@ version: 5
 **Ключевое:** PARA-структура vault; ~19 agent skills под KM-ритуалы (daily-review, weekly-synthesis, inbox-processor, thinking-partner); `init-bootstrap` — мастер настройки vault (аналог нашего scaffold). Связь не через API/MCP, а через файловую систему + agentic grep. Позиционирование: Claude как «мыслящий партнёр», не writing-ассистент.
 **Зачем нам:** живой пример модели «оболочка + наполнение» — ровно подход SVAIB; их набор KM-скиллов и онбординг (`init-bootstrap`) стоит сверить с нашими ритуалами и scaffold.
 **GitHub:** https://github.com/heyitsnoah/claudesidian
+**Подробнее:** [obsidian.md](obsidian.md) — Obsidian как платформа: командная коллаборация (Relay/CRDT) и agent-writable через MCP
 
 ---
 

@@ -14,6 +14,7 @@
   - [engineering-harness.md](engineering-harness.md) — детали принципа "Harness Engineering" (Hashimoto 6 шагов, OpenAI 7-phase SDLC, Anthropic данные)
   - [spec-driven-dev.md](spec-driven-dev.md) — детали принципа "Spec First": SDD как парадигма, инструменты (Spec Kit, Kiro, Tessl, OpenSpec, BMAD), schema-first контракты узлов, Agent Contracts, кейс малой команды, критика
 - [ai-ready-architecture.md](ai-ready-architecture.md) — **структура кода** под AI-агентов: sinks vs pipes, честные интерфейсы, progressive disclosure в коде (Ian Bull)
+- [likec4.md](likec4.md) — LikeC4: DSL «архитектура как код», синтаксис, фильтрация views, MCP, сравнение со Structurizr/D2/Mermaid C4/PlantUML C4
 
 ### Тестирование
 

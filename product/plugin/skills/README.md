@@ -1,7 +1,7 @@
 ---
 title: "Skills — исполняемые навыки Second Value AI Brain"
-updated: 2026-07-10
-version: 4
+updated: 2026-07-23
+version: 5
 scope: "product_core"
 priority: high
 ---
@@ -37,6 +37,7 @@ plugin/skills/
 │   └── template/                   ← сам каркас клиента (был product/scaffold/)
 ├── email-assistant/                ← триаж почты
 ├── meeting-analysis/                ← анализ встреч (пайплайн L1/L2)
+│   ├── SKILL.md                    ← исполняемая точка входа и маршрутизация типа встречи
 │   ├── README.md                   ← пайплайн, карта файлов, как запустить
 │   ├── orchestrator-meeting.md     ← оркестратор полного цикла (entity-only)
 │   ├── L1-prompt-entity-extractor.md     ← выжимка бизнес-сущностей
@@ -91,7 +92,7 @@ prompt → skill → agent
 | `channels/telegram` | есть | канал доставки в Telegram (plain + rich), общий ресурс для meeting/email/др. Канон — `channels/telegram/SKILL.md` |
 | `scaffold` (`init-brain`) | в разработке | спека — `scaffold/_draft_spec.md`, разворачивает `scaffold/template/` клиенту |
 | `email-assistant` | есть | триаж почты |
-| `meeting-analysis` | есть | пайплайн L1/L2, см. `meeting-analysis/README.md` |
+| `meeting-analysis` | есть | исполняемая точка входа `meeting-analysis/SKILL.md`, карта пайплайна — `meeting-analysis/README.md` |
 | `metrics-analysis` | есть | вертикаль метрик |
 | `weekly-review` | план | еженедельный ритуал: итоги → weekly_progress, новый план |
 | `/today` | план | план дня: читает CLAUDE.md + 03_plan.md |

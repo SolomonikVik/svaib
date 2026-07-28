@@ -8,7 +8,6 @@ updated: 2026-07-18
 review_by: 2026-10-18
 tags: [evals, llm-as-judge, agent-evaluation, statistics, eval-tooling]
 publish: false
-version: 3
 ---
 
 # Evals — сводка знаний

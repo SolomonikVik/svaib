@@ -7,7 +7,6 @@ updated: 2026-06-14
 review_by: 2026-07-25
 tags: [llm-analytics, metrics, semantic-layer, text-to-sql, mcp, snapshots, verified-queries]
 publish: false
-version: 2
 ---
 
 # Встраивание метрик в LLM-ассистента руководителя — сводное исследование

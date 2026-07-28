@@ -8,7 +8,6 @@ updated: 2026-07-18
 review_by: 2026-10-18
 tags: [evals, tooling, promptfoo, deepeval]
 publish: false
-version: 3
 ---
 
 # Eval tooling

@@ -8,7 +8,6 @@ updated: 2026-03-05
 review_by: 2026-06-05
 tags: [skills, tooling, linting, validation, routing, quality-gates, automation]
 publish: false
-version: 1
 ---
 
 # Инструменты и паттерны для жизненного цикла скиллов

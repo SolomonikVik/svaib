@@ -6,7 +6,6 @@ updated: 2026-02-21
 review_by: 2026-05-21
 tags: [cases, index, second-brain, skill-graph]
 publish: false
-version: 2
 ---
 
 # Cases — Кейсы применения

@@ -8,7 +8,6 @@ updated: 2026-03-07
 review_by: 2026-06-07
 tags: [skills, architecture, patterns, python, research, fallback, code-enforcement]
 publish: false
-version: 1
 ---
 
 # last30days-skill — Python-heavy Research Skill

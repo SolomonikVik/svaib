@@ -8,7 +8,6 @@ updated: 2026-04-24
 review_by: 2026-07-24
 tags: [buildin, notion-alternative, no-code, mcp, api, china]
 publish: false
-version: 1
 ---
 
 # Buildin

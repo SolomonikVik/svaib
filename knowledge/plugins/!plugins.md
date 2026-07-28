@@ -2,11 +2,10 @@
 title: "Plugins — система расширения AI-агентов: формат, экосистема, best practices"
 status: processed
 added: 2026-02-13
-updated: 2026-03-01
-review_by: 2026-06-01
+updated: 2026-07-21
+review_by: 2026-10-21
 tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
-version: 4
 ---
 
 # Plugins — система расширения AI-агентов
@@ -259,7 +258,11 @@ claude plugin install <name> --scope project
 
 ### Claude Code ↔ Cowork
 
-Формат плагинов **идентичен**. "Built for Cowork, also compatible with Claude Code" (Anthropic). Один плагин — работает в обоих.
+Формат плагинов **идентичен**. "Built for Cowork, also compatible with Claude Code" (Anthropic). Один плагин — работает в обоих, **кроме hooks**.
+
+**Hooks молча не срабатывают в Cowork.** Cowork запускает Claude CLI в sandboxed VM с флагом `--setting-sources user`, который исключает plugin-scoped hook discovery; host-файл `~/.claude/settings.json` в VM не монтируется. Skills, commands и MCP из того же плагина работают штатно — только hooks не срабатывают, без ошибки и без записи в лог. Известный открытый баг Anthropic (не закрыт на июль 2026), затрагивает все marketplace-плагины с хуками в Cowork, а не только конкретный плагин: [#27398](https://github.com/anthropics/claude-code/issues/27398) · [#40495](https://github.com/anthropics/claude-code/issues/40495) · [#51281](https://github.com/anthropics/claude-code/issues/51281) · [#63360](https://github.com/anthropics/claude-code/issues/63360).
+
+**Для продукта:** enforcement-логика, завязанная на hooks (см. [coding/claude-code.md](../coding/claude-code.md) — "хук решает то, что скилл может проигнорировать"), не сработает в клиентской поставке через Cowork. Нужна альтернатива для этого канала (кандидат — MCP-based enforcement).
 
 ---
 

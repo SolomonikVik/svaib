@@ -4,11 +4,10 @@ source: "https://claude.com/blog/cowork-research-preview"
 source_type: docs
 status: processed
 added: 2026-02-01
-updated: 2026-04-01
-review_by: 2026-06-01
+updated: 2026-07-21
+review_by: 2026-10-21
 tags: [cowork, anthropic, plugins, knowledge-work, agents, svaib-product]
 publish: false
-version: 5
 ---
 
 # Cowork — агентная платформа для knowledge workers
@@ -35,7 +34,7 @@ Cowork — фича Claude Desktop (macOS, Windows), запущена в янв�
 
 ## Ключевые возможности
 
-**Plugins.** Система расширения через Skills + Commands + Agents + Hooks + MCP. Всё файловое (Markdown + JSON). Подробнее о формате и экосистеме плагинов → [plugins/!plugins.md](../plugins/!plugins.md).
+**Plugins.** Система расширения через Skills + Commands + Agents + Hooks + MCP. Всё файловое (Markdown + JSON). **Hooks — исключение:** в sandboxed VM Cowork они молча не срабатывают (известный открытый баг Anthropic, не конкретного плагина) — Skills/Commands/MCP того же плагина работают штатно. Подробнее о формате, экосистеме и этом ограничении → [plugins/!plugins.md](../plugins/!plugins.md) (раздел "Claude Code ↔ Cowork").
 
 **Scheduled Tasks.** Recurring и on-demand задачи через `/schedule`. Docs: [Anthropic](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-cowork).
 

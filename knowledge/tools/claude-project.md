@@ -7,7 +7,6 @@ updated: 2026-03-18
 review_by: 2026-06-18
 tags: [tools, claude, google-drive, delivery, runtime]
 publish: false
-version: 1
 ---
 
 # Claude Project — delivery-среда для клиентов
@@ -77,3 +76,4 @@ Claude Project (claude.ai) — веб-интерфейс Claude с подклю�
 - [../context/search-mechanics.md](../context/search-mechanics.md) — механики поиска в Claude Projects (full context vs RAG, уровни доступа)
 - [../coding/claude-code.md](../coding/claude-code.md) — Claude Code: CLI для разработчиков (другой runtime)
 - [../context/claude_integrations_gdrive.md](../context/claude_integrations_gdrive.md) — тестирование Google Drive + Claude Projects + Cowork: матрица совместимости, зазоры, мосты
+- [team-content-platforms.md](team-content-platforms.md) — альтернативные контентные платформы с AI и их модель прав (Box, Notion, Nextcloud, M365, Workspace)

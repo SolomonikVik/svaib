@@ -7,7 +7,6 @@ added: 2026-01-30
 review_by: 2026-04-30
 tags: [skills, claude-code, plugins, superpowers, tdd, debugging, code-review]
 publish: false
-version: 2
 ---
 
 # Superpowers — библиотека Skills для Claude Code

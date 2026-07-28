@@ -8,7 +8,6 @@ updated: 2026-06-15
 review_by: 2026-09-14
 tags: [html, output, artifacts, presentation-layer, skills, generative-ui, design-tokens, dashboards, telegram]
 publish: false
-version: 3
 ---
 
 # HTML как слой вывода AI

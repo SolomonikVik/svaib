@@ -8,7 +8,6 @@ updated: 2026-04-08
 review_by: 2026-07-08
 tags: [context-engineering, orchestration, file-structure, progressive-disclosure, stage-contract]
 publish: false
-version: 1
 ---
 
 # ICM — Interpretable Context Methodology

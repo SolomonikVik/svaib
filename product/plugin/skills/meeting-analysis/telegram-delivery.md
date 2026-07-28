@@ -1,19 +1,19 @@
 ---
-title: "Telegram Delivery — автоматическая отправка сводки"
-status: EXPERIMENTAL
-updated: 2026-03-31
-version: 1
+title: "Доставка в Telegram — автоматическая отправка сводки"
+status: DRAFT
+updated: 2026-07-23
+version: 2
 ---
 
-# Telegram Delivery
+# Доставка в Telegram
 
-> **EXPERIMENTAL.** Пилот автоматической отправки Telegram-сводок. Не часть пайплайна — тестируется отдельно. По результатам тестов решим, куда это ложится в архитектуре (hooks, plugin, delivery-слой).
+Автоматическая отправка Telegram-сводок. Необязательный шаг доставки: работает при настроенном боте и `.env`; без них сводка показывается в чате.
 
 ## Что это
 
 После шага 3 оркестратора (Telegram-сводка сгенерирована) — координатор может отправить её в Telegram через бота, вместо ручного копирования.
 
-## Принятые решения (пилот)
+## Устройство
 
 - **Один бот на клиента** — изоляция, безопасность, масштабируемость. Создаём через @BotFather как сервисный шаг
 - **Секреты в `.env`** — в корне рабочего пространства клиента, в `.gitignore`. Токен не передаётся в prompt и не подставляется в команду вручную
@@ -35,7 +35,7 @@ TELEGRAM_CHAT_ID=...
 
 ### `send_telegram.sh` в `skills/` рабочего пространства
 
-Source of truth — исполняемый файл [`channels/telegram/send_telegram.sh`](../channels/telegram/send_telegram.sh) (вынесен в общий канал, канон — [channels/telegram/SKILL.md](../channels/telegram/SKILL.md)). Здесь не дублируем код, чтобы не расходились. Ключевые моменты:
+Источник правды — исполняемый файл [`channels/telegram/send_telegram.sh`](../channels/telegram/send_telegram.sh) (вынесен в общий канал, канон — [channels/telegram/SKILL.md](../channels/telegram/SKILL.md)). Здесь не дублируем код, чтобы не расходились. Ключевые моменты:
 - Конвертирует markdown → HTML: `**жирный**` → `<b>жирный</b>`, убирает `- [ ]` и `---`
 - `parse_mode=HTML`
 - Экранирует HTML-символы (`&`, `<`, `>`)
@@ -45,16 +45,18 @@ Source of truth — исполняемый файл [`channels/telegram/send_tel
 
 ## Инструкция координатору
 
-Source of truth по flow — шаг 3 в [orchestrator-meeting.md](orchestrator-meeting.md). Здесь краткая справка:
+Источник правды по процессу — шаг 3 в [orchestrator-meeting.md](orchestrator-meeting.md). Здесь краткая справка:
 
 1. Субагент генерирует сводку
 2. Координатор спрашивает: **"Показать в чате или отправить в Telegram?"**
 3. **Показать в чате** (по умолчанию) — вывести в code block для копирования
 4. **Отправить в Telegram** — выполнить `send_telegram.sh "ТЕКСТ СВОДКИ"` (скрипт из `skills/`). Проверить `"ok":true`. Если `.env` не найден или ошибка — fallback на code block
 
+> ⚠️ **Только plain.** Сводку встречи отправляй ТОЛЬКО через `send_telegram.sh` (plain). Формат `⭕️`/`✅` с одиночными переносами из L2-промпта рассчитан на plain (HTML сохраняет переносы); в rich (`send_telegram_rich.sh`) одиночный перенос — мягкий разрыв GFM, задачи слипнутся в один абзац. Rich — не путь доставки сводок. Инцидент: дейли 24.07.
+
 ## Онбординг
 
-Пошаговая инструкция для настройки бота новому клиенту: `clients/playbook/delivery/operations/setup_telegram_bot.md`.
+Бот настраивается при развёртывании рабочего пространства (создаётся через @BotFather, токен кладётся в `.env` корня пространства).
 
 ## Troubleshooting
 
@@ -71,7 +73,6 @@ Source of truth по flow — шаг 3 в [orchestrator-meeting.md](orchestrator
 
 **Диагностика:** `env | grep -i proxy` — если в выводе есть `HTTPS_PROXY=http://localhost:3128`, sandbox фильтрует трафик.
 
-> Подробный отчёт расследования: `clients/_inbox/cowork-telegram-debug-report.md`
 
 ## Связанные файлы
 

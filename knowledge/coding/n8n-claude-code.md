@@ -8,7 +8,6 @@ updated: 2026-06-14
 review_by: 2026-05-21
 tags: [n8n, claude-code, mcp, automation, workflow, skills]
 publish: false
-version: 2
 ---
 
 # Claude Code + n8n — разработка автоматизаций через AI

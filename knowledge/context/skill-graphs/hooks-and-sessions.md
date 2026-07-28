@@ -8,7 +8,6 @@ updated: 2026-03-06
 review_by: 2026-06-06
 tags: [skill-graph, arscontexta, hooks, session-orient, write-validate]
 publish: false
-version: 1
 ---
 
 # Hooks и Sessions — операционный слой arscontexta

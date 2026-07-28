@@ -7,7 +7,6 @@ updated: 2026-06-14
 review_by: 2026-07-15
 tags: [presentations, slides, markdown, ai-tools, marp, slidev]
 publish: false
-version: 3
 ---
 
 # Презентации с AI

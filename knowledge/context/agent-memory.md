@@ -8,7 +8,6 @@ updated: 2026-07-06
 review_by: 2026-05-16
 tags: [agent-memory, knowledge-graph, temporal-graph, hypergraph, retrieval, benchmarks]
 publish: false
-version: 3
 ---
 
 # Архитектуры памяти AI-агентов — обзорная карта

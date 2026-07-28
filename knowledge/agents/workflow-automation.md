@@ -8,7 +8,6 @@ updated: 2026-07-18
 review_by: 2026-09-14
 tags: [workflow, agents, automation, agent-first, workflow-first, mastra, n8n, harness]
 publish: false
-version: 2
 ---
 
 # Workflow-автоматизация — парадигмы и гибрид с агентом

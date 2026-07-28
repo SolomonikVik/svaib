@@ -8,7 +8,6 @@ updated: 2026-07-18
 review_by: 2026-10-18
 tags: [ai-coding, methodology, spec-driven, sdd, specification, agents, engineering, contract-testing, agent-contracts]
 publish: false
-version: 3
 ---
 
 # Spec-Driven Development

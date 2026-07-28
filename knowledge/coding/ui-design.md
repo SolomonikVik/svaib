@@ -8,7 +8,6 @@ updated: 2026-06-14
 review_by: 2026-08-11
 tags: [ui, design, lovable, v0, bolt, figma, pencil, mobbin, lazyweb, refero, mcp, design-mcp, workflow, cowork, claude-code, frontend-design]
 publish: false
-version: 7
 ---
 
 # UI-дизайн

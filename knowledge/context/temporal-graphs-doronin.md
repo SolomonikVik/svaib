@@ -8,7 +8,6 @@ updated: 2026-02-11
 review_by: 2026-05-11
 tags: [graphiti, temporal-graphs, practice, mcp, neo4j, pydantic]
 publish: false
-version: 1
 ---
 
 # Graphiti на практике — опыт Константина Доронина

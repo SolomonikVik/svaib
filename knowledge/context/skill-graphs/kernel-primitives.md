@@ -8,7 +8,6 @@ updated: 2026-03-06
 review_by: 2026-06-06
 tags: [skill-graph, arscontexta, kernel, primitives, dag]
 publish: false
-version: 1
 ---
 
 # Kernel Primitives — 15 строительных блоков arscontexta

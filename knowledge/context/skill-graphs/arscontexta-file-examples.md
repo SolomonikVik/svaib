@@ -8,7 +8,6 @@ updated: 2026-03-06
 review_by: 2026-06-06
 tags: [skill-graph, arscontexta, examples, moc, node]
 publish: false
-version: 1
 ---
 
 # Реальные файлы arscontexta — примеры из GitHub

@@ -8,7 +8,6 @@ updated: 2026-02-28
 review_by: 2026-05-28
 tags: [testing, tdd, ai-coding, verification, mutation-testing, property-based-testing]
 publish: false
-version: 1
 ---
 
 # Тестирование AI-generated кода

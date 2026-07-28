@@ -8,7 +8,6 @@ updated: 2026-03-06
 review_by: 2026-06-06
 tags: [skill-graph, architecture, arscontexta, progressive-disclosure]
 publish: false
-version: 4
 ---
 
 # Архитектура Skill Graph

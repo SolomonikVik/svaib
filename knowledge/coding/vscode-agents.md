@@ -8,7 +8,6 @@ updated: 2026-02-11
 review_by: 2026-05-11
 tags: [vscode, agents, multi-agent, claude, codex, copilot]
 publish: false
-version: 1
 ---
 
 # VS Code Agent Sessions

@@ -8,7 +8,6 @@ updated: 2026-03-06
 review_by: 2026-06-06
 tags: [skill-graph, wikilinks, knowledge-graph, progressive-disclosure, moc, context-engineering]
 publish: false
-version: 3
 ---
 
 # Skill Graphs — сети связанных файлов знаний

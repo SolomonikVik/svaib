@@ -10,7 +10,7 @@ status: draft
 
 Рабочая целевая архитектура к Product Vision: как реализовать образ AI-партнёра руководителя, который живёт в каналах, держит целостный менеджмент, сам приносит важное, отвечает на вопросы и даёт проверяемые views.
 
-Это **не канон** и не accepted-решение. Это рабочий мост между [Product Vision](01_product-vision.md), [ideas.md](../ideas.md) и будущими правками канона продукта.
+Это **не канон** и не accepted-решение. Это рабочий мост между [Product Vision](01_product-vision.md), гипотезой semantic sidecar и будущими правками канона продукта.
 
 ## Для чего файл
 
@@ -25,7 +25,7 @@ status: draft
 - [00_masterplan.md](00_masterplan.md) — состав работы и решения по Vision.
 - [01_product-vision.md](01_product-vision.md) — целевое состояние продукта.
 - [03_cycles/01_strategy.md](03_cycles/01_strategy.md) — стратегия как координатная система и первый граф.
-- [../ideas.md](../ideas.md) — scaffold + semantic sidecar + generated views.
+- ../_inbox/memory/memory-semantic-sidecar-views.md — scaffold + semantic sidecar + generated views.
 - [../architecture.md](../architecture.md) — текущий канон `Данные → Память → Помощники`, который будем эволюционировать.
 - [../methodology/scaffold/01_architecture.md](../methodology/scaffold/01_architecture.md) — composable management architecture.
 - [../methodology/memory/01_context_memory.md](../methodology/memory/01_context_memory.md) — текущий протокол контекстной памяти.

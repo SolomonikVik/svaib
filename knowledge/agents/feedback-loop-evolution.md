@@ -8,7 +8,6 @@ updated: 2026-02-11
 review_by: 2026-05-11
 tags: [agents, evolution, feedback-loop, evals, pattern]
 publish: false
-version: 1
 ---
 
 # Closed Feedback Loop — эволюция агентов

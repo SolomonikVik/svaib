@@ -6,7 +6,6 @@ updated: 2026-04-27
 review_by: 2026-07-27
 tags: [prompting, system-prompts, prompt-optimization]
 publish: false
-version: 6
 ---
 
 # Промптинг — сводка знаний

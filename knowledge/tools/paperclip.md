@@ -8,7 +8,6 @@ updated: 2026-07-07
 review_by: 2026-10-07
 tags: [agents, orchestration, multi-agent, self-hosted, open-source, ai-company]
 publish: false
-version: 1
 ---
 
 # Paperclip

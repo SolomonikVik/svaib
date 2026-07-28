@@ -8,7 +8,6 @@ updated: 2026-02-18
 review_by: 2026-05-18
 tags: [claude-code, cursor, claude-projects, chatgpt, search, grep, rag, embeddings]
 publish: false
-version: 5
 ---
 
 # Как AI-инструменты ищут файлы: Claude Code, Cursor, Projects

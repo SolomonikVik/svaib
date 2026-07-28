@@ -9,6 +9,7 @@
 - [!agents.md](!agents.md) — сводка знаний
 - [workflow-automation.md](workflow-automation.md) — workflow-first vs agent-first и гибрид (агент пишет workflow): decision frame, схемы, граница применимости
 - [mcp.md](mcp.md) — MCP: протокол, экосистема, SDK, security
+- [agent-authorization.md](agent-authorization.md) — авторизация агентов: acting-as, права = права человека ∩ scope, Zanzibar-стек (OpenFGA/SpiceDB/OPA), MCP поверх OAuth 2.1, agent gateway
 - [subagents.md](subagents.md) — Субагенты и мульти-агентные архитектуры
 - [feedback-loop-evolution.md](feedback-loop-evolution.md) — Closed Feedback Loop: автономная эволюция агентов
 - [sgr.md](sgr.md) — Schema-Guided Reasoning: паттерны структурирования рассуждений (Cascade, Routing, Cycle)

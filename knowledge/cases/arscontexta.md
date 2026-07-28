@@ -8,7 +8,6 @@ updated: 2026-02-21
 review_by: 2026-05-21
 tags: [second-brain, skill-graph, claude-code-plugin, knowledge-base, markdown, competitor]
 publish: false
-version: 1
 ---
 
 # arscontexta — персональный Second Brain как Claude Code плагин

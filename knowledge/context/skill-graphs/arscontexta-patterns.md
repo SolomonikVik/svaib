@@ -8,7 +8,6 @@ updated: 2026-03-06
 review_by: 2026-06-06
 tags: [skill-graph, arscontexta, plugin, vocabulary-transformation, feature-blocks]
 publish: false
-version: 2
 ---
 
 # Паттерны arscontexta для plugin-архитектуры

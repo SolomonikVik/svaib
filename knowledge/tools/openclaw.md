@@ -9,7 +9,6 @@ review_by: 2026-04-30
 tags: [agents, skills, memory, self-hosted, open-source, architecture-patterns]
 aliases: [Clawdbot, CloudBot, Moltbot, Claude Bot, клодбот]
 publish: false
-version: 4
 ---
 
 # OpenClaw (ex-Clawdbot → Moltbot)

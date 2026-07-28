@@ -1,12 +1,11 @@
 ---
 title: "Агентные системы — сводка знаний"
 status: processed
-updated: 2026-06-14
+updated: 2026-07-27
 added: 2026-01-30
 review_by: 2026-05-16
 tags: [agents, subagents, mcp, multi-agent, patterns, hosting]
 publish: false
-version: 9
 ---
 
 # Agents — Агентные системы
@@ -60,12 +59,16 @@ AI-системы, способные автономно принимать ре
 ### Gateway-Agent-Skills-Memory
 Архитектурный паттерн: Gateway абстрагирует канал доставки, Agent — reasoning, Skills — модульные действия, Memory — персистентный контекст на Markdown. Skills как плагины + Memory на файлах + проактивность агента — рабочая комбинация для AI-ассистентов. Реализация паттерна: OpenClaw (→ [../tools/openclaw.md](../tools/openclaw.md)).
 
+### Agent gateway — авторизация и guardrails на каждом вызове
+Развитие идеи Gateway в сторону безопасности: между агентом и данными/инструментами ставится шлюз, где каждый вызов проходит аутентификацию, политику (scoped по пользователю, приложению, модели), guardrails на входе и выходе (prompt injection, PII/DLP) и попадает в сквозную трассу. Zero-trust: никакого доступа по умолчанию. Смежное — авторизация самого агента как субъекта: acting-as пользователя, права = права человека ∩ scope агента, вынос истины о правах из хранилища в отдельный authorization plane (Zanzibar-семейство: OpenFGA, SpiceDB; политики — OPA). Спецификация авторизации MCP закрывает давнюю дыру «нет permission model»: MCP-серверы становятся OAuth 2.1 resource servers с audience-bound токенами. Подробнее → [agent-authorization.md](agent-authorization.md).
+
 ## Практика: когда что использовать
 
 | Задача | Решение |
 |--------|---------|
 | Автоматизировать повторяемый процесс: workflow или агент? | Decision frame + гибрид (→ workflow-automation.md) |
 | Подключить внешний сервис | MCP-сервер (→ mcp.md) |
+| Дать агенту доступ к корпоративным данным без «божественных» прав | Acting-as + отдельный authorization plane + шлюз на действия (→ agent-authorization.md) |
 | Исследование / параллельная работа / изоляция контекста | Субагент (→ subagents.md) |
 | Повторяющаяся процедура (стандарты, шаблоны) | Skill (→ ../skills/!skills.md) |
 | Агенты разных вендоров должны общаться | A2A протокол (→ subagents.md) |

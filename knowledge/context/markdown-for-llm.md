@@ -4,11 +4,10 @@ source: "consolidated research (Claude Opus 4.6, Gemini 3.0, GPT 5.2)"
 source_type: article
 status: processed
 added: 2026-02-17
-updated: 2026-06-14
-review_by: 2026-05-21
-tags: [markdown, llm, rag, yaml, chunking, context-engineering, wikilinks, instruction-following]
+updated: 2026-07-25
+review_by: 2026-10-25
+tags: [markdown, llm, rag, yaml, chunking, context-engineering, wikilinks, instruction-following, okf, standards]
 publish: false
-version: 5
 ---
 
 # Анатомия идеального Markdown-файла для человека + LLM + RAG
@@ -80,6 +79,10 @@ version: 5
 | Стандартные RAG (LangChain, LlamaIndex) | Парсит YAML как metadata для фильтрации. Тело файла — для embedding |
 
 **Вывод:** YAML — это прежде всего **человекочитаемый, LLM-видимый структурированный текст**. Пишите поля так, чтобы они хорошо читались как natural language.
+
+### 1.6 Open Knowledge Format (OKF) — эмерджентный стандарт
+
+Google Cloud (2026) формализовал этот подход в vendor-neutral спеку **OKF**: база знаний для AI-агентов = директория markdown-файлов, каждый файл — один концепт (метрика, процесс, runbook) с YAML-frontmatter (обязателен только `type`; `title`, `description`, `tags`, `timestamp` и пр. — на усмотрение автора) и кросс-ссылками обычным markdown-синтаксисом. Тезис: «бандл — это просто markdown, просто файлы, просто YAML» → агент читает и обновляет файлы напрямую, без SDK и конвертации, парсит граф связей между ними. Подтверждает выбор формата (plain .md + frontmatter + README-навигация) как индустриальный стандарт, а не самоделку. Источник: [OKF — Google Cloud](https://www.marktechpost.com/2026/06/16/google-cloud-introduces-open-knowledge-format-okf-a-vendor-neutral-markdown-spec-for-giving-ai-agents-curated-context/).
 
 ---
 

@@ -4,11 +4,10 @@ source: "https://ianbull.com/posts/software-architecture"
 source_type: article
 status: processed
 added: 2026-02-28
-updated: 2026-02-28
-review_by: 2026-05-28
+updated: 2026-07-21
+review_by: 2026-10-21
 tags: [architecture, ai-coding, side-effects, modularity, coupling, code-structure]
 publish: false
-version: 1
 ---
 
 # AI-Ready Architecture
@@ -77,6 +76,8 @@ def process_update():
 ### 4. C4-подобная структуризация
 
 Вместо "паутины мелких модулей" — структурировать по иерархии: подсистемы → компоненты → модули. Каждый уровень понятен без спуска в детали нижнего. Все зависимости явно в интерфейсах.
+
+Конкретный инструмент для этого слоя документации, версионируемый как код — [likec4.md](likec4.md).
 
 ---
 

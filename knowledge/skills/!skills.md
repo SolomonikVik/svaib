@@ -6,7 +6,6 @@ updated: 2026-06-14
 review_by: 2026-09-14
 tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling, code-enforcement, fallback]
 publish: false
-version: 16
 ---
 
 # Skills — Исполняемые инструкции для AI

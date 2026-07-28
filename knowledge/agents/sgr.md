@@ -8,7 +8,6 @@ updated: 2026-06-14
 review_by: 2026-09-14
 tags: [agents, patterns, structured-output, sgr, reasoning]
 publish: false
-version: 2
 ---
 
 # Schema-Guided Reasoning (SGR)

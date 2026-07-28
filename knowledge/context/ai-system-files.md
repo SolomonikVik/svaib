@@ -8,7 +8,6 @@ updated: 2026-06-19
 review_by: 2026-09-19
 tags: [claude-md, agents-md, dotfiles, ai-config, soul-md, memory, context-engineering, imports, hooks, codex]
 publish: false
-version: 4
 ---
 
 # AI System Files
