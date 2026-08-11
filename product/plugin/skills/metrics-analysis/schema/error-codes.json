@@ -1,0 +1,23 @@
+{
+  "$comment": "Реестр именованных отказов шва «вертикаль metrics ↔ потребитель» (boundary.md, cloud-runner-requirements.md). Один перечень: code → слой → эффект; watchdog и ops-алерты облака строятся по нему. rc указан только у отказов раннера: 0 — отчёт построен (в т.ч. сплошь деградированный — это валидный отчёт), 1 — отчёт построить нельзя (JSON {error, message} в stderr), 2 — usage/IO. Слои: runner — run_vertical.py; gateway — metrics_gateway повестки (интерактив и облако); fetcher — добытчик snapshot (init-контейнер либо драйвер); adapter — cloud-runner-адаптер.",
+  "contract": {"name": "error-codes", "version": "1.0.0"},
+  "codes": [
+    {"code": "request_invalid", "layer": "runner", "rc": 1, "effect": "отказ прогона", "meaning": "metrics-request.json битый или не проходит metrics-request.schema.json"},
+    {"code": "snapshot_manifest_mismatch", "layer": "runner", "rc": 1, "effect": "отказ прогона", "meaning": "sha256 файла snapshot разошёлся с манифестом, либо файл из манифеста отсутствует в --snapshot-dir"},
+    {"code": "manifest_invalid", "layer": "runner", "rc": 1, "effect": "отказ прогона", "meaning": "snapshot-manifest.json битый или не проходит snapshot-manifest.schema.json"},
+    {"code": "base_unreadable", "layer": "runner", "rc": 1, "effect": "отказ прогона", "meaning": "паспорта метрик по --base не читаются (нет каталога, битые файлы)"},
+    {"code": "unmapped_facts", "layer": "runner", "rc": 1, "effect": "отказ прогона", "meaning": "сочетание фактов не покрыто таблицей деривации осей — таблица тотальна, пустой оси не бывает (catch-all boundary §4)"},
+    {"code": "usage_error", "layer": "runner", "rc": 2, "effect": "отказ прогона", "meaning": "неверные аргументы CLI, недоступный --out, IO-ошибка"},
+    {"code": "snapshot_missing", "layer": "runner", "effect": "деградация источника", "meaning": "источник объявлен паспортом, но файла в манифесте нет — sources[].status = unavailable, метрики источника не читаются; прогон продолжается (rc = 0)"},
+    {"code": "snapshot_unreadable", "layer": "runner", "effect": "деградация источника", "meaning": "файл snapshot есть и sha256 сошёлся, но не читается как xlsx/слепок — sources[].status = unavailable; прогон продолжается (rc = 0)"},
+    {"code": "schema_mismatch", "layer": "runner", "effect": "деградация источника", "meaning": "guard extractor'а остановил чтение: структура книги разошлась с ожидаемой — sources[].status = schema_mismatch, метрики источника blocked/mismatch; прогон продолжается (rc = 0)"},
+    {"code": "vertical_failed", "layer": "gateway", "effect": "отказ прогона повестки", "meaning": "раннер вернул rc ≠ 0, битый JSON или чужой major версии контракта"},
+    {"code": "report_mismatch", "layer": "gateway", "effect": "отказ прогона повестки", "meaning": "эхо-поля отчёта (run_id / object_ref / meeting_date / period_basis) разошлись с запросом"},
+    {"code": "scope_violation", "layer": "gateway", "effect": "отказ прогона повестки", "meaning": "verification.scope ≠ client"},
+    {"code": "contract_violation", "layer": "gateway", "effect": "отказ прогона повестки", "meaning": "в отчёте нет строки на запрошенную пару {name, file}, есть лишняя или повторная строка, либо строка с осью verification ∈ {verified, mismatch} не подтверждена ни одним массивом verification (пары с not_run законно отсутствуют везде — сверять было нечего); принуждает validate_contract.py"},
+    {"code": "catalog_missing", "layer": "gateway", "effect": "отказ прогона повестки", "meaning": "пакет вертикали не приехал — перечень метрик построить нельзя; пустой перечень при непустом scope запрещён"},
+    {"code": "stale_snapshot", "layer": "gateway", "effect": "отказ прогона повестки", "meaning": "manifest.run_id ≠ run_id текущего прогона — snapshot добыт другим прогоном; resume того же run_id валиден; fetched_at и mtime в сравнении не участвуют"},
+    {"code": "unknown_source", "layer": "fetcher", "effect": "отказ добычи", "meaning": "запрошен адрес вне перечня gateway (реестр + catalog)"},
+    {"code": "zone_link_missing", "layer": "adapter", "effect": "повестка не собирается, алерт в ops-чат", "meaning": "объект без зоны в автономном прогоне — спросить некого; молчаливый пропуск запрещён"}
+  ]
+}

@@ -12,14 +12,14 @@ version: 3
 **Иерархия:**
 - `entities.md` → что извлекаем (11 типов атомарных сущностей)
 - **этот файл** → как из сущностей собирается протокол (маппинг, секции, правила)
-- `L2-prompt-protocol-full.md`, `L2-prompt-protocol-telegram.md` → как рендерим конкретный формат
+- рендер конкретного формата: полный протокол публикуется spine из принятой выжимки (по этому маппингу); Telegram-сводка — `prompts/protocol-telegram.md` скилла
 
 ## Связанные файлы
 
 - [entities.md](entities.md) — канон атомарных сущностей (определения, маркеры, правила разграничения)
 - [../meeting_overlays.md](../meeting_overlays.md) — каталог L2-надстроек (протокол = одна из них)
-- [../../plugin/skills/meeting-analysis/L2-prompt-protocol-full.md](../../plugin/skills/meeting-analysis/L2-prompt-protocol-full.md) — реализация: полный протокол
-- [../../plugin/skills/meeting-analysis/L2-prompt-protocol-telegram.md](../../plugin/skills/meeting-analysis/L2-prompt-protocol-telegram.md) — реализация: Telegram-сводка
+- [../../plugin/skills/meeting-analysis/SKILL.md](../../plugin/skills/meeting-analysis/SKILL.md) — скилл встреч: полный протокол публикует spine из принятой выжимки
+- ../../plugin/skills/meeting-analysis/prompts/protocol-telegram.md — реализация: Telegram-сводка
 
 ---
 
@@ -97,9 +97,9 @@ version: 3
 
 ## Форматы-реализации
 
-| Формат | Файл | Особенности |
-|--------|------|-------------|
-| Полный | `L2-prompt-protocol-full.md` | Все секции, без ограничений длины, Markdown |
-| Telegram | `L2-prompt-protocol-telegram.md` | Action-only: итог, задачи, решения и договорённости, к следующей встрече. Лимит ~4000 символов, эмодзи |
+| Формат | Реализация | Особенности |
+|--------|------------|-------------|
+| Полный | публикуется spine из принятой выжимки (по маппингу этого файла) | Все секции, без ограничений длины, Markdown |
+| Telegram | `prompts/protocol-telegram.md` скилла | Action-only: итог, задачи, решения и договорённости, к следующей встрече. Лимит ~4000 символов, эмодзи |
 
-Каждый формат — отдельный самостоятельный промпт (архитектурное решение, зафиксировано в `meeting_overlays.md`). Маппинг и правила из этого файла — общий контракт. Каждый формат сам определяет свой набор секций.
+Маппинг и правила из этого файла — общий контракт. Каждый формат сам определяет свой набор секций.

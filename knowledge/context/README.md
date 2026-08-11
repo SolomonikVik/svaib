@@ -7,6 +7,7 @@
 ## Файлы
 
 - [!context.md](!context.md) — сводка знаний
+- [context-engineering-claude5.md](context-engineering-claude5.md) — новые правила сборки контекста для поколения Claude 5: шесть сдвигов, роли слоёв (system prompt / CLAUDE.md / skills / references), ревизия накопленных инструкций
 - [agent-memory.md](agent-memory.md) — обзорная карта: 5 архитектур хранения, 9 стратегий поиска, бенчмарки (survey arxiv 2602.05665)
 - [temporal-graphs.md](temporal-graphs.md) — deep dive: Graphiti, Hindsight, bi-temporal model
 - [temporal-graphs-doronin.md](temporal-graphs-doronin.md) — Graphiti на практике: метрики, кейсы, оптимизация (опыт @kdoronin_blog)

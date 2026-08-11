@@ -2,8 +2,8 @@
 title: "Plugins — система расширения AI-агентов: формат, экосистема, best practices"
 status: processed
 added: 2026-02-13
-updated: 2026-07-21
-review_by: 2026-10-21
+updated: 2026-08-11
+review_by: 2026-11-11
 tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
 ---
@@ -12,7 +12,7 @@ publish: false
 
 ## Кратко
 
-Плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Всё файловое (Markdown + JSON), zero code, zero build steps. Единый формат для Claude Code (CLI, разработчики) и Cowork (GUI, knowledge workers). Public beta с октября 2025. Экосистема: official marketplace (dev-плагины + LSP + интеграции), knowledge-work плагины для Cowork (отраслевые), растущие community-маркетплейсы. Cross-platform: совместим с Factory Droid, OpenAI Codex и др. через Agent Skills стандарт. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
+Плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Всё файловое (Markdown + JSON), zero code, zero build steps. Единый формат для Claude Code (CLI, разработчики) и Cowork (GUI, knowledge workers). Public beta с октября 2025. Экосистема: official marketplace (dev-плагины + LSP + интеграции), knowledge-work плагины для Cowork (отраслевые), растущие community-маркетплейсы. Cross-platform: совместим с Factory Droid, OpenAI Codex и др. через Agent Skills стандарт; с августа 2026 обёртку описывает вендор-нейтральный [Agent Plugins 1.0](agent-plugins-standard.md), но только для скиллов и MCP. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
 
 ---
 
@@ -238,19 +238,20 @@ claude plugin install <name> --scope project
 
 ## Портабельность и конвергенция форматов
 
-> **Быстро устаревает.** Ситуация с совместимостью меняется ежемесячно. Перед принятием продуктовых решений — перепроверять актуальное состояние. Снимок: февраль 2026.
+> **Быстро устаревает.** Ситуация с совместимостью меняется ежемесячно. Перед принятием продуктовых решений — перепроверять актуальное состояние. Снимок: август 2026.
 
 ### Тренд: от фрагментации к стандартам
 
-Экосистема AI-агентов движется к конвергенции, но неравномерно. Три волны стандартизации:
+Экосистема AI-агентов движется к конвергенции, но неравномерно. Четыре волны стандартизации:
 
 1. **LSP** (Language Server Protocol) — стандартизирован давно (Microsoft), универсален. Закрытый вопрос.
 2. **MCP** (Model Context Protocol) — стандартизирован (Anthropic, 2024-2025), принят повсеместно. Фактически закрытый вопрос.
 3. **Skills** (Agent Skills, SKILL.md) — стандарт опубликован (Anthropic, декабрь 2025), быстро набирает adoption. Процесс идёт.
+4. **Обёртка** (папка плагина + манифест) — [Agent Plugins 1.0](agent-plugins-standard.md), август 2026: Amazon/AWS, Cursor, Microsoft и GitHub, OpenAI, Vercel. Стандартизирует ровно упаковку и discovery двух компонентов — скиллов и MCP.
 
-**Hooks, commands, agents** — пока зона фрагментации. Все крупные инструменты (Cursor, Copilot, Cline, Windsurf) внедрили свои lifecycle hooks, но форматы несовместимы. Концепция одна, реализации разные. Стандарта нет. Конвергенция возможна, но не произошла.
+**Hooks, commands, agents** — по-прежнему зона фрагментации, и Agent Plugins 1.0 её закрепляет: они явно оставлены вне scope как клиентские. Все крупные инструменты (Cursor, Copilot, Cline, Windsurf) внедрили свои lifecycle hooks, но форматы несовместимы. Концепция одна, реализации разные.
 
-**Обёртка** (plugin.json, маркетплейсы, namespace) — специфика Claude Code. Другие инструменты начинают копировать подход (Factory Droid полностью совместим), но это пока не стандарт.
+**Обёртка перестала быть спецификой Claude Code, но формат Anthropic в стандарт не вошёл.** Agent Plugins кладёт `plugin.json` в корень с закрытой схемой, Anthropic — в `.claude-plugin/`: одно имя файла, разные схемы. Anthropic не участвует в стандарте, хотя оба его компонента — MCP и Agent Skills — созданы ею. Плагины ставятся в Claude Code через CLI-трансляцию (`npx plugins add`), при которой хуки и субагенты отбрасываются, а переживают перенос только скиллы и MCP. Детали и таблица расхождений — [agent-plugins-standard.md](agent-plugins-standard.md).
 
 ### Что это значит для продукта
 
@@ -333,6 +334,7 @@ claude plugin install <name> --scope project
 | Декабрь 2025 | Agent Skills как открытый стандарт. v4.0 Superpowers. LSP в плагинах |
 | Январь 2026 | Cowork launch (12 янв). Cowork Plugins (30 янв) |
 | Февраль 2026 | Agent Teams (experimental). Factory Droid совместим. Enterprise: private marketplaces, отраслевые шаблоны, новые коннекторы |
+| Август 2026 | Agent Plugins 1.0 — вендор-нейтральный стандарт обёртки (Amazon/AWS, Cursor, Microsoft и GitHub, OpenAI, Vercel), без участия Anthropic |
 
 ---
 
@@ -386,6 +388,7 @@ Product vision описывает модель подписки: клиент п
 
 ## Связанные файлы
 
+- [agent-plugins-standard.md](agent-plugins-standard.md) — Agent Plugins 1.0: спецификация вендор-нейтральной обёртки, расхождения с форматом Anthropic, механика CLI-трансляции
 - [skills/!skills.md](../skills/!skills.md) — Skills как компонент плагина: формат SKILL.md, проектирование, экосистема
 - [skills/superpowers.md](../skills/superpowers.md) — Superpowers: эталонный плагин, все 4 механизма
 - [agents/!agents.md](../agents/!agents.md) — Агенты как компонент плагина

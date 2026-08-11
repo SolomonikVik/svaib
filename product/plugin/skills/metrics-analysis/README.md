@@ -21,6 +21,8 @@ type: reference
 | [`business-metrics-intake.md`](business-metrics-intake.md) | procedure | Промпт-помощник заполнения клиентского `business-metrics.md`: ведёт диалог с CEO, собирает каноническое имя / бизнес-смысл / правило расчёта / единицу / направление по каждой метрике, по спеке [`metrics-spec.md`](../../../methodology/metrics/metrics-spec.md) |
 | [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Операционный пайплайн оркестратора: чем исполняется каждый шаг потока обработки запроса в проде. Приведён к `architecture.md` v2 |
 | [`probe_xlsx.py`](probe_xlsx.py) | code | Универсальный helper разведки xlsx: листы, размеры, объединённые ячейки, формулы, cached errors, заполненность колонок |
+| [`defects.md`](defects.md) | spec | Дефект-лист семантического слоя (SDD на починку): что сломалось на живом прогоне вертикали, по категориям, с требованиями к решению. Правки в `final`-канон из него выносятся отдельно |
+| [`connector-gsheets-mcp.md`](connector-gsheets-mcp.md) | procedure | Коннектор Google Sheets через Drive MCP: xlsx-выгрузка → python, guard-и, свежесть snapshot. Минимальная часть, без eval |
 
 ## Что НЕ живёт здесь
 

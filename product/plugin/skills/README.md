@@ -31,22 +31,17 @@ priority: high
 plugin/skills/
 ├── README.md                       ← этот файл
 ├── channels/                       ← общие каналы доставки (shared-слой, не домен)
-│   └── telegram/                   ← Telegram Bot API: send_telegram.sh (plain) + send_telegram_rich.sh (rich) + SKILL.md (канон)
+│   └── send-telegram/              ← Telegram Bot API: SKILL.md + scripts/ (send_telegram.sh plain, send_telegram_rich.sh rich); ставится в .claude/skills/send-telegram/
 ├── scaffold/                       ← деплой каркаса клиенту (init-brain), в разработке
 │   ├── _draft_spec.md              ← черновик спеки скилла
 │   └── template/                   ← сам каркас клиента (был product/scaffold/)
 ├── email-assistant/                ← триаж почты
-├── meeting-analysis/                ← анализ встреч (пайплайн L1/L2)
-│   ├── SKILL.md                    ← исполняемая точка входа и маршрутизация типа встречи
-│   ├── README.md                   ← пайплайн, карта файлов, как запустить
-│   ├── orchestrator-meeting.md     ← оркестратор полного цикла (entity-only)
-│   ├── L1-prompt-entity-extractor.md     ← выжимка бизнес-сущностей
-│   ├── L1-prompt-behavior-extractor.md   ← поведение (аналитический, не в пайплайне)
-│   ├── L1-prompt-behavior-extractor-v2.md ← поведение (клиентский, experimental)
-│   ├── L1-procedure-chunking.md          ← чанкинг (needs-revalidation)
-│   ├── L2-prompt-protocol-full.md             ← выжимка → протокол (полный)
-│   ├── L2-prompt-protocol-telegram.md             ← выжимка → Telegram-сводка
-│   └── L2-procedure-scaffold-update.md   ← выжимка → обновление scaffold (дельта)
+├── meeting-analysis/                ← анализ встреч (spine-пайплайн)
+│   ├── SKILL.md                    ← точка входа; процесс ведёт scripts/meeting_spine.py
+│   ├── scripts/                    ← meeting_spine.py (state machine) + validate_deltas.py
+│   ├── prompts/                    ← промпты узлов (выжимка, дельты, ревью, протоколы)
+│   ├── references/                 ← справочники (routing и др.)
+│   └── schema/                     ← машинные контракты артефактов
 └── metrics-analysis/                ← вертикаль метрик
 ```
 
@@ -89,7 +84,7 @@ prompt → skill → agent
 
 | Скилл | Статус | Примечание |
 |-------|--------|-----------|
-| `channels/telegram` | есть | канал доставки в Telegram (plain + rich), общий ресурс для meeting/email/др. Канон — `channels/telegram/SKILL.md` |
+| `channels/send-telegram` | есть | канал доставки в Telegram (plain + rich), общий ресурс для meeting/email/др. Канон — `channels/send-telegram/SKILL.md`, установка — `skills/send-telegram/` |
 | `scaffold` (`init-brain`) | в разработке | спека — `scaffold/_draft_spec.md`, разворачивает `scaffold/template/` клиенту |
 | `email-assistant` | есть | триаж почты |
 | `meeting-analysis` | есть | исполняемая точка входа `meeting-analysis/SKILL.md`, карта пайплайна — `meeting-analysis/README.md` |

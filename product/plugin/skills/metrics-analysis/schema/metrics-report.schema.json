@@ -1,0 +1,386 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://svaib.com/schema/metrics-analysis/metrics-report.schema.json",
+  "title": "metrics-report v1 — отчёт линии данных вертикали metrics",
+  "description": "Контракт границы «вертикаль metrics → потребитель» (dev/metrics/boundary.md §3). Производит run_vertical.py, запускает его сам gateway потребителя; приём отчёта извне запрещён. Отчёт несёт факты наблюдения и три оси достоверности; язык показа (display_status) остаётся потребителю. Семантика меняется только через major; поля, чья семантика ждёт согласования канона Э0 (plan*, as_of, delta/trend), — nullable с v1 и включаются без bump major. Ключ строки — пара {name, file}: одноимённые метрики в двух файлах не склеиваются.",
+  "type": "object",
+  "required": ["contract", "run_id", "object_ref", "meeting_date", "period_basis", "generated_at", "sources", "metrics", "verification"],
+  "additionalProperties": false,
+  "definitions": {
+    "period": {
+      "type": "string",
+      "pattern": "^[0-9]{4}(-(0[1-9]|1[0-2])|-W(0[1-9]|[1-4][0-9]|5[0-3])|-Q[1-4])?$",
+      "description": "Период в гранулярности метрики: YYYY-MM, YYYY-Wnn, YYYY-Qn или YYYY (год). Соответствие формата гранулярности принуждается условиями на строке метрики."
+    },
+    "relpath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\.\\.).+$",
+      "description": "Base-relative POSIX-путь: без ведущего /, без «..» — чтение вне --base запрещено."
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "datetime": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?[+-][0-9]{2}:[0-9]{2}$",
+      "description": "ISO 8601 с явным смещением (+04:00, +00:00 — не Z): нормализация для идемпотентности потребителя тривиальна."
+    },
+    "metric_key": {
+      "type": "object",
+      "required": ["name", "file"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "file": {"$ref": "#/definitions/relpath"}
+      }
+    }
+  },
+  "properties": {
+    "contract": {
+      "type": "object",
+      "required": ["name", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"const": "metrics-report"},
+        "version": {
+          "type": "string",
+          "pattern": "^1\\.[0-9]+\\.[0-9]+$",
+          "description": "Semver; эта схема нормирует major = 1. Потребитель отвергает чужой major (vertical_failed)."
+        }
+      }
+    },
+    "run_id": {"type": "string", "minLength": 1, "description": "Эхо запроса; gateway сверяет (report_mismatch)."},
+    "object_ref": {"type": "string", "minLength": 1, "description": "Эхо запроса; gateway сверяет (report_mismatch)."},
+    "meeting_date": {
+      "$ref": "#/definitions/date",
+      "description": "Эхо запроса. Закрытый период вертикаль вычисляет от этой даты в гранулярности каждой метрики; фактический период — в строке metrics[].period."
+    },
+    "period_basis": {"type": "string", "enum": ["closed", "current"], "description": "Эхо запроса."},
+    "generated_at": {
+      "$ref": "#/definitions/datetime",
+      "description": "Единственное volatile-поле: повторный вызов на том же входе обязан дать байт-в-байт тот же отчёт за вычетом этого поля."
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source", "title", "schema_hash", "snapshot_modified_time", "status", "error"],
+        "additionalProperties": false,
+        "properties": {
+          "source": {"type": "string", "minLength": 1, "description": "Глобальный ключ книги = её адрес (URL / fileId), как в каноне architecture.md."},
+          "title": {"type": ["string", "null"], "description": "Из snapshot-manifest.json, не из содержимого файла. null — источник не добыт."},
+          "schema_hash": {
+            "type": ["string", "null"],
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "description": "Отпечаток структуры книги (extractor). null — источник не прочитан."
+          },
+          "snapshot_modified_time": {
+            "anyOf": [{"$ref": "#/definitions/datetime"}, {"type": "null"}],
+            "description": "modifiedTime книги из snapshot-manifest.json — машинная фиксация добытчика, раннер её не выдумывает из содержимого."
+          },
+          "status": {"type": "string", "enum": ["ok", "unavailable", "no_extractor", "schema_mismatch"]},
+          "error": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "required": ["code", "message"],
+                "additionalProperties": false,
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "enum": ["snapshot_missing", "snapshot_unreadable", "schema_mismatch"],
+                    "description": "Закрытый перечень source-кодов; расшифровка — schema/error-codes.json."
+                  },
+                  "message": {"type": "string"}
+                }
+              }
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"status": {"enum": ["ok", "no_extractor"]}}},
+            "then": {"properties": {"error": {"const": null}}}
+          },
+          {
+            "if": {"properties": {"status": {"const": "unavailable"}}},
+            "then": {"properties": {"error": {"type": "object", "properties": {"code": {"enum": ["snapshot_missing", "snapshot_unreadable"]}}}}}
+          },
+          {
+            "if": {"properties": {"status": {"const": "schema_mismatch"}}},
+            "then": {"properties": {"error": {"type": "object", "properties": {"code": {"const": "schema_mismatch"}}}}}
+          },
+          {
+            "if": {"properties": {"status": {"enum": ["ok", "schema_mismatch"]}}},
+            "then": {"properties": {"schema_hash": {"type": "string"}}},
+            "else": {"properties": {"schema_hash": {"const": null}}}
+          }
+        ]
+      }
+    },
+    "metrics": {
+      "type": "array",
+      "description": "По строке на каждую запрошенную пару {name, file}, в порядке запроса; пропуск пары = нарушение контракта (contract_violation у потребителя).",
+      "items": {
+        "type": "object",
+        "required": ["name", "file", "source", "unit", "direction", "plan", "plan_source", "plan_conflict", "fact", "value_status", "period", "granularity", "period_partial", "as_of", "delta", "trend", "composition_confirmed", "baseline", "source_ref", "axes"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "minLength": 1, "description": "Каноническое имя метрики (metrics-spec: имя = ID)."},
+          "file": {"allOf": [{"$ref": "#/definitions/relpath"}], "description": "Metrics-файл клиента, base-relative POSIX."},
+          "source": {"type": ["string", "null"], "description": "Адрес источника именно этого значения (привязка «метрика × тип периода»); null — привязки в паспорте нет (source_unbound)."},
+          "unit": {"type": ["string", "null"]},
+          "direction": {"type": ["string", "null"], "enum": ["up", "down", null], "description": "Направление желаемого движения; null — в паспорте не задано."},
+          "plan": {"type": ["number", "null"], "description": "null до согласования диффа Э0-A-в (поле плана с источником правды)."},
+          "plan_source": {"type": ["string", "null"], "enum": ["goal", "source", null]},
+          "plan_conflict": {"type": ["boolean", "null"], "description": "Вердикт verifier'а; null до Э0-A."},
+          "fact": {"type": ["number", "null"], "description": "null всегда при value_status ≠ ok."},
+          "value_status": {
+            "type": "string",
+            "enum": ["ok", "div0", "missing", "error", "not_read"],
+            "description": "Статус extractor'а 1:1 (extractor.md) ∪ not_read (извлечение не выполнялось: источник не добыт / чтение остановлено guard-ом / дубль имени)."
+          },
+          "period": {
+            "anyOf": [{"$ref": "#/definitions/period"}, {"type": "null"}],
+            "description": "Период фактического значения в шкале метрики; null при value_status = not_read."
+          },
+          "granularity": {"type": ["string", "null"], "enum": ["week", "month", "quarter", "year", null], "description": "Шкалу отдаёт extractor вместе со значением; null — не читалось."},
+          "period_partial": {"type": "boolean", "description": "Период источника не закрыт: значение показывается с обязательной пометкой, деградацией не является."},
+          "as_of": {
+            "anyOf": [{"$ref": "#/definitions/date"}, {"type": "null"}],
+            "description": "Дата бизнес-среза значения (не дата файла). null до согласования пакета Э0-B."
+          },
+          "delta": {"type": ["number", "null"], "description": "Только calculator и только при composition_confirmed = true; null до Э0-A (правило агрегации)."},
+          "trend": {"type": ["string", "null"], "enum": ["up", "down", "flat", null]},
+          "composition_confirmed": {"type": "boolean", "description": "Двухпериодный вердикт verifier'а: состав подтверждён паспортом для текущего периода И базы сравнения."},
+          "baseline": {
+            "oneOf": [
+              {"type": "null"},
+              {
+                "type": "object",
+                "required": ["period", "fact", "composition_confirmed"],
+                "additionalProperties": false,
+                "properties": {
+                  "period": {"$ref": "#/definitions/period"},
+                  "fact": {"type": ["number", "null"]},
+                  "composition_confirmed": {"type": "boolean"}
+                }
+              }
+            ],
+            "description": "Явная база сравнения — делает Δ и тренд аудируемыми."
+          },
+          "source_ref": {"type": ["string", "null"], "description": "«Лист + строка/ячейка» текстом."},
+          "axes": {
+            "type": "object",
+            "required": ["availability", "freshness", "verification"],
+            "additionalProperties": false,
+            "description": "Три оси достоверности — вывод вертикали по таблице 1 boundary §4. Значение not_attempted вертикаль не выдаёт никогда: о собственном отсутствии она сказать не может (его ставит gateway в metrics-axes).",
+            "properties": {
+              "availability": {"type": "string", "enum": ["value", "no_value", "value_error", "source_unavailable", "source_unbound", "blocked"]},
+              "freshness": {"type": "string", "enum": ["in_period", "before_period", "undatable"]},
+              "verification": {"type": "string", "enum": ["verified", "mismatch", "not_run"]}
+            },
+            "allOf": [
+              {
+                "if": {"properties": {"availability": {"const": "blocked"}}},
+                "then": {"properties": {"verification": {"const": "mismatch"}}}
+              },
+              {
+                "if": {"properties": {"availability": {"const": "source_unbound"}}},
+                "then": {"properties": {"verification": {"const": "not_run"}}}
+              },
+              {
+                "if": {"properties": {"availability": {"const": "source_unavailable"}}},
+                "then": {"properties": {"verification": {"const": "not_run"}}}
+              }
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"value_status": {"const": "ok"}}},
+            "then": {
+              "properties": {
+                "fact": {"type": "number"},
+                "period": {"type": "string"},
+                "granularity": {"type": "string"},
+                "axes": {"properties": {"availability": {"const": "value"}}}
+              }
+            },
+            "else": {"properties": {"fact": {"const": null}}}
+          },
+          {
+            "if": {"properties": {"value_status": {"enum": ["div0", "error"]}}},
+            "then": {"properties": {"axes": {"properties": {"availability": {"const": "value_error"}}}}}
+          },
+          {
+            "if": {"properties": {"value_status": {"const": "missing"}}},
+            "then": {"properties": {"axes": {"properties": {"availability": {"const": "no_value"}}}}}
+          },
+          {
+            "if": {"properties": {"value_status": {"const": "not_read"}}},
+            "then": {"properties": {"axes": {"properties": {"availability": {"enum": ["source_unavailable", "source_unbound", "blocked"]}}}}}
+          },
+          {
+            "if": {"properties": {"composition_confirmed": {"const": false}}},
+            "then": {"properties": {"delta": {"const": null}, "trend": {"const": null}}}
+          },
+          {
+            "if": {"properties": {"composition_confirmed": {"const": true}}},
+            "then": {
+              "properties": {
+                "baseline": {
+                  "type": "object",
+                  "properties": {
+                    "fact": {"type": "number"},
+                    "composition_confirmed": {"const": true}
+                  }
+                }
+              }
+            }
+          },
+          {
+            "if": {"properties": {"granularity": {"const": "week"}}},
+            "then": {"properties": {"period": {"pattern": "^[0-9]{4}-W(0[1-9]|[1-4][0-9]|5[0-3])$"}}}
+          },
+          {
+            "if": {"properties": {"granularity": {"const": "month"}}},
+            "then": {"properties": {"period": {"pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"}}}
+          },
+          {
+            "if": {"properties": {"granularity": {"const": "quarter"}}},
+            "then": {"properties": {"period": {"pattern": "^[0-9]{4}-Q[1-4]$"}}}
+          },
+          {
+            "if": {"properties": {"granularity": {"const": "year"}}},
+            "then": {"properties": {"period": {"pattern": "^[0-9]{4}$"}}}
+          }
+        ]
+      }
+    },
+    "verification": {
+      "type": "object",
+      "required": ["scope", "files_scanned", "verified", "unmapped_metric", "mapping_mismatch", "orphan_row", "schema_mismatch", "composition_mismatch", "duplicate_name"],
+      "additionalProperties": false,
+      "properties": {
+        "scope": {"const": "client", "description": "Область сверки — клиент, не объект; gateway отвергает иное (scope_violation)."},
+        "files_scanned": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/relpath"},
+          "uniqueItems": true,
+          "description": "Фактически просмотренные metrics-файлы — доказательство client-scope, не декларация."
+        },
+        "verified": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["name", "file", "sheet", "row_label"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "file": {"$ref": "#/definitions/relpath"},
+              "sheet": {"type": "string"},
+              "row_label": {"type": "string"}
+            }
+          },
+          "description": "Координаты, не только имя: verifier сверяет их с координатами факта extractor'а; расхождение → запись в mapping_mismatch[] (деградация метрики)."
+        },
+        "unmapped_metric": {"type": "array", "uniqueItems": true, "items": {"$ref": "#/definitions/metric_key"}},
+        "mapping_mismatch": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["name", "file", "expected", "actual"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "file": {"$ref": "#/definitions/relpath"},
+              "expected": {
+                "type": "object",
+                "required": ["sheet", "row_label"],
+                "additionalProperties": false,
+                "properties": {"sheet": {"type": "string"}, "row_label": {"type": "string"}}
+              },
+              "actual": {
+                "type": "object",
+                "required": ["sheet", "row_label"],
+                "additionalProperties": false,
+                "properties": {"sheet": {"type": "string"}, "row_label": {"type": "string"}}
+              }
+            }
+          },
+          "description": "Координаты паспорта разошлись с координатами, из которых extractor взял факт (R5): под сомнением происхождение числа — потребитель значение не показывает. Не сливать с composition_mismatch: там значение верно, невалидно только сравнение."
+        },
+        "orphan_row": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["source", "sheet", "row_label", "candidate_metrics"],
+            "additionalProperties": false,
+            "properties": {
+              "source": {"type": "string", "minLength": 1},
+              "sheet": {"type": "string"},
+              "row_label": {"type": "string"},
+              "candidate_metrics": {
+                "type": "array",
+                "items": {"$ref": "#/definitions/metric_key"},
+                "description": "Результат сверки со ВСЕМИ metrics-файлами клиента (требование A3.1 — поле контракта)."
+              }
+            }
+          }
+        },
+        "schema_mismatch": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["source", "detail"],
+            "additionalProperties": false,
+            "properties": {
+              "source": {"type": "string", "minLength": 1},
+              "detail": {"type": "string"}
+            }
+          },
+          "description": "Ретрансляция остановки extractor'а, не вторая проверка."
+        },
+        "composition_mismatch": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["name", "file", "period", "added", "removed"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "file": {"$ref": "#/definitions/relpath"},
+              "period": {"$ref": "#/definitions/period"},
+              "added": {"type": "array", "items": {"type": "string"}},
+              "removed": {"type": "array", "items": {"type": "string"}}
+            }
+          },
+          "description": "Расхождение состава гасит сравнение (Δ, тренд), но не факт — не сливать с mapping_mismatch."
+        },
+        "duplicate_name": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "required": ["name", "files"],
+            "additionalProperties": false,
+            "properties": {
+              "name": {"type": "string", "minLength": 1},
+              "files": {"type": "array", "items": {"$ref": "#/definitions/relpath"}, "minItems": 2, "uniqueItems": true}
+            }
+          },
+          "description": "Предупреждение, не отказ прогона (решение 31.07): обе строки метрики остаются в metrics[] и деградируют (value_status = not_read, axes blocked/mismatch) с причиной дубля."
+        }
+      }
+    }
+  }
+}

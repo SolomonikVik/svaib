@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Реестр адресатов канала send-telegram",
+  "description": "Форма файла. Уникальность алиасов, целостность members и правило «в git не едут значения» схемой не выражаются — их держит семантика в recipients.py.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "bot"],
+  "properties": {
+    "version": {
+      "const": 1,
+      "description": "Версия формы. Меняется только вместе с резолвером."
+    },
+    "bot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "description": "Бот, для которого действителен реестр. chat_id зависит от пары (бот, получатель).",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9]{5,20}$",
+          "description": "Префикс токена до двоеточия. Строкой, чтобы YAML не терял точность на больших числах."
+        },
+        "username": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_]{5,32}$",
+          "description": "Для человека. В сверке не участвует: username переименовывается, id — нет."
+        }
+      }
+    },
+    "people": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["alias", "chat_id_ref"],
+        "properties": {
+          "alias": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{1,31}$",
+            "description": "Без запятых — они разделяют адресатов в --to; без пробелов и заглавных."
+          },
+          "chat_id_ref": {
+            "type": "string",
+            "pattern": "^TG_CHAT_[A-Z0-9_]+$",
+            "description": "ИМЯ переменной окружения, не значение."
+          },
+          "person_ref": {
+            "type": "string",
+            "description": "Относительный путь к профилю от корня базы."
+          }
+        }
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["alias", "chat_id_ref"],
+        "properties": {
+          "alias": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{1,31}$"
+          },
+          "chat_id_ref": {
+            "type": "string",
+            "pattern": "^TG_CHAT_[A-Z0-9_]+$"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Зачем этот чат существует. Для человека, читающего реестр."
+          },
+          "members": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Справочно. Доставка уходит всем участникам чата, а не этому списку."
+          }
+        }
+      }
+    }
+  }
+}

@@ -65,7 +65,7 @@ version: 9
 | **[orchestrator-meeting.md](orchestrator-meeting.md)** | **Оркестратор** | **Полный цикл внутренней встречи: выжимка → обновление узлов-направлений + 01_company/02_team/ → Telegram** |
 | **[orchestrator-client-meeting.md](orchestrator-client-meeting.md)** | **Оркестратор** | **Полный цикл встречи с контрагентом: выжимка → обновление досье → Telegram** |
 | [telegram-delivery.md](telegram-delivery.md) | Доставка | Спека: автоматическая отправка сводки в Telegram через бота |
-| [channels/telegram/](../channels/telegram/SKILL.md) | Доставка | Общий канал: `send_telegram.sh` (простой формат) + `send_telegram_rich.sh` (расширенный формат). Канон — в SKILL.md канала |
+| channels/telegram/ | Доставка | Общий канал: `send_telegram.sh` (простой формат) + `send_telegram_rich.sh` (расширенный формат). Канон — в SKILL.md канала |
 
 ---
 

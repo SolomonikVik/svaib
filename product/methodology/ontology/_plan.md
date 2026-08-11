@@ -6,7 +6,7 @@
 
 - добавить канон первым в [ontology/README.md](README.md) и явно обозначить SOT;
 - добавить Svaib Management System в [methodology/README.md](../README.md);
-- закрыть подпункт в [02_active.md](../../02_active.md) и записать результат в [03_progress.md](../../03_progress.md).
+- закрыть подпункт в [02_active.md](../../02_active.md) и записать результат в [04_progress.md](../../04_progress.md).
 
 ## ✅ Этап 7.1. Визуальная страница модели для внешней аудитории — 2026-07-26
 
@@ -43,11 +43,11 @@
 - [01_product-vision.md](../../vision/01_product-vision.md) — нижняя половина файла (от § «Партнёр (не приложение или скилл)») стоит на 9 циклах и противоречит собственному § 3;
 - [methodology/README.md](../README.md) — раздел «Вертикали управленческих циклов»;
 - [plugin/skills/README.md](../../plugin/skills/README.md), [methodology/metrics/](../metrics/), [01_context_memory.md](../memory/01_context_memory.md) — входящие ссылки и терминология;
-- добавлено 27.07 (сверка на планёрке, Виктор подтвердил «хочу назвать контуры везде», цена ~50 файлов принята): [02_backlog.md](../../02_backlog.md) — структура файла целиком построена на делении «Горизонтали / Вертикали»; [README.md](../../README.md), [development-operating-model.md](../../development-operating-model.md), [03_progress.md](../../03_progress.md), meta/management/04_weekly_progress.md.
+- добавлено 27.07 (сверка на планёрке, Виктор подтвердил «хочу назвать контуры везде», цена ~50 файлов принята): [03_backlog.md](../../03_backlog.md) — структура файла целиком построена на делении «Горизонтали / Вертикали»; [README.md](../../README.md), [development-operating-model.md](../../development-operating-model.md), [04_progress.md](../../04_progress.md), weekly-progress.md.
 
 ### 8.3. Выровнять scaffold под канон
 
-[Задача в бэклоге](../../02_backlog.md): шесть management aspects (`strategic`, `team`, `metrics`, `projects`, `processes`, `knowledge`) против семи контуров — нет `finance` и «ритма управления», лишний `knowledge`. Разбирать после 8.2.
+[Задача в бэклоге](../../03_backlog.md): шесть management aspects (`strategic`, `team`, `metrics`, `projects`, `processes`, `knowledge`) против семи контуров — нет `finance` и «ритма управления», лишний `knowledge`. Разбирать после 8.2.
 
 ### 8.4. Продолжить интегральную онтологию
 

@@ -35,7 +35,7 @@
 
 ### 2. Telegram-доставка
 
-Скрипт `product/plugin/skills/channels/telegram/send_telegram.sh` (общий канал доставки). Скрипт читает `.env` в корне рабочей папки клиента:
+Скрипт `product/plugin/skills/channels/send-telegram/scripts/send_telegram.sh` (общий канал доставки). Скрипт читает `.env` в корне рабочей папки клиента:
 
 ```
 TELEGRAM_BOT_TOKEN=...

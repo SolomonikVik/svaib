@@ -10,7 +10,7 @@
 
 | Что | Папка | Что делает                                                                                                       |
 |-----|-------|------------------------------------------------------------------------------------------------------------------|
-| Skills | `skills/` | Методология в исполняемом формате:  channels/telegram (доставка), scaffold (в разработке), email-assistant, meeting-analysis, metrics-analysis |
+| Skills | `skills/` | Методология в исполняемом формате:  channels/send-telegram (доставка), scaffold (в разработке), email-assistant, meeting-analysis, metrics-analysis |
 | Hooks | `hooks/` | Детерминированные правила сессии (только Claude Code): личность пользователя, запрет отложенных действий, Stop-backstop гейтов meeting-analysis |
 | Agents | `agents/` | Скелет. Автоматизация: диспетчер задач, обновление документации                                                  |
 
@@ -31,14 +31,14 @@ Plugin и runtime — не одно и то же.
 - **Plugin** — наш слой: skills, agents, hooks, то есть методология и автоматизация.
 - **Runtime** — внешний слой доставки: AI-host, scheduling, orchestration, интерфейсные коннекторы.
 
-Мы не считаем runtime частью ядра продукта. Текущее решение по этой границе зафиксировано в [../04_decisions.md](../04_decisions.md) (пункт 1 — Выбор runtime).
+Мы не считаем runtime частью ядра продукта. Текущее решение по этой границе зафиксировано в [../05_decisions.md](../05_decisions.md) (пункт 1 — Выбор runtime).
 
 ### Что это значит на практике
 
 - plugin должен оставаться максимально runtime-agnostic;
 - нельзя описывать plugin как артефакт только для `Claude Code / Cowork`, если это не часть самой сути;
 - конкретный runtime может меняться без пересборки продуктовой логики;
-- текущие пилотные кандидаты — Claude Code Scheduled Tasks (приоритетный, cloud-режим) и `HKUDS/nanobot` (запасной), детали в [../04_decisions.md](../04_decisions.md) (пункт 1 — Выбор runtime); plugin не должен быть описан как «nanobot-плагин» или «Scheduled-Tasks-плагин».
+- текущие пилотные кандидаты — Claude Code Scheduled Tasks (приоритетный, cloud-режим) и `HKUDS/nanobot` (запасной), детали в [../05_decisions.md](../05_decisions.md) (пункт 1 — Выбор runtime); plugin не должен быть описан как «nanobot-плагин» или «Scheduled-Tasks-плагин».
 
 ## Delivery-модель
 
@@ -74,5 +74,5 @@ runtime / host (внешняя доставка)
 - [skills/README.md](skills/README.md) — состав и статус скиллов (что уже есть, что в разработке, что в планах)
 - ../README.md — обзор продукта
 - ../architecture.md — архитектурная граница между plugin и runtime
-- ../04_decisions.md — продуктовые решения (включая выбор runtime)
+- ../05_decisions.md — продуктовые решения (включая выбор runtime)
 - ../../knowledge/plugins/ — исследование формата плагинов и delivery-подходов

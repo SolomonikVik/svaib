@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Сводка встречи: текст участникам",
+  "type": "object",
+  "required": [
+    "schema",
+    "text"
+  ],
+  "properties": {
+    "schema": {
+      "const": "delivery/2"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "description": "готовая сводка участникам встречи; ядро сверяет границы — кухня разбора наружу не едет"
+    }
+  }
+}

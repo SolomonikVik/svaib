@@ -12,7 +12,7 @@ priority: high
 
 Ядро продукта Second Value AI Brain: vision, методология, scaffold, skills, plugin. Всё, чтобы развернуть персональную AI-инфраструктуру для руководителя.
 
-**`product/` = продукт.** Отдельной папки «продукт» в meta нет — продуктовое видение, архитектура, решения и состояние реализации живут здесь.
+**`product/` = продукт.** Продуктовое видение, архитектура, решения и состояние реализации живут здесь.
 
 **Пять частей продукта:**
 - **Vision** — целевой образ продукта: как должен выглядеть Second Value AI Brain
@@ -27,22 +27,22 @@ priority: high
 
 - [01_overview.md](01_overview.md) — что за продукт, для кого, принципы, границы, бизнес-модель
 - [architecture.md](architecture.md) — как продукт устроен внутри (слои, компоненты, связи)
-- [vision/](vision/) — целевой образ продукта, клиентская доказательная база, исследования и target architecture
-- [04_decisions.md](04_decisions.md) — продуктовые решения (runtime, границы, путь skills)
+- [vision/README.md](vision/README.md) — карта целевого образа продукта, семи контуров, доказательной базы, исследований и target architecture
+- [05_decisions.md](05_decisions.md) — продуктовые решения (runtime, границы, путь skills)
 
 ### Операционка направления
 
 - [02_active.md](02_active.md) — что горит сейчас, Session Handoff
-- [02_backlog.md](02_backlog.md) — задачи на будущее
-- [03_progress.md](03_progress.md) — хроника сделанного
+- [03_backlog.md](03_backlog.md) — задачи на будущее
+- [04_progress.md](04_progress.md) — хроника сделанного
 - [ideas.md](ideas.md) — продуктовые идеи, инсайты, открытые вопросы (накопитель с синков)
 - _inbox/ — входящее на разбор
 
 ### Связи наружу
 
-- ../meta/management/01_vision.md — vision проекта svaib (связь ①: блок «Продукт» → [01_overview.md](01_overview.md))
-- ../meta/management/02_goal.md — цели svaib (связь ②: фокус «Продукт» → операционка [02_active.md](02_active.md))
-- ../meta/management/04_weekly_progress.md — агрегатор svaib (связь ③: [03_progress.md](03_progress.md) → туда)
+- ../01_company/01_strategic/vision.md — vision проекта svaib (связь ①: блок «Продукт» → [01_overview.md](01_overview.md))
+- ../01_company/01_strategic/goal.md — цели svaib (связь ②: фокус «Продукт» → операционка [02_active.md](02_active.md))
+- ../01_company/04_progress/weekly-progress.md — агрегатор svaib (связь ③: [04_progress.md](04_progress.md) → туда)
 - ../clients/playbook/delivery/01_delivery_plan.md — delivery plan (онбординг, ДЗ, инструменты)
 
 Направление устроено по универсальной модели svaib: `_inbox → backlog → active → progress + decisions`. Правила работы — ../lab/work-model.md.
@@ -75,15 +75,15 @@ Vision меняется при уточнении целевого образа.
 ## Карта связей svaib ↔ product
 
 ```
-┌─ УРОВЕНЬ SVAIB — meta/management/ ─────────────────────────┐
+┌─ УРОВЕНЬ SVAIB — 01_company/ ──────────────────────────────┐
 │                                                            │
-│  01_vision.md ── идентичность, 3 направления               │
+│  01_strategic/vision.md ── идентичность, 3 направления     │
 │      └─ блок "Продукт"  ──────── связь ① ──────┐           │
 │                                                │           │
-│  02_goal.md ── цели, метрики                   │           │
+│  01_strategic/goal.md ── цели, метрики         │           │
 │      └─ фокус "Продукт" ──────── связь ② ──┐  │           │
 │                                             │  │           │
-│  03_plan / 04_weekly_progress / 05_timeline │  │           │
+│  04_progress/weekly-progress.md / timeline.md│  │           │
 │              ▲                              │  │           │
 └──────────────│──────────────────────────────│──│───────────┘
                │ связь ③                      │  │
@@ -93,9 +93,9 @@ Vision меняется при уточнении целевого образа.
 │  01_overview.md       ◀──── ЧТО строим и зачем (связь ①)       │
 │  architecture.md  ─────  КАК устроено                      │
 │                                                            │
-│  02_active / 02_backlog / 03_progress ◀── операционка (②)   │
-│  03_progress.md ──── связь ③ ──▶ 04_weekly_progress        │
-│  04_decisions.md  ─────  журнал решений                    │
+│  02_active / 03_backlog / 04_progress ◀── операционка (②)   │
+│  04_progress.md ─ связь ③ ─▶ 04_progress/weekly-progress.md│
+│  05_decisions.md  ─────  журнал решений                    │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -103,14 +103,14 @@ Vision меняется при уточнении целевого образа.
 
 | № | Откуда | Куда | Частота |
 |---|--------|------|---------|
-| ① | ../meta/management/01_vision.md (блок «Продукт») | [01_overview.md](01_overview.md) | Стабильная, меняется при пивотах |
-| ② | ../meta/management/02_goal.md (фокус «Продукт») | [02_active.md](02_active.md) | Оперативно (недели) |
-| ③ | [03_progress.md](03_progress.md) | ../meta/management/04_weekly_progress.md | Еженедельно |
+| ① | ../01_company/01_strategic/vision.md (блок «Продукт») | [01_overview.md](01_overview.md) | Стабильная, меняется при пивотах |
+| ② | ../01_company/01_strategic/goal.md (фокус «Продукт») | [02_active.md](02_active.md) | Оперативно (недели) |
+| ③ | [04_progress.md](04_progress.md) | ../01_company/04_progress/weekly-progress.md | Еженедельно |
 
 ### Две скорости жизни
 
 - **Стабильный контур (месяцы):** [01_overview.md](01_overview.md), [architecture.md](architecture.md)
-- **Оперативный контур (дни/недели):** [02_active.md](02_active.md), [02_backlog.md](02_backlog.md), [03_progress.md](03_progress.md)
+- **Оперативный контур (дни/недели):** [02_active.md](02_active.md), [03_backlog.md](03_backlog.md), [04_progress.md](04_progress.md)
 
 Подпапки `vision/`, `methodology/`, `plugin/` — разделы, где живут детали частей продукта; `scaffold/` и `skills/` сейчас внутри `plugin/`. Ontology живёт внутри `methodology/ontology/`, Memory — внутри `methodology/memory/`. [architecture.md](architecture.md) даёт карту, они — детализация.
 
@@ -122,11 +122,12 @@ Vision меняется при уточнении целевого образа.
 |--------|-----------|-------------|
 | Понять что за продукт и зачем | [01_overview.md](01_overview.md) | Проблема, для кого, решение, принципы, границы, бизнес-модель |
 | Понять как продукт устроен внутри | [architecture.md](architecture.md) | Слои, компоненты, общая схема |
-| Понять целевой образ продукта | [vision/](vision/) | Product Vision, клиентская доказательная база, исследования, target architecture |
+| Понять целевой образ продукта | [vision/README.md](vision/README.md) | Product Vision, семь контуров, клиентская доказательная база, исследования, target architecture |
+| Понять работу svaib в семи контурах | [vision/02_contours.md](vision/02_contours.md) | Роли svaib, способы работы, результаты, границы и связи контуров |
 | Найти/зафиксировать клиентское свидетельство для vision | [vision/customer-evidence.md](vision/customer-evidence.md) | Что клиенты реально говорят и как это подтверждает, уточняет или ломает vision |
 | Понять что горит сейчас | [02_active.md](02_active.md) | Активные задачи, Session Handoff |
 | Зафиксировать/найти продуктовую идею с синка | [ideas.md](ideas.md) | Идеи, инсайты, открытые вопросы, принципы-кандидаты |
-| Узнать почему выбрано так | [04_decisions.md](04_decisions.md) | Runtime, границы, путь skills |
+| Узнать почему выбрано так | [05_decisions.md](05_decisions.md) | Runtime, границы, путь skills |
 | Разобраться в сущностях | [methodology/ontology/](methodology/ontology/) | Файлы, связи, правила размещения |
 | Как агент работает с информацией | [methodology/memory/01_context_memory.md](methodology/memory/01_context_memory.md) | Протокол чтения, сбор контекста, хуки, детерминированность |
 | Понять как работать с X | [methodology/](methodology/) | Протоколы, decision frames, ритуалы |
@@ -137,7 +138,7 @@ Vision меняется при уточнении целевого образа.
 | Развернуть scaffold для клиента | [plugin/skills/scaffold/template/](plugin/skills/scaffold/template/) | Канонический scaffold продукта |
 | Спроектировать навык | [plugin/skills/](plugin/skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |
-| Вертикаль metrics (методология цикла) | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md` (карта вертикали); внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
+| Контур «Цели и показатели»: методология метрик | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md`; внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
 | Работа со встречами | [methodology/meeting_analysis.md](methodology/meeting_analysis.md) | Пайплайн анализа транскриптов |
 | Онбординг клиента | [methodology/onboarding.md](methodology/onboarding.md) | Последовательность освоения |
 | Формат файлов | [methodology/scaffold/02_file-spec.md](methodology/scaffold/02_file-spec.md) | Действующий канон: YAML, шапка, секции, связи |
@@ -146,7 +147,7 @@ Vision меняется при уточнении целевого образа.
 
 ## Масштабирование
 
-**Соло / малый бизнес:** ядро (8 файлов) + мета. Один человек, LLM помогает.
+**Соло / малый бизнес:** ядро продукта + управленческий контекст. Один человек, LLM помогает.
 
 **CEO с командой (до 100-200 чел):** та же структура, но для личного пространства CEO. Разница — в глубине наполнения, не в количестве файлов.
 

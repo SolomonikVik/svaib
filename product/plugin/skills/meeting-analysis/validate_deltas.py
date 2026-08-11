@@ -57,7 +57,6 @@ exit: 0 — инварианты держатся; 1 — есть нарушен
 
 import argparse
 import json
-import re
 import sys
 
 ROLES = {"canonical", "reference", "consequence"}
@@ -72,21 +71,22 @@ CORE_CLASSES = {"active", "backlog", "decisions", "overview"}
 
 
 def file_class(path):
-    # Класс — по хвосту имени, префикс не значим: нумерация kit у клиентов
-    # расходится с канонической (03_progress, 04_decisions, 02_glossary и
-    # т.п.). Граница контракта: kit-префикс — 1-2 цифры, опционален
-    # (active.md — тоже kit: класс задаёт суффикс, не номер); длинный
-    # цифровой префикс (2026_progress.md) — не kit, остаётся other.
     p = path.replace("\\", "/")
     name = p.rsplit("/", 1)[-1]
-    if re.search(r"(^|/)(\d{1,2}_)?team/", p):
+    if "/02_team/" in p or p.startswith("02_team/"):
         return "team"
-    stem = name[:-3] if name.endswith(".md") else name
-    stem = re.sub(r"^\d{1,2}_", "", stem)
-    if stem in ("glossary", "speech-aliases"):
+    if name in ("glossary.md", "speech-aliases.md"):
         return "glossary"
-    if stem in ("active", "backlog", "decisions", "overview", "progress"):
-        return stem
+    if name == "02_active.md":
+        return "active"
+    if name == "03_backlog.md":
+        return "backlog"
+    if name in ("05_decisions.md", "04_decisions.md"):
+        return "decisions"
+    if name == "01_overview.md":
+        return "overview"
+    if name == "04_progress.md":
+        return "progress"
     return "other"
 
 

@@ -320,7 +320,7 @@ Runtime — это внешний исполняющий слой, через к
 - `Claude Code`, `Cowork`, `nanobot` или будущий managed runtime — это варианты delivery;
 - при проектировании skills, agents и hooks мы должны по возможности сохранять runtime-agnostic контракт.
 
-Текущее решение: свой runtime не пишем; внешний lightweight runtime проверяем как delivery-слой. Детали и статус — в [04_decisions.md](04_decisions.md) (пункт 1 — Выбор runtime).
+Текущее решение: свой runtime не пишем; внешний lightweight runtime проверяем как delivery-слой. Детали и статус — в [05_decisions.md](05_decisions.md) (пункт 1 — Выбор runtime).
 
 ---
 

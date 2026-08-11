@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://svaib.com/schema/meeting-analysis/delta.schema.json",
+  "title": "Пакет дельт meeting-analysis",
+  "description": "Контракт пакета дельт (артефакт узлов build-deltas и canonize). Поля дельты перенесены из инвариантов validate_deltas.py как есть; новое поле — doubt_question (вопрос пользователю на doubtful-дельте). ID дельт назначает spine на submit deltas (d001…), id сущностей приходят из ростера (E01, E02, …). Дельты протокола не существует (entity_type: protocol — ошибка валидации): протокол публикует spine из принятой выжимки. Поля anchor/source_file читает только apply — валидатор их не проверяет.",
+  "type": "object",
+  "required": ["entities", "deltas"],
+  "properties": {
+    "entities": {
+      "description": "Ростер сущностей выжимки.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "disposition"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^E[0-9]{2,}$"},
+          "type": {"type": "string", "minLength": 1},
+          "disposition": {"type": "string", "enum": ["write", "summary_only", "unclear"]},
+          "label": {"type": "string"},
+          "merged_into": {"type": ["string", "null"]},
+          "resolved_from_unclear": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "deltas": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["target_file", "operation", "proposed_text", "section"],
+        "properties": {
+          "id": {
+            "description": "Назначает spine (d001…). Приходящее значение нормализуется.",
+            "type": ["string", "null"]
+          },
+          "entity_id": {"type": ["string", "null"]},
+          "entity_type": {"type": ["string", "null"]},
+          "target_file": {
+            "description": "Путь относительно корня базы; path confinement — инвариант spine.",
+            "type": "string",
+            "minLength": 1
+          },
+          "operation": {
+            "type": "string",
+            "enum": ["add", "update", "delete", "move", "merge", "create"]
+          },
+          "proposed_text": {"type": "string"},
+          "source_evidence": {
+            "description": "Опора в выжимке. Дельта без неё в ревью не идёт — сразу doubtful (R6).",
+            "type": ["string", "null"]
+          },
+          "owner": {"type": ["string", "null"]},
+          "role": {"type": ["string", "null"], "enum": ["canonical", "reference", "consequence", null]},
+          "section": {"type": "string", "enum": ["recommended", "doubtful"]},
+          "card_home": {"type": ["string", "null"]},
+          "home_question": {
+            "description": "Вопрос о выборе легитимного дома. Только на canonical-дельте в recommended (B10).",
+            "type": ["string", "null"]
+          },
+          "doubt_question": {
+            "description": "Вопрос пользователю по спорной правке. Только на doubtful-дельте (B12).",
+            "type": ["string", "null"]
+          },
+          "doubt_reason": {"type": ["string", "null"], "enum": ["dispute", "unresolved", null]},
+          "canonical_external": {"type": ["boolean", "null"]},
+          "spec_id": {"type": ["string", "null"]},
+          "anchor": {
+            "description": "Точный фрагмент целевого файла для update/merge/delete/move (apply-уровень).",
+            "type": ["string", "null"]
+          },
+          "source_file": {
+            "description": "Файл-источник для operation=move (apply-уровень).",
+            "type": ["string", "null"]
+          },
+          "amended_by": {"type": ["string", "null"]},
+          "review_verdict": {"type": ["string", "null"]},
+          "no_evidence": {"type": ["boolean", "null"]}
+        }
+      }
+    },
+    "meeting_nodes": {
+      "description": "Затронутые узлы. Spine подставляет контуры из context-manifest — значение артефакта не доверяется.",
+      "type": "array"
+    },
+    "dropped_nodes": {
+      "description": "Узлы Фазы A, снятые канонизацией: [{node, reason}].",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node", "reason"],
+        "properties": {
+          "node": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "phase_a_nodes": {"type": "array"},
+    "protocol_required": {"type": ["boolean", "null"]},
+    "protocol_path": {"type": ["string", "null"]}
+  }
+}

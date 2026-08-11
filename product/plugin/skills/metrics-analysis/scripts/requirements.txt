@@ -1,0 +1,14 @@
+# Зависимости run_vertical.py и validate_contract.py (образ runner-контейнера собирается по этому файлу).
+# Python 3.9+ для кода; runner-образ пинует ОДИН интерпретатор — python:3.11-slim (arm64),
+# согласование с инфра-командой 04.08: «байт-в-байт» любит одинаковость, CI образа гоняет
+# суиту dev/metrics/tests на нём же (python3 -m unittest discover -s dev/metrics/tests).
+# Версии пиновые: требование «байт-в-байт тот же отчёт» несовместимо с плавающими зависимостями.
+# Только pure-python пакеты — без бинарных колёс, arm64 (Hetzner CAX) гарантирован.
+# Сеть раннеру запрещена целиком: сетевых клиентов в зависимостях быть не должно.
+#
+# Норма канонической сериализации отчёта (детерминизм):
+#   json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n", UTF-8 без BOM;
+#   порядок metrics[] = порядок пар запроса; массивы verification.* отсортированы по (name, file) /
+#   (source, sheet, row_label); files_scanned и sources[] — по source/пути.
+openpyxl==3.1.5
+jsonschema==4.17.3

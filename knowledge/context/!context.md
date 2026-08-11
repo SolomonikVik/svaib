@@ -2,9 +2,9 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-07-27
-review_by: 2026-09-14
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, graphrag, lightrag, metrics]
+updated: 2026-08-03
+review_by: 2026-11-03
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, graphrag, lightrag, metrics, claude-5]
 publish: false
 ---
 
@@ -19,6 +19,10 @@ publish: false
 **Профайл:** Методологическая карта — концепции, архитектуры, принципы. Сюда: теория и классификации (что такое RAG, какие бывают архитектуры памяти, что такое context rot). Как это реализовано в конкретных продуктах (Claude Code, Cursor, Projects, ChatGPT) → [search-mechanics.md](search-mechanics.md).
 
 ## Ключевые направления
+
+### Смена правил при смене поколения моделей
+
+Набор инструкций — не вечный актив: то, что повышало качество на прежних моделях, на поколении Claude 5 его снижает. Anthropic сняла более 80% системного промпта Claude Code без измеримой потери на евалах. Шесть сдвигов: правила → суждение модели; примеры → выразительные интерфейсы инструментов; всё upfront → progressive disclosure через скиллы и отложенную загрузку инструментов; повторы → одно простое описание инструмента; память в CLAUDE.md → авто-память; markdown-спека → богатые референсы (HTML-мокап, код, тест-сьюты, рубрики). Роли слоёв расходятся: системный промпт — про продукт, CLAUDE.md — про грабли репозитория, скиллы — проводники к информации, референсы — глубина задачи. Практический вывод: при смене поколения инструкции **сокращают**, а не дополняют, и это отдельная работа (в Claude Code для неё есть `/doctor`). → [context-engineering-claude5.md](context-engineering-claude5.md); сторона формулировок и поведения модели → [../prompting/claude-5-prompting.md](../prompting/claude-5-prompting.md).
 
 ### Архитектуры памяти AI-агентов — широкая карта
 
@@ -98,6 +102,7 @@ ICM (Van Clief, McDermott, 2026) — методология, где файлов
 
 ## Связанные файлы
 
+- [context-engineering-claude5.md](context-engineering-claude5.md) — новые правила сборки контекста для поколения Claude 5: шесть сдвигов, роли слоёв, ревизия накопленных инструкций
 - [agent-memory.md](agent-memory.md) — обзорная карта архитектур памяти AI-агентов (5 типов storage, 9 стратегий retrieval, бенчмарки)
 - [temporal-graphs.md](temporal-graphs.md) — Temporal Knowledge Graphs: Graphiti, Hindsight, bi-temporal model
 - [temporal-graphs-doronin.md](temporal-graphs-doronin.md) — Graphiti на практике (опыт @kdoronin_blog)

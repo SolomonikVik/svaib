@@ -2,9 +2,9 @@
 title: "Skills — исполняемые инструкции для AI — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-06-14
-review_by: 2026-09-14
-tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling, code-enforcement, fallback]
+updated: 2026-08-11
+review_by: 2026-11-11
+tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling, code-enforcement, fallback, verification, claude-5]
 publish: false
 ---
 
@@ -105,7 +105,9 @@ skill-name/
 
 ### Принципы
 
-**Iron Law — один скилл = одно нерушимое правило.** Каждый скилл строится вокруг ОДНОГО правила — якорь, который не даёт AI "уплыть" под давлением. AI рационализирует нарушение правил при давлении ("давай быстрее") — одно чёткое правило сложнее обойти, чем десять размытых. Примеры: TDD — "No production code without a failing test first." Debugging — "No fixes without root cause investigation first." Code review — "Verify before implementing."
+**Iron Law — один скилл = одно нерушимое правило.** Каждый скилл строится вокруг ОДНОГО правила — якорь, который не даёт AI "уплыть" под давлением. AI рационализирует нарушение правил при давлении ("давай быстрее") — одно чёткое правило сложнее обойти, чем десять размытых. Примеры: TDD — "No production code without a failing test first." Debugging — "No fixes without root cause investigation first." Code review — "Verify before implementing." Работает ровно потому, что правило ОДНО: перечень частных запретов вокруг него даёт обратный эффект (см. «Прескриптивность под поколение модели»).
+
+**Прескриптивность под поколение модели.** Скиллы, написанные под прежние поколения, часто слишком предписывающие и **ухудшают** вывод на моделях поколения Claude 5 — это прямая рекомендация Anthropic при миграции: ревизовать существующие скиллы и удалять старые инструкции, если поведение по умолчанию лучше. Масштаб эффекта: из системного промпта Claude Code снято более 80% текста без измеримой потери на coding-евалах. Натяжение с Iron Law разрешается так: жёсткое правило оправдано там, где шаг хрупкий и цена ошибки высока (принцип Degrees of Freedom ниже), и не оправдано как страховка от общей небрежности модели — этот слой инструкций теперь работает против качества. Практический критерий: правило пишется под наблюдаемую ошибку, а не впрок; вместо перечня запретов — одна фраза про намерение. Контекст сдвига и архитектура слоёв → [../context/context-engineering-claude5.md](../context/context-engineering-claude5.md).
 
 **Concise is Key — контекст как общий ресурс.** Контекстное окно делится между системным промптом, историей, метаданными всех скиллов. "Claude уже умный — добавляй только то, чего он не знает." Каждый абзац оправдывает стоимость в токенах. SKILL.md — до 5000 слов. Лаконичные примеры лучше многословных объяснений.
 
@@ -146,6 +148,8 @@ skill-name/
 **6. Code-enforced phases** — критичные шаги вынесены в bundled scripts, не в промпт. Каждая фаза скрипта возвращает data structure → следующая фаза принимает как input → пропуск невозможен. Промпт отвечает только за синтез готовых данных. Пример: [last30days-skill](last30days-skill.md) — Python-скрипт (~1800 строк) собирает данные с 8 платформ, SKILL.md (~400 строк) только синтезирует. Связь с принципом "Degrees of Freedom": для хрупких шагов — код, для творческих — промпт.
 
 **7. Fallback chains** — каждый внешний источник/API имеет цепочку fallback: Primary → Fallback 1 → Fallback 2 → Skip (с пометкой). Один недоступный источник не блокирует весь процесс. Graceful degradation вместо hard failure. Пример: [last30days-skill](last30days-skill.md) — Reddit: ScrapeCreators → OpenAI API → skip; Web: Parallel → Brave → OpenRouter → WebSearch.
+
+**8. Verification loop** — скилл как повторяющаяся проверка: агент прогоняет тесты, линтеры или кастомные чеки и чинит упавшее до перехода дальше. Четыре способа развёртывания: standalone (вызывается намеренно для сквозных проверок), embedded (шаги проверки дописаны в тело порождающего скилла), chained (скилл вызывает следующий по завершении), PR-wide (автоматически на каждый pull request). Порядок внедрения — от embedded к PR-wide, по мере устаканивания процедуры; цепочки стоят токенов. Ключевой принцип: проверяющий не должен быть автором — отдельный верификатор со свежим контекстом превосходит самокритику. Детали и встроенный `/verify` → [../coding/claude-code.md](../coding/claude-code.md).
 
 ### Два полюса архитектуры
 
@@ -284,7 +288,7 @@ Causes и solutions:
 
 При конфликте имён — побеждает более высокий уровень.
 
-**Установка:** Вручную (скопировать папку), CLI `npx skills add owner/repo` (Vercel, 40+ агентов), плагин-система Claude Code (`/plugin marketplace add`).
+**Установка:** Вручную (скопировать папку), CLI `npx skills add owner/repo` (Vercel, 40+ агентов), плагин-система Claude Code (`/plugin marketplace add`), CLI `npx plugins add owner/repo` — ставит плагин стандарта [Agent Plugins 1.0](../plugins/agent-plugins-standard.md) в любую распознанную цель (Claude Code, Cursor, Codex, Copilot CLI, VS Code и др.), транслируя формат под клиента. Скиллы переживают такую трансляцию, хуки и субагенты — нет.
 
 ### Где найти скиллы
 
@@ -345,3 +349,5 @@ Skills API: endpoint `/v1/skills`, параметр `container.skills` в Messag
 - [../agents/!agents.md](../agents/!agents.md) — Сводка по агентным системам
 - [../agents/mcp.md](../agents/mcp.md) — MCP: Skills + MCP комбинация
 - [../context/markdown-for-llm.md](../context/markdown-for-llm.md) — Как LLM видит wikilinks и YAML
+- [../context/context-engineering-claude5.md](../context/context-engineering-claude5.md) — почему скиллы под прежние поколения приходится сокращать: шесть сдвигов, архитектура слоёв контекста
+- [../prompting/claude-5-prompting.md](../prompting/claude-5-prompting.md) — формулировки и антипаттерны промптинга под то же поколение (в т.ч. запрет на «покажи ход мысли» в скиллах)

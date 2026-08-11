@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://svaib.com/schema/metrics-analysis/metrics-request.schema.json",
+  "title": "metrics-request v1 — запрос потребителя к раннеру вертикали",
+  "description": "Пишет gateway потребителя (в облаке — cloud-adapter) в run-каталог; run_vertical.py читает его через --request. Несёт meeting_date, а не period: закрытый период вычисляет вертикаль в гранулярности каждой метрики — gateway гранулярностью не владеет. Поля run_id / object_ref / meeting_date / period_basis — эхо-контур: раннер возвращает их в отчёте без изменений, gateway сверяет (report_mismatch).",
+  "type": "object",
+  "required": ["contract", "run_id", "object_ref", "meeting_date", "period_basis", "metrics", "plan_values"],
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "type": "object",
+      "required": ["name", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"const": "metrics-request"},
+        "version": {"type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$"}
+      }
+    },
+    "run_id": {"type": "string", "minLength": 1},
+    "object_ref": {"type": "string", "minLength": 1},
+    "meeting_date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$",
+      "description": "Дата встречи. Дефолт запроса: последний ЗАКРЫТЫЙ период относительно этой даты, в шкале самой метрики (неделя / месяц / квартал)."
+    },
+    "period_basis": {"type": "string", "enum": ["closed", "current"]},
+    "metrics": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "description": "Перечень запрошенных пар — «scope повестки × catalog вертикали». Пустой перечень запрещён: при пустом scope gateway раннер не зовёт (catalog_missing — его отказ, не раннера). Повтор пары запрещён. Отчёт обязан вернуть строку на каждую пару, ровно одну, в порядке запроса (принуждает validate_contract.py).",
+      "items": {
+        "type": "object",
+        "required": ["name", "file"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!/)(?!.*\\.\\.).+$",
+            "description": "Base-relative POSIX, без ведущего / и без «..»."
+          }
+        }
+      }
+    },
+    "plan_values": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Плановые значения целей — параметром от потребителя (владение по boundary §2: plan_conflict выносит verifier, план цели приходит снаружи). Пустой массив до согласования Э0-A.",
+      "items": {
+        "type": "object",
+        "required": ["name", "file", "value"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "file": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*\\.\\.).+$"},
+          "value": {"type": "number"}
+        }
+      }
+    }
+  }
+}

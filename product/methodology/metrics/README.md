@@ -29,6 +29,7 @@ version: 2
 | [README.md](../../plugin/skills/metrics-analysis/README.md) | — | Карта skill-папки |
 | [orchestrator-metrics.md](../../plugin/skills/metrics-analysis/orchestrator-metrics.md) | draft | Операционный пайплайн оркестратора: чем исполняется каждый шаг потока в проде. Приведён к `architecture.md` v2 |
 | [probe_xlsx.py](../../plugin/skills/metrics-analysis/probe_xlsx.py) | code | Helper разведки xlsx — выверен, архитектурно-нейтрален |
+| [defects.md](../../plugin/skills/metrics-analysis/defects.md) | draft | Дефект-лист семантического слоя по итогам первого живого прогона (30.07): 9 дефектов в 4 категориях, вход для правок `metrics-spec.md` / `architecture.md` |
 
 ## Scaffold
 

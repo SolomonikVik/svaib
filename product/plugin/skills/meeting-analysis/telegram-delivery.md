@@ -35,7 +35,7 @@ TELEGRAM_CHAT_ID=...
 
 ### `send_telegram.sh` в `skills/` рабочего пространства
 
-Источник правды — исполняемый файл [`channels/telegram/send_telegram.sh`](../channels/telegram/send_telegram.sh) (вынесен в общий канал, канон — [channels/telegram/SKILL.md](../channels/telegram/SKILL.md)). Здесь не дублируем код, чтобы не расходились. Ключевые моменты:
+Источник правды — исполняемый файл `channels/telegram/send_telegram.sh` (вынесен в общий канал, канон — channels/telegram/SKILL.md). Здесь не дублируем код, чтобы не расходились. Ключевые моменты:
 - Конвертирует markdown → HTML: `**жирный**` → `<b>жирный</b>`, убирает `- [ ]` и `---`
 - `parse_mode=HTML`
 - Экранирует HTML-символы (`&`, `<`, `>`)

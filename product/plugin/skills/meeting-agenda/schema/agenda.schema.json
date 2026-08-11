@@ -1,0 +1,567 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://svaib.com/schema/meeting-agenda/agenda.schema.json",
+  "title": "Повестка встречи — машинный формат",
+  "description": "Контракт agenda.json. Прозаические поля пишет LLM, машинные вливает assemble_agenda.py; строки метрик LLM не пишет и не переписывает. Порядок блоков схемой НЕ проверяется — единственный норматив порядка — константа BLOCK_ORDER в render_agenda.py, покрытая тестом (design.md Р1). Значения enum — машинные латинские идентификаторы; человеческие формулировки статусов живут в рендере, соответствие норме level.md указано в description каждого значения.",
+  "type": "object",
+  "required": [
+    "meeting",
+    "frame",
+    "metrics",
+    "tasks",
+    "focus",
+    "questions",
+    "flags"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "meeting": {
+      "description": "Шапка: объект встречи и её место в серии.",
+      "type": "object",
+      "required": [
+        "object_ref",
+        "object_kind",
+        "date",
+        "type",
+        "series_key"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "object_ref": {
+          "description": "Ссылка на объект встречи: путь узла, файл цели или профиль человека. Тип ссылки совпадает с контрактом строки `**Объект:**` в шапке протокола (design.md Р5).",
+          "type": "string",
+          "minLength": 1
+        },
+        "object_kind": {
+          "type": "string",
+          "enum": [
+            "node",
+            "goal",
+            "person"
+          ],
+          "description": "node — направление или компания; goal — файл цели внутри ракурса strategic; person — профиль в ракурсе team."
+        },
+        "date": {
+          "description": "Дата встречи, ISO.",
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "type": {
+          "description": "Тип встречи словом базы (регулярка, 1-on-1, планёрка).",
+          "type": "string",
+          "minLength": 1
+        },
+        "series_key": {
+          "description": "Ключ серии встреч. null — серия не определима, работает fallback «> 14 дней», факт попадает в flags (design.md Р5).",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prev_protocol_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "prev_meeting_date": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^([0-9]{4}-[0-9]{2}-[0-9]{2})?$"
+        }
+      }
+    },
+    "frame": {
+      "description": "Блок 1: рамка объекта управления. Ссылается на массив metrics, а не дублирует его.",
+      "type": "object",
+      "required": [
+        "goal_ref",
+        "metrics_ref"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "goal_text": {
+          "description": "Проза LLM: цель объекта в двух-трёх предложениях.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "goal_ref": {
+          "description": "Источник цели. null — у объекта нет привязанной цели (готовый сигнал проверки «цель ↔ метрика»).",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metrics_ref": {
+          "description": "Всегда строка \"metrics\": рамка ссылается на единственный массив метрик.",
+          "type": "string",
+          "enum": [
+            "metrics"
+          ]
+        },
+        "summary_line": {
+          "description": "Проза LLM: одна строка вывода под таблицей. Числа — только токенами.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "metrics": {
+      "description": "Перечень метрик объекта. Заполняется целиком кодом. Каждая метрика объекта представлена ровно одной строкой — развёрнутой либо внутри collapsed_names свёрнутой строки (design.md, «Правила перечня метрик объекта»).",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "metric_id",
+          "name",
+          "availability",
+          "freshness",
+          "verification",
+          "display_status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "metric_id": {
+            "description": "Каноническое имя метрики по metrics-spec (заголовок ### в metrics-файле).",
+            "type": "string",
+            "minLength": 1
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unit": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "direction": {
+            "description": "Куда метрике хорошо расти.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "up",
+              "down",
+              "target",
+              null
+            ]
+          },
+          "plan": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "plan_conflict": {
+            "description": "Дефект A2.1: у метрики несколько несовпадающих планов. true — колонка «План» остаётся пустой с пометкой, произвольный выбор запрещён.",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "fact": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "as_of": {
+            "description": "Дата среза значения. Не путать с modifiedTime источника — подстановка запрещена (level.md, design.md).",
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^([0-9]{4}-[0-9]{2}-[0-9]{2})?$"
+          },
+          "delta": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "trend": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "composition_confirmed": {
+            "description": "Состав разреза подтверждён паспортом для ОБОИХ сравниваемых периодов (design.md Р6). Без этого поля правило 5 валидатора неисполнимо: постфактум по agenda.json уже не видно, почему Δ отсутствует — потому что состав не подтверждён или потому что его забыли влить.",
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "availability": {
+            "type": "string",
+            "enum": [
+              "value",
+              "no_value",
+              "source_unavailable",
+              "value_error",
+              "source_unbound",
+              "blocked",
+              "not_attempted"
+            ],
+            "description": "Ось доступности. value — значение прочитано; no_value — в подключённом источнике не найдено; source_unavailable — книга не прочитана; value_error — ячейка отдаёт ошибку (div0, битая формула); source_unbound — источник метрике не назначен: записи о ней нет в карте источников базы, и угадывать её никто не вправе; blocked — чтение остановлено guard'ом (структура книги разошлась с раскладкой либо строка задвоена), число из такой книги недостоверно целиком; not_attempted — источник не исследовался вовсе (режим без вызова вертикали). not_attempted допустим ТОЛЬКО вместе с verification=not_run: записать no_value там, где чтения не было, значит машинно утверждать «в источнике не найдено» — ложь класса R2."
+          },
+          "freshness": {
+            "type": "string",
+            "enum": [
+              "in_period",
+              "before_period",
+              "undatable"
+            ],
+            "description": "Ось свежести. undatable — датировку колонки источник не даёт (A4.1)."
+          },
+          "verification": {
+            "type": "string",
+            "enum": [
+              "verified",
+              "mismatch",
+              "not_run"
+            ],
+            "description": "Ось верификации. mismatch — guard дал расхождение; not_run — сервис сверки недоступен (режим MVP до Этапа 3 fix-plan)."
+          },
+          "display_status": {
+            "type": "string",
+            "enum": [
+              "current",
+              "outdated",
+              "as_of_unknown",
+              "no_value",
+              "value_error",
+              "source_unavailable",
+              "source_unbound",
+              "blocked",
+              "unverified",
+              "verification_not_run"
+            ],
+            "description": "Пользовательский статус. Выводится КОДОМ из трёх осей по таблице приоритетов design.md Р1, полем суждения не является. Соответствие закрытому списку level.md: current=«актуально», outdated=«устарело», as_of_unknown=«дата среза неизвестна», no_value=«нет значения», value_error=«ошибка значения», source_unavailable=«источник недоступен», source_unbound=«источник не привязан», blocked=«чтение остановлено», unverified=«не сверено», verification_not_run=«сверка не выполнялась»."
+          },
+          "source_ref": {
+            "description": "Лист и ячейка источника текстом (deep-link отложен — MVP).",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "collapsed_names": {
+            "description": "Легальная свёртка: имена метрик, представленных этой строкой. Группа однородна по display_status и не содержит метрик с отклонением, красных и попавших в фокус-пункты.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "period": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Период значения в шкале самой метрики (2026-07, 2026-W31, 2026-Q2). Датировка, которую вертикаль знает всегда, в отличие от `as_of` — даты среза источника. Для статуса «устарело» период является законной датировкой: «данные за июль» руководителю понятнее, чем дата последнего пересчёта книги."
+          },
+          "granularity": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "week",
+              "month",
+              "quarter",
+              "year",
+              null
+            ],
+            "description": "Шкала периода метрики. Недельная метрика на встрече 3 августа сравнивается с прошлой неделей, а не с прошлым месяцем."
+          },
+          "period_partial": {
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "Период источника не закрыт: число неполное и сравнению с закрытыми периодами не подлежит."
+          }
+        }
+      }
+    },
+    "tasks": {
+      "description": "Блок 2: активные задачи и прогресс. text пишет LLM, stale и датные поля вливает код.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "text",
+          "source_ref",
+          "date_origin",
+          "stale"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner_source": {
+            "description": "Владелец пункта со ссылкой на источник знания о нём.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "due": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_ref": {
+            "description": "Обязателен: пункт без источника режется валидатором.",
+            "type": "string",
+            "minLength": 1
+          },
+          "source_date": {
+            "description": "Дата факта. null допустима только при date_origin=undatable.",
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^([0-9]{4}-[0-9]{2}-[0-9]{2})?$"
+          },
+          "date_origin": {
+            "type": "string",
+            "enum": [
+              "protocol",
+              "kit_record",
+              "decision",
+              "undatable"
+            ],
+            "description": "Откуда взята дата. Выведение из mtime файла запрещено (design.md Р5); undatable — дата не выводится, пункт остаётся и учитывается в flags."
+          },
+          "stale": {
+            "description": "Считает код: после source_date прошла встреча серии без подтверждённого обновления.",
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "focus": {
+      "description": "Блок 3: на чём сфокусироваться. Ядро ценности, пишет LLM. Лимит ≤3 проверяет валидатор.",
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "text",
+          "evidence",
+          "check_id"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "description": "Провенанс для аудита R2/R3: непустой, каждый элемент с путём и датой.",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "path",
+                "date"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "date": {
+                  "type": "string",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+                },
+                "quote": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            }
+          },
+          "check_id": {
+            "description": "Какая из 10 проверок каталога дала сигнал (references/agenda-contract.md).",
+            "type": "string",
+            "minLength": 1
+          },
+          "metric_ids": {
+            "description": "Метрики, о которых пункт. Без этой связи правило «метрика из фокус-пункта не сворачивается» неисполнимо: assembler иначе не знает, какую строку нельзя схлопывать.",
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "questions": {
+      "description": "Блок 4: что должно быть решено. Лимит ≤3.",
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision_owner": {
+            "description": "Только вместе с owner_source_ref: молча подставленный владелец решения режется валидатором.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "owner_source_ref": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "flags": {
+      "description": "Машинные сигналы деградации. Присутствуют всегда; пустое значение — тоже значение.",
+      "type": "object",
+      "required": [
+        "stale_tasks",
+        "unverified_count",
+        "undated_tasks_count",
+        "unowned_tasks_count",
+        "sources_missing",
+        "orphan_rows",
+        "checks_skipped"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "stale_tasks": {
+          "description": "Индексы протухших пунктов tasks[].",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "unverified_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "undated_tasks_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unowned_tasks_count": {
+          "description": "Пунктов без владельца. Владелец обязателен так же, как дата: неизвестен — пункт остаётся, но факт учтён и виден, а не растворён в тексте.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "sources_missing": {
+          "description": "Источники чек-листа со статусом «отсутствует» или «недоступно».",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "path",
+              "status"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "missing",
+                  "unreadable"
+                ]
+              },
+              "role": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
+        "orphan_rows": {
+          "description": "Строки источника, не привязанные ни к одной метрике ни одного файла клиента. Кандидаты в фокус-пункт, не молчание.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "checks_skipped": {
+          "description": "Проверки каталога, которым не хватило данных. Пропуск проверки без записи о нём — дефект формы (правило 11 валидатора).",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "check_id",
+              "reason"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "check_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "series_key_undefined": {
+          "description": "true — серия не определилась, свежесть считается по fallback «> 14 дней» (design.md Р5).",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

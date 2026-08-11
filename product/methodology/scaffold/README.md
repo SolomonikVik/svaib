@@ -1,7 +1,7 @@
 ---
 title: "Scaffold methodology — source of truth слоя scaffold"
 created: 2026-05-06
-updated: 2026-07-12
+updated: 2026-08-07
 version: 4.1
 status: final
 ---
@@ -18,7 +18,7 @@ Scaffold v4.1 строится как **composable management architecture**.
 - **Aspect** — управленческий ракурс: сторона, через которую смотрим на объект управления.
 - **Kit** — управленческая панель узла: overview, active, backlog, progress, decisions.
 - **Node** — узел: управляемая сущность в дереве, файл или папка, которая может расти.
-- **Infrastructure folders** — `_inbox/`, `meetings/`, `source/`, `extractors/`, `zz_archive/`.
+- **Infrastructure folders** — `_inbox/`, `_private/`, `meetings/`, `source/`, `extractors/`, `zz_archive/`.
 - **Client workspace folders** — свободные рабочие папки клиента (`docs/`, `contracts/`, `pages/` и т.д.).
 
 
@@ -36,7 +36,7 @@ Scaffold v4.1 строится как **composable management architecture**.
 | [deployment.md](deployment.md) | Развёртывание каркаса у клиента: стартовый минимум, триггеры расширения, выбор формы узла | При первичной сборке scaffold у клиента |
 | [deployment-node-review.md](deployment-node-review.md) | QA-гейт узла перед выгрузкой: промпт ревьюера по клиентскому канону scaffold | Перед финальной передачей scaffold клиенту |
 | [open-questions.md](open-questions.md) | Открытые вопросы v4.1: lifecycle миграций, визуальный UX, finance, нумерация | Когда тема упирается в нерешённый вопрос |
-| [scaffold-evolution-log.md](scaffold-evolution-log.md) | Историческая память: эволюция модели v1→v4, оценка по 5 осям | Когда нужно понять, почему пришли к v4 |
+| [scaffold-evolution-log.md](scaffold-evolution-log.md) | Историческая память: эволюция модели | Когда нужно понять, как развивалась модель |
 
 ## Маршруты чтения
 

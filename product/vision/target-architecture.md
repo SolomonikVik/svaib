@@ -24,13 +24,13 @@ status: draft
 
 - [00_masterplan.md](00_masterplan.md) — состав работы и решения по Vision.
 - [01_product-vision.md](01_product-vision.md) — целевое состояние продукта.
-- [03_cycles/01_strategy.md](03_cycles/01_strategy.md) — стратегия как координатная система и первый граф.
+- [02_contours/01_strategy.md](02_contours/01_strategy.md) — стратегия как координатная система управления.
 - ../_inbox/memory/memory-semantic-sidecar-views.md — scaffold + semantic sidecar + generated views.
 - [../architecture.md](../architecture.md) — текущий канон `Данные → Память → Помощники`, который будем эволюционировать.
 - [../methodology/scaffold/01_architecture.md](../methodology/scaffold/01_architecture.md) — composable management architecture.
 - [../methodology/memory/01_context_memory.md](../methodology/memory/01_context_memory.md) — текущий протокол контекстной памяти.
 - [../methodology/metrics/architecture.md](../methodology/metrics/architecture.md) — extractor, маршруты, snapshot, объяснимость.
-- [../04_decisions.md](../04_decisions.md) — принятые продуктовые решения.
+- [../05_decisions.md](../05_decisions.md) — принятые продуктовые решения.
 - ../_inbox/scaffold/2026-06-30-ai-memory-engineering-patterns.md — инженерные паттерны памяти.
 - ../_inbox/scaffold/2026-06-30-ai-memory-market-landscape.md — рыночные паттерны context layer / work graph.
 - ../meetings/zz_archive/2026-07-06_vision_transcript.md — обсуждение Vision и архитектурных развилок.
@@ -606,5 +606,5 @@ svaib не должен конкурировать с каждым инстру�
 1. Согласовать эту v0.1 как рабочую рамку или поправить развилки.
 2. Выбрать первый target view: стратегическая карта управления или meeting prep.
 3. Для выбранного view описать минимальные sources, entities, edges, route, output и write-back.
-4. После проверки на живом материале оформить accepted/proposed решения в [../04_decisions.md](../04_decisions.md).
+4. После проверки на живом материале оформить accepted/proposed решения в [../05_decisions.md](../05_decisions.md).
 5. Только после этого переносить изменения в [../architecture.md](../architecture.md), `methodology/memory/` и specs.

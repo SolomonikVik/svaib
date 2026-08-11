@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ответ редактора юнита-адресата на переезд записи",
+  "description": "Один вызов на wrong_file контролёра: запись твоя? где ей место? нет ли её у тебя уже? Подаётся командой submit relocation.",
+  "type": "object",
+  "required": ["eid", "editor_id", "accepted"],
+  "properties": {
+    "schema": { "const": "relocation/1" },
+    "eid": { "type": "string", "description": "сущность, которую переезд касается" },
+    "editor_id": { "type": "string", "description": "идентификатор редактора юнита-адресата" },
+    "accepted": { "type": "boolean", "description": "true — запись твоя; false — спор, решит пользователь" },
+    "target": {
+      "type": "object",
+      "required": ["file"],
+      "properties": {
+        "file": { "type": "string", "description": "файл юнита-адресата; обязателен при accepted: true" },
+        "section": { "type": "string" }
+      }
+    },
+    "duplicate": {
+      "type": "object",
+      "required": ["file", "quote"],
+      "properties": {
+        "file": { "type": "string" },
+        "quote": { "type": "string", "description": "дословная строка существующей записи — код проверит вхождение" }
+      },
+      "description": "предмет уже записан у адресата"
+    },
+    "note": { "type": "string", "description": "обязателен при accepted: false — предмет спора, уедет на экран" }
+  }
+}

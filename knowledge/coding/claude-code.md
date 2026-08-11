@@ -4,9 +4,9 @@ source: "https://code.claude.com/docs"
 source_type: docs
 status: processed
 added: 2026-01-30
-updated: 2026-03-12
-review_by: 2026-05-28
-tags: [claude-code, tools, plugins, mcp, hooks, agents, anthropic, permissions, sandbox, remote-control]
+updated: 2026-08-03
+review_by: 2026-11-03
+tags: [claude-code, tools, plugins, mcp, hooks, agents, anthropic, permissions, sandbox, remote-control, workflows, verification]
 publish: false
 ---
 
@@ -262,6 +262,48 @@ Hooks — автоматические перехватчики событий �
 
 **Паттерн:** main agent делает основную работу, sub-agents (code review, testing) работают в изолированных контекстах, возвращают только результаты — context-efficient approach.
 
+## Dynamic Workflows
+
+Claude пишет собственный харнес на лету под конкретную задачу. Механика: исполняется JavaScript-файл со специальными функциями создания и координации субагентов — каждый субагент получает своё контекстное окно и изолированную задачу.
+
+Три проблемы, которые это решает: **agentic laziness** (агент останавливается раньше, чем задача решена), **self-preferential bias** (агент предпочитает собственный результат при проверке — «верификатор с личным интересом не бывает честным»), **goal drift** (постепенная потеря требований на длинной дистанции).
+
+Шесть паттернов:
+
+| Паттерн | Суть |
+|---|---|
+| **Classify-and-act** | Классификатор определяет тип задачи и маршрутизирует к нужным агентам |
+| **Fan-out-and-synthesize** | Разбить на подзадачи, выполнить параллельно, синтезировать |
+| **Adversarial verification** | Отдельные агенты проверяют работу по рубрике |
+| **Generate-and-filter** | Сгенерировать много вариантов, отфильтровать по рубрике, дедуплицировать |
+| **Tournament** | N агентов решают задачу разными подходами, судья определяет победителя попарным сравнением |
+| **Loop until done** | Спаунить агентов до выполнения условия («нет новых находок»), а не фиксированное число проходов |
+
+Применения из практики Anthropic: миграции кода (Bun переписан с Zig на Rust через workflows), ранжирование больших наборов (1000+ элементов турниром), root cause analysis независимыми гипотезами, триаж очередей, проверка документов на соответствие CLAUDE.md специализированными верификаторами.
+
+**Границы.** Workflows тратят заметно больше токенов и оправданы на сложных дорогих задачах — «параллелизм и специализация должны окупить стоимость координации». Для обычного кодинга и одношаговых запросов — избыточны. Практика: явно называть нужный паттерн в промпте, задавать бюджет токенов, сохранять удачные в `~/.claude/workflows` или в скиллы.
+
+## Verification loops
+
+Повторяющийся цикл, где агент проверяет свою работу (тесты, линтеры, кастомные проверки) и чинит упавшее до перехода дальше. Встроенная точка входа — скилл `/verify`; дальше — интеграция тулчейна, code review на PR, GitHub Actions, скиллы валидации спеки, рубрики в Claude Managed Agents (отдельный агент-грейдер, провалы автоматически уходят на переделку).
+
+Четыре паттерна развёртывания собственных verification-скиллов:
+
+- **Standalone** — вызывается намеренно для сквозных проверок (security, accessibility)
+- **Embedded** — шаги проверки дописаны в тело порождающего скилла, срабатывают автоматически
+- **Chained** — скилл по завершении вызывает следующий; резервировать для устоявшихся процессов (стоимость токенов)
+- **PR-wide** — автоматически на каждый pull request, включать после того как цепочки стабилизировались
+
+Рекомендация источника: начинать со встроенного `/verify`, документировать точные команды сборки и тестов в CLAUDE.md, проверять embedded-верификацию на свежих задачах.
+
+## Ревизия конфигурации: `/doctor`
+
+Команда помогает «rightsize» скиллы и файлы CLAUDE.md — подсказывает, что стало избыточным. Появилась вместе с поколением Claude 5, где накопленные под прежние модели инструкции ухудшают результат. Контекст сдвига → [context/context-engineering-claude5.md](../context/context-engineering-claude5.md).
+
+## Отложенная загрузка инструментов
+
+Инструменты подгружают полные определения не сразу, а когда понадобились: в контексте изначально висят только имена, схема запрашивается поиском по ним. Частный случай progressive disclosure, перенесённый с уровня документов на уровень tool definitions — снимает часть постоянной нагрузки на контекст при большом числе подключённых MCP-серверов.
+
 ## Headless-режим (`claude -p`)
 
 `claude -p` — non-interactive CLI-вызов (не интерактивная сессия): скрипты, харнесы, автоматизация. Отличается поведением от интерактивного режима — три находки из эксплуатации eval-харнеса (найдено 17.07.2026, meeting-analysis eval-инстанс):
@@ -426,6 +468,7 @@ Effort и thinking budget — независимые параметры. High ef
 - **Cowork** — Anthropic перенёс ту же plugin-архитектуру в GUI для knowledge workers (sales, legal, finance). Формат плагинов идентичен. См. [tools/cowork.md](../tools/cowork.md)
 - **Механика поиска Claude Code** — как Claude Code ищет файлы (агентный grep без индекса, двухмодельная архитектура, сравнение с Cursor и Claude Projects). См. [context/search-mechanics.md](../context/search-mechanics.md)
 - **AI System Files** — CLAUDE.md в контексте ландшафта (AGENTS.md, GEMINI.md, soul.md), кросс-чтение, стандартизация AAIF, best practices и лимиты. См. [context/ai-system-files.md](../context/ai-system-files.md)
+- **Context engineering под Claude 5** — почему накопленные инструкции и скиллы приходится сокращать при смене поколения моделей. См. [context/context-engineering-claude5.md](../context/context-engineering-claude5.md)
 
 ## Источники
 
@@ -434,3 +477,5 @@ Effort и thinking budget — независимые параметры. High ef
 - [Claude Code Plugins Announcement (Oct 2025)](https://claude.com/blog/claude-code-plugins)
 - [anthropics/claude-plugins-official (GitHub)](https://github.com/anthropics/claude-plugins-official)
 - [Claude Code Sandboxing](https://www.anthropic.com/engineering/claude-code-sandboxing)
+- [A harness for every task: dynamic workflows in Claude Code](https://claude.com/blog/a-harness-for-every-task-dynamic-workflows-in-claude-code)
+- [Building verification loops in Claude Code with skills](https://claude.com/blog/building-verification-loops-in-claude-code-with-skills)

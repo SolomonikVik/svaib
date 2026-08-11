@@ -2,9 +2,9 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: processed
 added: 2026-01-30
-updated: 2026-07-21
+updated: 2026-08-03
 review_by: 2026-10-21
-tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code]
+tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code, workflows, claude-5]
 publish: false
 ---
 
@@ -67,6 +67,8 @@ publish: false
 Плюс практические заметки: corrections > waiting (OpenAI), парадокс надзора (Anthropic), делегирование D/R/O (OpenAI), end-of-day agents (Hashimoto). Практика 2026: пропускная способность команды упирается в ревью, а не в число агентов (4-8 worktrees/разработчика — норма, выше — bottleneck на ревью); кросс-модельное ревью работает асимметрично (сильная модель ревьюит — эффект больше); anti-slop — маленькие диффы и неторгуемые CI-гейты как требование, не пожелание.
 
 Индустриальные данные: OpenAI (1M строк, 0 вручную; в отчёте по Codex — 28.6% сотрудников гоняют 5+ параллельных воркфлоу), Anthropic (+67% PRs, автономность ×2), Spotify (no code since Dec 2025), METR (2025: агенты замедляли на 19%; 2026: разворот к ускорению, но данные сам METR называет слабыми; устойчиво — рутина ускоряется сильно, сложное почти нет). Полный синтез с источниками: [ai-dev-practices.md](ai-dev-practices.md).
+
+Что меняет поколение Claude 5. Харнес перестаёт быть только человеческой работой: агент собирает его сам под задачу (dynamic workflows — классификация, fan-out, adversarial verification, турниры, циклы до условия), а накопленные под прежние модели правила и скиллы приходится **сокращать**, а не дополнять. Узкое место смещается с формулировки правил на прояснение unknowns — разрыва между картой (промпт, скиллы) и территорией (реальный код). Реализация в Claude Code → [claude-code.md](claude-code.md); правила сборки контекста → [../context/context-engineering-claude5.md](../context/context-engineering-claude5.md); техники поиска unknowns → [../prompting/claude-5-prompting.md](../prompting/claude-5-prompting.md).
 
 ## AI-Ready Architecture — структура кода под AI-агентов
 

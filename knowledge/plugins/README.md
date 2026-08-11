@@ -7,6 +7,7 @@
 ## Файлы
 
 - [!plugins.md](!plugins.md) — сводка знаний
+- [agent-plugins-standard.md](agent-plugins-standard.md) — Agent Plugins 1.0: вендор-нейтральный стандарт упаковки (skills + MCP), расхождения с форматом Anthropic, CLI-трансляция
 
 ## Связи
 

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Карта домов встречи — выход узла map",
+  "description": "LLM строит карту по канону scaffold из сырья base-raw.json; код проверяет только форму: названное место существует в базе и не служебное.",
+  "type": "object",
+  "required": ["units"],
+  "properties": {
+    "schema": { "const": "map/1" },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["unit", "reason"],
+        "properties": {
+          "unit": {
+            "type": "string",
+            "description": "путь дома от корня базы: существующий каталог или md-файл"
+          },
+          "reason": {
+            "type": "string",
+            "description": "почему встреча касается этого дома"
+          }
+        }
+      }
+    },
+    "protocol_home": {
+      "type": "object",
+      "description": "где у ЭТОЙ базы живут протоколы встреч — по правилу самой базы, прочитанному в корневом README. Не нашёл правила — поля нет: ядро спросит человека на паузе 1. Выдуманный каталог хуже отсутствия.",
+      "required": ["dir", "evidence"],
+      "properties": {
+        "dir": {
+          "type": "string",
+          "description": "существующий каталог протоколов, путь от корня базы — обычно `<узел>/meetings`; ядро проверит существование"
+        },
+        "evidence": {
+          "type": "object",
+          "required": ["file", "quote"],
+          "description": "улика правила — той же формы, что placement_evidence операции: код проверяет, что строка действительно стоит в названном файле",
+          "properties": {
+            "file": { "type": "string", "description": "файл базы, где записано правило (обычно README.md)" },
+            "quote": { "type": "string", "description": "дословная строка, из которой правило прочитано" }
+          }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "расхождения структуры с каноном scaffold, о которых стоит сказать пользователю: узел без карты, необъявленный узел, отсутствующее досье"
+    }
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "schema_version": 2,
+  "description": "Единственный источник манифестов узлов и таблицы фаз пайплайна meeting-analysis. Модель — advisory для координатора: spine LLM не вызывает. `kind`: node — фаза ждёт артефакт субагента; hitl — решение человека; spine — команда самого spine (`command`).",
+  "pipeline": [
+    {"phase": "locate", "kind": "node", "node": "locate-context", "implemented": true},
+    {"phase": "l1", "kind": "node", "node": "extract-entities", "implemented": true},
+    {"phase": "confirm", "kind": "hitl", "node": null, "implemented": true},
+    {"phase": "deltas", "kind": "node", "node": "build-deltas", "implemented": true},
+    {"phase": "canon", "kind": "node", "node": "canonize", "implemented": true},
+    {"phase": "review", "kind": "node", "node": "review", "implemented": true, "export_command": "export-review"},
+    {"phase": "questions", "kind": "node", "node": "questions", "implemented": true},
+    {"phase": "compose", "kind": "spine", "node": null, "implemented": true, "command": "compose"},
+    {"phase": "accept", "kind": "hitl", "node": null, "implemented": true},
+    {"phase": "apply", "kind": "spine", "node": null, "implemented": true, "command": "apply"},
+    {"phase": "postcheck", "kind": "spine", "node": null, "implemented": true, "command": "postcheck"},
+    {"phase": "deliver", "kind": "node", "node": "protocol-telegram", "implemented": true, "optional": true},
+    {"phase": "finalize", "kind": "spine", "node": null, "implemented": true, "command": "finalize"}
+  ],
+  "nodes": {
+    "locate-context": {
+      "phase": "locate",
+      "implemented": true,
+      "model": "sonnet",
+      "prompt": "prompts/locate-context.md",
+      "references": ["references/routing.md"],
+      "inputs": [
+        {"name": "transcript", "from": "run.transcript", "kind": "path"},
+        {"name": "meetings_map", "from": "run.meetings_map", "kind": "path"}
+      ],
+      "output": {"path": "artifacts/context.json", "format": "json"},
+      "rework_limit": 2
+    },
+    "extract-entities": {
+      "phase": "l1",
+      "implemented": true,
+      "model": "sonnet",
+      "prompt": "prompts/extract-entities.md",
+      "references": [],
+      "inputs": [
+        {"name": "transcript", "from": "run.transcript", "kind": "path"},
+        {"name": "context", "from": "phase:locate.artifact", "kind": "path"},
+        {"name": "corrections", "from": "input:l1.corrections", "kind": "path", "optional": true}
+      ],
+      "output": {"path": "artifacts/summary.md", "format": "markdown"},
+      "rework_limit": 2
+    },
+    "build-deltas": {
+      "phase": "deltas",
+      "implemented": true,
+      "model": "sonnet",
+      "prompt": "prompts/build-deltas.md",
+      "references": ["references/routing.md", "references/formats.md"],
+      "inputs": [
+        {"name": "summary", "from": "phase:l1.artifact", "kind": "path"},
+        {"name": "context", "from": "phase:locate.artifact", "kind": "path"},
+        {"name": "corrections", "from": "input:deltas.corrections", "kind": "path", "optional": true}
+      ],
+      "output": {"path": "artifacts/deltas.json", "format": "json"},
+      "rework_limit": 2
+    },
+    "canonize": {
+      "phase": "canon",
+      "implemented": true,
+      "model": "sonnet",
+      "prompt": "prompts/canonize.md",
+      "references": ["references/routing.md"],
+      "inputs": [
+        {"name": "deltas", "from": "phase:deltas.normalized", "kind": "path"}
+      ],
+      "output": {"path": "artifacts/canon.json", "format": "json"},
+      "rework_limit": 2
+    },
+    "review": {
+      "phase": "review",
+      "implemented": true,
+      "model": "sonnet",
+      "prompt": "prompts/review.md",
+      "references": ["references/routing.md"],
+      "inputs": [
+        {"name": "package", "from": "review.package", "kind": "path"}
+      ],
+      "output": {"path": "artifacts/review/verdicts/", "format": "json"},
+      "rework_limit": 2,
+      "fan_out": "package"
+    },
+    "questions": {
+      "phase": "questions",
+      "implemented": true,
+      "model": "sonnet",
+      "prompt": "prompts/questions.md",
+      "references": [],
+      "inputs": [
+        {"name": "ledger", "from": "phase:review.artifact", "kind": "path"},
+        {"name": "summary", "from": "phase:l1.artifact", "kind": "path"}
+      ],
+      "output": {"path": "artifacts/questions.json", "format": "json"},
+      "rework_limit": 2
+    },
+    "protocol-telegram": {
+      "phase": "deliver",
+      "implemented": true,
+      "model": "sonnet",
+      "prompt": "prompts/protocol-telegram.md",
+      "references": [],
+      "inputs": [
+        {"name": "summary", "from": "phase:l1.artifact", "kind": "path"},
+        {"name": "decisions", "from": "deliver.decisions", "kind": "path"}
+      ],
+      "output": {"path": "artifacts/deliver.md", "format": "markdown"},
+      "rework_limit": 1
+    }
+  }
+}

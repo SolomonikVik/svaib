@@ -1,0 +1,58 @@
+{
+  "$comment": "Манифесты узлов: промпт, схема выхода, входы. Промпты остаются чистым контентом. Узел applier применяет принятое сам — по фактическому состоянию файлов; quote-judge — быстрая модель (haiku-класс). Пути `artifacts/…` во входах отсчитываются от рабочего каталога прогона, который называет `check` (`data.run_dir`); выходы узлов кладутся в `<run_dir>/inbox/`.",
+  "nodes": {
+    "map": {
+      "prompt": "prompts/map.md",
+      "schema": "schema/map.json",
+      "inputs": ["artifacts/base-raw.json", "transcript_rough"],
+      "retry": 1
+    },
+    "extract": {
+      "prompt": "prompts/extract.md",
+      "schema": "schema/brief.json",
+      "inputs": ["transcript", "map.units"],
+      "retry": 1,
+      "segment_threshold_tokens": 24000
+    },
+    "quote-judge": {
+      "prompt": "prompts/quote-judge.md",
+      "schema": "schema/quotes.json",
+      "inputs": ["quote_flags", "transcript", "brief"],
+      "retry": 1,
+      "model_class": "fast"
+    },
+    "unit-editor": {
+      "prompt": "prompts/unit-editor.md",
+      "schema": "schema/operation.json",
+      "inputs": ["artifacts/context/<unit>.json", "references/routing.md"],
+      "tools": "чтение файлов своего юнита (Read) — контекст даёт головы, «перечитай файл» требует инструмента",
+      "retry": 1,
+      "parallel": "per_unit",
+      "$comment": "переезд (wrong_file контролёра) отвечает этот же узел артефактом schema/relocation.json → submit relocation. Контекст юнита несёт gist встречи, назначенные сущности с правками паузы 1 и срез файлов юнита — отдельного артефакта назначений у узла нет. Транскрипт узлу не выдаётся: корпус цитат встречи для него — выжимка, ярус 1 судит по ней."
+    },
+    "unit-controller": {
+      "prompt": "prompts/unit-controller.md",
+      "schema": "schema/verdict.json",
+      "inputs": ["operations.unit", "unit_files", "brief", "map.units",
+                 "references/routing.md", "references/formats.md"],
+      "retry": 1,
+      "parallel": "per_unit",
+      "independent_from": "unit-editor"
+    },
+    "applier": {
+      "prompt": "prompts/applier.md",
+      "schema": "schema/applied.json",
+      "inputs": ["apply-material (render apply)", "references/formats.md"],
+      "tools": "чтение и точечная правка файлов базы (Read/Edit) плюс копирование файла (Bash cp) для протокола и транскрипта — обязательная часть контракта узла",
+      "retry": 0,
+      "parallel": "per_file_group",
+      "$comment": "retry 0: повторное применение — решение пользователя, не механики; большой write-set координатор делит на непересекающиеся группы файлов — граница группы по юниту — и склеивает отчёты в один submit applied. Раздел protocol материала несёт ПУТИ протокола и транскрипта, а не их тексты: файлы копируются, содержимое через модель не проходит"
+    },
+    "deliver": {
+      "prompt": "prompts/deliver.md",
+      "schema": "schema/delivery.json",
+      "inputs": ["delivery_material (render delivery)"],
+      "retry": 1
+    }
+  }
+}

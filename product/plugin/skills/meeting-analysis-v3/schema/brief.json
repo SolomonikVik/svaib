@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Выжимка встречи: ростер сущностей с цитатами и модальностью",
+  "type": "object",
+  "required": [
+    "schema",
+    "meeting",
+    "roster"
+  ],
+  "properties": {
+    "schema": {
+      "const": "brief/1"
+    },
+    "meeting": {
+      "type": "object",
+      "required": [
+        "gist",
+        "topic"
+      ],
+      "properties": {
+        "gist": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(_[a-z0-9]+)*$",
+          "description": "короткое название темы встречи: snake_case, английский — из него ядро строит имя файла протокола ({дата}_{тема}_summary.md)"
+        }
+      }
+    },
+    "roster": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "eid",
+          "type",
+          "thread",
+          "title",
+          "quote"
+        ],
+        "properties": {
+          "eid": {
+            "type": "string",
+            "pattern": "^[EH][0-9]{2,}$",
+            "description": "идентификатор внутри прогона"
+          },
+          "type": {
+            "type": "string"
+          },
+          "thread": {
+            "type": "string",
+            "description": "тема: одна тема — один доминирующий артефакт"
+          },
+          "title": {
+            "type": "string"
+          },
+          "quote": {
+            "type": "string",
+            "description": "нормализованное вхождение реплики транскрипта"
+          },
+          "modality": {
+            "enum": [
+              "committed",
+              "intention",
+              "deprioritized",
+              "cancelled",
+              "done_in_meeting"
+            ]
+          },
+          "frame": {
+            "type": "string"
+          },
+          "unit_hint": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "due": {
+            "type": "string",
+            "minLength": 1,
+            "description": "срок обязательства ровно так, как он прозвучал на встрече («до конца недели», «к 15-му»); ядро дат не вычисляет и не нормализует. Срок не прозвучал — поля нет"
+          }
+        }
+      }
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "eid": { "type": "string", "description": "сущность, которой вопрос касается (если есть)" },
+          "message": { "type": "string", "description": "вопрос пользователю — доедет до паузы 1" }
+        }
+      }
+    }
+  }
+}

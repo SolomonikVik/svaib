@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://svaib.com/schema/metrics-analysis/snapshot-manifest.schema.json",
+  "title": "snapshot-manifest v1 — машинная фиксация добытых snapshot'ов",
+  "description": "Пишет добытчик snapshot'ов: в облаке — init-контейнер-fetcher, в интерактивной среде — драйвер повестки на команде snapshot (машинный результат get_file_metadata). Два производителя — одна схема, владелец — трек metrics. Раннер берёт из манифеста title / modified_time (не выдумывает их из содержимого) и сверяет sha256 каждого файла; расхождение или отсутствие файла из манифеста — отказ snapshot_manifest_mismatch (rc = 1). Алгоритм свежести (stale_snapshot) один на обе среды: проверяет gateway ДО запуска раннера — manifest.run_id обязан совпасть с run_id текущего прогона; расхождение = stale_snapshot. Resume того же run_id признаёт свой snapshot валидным (идемпотентность). fetched_at — аудит и флаг «данные книги от…», в сравнении свежести не участвует; mtime файловой системы не используется вовсе.",
+  "type": "object",
+  "required": ["contract", "run_id", "fetched_at", "fetched_by", "sources"],
+  "additionalProperties": false,
+  "properties": {
+    "contract": {
+      "type": "object",
+      "required": ["name", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {"const": "snapshot-manifest"},
+        "version": {"type": "string", "pattern": "^1\\.[0-9]+\\.[0-9]+$"}
+      }
+    },
+    "run_id": {"type": "string", "minLength": 1, "description": "Прогон, которым добыт snapshot; gateway сверяет с текущим (stale_snapshot)."},
+    "fetched_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?[+-][0-9]{2}:[0-9]{2}$",
+      "description": "Когда добыт, ISO 8601 с явным смещением."
+    },
+    "fetched_by": {"type": "string", "enum": ["fetcher", "driver"], "description": "fetcher — init-контейнер облака; driver — драйвер повестки в интерактивной среде."},
+    "sources": {
+      "type": "array",
+      "uniqueItems": true,
+      "description": "Только адреса из перечня gateway (реестр + catalog); иной адрес добытчик не качает (unknown_source). Книга, которую добыть не удалось, в манифест не входит — раннер увидит её отсутствие и отдаст источнику status = unavailable. Уникальность source и path по массиву принуждает validate_contract.py.",
+      "items": {
+        "type": "object",
+        "required": ["source", "title", "modified_time", "path", "sha256"],
+        "additionalProperties": false,
+        "properties": {
+          "source": {"type": "string", "minLength": 1, "description": "Адрес книги (URL / fileId) — глобальный ключ, тот же, что в отчёте."},
+          "title": {"type": "string"},
+          "modified_time": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]+)?([+-][0-9]{2}:[0-9]{2}|Z)$",
+            "description": "modifiedTime книги как отдал Drive API (здесь Z допустим — это чужое значение, фиксируется дословно)."
+          },
+          "path": {
+            "type": "string",
+            "pattern": "^[^/]+\\.(xlsx|json)$",
+            "description": "Имя файла в --snapshot-dir, без подкаталогов: <fileId>.xlsx (боевой) или <имя>.json (слепок фикстур). Единственный источник соответствия «адрес → файл»."
+          },
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$", "description": "Хеш файла snapshot; раннер обязан сверить."}
+        }
+      }
+    }
+  }
+}

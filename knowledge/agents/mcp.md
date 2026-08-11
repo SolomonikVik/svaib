@@ -261,6 +261,7 @@ Production-ready или перспективные MCP-серверы, кото�
 - [agent-authorization.md](agent-authorization.md) — авторизация агентов и MCP-серверов: OAuth 2.1, authorization plane, agent gateway
 - [subagents.md](subagents.md) — агентные фреймворки и A2A протокол
 - [../tools/openclaw.md](../tools/openclaw.md) — OpenClaw использует MCP для интеграций
+- [../plugins/agent-plugins-standard.md](../plugins/agent-plugins-standard.md) — Agent Plugins 1.0: портативный `mcp.json` как один из двух компонентов вендор-нейтрального плагина
 - [../coding/claude-code.md](../coding/claude-code.md) — MCP как механизм расширения Claude Code
 - [../tools/cowork.md](../tools/cowork.md) — MCP-серверы в Cowork
 - [../coding/n8n-claude-code.md](../coding/n8n-claude-code.md) — Claude Code + n8n через MCP

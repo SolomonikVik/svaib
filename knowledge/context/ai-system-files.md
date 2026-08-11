@@ -4,9 +4,9 @@ source: "https://agents.md/"
 source_type: article
 status: processed
 added: 2026-02-28
-updated: 2026-06-19
+updated: 2026-08-03
 review_by: 2026-09-19
-tags: [claude-md, agents-md, dotfiles, ai-config, soul-md, memory, context-engineering, imports, hooks, codex]
+tags: [claude-md, agents-md, dotfiles, ai-config, soul-md, memory, context-engineering, imports, hooks, codex, claude-5]
 publish: false
 ---
 
@@ -147,6 +147,7 @@ LLM-generated файлы дублируют то, что агент и так н
 | **Модульность** | Дробить на маленькие файлы с условной активацией (globs, режимы). Progressive disclosure: инструкции только для части кодовой базы, в которой агент работает |
 | **Бизнес-контекст > структура** | Писать про что проект, текущую стадию, нестандартные требования — не описание файловой структуры |
 | **Compiler/linter > текст** | Если правило можно выразить через ESLint rule, tsconfig strict, pre-commit hook — это надёжнее текстовой инструкции |
+| **Грабли, а не карта** | Официальная позиция Anthropic для поколения Claude 5: в CLAUDE.md — краткое описание репозитория и **неочевидные подвохи** («типы лежат в одном монолитном файле»), а не то, что модель прочитает из файловой системы сама. Роль памяти ушла в авто-память, детали — в скиллы по ссылке → [context-engineering-claude5.md](context-engineering-claude5.md) |
 
 ### Anti-patterns
 

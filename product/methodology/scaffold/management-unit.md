@@ -1,7 +1,7 @@
 ---
 title: Management units — объекты управления в scaffold
 created: 2026-05-19
-updated: 2026-07-12
+updated: 2026-08-07
 status: final
 version: 4.1
 ---
@@ -57,7 +57,7 @@ marketing/
 | `README.md`        | карта папки и маршрутизация агента                                                       | [02_readme-spec.md](02_readme-spec.md)       |
 | Management aspects | управленческие ракурсы: strategic, team, metrics, projects, processes, knowledge         | [management-aspect.md](management-aspect.md) |
 | Management kit     | управленческая панель: overview, active, backlog, progress, decisions                    | [management-kit.md](management-kit.md)       |
-| Infrastructure folders | inbox, meetings, source, extractors, zz_archive                                      | [02_folder-spec.md](02_folder-spec.md)       |
+| Infrastructure folders | inbox, private, meetings, source, extractors, zz_archive                             | [02_folder-spec.md](02_folder-spec.md)       |
 | Client workspace folders | docs, contracts, pages, drafts и другие рабочие папки клиента                    | [02_folder-spec.md](02_folder-spec.md)       |
 | Дочерние units     | вложенные объекты управления                                                             | этот файл                                    |
 
@@ -167,7 +167,3 @@ clients/
     ├── deliverables/     ← материалы для контрагента
     └── docs/             ← рабочая папка клиента для юридических и исходных документов
 ```
-
-Контекст с более узким доступом размещается в ближайшей `_private/` по [общему канону](02_folder-spec.md#_private). Дополнительные файлы разворачиваются при необходимости.
-
-Шаблон клиентского проекта — [_templates/nodes/clients/client-name/](../../plugin/skills/scaffold/template/_templates/nodes/clients/client-name/).

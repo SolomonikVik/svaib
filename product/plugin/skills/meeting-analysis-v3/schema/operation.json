@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Пакет сущностных операций юнита — выход узла unit-editor",
+  "description": "Операция — единица изменения сущности, не правка файла. Якорей нет: куда именно внутри файла, решает узел applier по канону формы (references/formats.md). Код проверяет форму, принадлежность файла юниту и покрытие: каждая назначенная сущность получает судьбу.",
+  "type": "object",
+  "required": ["unit", "editor_id", "operations"],
+  "properties": {
+    "schema": { "const": "operations/1" },
+    "unit": { "type": "string" },
+    "editor_id": {
+      "type": "string",
+      "description": "кто предлагает; контролёр юнита обязан быть другим агентом"
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["eid", "op"],
+        "properties": {
+          "eid": { "type": "string", "description": "сущность ростера выжимки" },
+          "op": { "enum": ["new", "update", "done", "dropped", "deferred", "noop"] },
+          "proposed_text": {
+            "type": "string",
+            "description": "точный текст записи (new/update): пользователь видит его дословно; каждая закавыченная фраза объявляется в quote_sources — незадекларированная кавычка отбивает пакет. Закавыченной считается фраза внутри любой пары кавычек — «…», „…“, “…”, \"…\", '…' — любой длины; апостроф внутри слова кавычкой не является"
+          },
+          "quote_sources": {
+            "type": "array",
+            "description": "источник каждой закавыченной фразы текста записи; объявление, которому не отвечает ни одна кавычка, ошибкой не является",
+            "items": {
+              "type": "object",
+              "required": ["text", "source"],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "фраза ровно как она стоит внутри ВНЕШНЕЙ пары кавычек, вместе с вложенными кавычками: вложенная кавычка фразу не разрывает и своего объявления не требует"
+                },
+                "source": {
+                  "enum": ["meeting", "base"],
+                  "description": "meeting — фраза встречи из выжимки (транскрипт узлу не выдаётся), её судит судья цитат; base — строка файла базы, её проверяет код по названному файлу"
+                },
+                "source_file": {
+                  "type": "string",
+                  "description": "обязателен при source=base: файл базы, где эта строка стоит"
+                }
+              }
+            }
+          },
+          "target": {
+            "type": "object",
+            "required": ["file"],
+            "properties": {
+              "file": {
+                "type": "string",
+                "description": "файл своего юнита из фактического дерева; нового файла это не запрещает"
+              },
+              "section": {
+                "type": "string",
+                "description": "подсказка applier'у, куда внутри файла (заголовок секции); не якорь и не обязательство"
+              }
+            }
+          },
+          "placement_evidence": {
+            "type": "object",
+            "properties": {
+              "file": { "type": "string" },
+              "quote": {
+                "type": "string",
+                "description": "дословная строка-опора выбора дома; код проверяет существование, невалидная — пометка на экран"
+              }
+            }
+          },
+          "noop_reason": { "enum": ["already_covered", "not_valuable", "episode"] },
+          "journal_only": {
+            "type": "boolean",
+            "description": "судьба журнальная (cancelled без записи в базе): на экран не едет"
+          },
+          "cancel_quote": { "type": "string" },
+          "projections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["file"],
+              "properties": {
+                "file": { "type": "string", "description": "файл юнита-адресата проекции" },
+                "proposed_text": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

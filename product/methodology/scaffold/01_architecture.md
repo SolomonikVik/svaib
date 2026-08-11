@@ -1,7 +1,7 @@
 ---
 title: Scaffold architecture — требования и модель клиентского каркаса
 created: 2026-05-05
-updated: 2026-07-12
+updated: 2026-08-07
 version: 4.1
 status: final
 ---
@@ -45,7 +45,7 @@ Scaffold Second Value AI Brain — собираемая управленческ
 - **management unit** — объект управления: компания, направление, подразделение, филиал, продукт или клиентский контур
 - **management aspect** — управленческий ракурс на unit: стратегия, команда, метрики, проекты
 - **management kit** — управленческая панель узла: overview, active, backlog, progress, decisions
-- **infrastructure folders** — инфраструктура обработки: входящее, встречи, источники, архив
+- **infrastructure folders** — инфраструктура обработки: входящее, личное приватное пространство, встречи, источники, архив
 - **client workspace folders** — свободные рабочие папки клиента: документы, страницы, правила, материалы
 - **navigation** — служебные файлы и метки, связывающие папки между собой (README, YAML, ссылки)
 
@@ -120,7 +120,7 @@ Node — любая управляемая сущность в scaffold. Узл�
 - может содержать вложенные узлы
 - может содержать management aspects (как подпапки)
 - может подключать management kit (как файлы или папки)
-- может содержать infrastructure folders (`_inbox/`, `meetings/`, `source/`, `extractors/`, `zz_archive/`)
+- может содержать infrastructure folders (`_inbox/`, `_private/`, `meetings/`, `source/`, `extractors/`, `zz_archive/`)
 - может содержать client workspace folders (`docs/`, `contracts/`, `pages/` и т.д.)
 - описывается через README и YAML
 
@@ -193,7 +193,7 @@ scaffold/
 
 Помимо management folders, узел может содержать инфраструктуру обработки и свободные рабочие папки клиента.
 
-**Infrastructure folders** — контейнеры с ролью в AI-процедурах: `_inbox/`, `meetings/`, `source/`, `extractors/`, `zz_archive/`. Не являются управляемыми узлами.
+**Infrastructure folders** — контейнеры с ролью в AI-процедурах: `_inbox/`, `_private/`, `meetings/`, `source/`, `extractors/`, `zz_archive/`. Не являются управляемыми узлами.
 
 **Client workspace folders** — свободные рабочие папки клиента: `docs/`, `contracts/`, `pages/`, `drafts/` и другие удобные клиенту структуры. Scaffold не нормирует их внутреннее устройство.
 

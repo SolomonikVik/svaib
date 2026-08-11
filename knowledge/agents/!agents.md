@@ -1,10 +1,10 @@
 ---
 title: "Агентные системы — сводка знаний"
 status: processed
-updated: 2026-07-27
+updated: 2026-08-03
 added: 2026-01-30
 review_by: 2026-05-16
-tags: [agents, subagents, mcp, multi-agent, patterns, hosting]
+tags: [agents, subagents, mcp, multi-agent, patterns, hosting, workflows, verification]
 publish: false
 ---
 
@@ -55,6 +55,11 @@ AI-системы, способные автономно принимать ре
 | **Parallel Specialists** | Несколько агентов анализируют одно с разных ракурсов | Многоаспектная оценка (security + perf + architecture) |
 | **Closed Feedback Loop** | Agent → Eval → Analyzer → Evolver → Agent (next gen). Автономная эволюция промпта/кода через замкнутый цикл с измеримой обратной связью | Оптимизация метрики, прохождение тестов, prompt engineering at scale. Подробнее → [feedback-loop-evolution.md](feedback-loop-evolution.md) |
 | **Schema-Guided Reasoning (SGR)** | Структурирование рассуждений LLM через Pydantic-схемы (constrained decoding). Три компонуемых паттерна: Cascade (последовательность), Routing (ветвление), Cycle (повторение) | Предсказуемое поведение агентов, работа с дешёвыми моделями, аудитируемые решения. Подробнее → [sgr.md](sgr.md) |
+| **Adversarial verification** | Проверяющий агент отделён от автора и судит по рубрике. Мотив: агент предпочитает собственный результат, верификатор со своим интересом не бывает честным; свежий контекст превосходит самокритику | Везде, где цена незамеченной ошибки выше стоимости второго прогона |
+| **Tournament** | N агентов решают задачу разными подходами, судья выбирает победителя попарным сравнением | Ранжирование больших наборов, выбор дизайн-направления |
+| **Loop until done** | Спаунить агентов до выполнения условия («нет новых находок», «нет ошибок в логах»), а не фиксированное число проходов | Поиск неизвестного объёма: баги, находки, edge-кейсы |
+
+**Dynamic workflows** — сборка этих паттернов на лету: агент пишет собственный харнес под задачу (JS-файл с функциями создания и координации субагентов, у каждого своё контекстное окно). Лечит agentic laziness, self-preferential bias и goal drift, но стоит заметно больше токенов — «параллелизм и специализация должны окупить стоимость координации». Реализация в Claude Code → [../coding/claude-code.md](../coding/claude-code.md).
 
 ### Gateway-Agent-Skills-Memory
 Архитектурный паттерн: Gateway абстрагирует канал доставки, Agent — reasoning, Skills — модульные действия, Memory — персистентный контекст на Markdown. Skills как плагины + Memory на файлах + проактивность агента — рабочая комбинация для AI-ассистентов. Реализация паттерна: OpenClaw (→ [../tools/openclaw.md](../tools/openclaw.md)).
@@ -80,4 +85,5 @@ AI-системы, способные автономно принимать ре
 - **../skills/** — Skills как модуль агентных систем: формат SKILL.md, библиотеки, активация
 - **../coding/** — Claude Code как агентная платформа: субагенты, MCP, Swarm Mode
 - **../tools/** — Инструменты автоматизации (n8n, Dify) и готовые агентные продукты (OpenClaw, Manus)
-- **../context/** — Context Engineering, Memory — ключевой компонент эффективности агентов. Карта архитектур памяти агентов → [../context/agent-memory.md](../context/agent-memory.md)
+- **../context/** — Context Engineering, Memory — ключевой компонент эффективности агентов. Карта архитектур памяти агентов → [../context/agent-memory.md](../context/agent-memory.md); смена правил сборки контекста на поколении Claude 5 → [../context/context-engineering-claude5.md](../context/context-engineering-claude5.md)
+- **../prompting/** — промптинг долгоживущих агентов: effort, длинные прогоны, делегирование субагентам, память как файлы, инструмент send-to-user → [../prompting/claude-5-prompting.md](../prompting/claude-5-prompting.md)
