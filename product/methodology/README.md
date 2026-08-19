@@ -8,14 +8,13 @@
 
 - [methodology.md](methodology.md) — протокол чтения LLM, decision frames, масштабирование (❗️ файл устарел и требует тщательной переработки - на него не опираться и не читать)
 - [onboarding.md](onboarding.md) — последовательность освоения системы клиентом: от MyProfile до работающих ритуалов (❗️ файл устарел и требует тщательной переработки - на него не опираться и не читать)
-- [meeting_analysis.md](meeting_analysis.md) — методология анализа транскриптов встреч: выжимка (извлечение → классификация) + надстройки (DRAFT)
-- [meeting_overlays.md](meeting_overlays.md) — надстройки meeting-анализа
 
 ## Вертикали управленческих циклов
 
 Папки с методологией конкретных управленческих циклов. Точка входа в каждую вертикаль — её `README.md`.
 
 - [metrics/](metrics/) — вертикаль `metrics`: 6 слоёв архитектуры, HOWTO, rollout-playbook, intake-form, открытые вопросы. Вход — [`metrics/README.md`](metrics/README.md).
+- [rhythm/](rhythm/) — вертикаль `rhythm`: повестка и анализ встреч. Вход — [`rhythm/README.md`](rhythm/README.md).
 
 ## Методологии слоёв
 

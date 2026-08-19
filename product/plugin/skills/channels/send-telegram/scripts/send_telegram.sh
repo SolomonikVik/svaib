@@ -28,6 +28,15 @@ CHANNEL_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=_channel_common.sh
 source "$CHANNEL_SCRIPT_DIR/_channel_common.sh"
 
+# --- 0. Диагностика маршрута ------------------------------------------------
+# `--check` ничего не отправляет: печатает, чем канал будет слать и что для
+# этого настроено. Нужен ровно там, где раньше приходилось гадать: сообщение
+# ушло не туда или не ушло вовсе, а конфигурация видна только чтением .env.
+if [ "${1:-}" = "--check" ]; then
+  channel_report_route
+  exit 0
+fi
+
 # --- 1. Разбор аргументов ---------------------------------------------------
 channel_parse_args "$@" || exit 3
 INPUT="$CHANNEL_TEXT"

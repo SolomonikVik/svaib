@@ -10,8 +10,12 @@
 4. журнал: отсевы с уликами, принятый набор целиком, статусы записи;
 5. границы сводки участникам.
 
-Записью в базу ядро не занимается: применяет LLM-узел по фактическому
-состоянию файла (решение Эрика 09.08). Хранение и синхронизация базы — зона
+Предлагаемые изменения базы ядро не записывает: их применяет LLM-узел по
+фактическому состоянию файла (решение Эрика 09.08). Исключение ровно одно и
+названо: протокол встречи и архивную копию транскрипта кладёт в базу само ядро
+(решение Эрика 13.08) — это не предложение к записи, а артефакт разбора,
+подписанный человеком на паузе 1; текст его рендерит код, и файл появляется
+сразу после выжимки, а не в конце. Хранение и синхронизация базы — зона
 ответственности клиента; откат — версионная история его платформы.
 """
 
@@ -22,6 +26,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sys
 import tempfile
 import uuid
@@ -102,6 +107,11 @@ def atomic_write(path: Path, text: str) -> None:
     try:
         with os.fdopen(handle, "w", encoding="utf-8", newline="") as stream:
             stream.write(text)
+        # mkstemp отдаёт 0600: файл базы не должен отличаться правами от соседей —
+        # база живёт в git и в облачных папках, где 0600 читается как аномалия
+        mask = os.umask(0)
+        os.umask(mask)
+        os.chmod(tmp, 0o666 & ~mask)
         os.replace(tmp, path)
     except BaseException:
         Path(tmp).unlink(missing_ok=True)
@@ -182,6 +192,11 @@ class Run:
         self.manifest["state"] = state
         self.manifest["step"] = step
         write_json(self.manifest_path, self.manifest)
+        # протокол в базе идёт за состоянием прогона: его yaml-поле `status`
+        # называет этап, на котором разбор стоит. Одна точка вместо вызова из
+        # каждой фазы — иначе новая фаза однажды забудет обновить файл, и в базе
+        # останется статус, которого прогон давно не имеет
+        sync_protocol(self)
 
     def base_dir(self) -> Path:
         return state_root() / "svaib" / "ma" / "bases" / self.manifest["base_id"]
@@ -218,13 +233,22 @@ class Run:
         return path
 
     def read_base(self, rel: str) -> Optional[str]:
+        """Файл базы текстом — или ничего.
+
+        Нечитаемое (чужая кодировка, исчезнувший файл, путь наружу) означает
+        «источника нет», а не падение команды: база пользователя живёт своей
+        жизнью, и один файл в cp1251 не повод останавливать разбор.
+        """
         try:
             path = self.base_file(rel)
         except SpineError:
             return None
         if not path.is_file():
             return None
-        return read_text(path)
+        try:
+            return read_text(path)
+        except (OSError, UnicodeDecodeError):
+            return None
 
     def transcript_text(self) -> str:
         path = Path(self.manifest["transcript"]["path"])
@@ -347,7 +371,8 @@ def resolve_run_dir(args: argparse.Namespace) -> Path:
 
 # --- сырьё карты базы ---------------------------------------------------
 
-README_SECTIONS = ("Маршруты записи", "Содержимое папки", "Правила работы")
+README_SECTIONS = ("Маршруты записи", "Содержимое папки", "Правила работы",
+                   "Контекст перед разбором")
 #: Служебные деревья: холодный архив, входящее, приватное, шаблоны каркаса и
 #: техническая обвязка. Единственный владелец правила «это не база».
 SKIP_DIRS = {"node_modules", "__pycache__", "zz_archive", "_private", "clients-scaffold",
@@ -358,6 +383,28 @@ TEMPLATE_NAMES = {"template", "templates"}
 #: Пять канонических kit-имён в обеих формах — файл и развернувшаяся папка.
 #: Ядро классов не выводит: панель читается как факт сырья, решает LLM-узел.
 KIT_NAME = re.compile(r"^\d{2}_(?:overview|active|backlog|progress|decisions)(?:\.md)?$")
+#: Журнал решений панели узла. Канон kit (`management-kit.md`, final): «Принятые
+#: решения не переписываются; если решение устарело, оно помечается как
+#: Superseded со ссылкой на новое». Правка прежней записи там запрещена, и
+#: запрет держится кодом, а не прозой промпта — так велит канон формы файла:
+#: «Если нужен жёсткий запрет, он фиксируется отдельным validator/procedure, не
+#: текстом правила» (`02_file-spec.md`, final).
+#:
+#: Имя читается по канону панели во всех формах, которые он допускает: цифра —
+#: атрибут сортировки, а не часть имени (`decisions.md` = `05_decisions.md`), и
+#: любой файл кита вправе развернуться в папку (`decisions/`). Поэтому смотрим
+#: каждый сегмент пути, а не только имя файла.
+DECISION_LOG = re.compile(r"^(?:\d{2}_)?decisions(?:\.md)?$")
+
+
+def is_decision_log(rel: str) -> bool:
+    """Журнал решений — и файлом, и развернувшейся папкой.
+
+    Канон панели разрешает `05_decisions.md` вырасти в `05_decisions/`: тогда
+    журналом становится всё её содержимое, и правило append-only действует там
+    же. Смотрим все сегменты пути, а не только имя файла.
+    """
+    return any(DECISION_LOG.match(part.lower()) for part in rel.split("/") if part)
 
 
 def service_parts(parts: Sequence[str]) -> bool:
@@ -458,10 +505,20 @@ def build_base_raw(base: Path) -> Dict[str, Any]:
 
 
 def unit_exists(run: Run, unit: str) -> bool:
-    """Форма выбора карты: названное место существует в базе и не служебное."""
+    """Форма выбора карты: названное место существует в базе и не служебное.
+
+    Каталог встреч домом не бывает: канон scaffold зовёт его infrastructure
+    folder и говорит прямо — такие каталоги «не являются управляемыми узлами»
+    (`01_architecture.md`). Без этой проверки карта вправе назвать юнитом сам
+    `product/meetings`, и тогда срез записей встреч обходится с корня: редактор
+    получает протоколы как свои файлы (круг ревью 17.08).
+    """
     if not unit or unit.startswith("/") or ".." in unit.split("/"):
         return False
     if service_parts(tuple(unit.split("/"))):
+        return False
+    if is_historic_record(unit) or any(part.lower() == MEETINGS_DIR
+                                       for part in unit.split("/")):
         return False
     try:
         path = run.base_file(unit)
@@ -487,8 +544,56 @@ def base_dir_exists(run: Run, rel: str) -> bool:
         return False
 
 
+#: Запись встречи в базе: протокол разбора или архивная копия транскрипта.
+#: Это исторический слой — разбор его не читает и не правит, иначе собственная
+#: выжимка этого же прогона становится законной уликой дубля, и сущность тихо
+#: исчезает из разбора, не дойдя до экрана решений.
+MEETING_RECORD = re.compile(r"^\d{4}-\d{2}-\d{2}_.+_(?:summary|transcript)\.md$", re.I)
+
+#: Каталог записей встреч по канону scaffold (`02_folder-spec.md` § `meetings/`):
+#: infrastructure folder, который «хранит память встреч узла: протоколы, выжимки,
+#: ссылки на сырьё». Подпапка внутри — форма роста, и имена её произвольны
+#: (`one-to-one/`, `quarterly/`, `okr-3/`), поэтому исключается всё поддерево.
+#:
+#: Имя файла протокола каноном не закреплено так же жёстко, как имя каталога:
+#: живые базы держат рядом `2026-08-03_product_sync.md`, `..._summary_v1.md` и
+#: `README.md` — под `MEETING_RECORD` они не подходят, а протоколами являются.
+#: Каталог — надёжный признак, регекс имени остаётся страховкой на запись,
+#: положенную руками мимо него.
+MEETINGS_DIR = "meetings"
+
+
+def is_meeting_record(rel: str) -> bool:
+    return bool(MEETING_RECORD.match(rel.rsplit("/", 1)[-1]))
+
+
+def in_meetings_dir(rel: str) -> bool:
+    """Путь лежит в каталоге записей встреч — на любом уровне дерева."""
+    return any(part.lower() == MEETINGS_DIR for part in rel.split("/")[:-1] if part)
+
+
+def is_historic_record(rel: str) -> bool:
+    """Исторический слой: запись встречи по каталогу либо по имени файла.
+
+    Один предикат на все входы — контекст редактора, улики отсева, подсказки
+    адреса, объявленные источники чтения, выбор дома карты. Разъехавшись, они
+    дают обход: первый круг ревью 17.08 нашёл ровно это — каталог закрыли в
+    одном месте, а через объявление `reading_sources` протокол по-прежнему
+    заезжал в разбор.
+    """
+    return is_meeting_record(rel) or in_meetings_dir(rel)
+
+
 def unit_files(run: Run, unit: str) -> List[str]:
-    """Файлы юнита: дерево каталога без поддеревьев дочерних юнитов карты."""
+    """Файлы юнита: дерево каталога без поддеревьев дочерних юнитов карты и без
+    записей встреч — протоколы прошлых разборов узлам не показываются.
+
+    Каталог `meetings/` срезается целиком, вместе с подпапками: по канону
+    scaffold там живёт вся память встреч узла, включая выжимку ЭТОГО прогона.
+    Оставленный, он даёт круговую ссылку — свежий протокол доказывает сам себя,
+    и редактор списывает сущность в `already_covered` по собственному разбору
+    (живой прогон 14.08, юнит product).
+    """
     units = set(run.units())
     path = run.base_file(unit)
     if path.is_file():
@@ -499,9 +604,10 @@ def unit_files(run: Run, unit: str) -> List[str]:
         rel = "/".join(rel_parts)
         dirs[:] = sorted(name for name in dirs
                          if not service_parts(rel_parts + (name,))
+                         and name.lower() != MEETINGS_DIR
                          and (f"{rel}/{name}" if rel else name) not in units)
         for name in sorted(files):
-            if name.lower().endswith(".md"):
+            if name.lower().endswith(".md") and not is_meeting_record(name):
                 out.append(f"{rel}/{name}" if rel else name)
     return out
 
@@ -618,25 +724,53 @@ def cmd_check(args: argparse.Namespace) -> Dict[str, Any]:
         "base_realpath": str(base),
         "base_id": sha256_bytes(str(base).encode("utf-8"))[:12],
         "meeting_date": args.meeting_date,
+        "meeting_hint": {name: value for name, value in
+                         (("тип встречи", getattr(args, "meeting_kind", None)),
+                          ("цель встречи", getattr(args, "meeting_goal", None)))
+                         if value},
         "transcript": {"path": str(transcript.resolve()),
                        "sha256": sha256_bytes(body.encode("utf-8"))},
     })
     write_json(workspace / "artifacts" / "base-raw.json", raw)
     inbox = workspace / "inbox"
     inbox.mkdir(parents=True, exist_ok=True)
+    # дефолтный речевой контекст — до карты: без неё область сбора — корень и
+    # 01_company, то есть глобальные словари базы. Этого хватает штатному пути
+    # extract-first; пустой контекст — сигнал фоллбэка (map первым, по
+    # транскрипту: его область добавит юниты и досье)
+    run = Run(workspace)
+    context = build_reading_context(run)
+    declared = declared_reading_lines(run)
+    if declared["lines"]:
+        context["declared"] = declared
+    # отчёт сохраняется: подсказка next_action на ready читает факт контекста,
+    # а не пересобирает его на каждый вопрос «что дальше»
+    run.store("reading-context.json", context)
     data: Dict[str, Any] = {"directories": len(raw["directories"]),
                             "spine": SPINE_PATH,
                             "run_dir": str(workspace),
                             "inbox": str(inbox),
+                            # размер транскрипта решает, читать его одним
+                            # проходом или резать: порог узла — в nodes.json
+                            "transcript_bytes": len(body.encode("utf-8")),
+                            "reading_context": context,
                             "base_raw": str(workspace / "artifacts" / "base-raw.json")}
     # Старта, кроме check, у v3 нет — сравнение версий садится сюда, последним
     # шагом: прогон к этому моменту уже создан, рекомендация его не держит.
     update = skill_update(base)
     if update:
         data["skill_update"] = update
+    empty_context = not context.get("sources")
+    if empty_context:
+        next_text = ("речевой контекст базы пуст — фоллбэк: узел map читает "
+                     "транскрипт и строит карту по artifacts/base-raw.json → "
+                     "submit map (контекст соберётся по её области)")
+    else:
+        next_text = ("узел extract читает транскрипт с речевым контекстом "
+                     f"({context['file']}) → submit brief; карта строится после, "
+                     "по ростеру выжимки")
     return {"state": "ready", "step": "", "run_id": run_id,
-            "next": "узел map строит карту домов по artifacts/base-raw.json → "
-                    f"ответ узла сохрани в {inbox}/map.json → submit map",
+            "next": next_text,
             "data": data}
 
 
@@ -669,12 +803,42 @@ def raise_violations(run: Run, violations: List[V.Violation], phase: str) -> Non
     escalate = any((item.code, item.eid or None) in prior for item in violations)
     if escalate:
         run.event("question", code=sorted(codes)[0], eid=violations[0].eid or None,
-                  message="узел не исправил замечание со второй попытки — решает человек")
+                  message="разбор дважды не смог оформить это место — "
+                          "решение за вами")
     first = violations[0]
     raise SpineError(first.code, first.message, field=first.field, hint=first.hint,
                      issues=[item.as_dict() for item in violations],
                      error_class="question" if escalate else None,
                      data={"phase": phase})
+
+
+def drop_brief_quote_flags(run: Run) -> None:
+    """Флаги цитат прежней выжимки: они сняты с текста, которого больше нет.
+
+    Зеркало `drop_unit_quote_flags` для переподачи brief: зовётся ДО разбора
+    новой выжимки. Оставленный флаг держал бы экран в ожидании суда над
+    исчезнувшей цитатой, а оставленный вердикт — спорность по фразе, которой
+    в новом ростере нет.
+    """
+    flags = run.load("quote-flags.json")
+    if not flags:
+        return
+    kept = [row for row in flags.get("flags", [])
+            if row.get("stage") == "operations"]
+    dropped = [row.get("quote") for row in flags.get("flags", [])
+               if row not in kept]
+    if len(kept) != len(flags.get("flags", [])):
+        run.store("quote-flags.json", {"flags": kept})
+        run.event("quote_flags_dropped", message="переподача выжимки")
+    if not dropped:
+        return
+    verdicts = run.load("quote-verdicts.json")
+    if not verdicts:
+        return
+    live = [row for row in verdicts.get("quotes", [])
+            if row.get("quote") not in dropped]
+    if len(live) != len(verdicts.get("quotes", [])):
+        run.store("quote-verdicts.json", {"quotes": live})
 
 
 def store_quote_flags(run: Run, new_flags: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -694,8 +858,29 @@ def pending_quote_flags(run: Run) -> List[Dict[str, Any]]:
             if (row.get("eid"), row.get("quote")) not in verdicts]
 
 
+#: Поля lean-ростера — вход карты по штатному пути (extract-first): сущности
+#: без цитат и спецификаций. Карте нужен предмет разговора, а не дословность:
+#: цитаты удваивают размер и ничего не добавляют вопросу «чей это разговор».
+ROSTER_LEAN_ENTITY = ("eid", "type", "thread", "title", "author", "unit_hint",
+                      "owner")
+ROSTER_LEAN_MEETING = ("gist", "topic", "kind", "participants")
+
+
+def write_roster_lean(run: Run) -> Path:
+    """Ростер выжимки для узла map: транскрипт через LLM проходит один раз."""
+    brief = run.load("brief.json") or {}
+    meeting = brief.get("meeting") or {}
+    lean = {"meeting": {k: meeting.get(k) for k in ROSTER_LEAN_MEETING
+                        if meeting.get(k)},
+            "roster": [{k: row.get(k) for k in ROSTER_LEAN_ENTITY if row.get(k)}
+                       for row in brief.get("roster", []) or []]}
+    path = run.artifact("roster-lean.json")
+    write_json(path, lean)
+    return path
+
+
 def submit_map(run: Run, payload: Any) -> Dict[str, Any]:
-    require_state(run, ("ready", "mapped"))
+    require_state(run, ("ready", "mapped", "briefed"))
     raise_violations(run, V.validate_map(payload), "map")
     missing = [row["unit"] for row in payload.get("units", [])
                if not unit_exists(run, row.get("unit", ""))]
@@ -705,29 +890,136 @@ def submit_map(run: Run, payload: Any) -> Dict[str, Any]:
             field="map.units",
             hint="юнит — существующий каталог или md-файл базы; нет подходящего — "
                  "опиши предмет в findings, вопрос доедет до паузы 1")], "map")
+    declared_units = {row.get("unit") for row in payload.get("units", [])}
+    stray = {str(k): str(v) for k, v in (payload.get("hint_map") or {}).items()
+             if str(v) not in declared_units}
+    if stray:
+        raise_violations(run, [V.Violation(
+            "unknown_unit",
+            "hint_map ведёт в место вне карты: "
+            + "; ".join(f"{k!r} → {v!r}" for k, v in sorted(stray.items())),
+            field="map.hint_map",
+            hint="значение hint_map — юнит из units этой же карты")], "map")
     run.store("map.json", payload)
     for finding in payload.get("findings", []) or []:
         run.event("map_finding", message=str(finding))
+    if run.load("brief.json"):
+        # extract-first: выжимка уже сдана, карта пришла по её ростеру. Речевой
+        # контекст узлу extract больше не нужен — вместо него строится
+        # назначение, а смена состояния кладёт протокол в базу: дом только что
+        # стал известен
+        questions = rebuild_assignment(run)
+        run.set_state("briefed")
+        # контракт команды, а не побочный эффект смены состояния: протокол
+        # ложится в базу ЗДЕСЬ — дом только что стал известен. set_state выше
+        # уже синхронизировал, но фаза не сменилась (briefed → briefed), и
+        # полагаться на «sync зовётся и при том же состоянии» нельзя: явный
+        # вызов идемпотентен и переживёт любой рефакторинг set_state
+        sync_protocol(run)
+        pending = pending_quote_flags(run)
+        data: Dict[str, Any] = {"units": run.units(),
+                                "assignment": len(run.assignment()),
+                                "questions": questions}
+        if payload.get("reading_sources") or payload.get("counterparties"):
+            # молчание здесь читалось бы как «источники учтены» — а выжимка уже
+            # сдана, и перечитать контекст ей нельзя: поля работают только в
+            # фоллбэке, когда карта идёт до выжимки
+            data["note"] = ("reading_sources и counterparties этой карты не "
+                            "потребляются: выжимка уже сдана — эти поля "
+                            "работают только в фоллбэке (map до выжимки). "
+                            "Новые словари важны для чтения этой встречи — "
+                            "передай их пути узлу extract напрямую и переподай "
+                            "выжимку")
+        report = protocol_report(run)
+        if report:
+            data["protocol"] = report
+        return {"state": run.state, "step": run.step,
+                "next": ("узел quote-judge судит спорные цитаты → submit quotes"
+                         if pending else "render summary → decide --screen summary"),
+                "data": data}
     run.set_state("mapped")
-    return {"state": run.state, "step": run.step, "next": "submit brief",
-            "data": {"units": run.units()}}
+    context = build_reading_context(run)
+    declared = declared_reading_lines(run)
+    if declared["lines"]:
+        context["declared"] = declared
+    notes: List[str] = []
+    if context.get("rejected"):
+        # молчание в ответ на «поищи сам» читается как «ищи ещё»: координатор
+        # уже нашёл файл, и промах в имени роли обязан быть назван
+        notes.append("названные источники не взяты: "
+                     + "; ".join(f"{row['file'] or '—'} — {row['why']}"
+                                 for row in context["rejected"]))
+    if context["bytes"] > READING_CONTEXT_LOUD:
+        notes.append(f"речевой контекст велик — {context['bytes'] // 1024} КБ: узел "
+                     "прочитает его целиком. Дорого — сузь состав полем "
+                     "`reading_sources` карты")
+    if context["missing_roles"]:
+        # фоллбэк к суждению ровно там, где канон не сработал: файл мог
+        # называться иначе или лежать не на месте — это видно глазами, а не
+        # правилом, и переподача карты дешевле нового экрана
+        notes.append("канон не нашёл в базе: " + ", ".join(context["missing_roles"])
+                     + " — поищи эти файлы сам (имя с префиксом, чужая папка, "
+                       "другое название) и переподай карту с `reading_sources`; "
+                       "не нашёл — так и работаем")
+    nudge = "; ".join(notes) + "; " if notes else ""
+    return {"state": run.state, "step": run.step, "next": nudge + "submit brief",
+            "data": {"units": run.units(), "reading_context": context}}
 
 
 def submit_brief(run: Run, payload: Any) -> Dict[str, Any]:
-    require_state(run, ("mapped", "briefed"))
+    require_state(run, ("ready", "mapped", "briefed"))
     transcript = run.transcript_text()
     violations, flags = V.validate_brief(payload, transcript)
     raise_violations(run, violations, "brief")
+    resubmitted = bool(run.load("brief.json"))
+    if resubmitted:
+        # флаги и вердикты прежней выжимки сняты с текста, которого больше
+        # нет, — до сохранения новых, иначе стёрлась бы эта же подача
+        drop_brief_quote_flags(run)
     run.store("brief.json", payload)
+    lean = write_roster_lean(run)
     added = store_quote_flags(run, flags)
-    questions = rebuild_assignment(run)
+    has_map = bool(run.load("map.json"))
+    # без карты назначению не к чему приводить hint'ы — оно строится на
+    # `submit map`, когда дома известны (extract-first)
+    questions = rebuild_assignment(run) if has_map else []
+    # состояние меняется последним: на этой смене ядро кладёт выжимку в базу —
+    # уже сейчас, до паузы 1 (в extract-first — на `submit map`, как только
+    # прочитан дом протокола). Оборванный дальше разбор оставляет файл встречи
+    # на месте, со статусом того этапа, где он встал
     run.set_state("briefed")
     pending = pending_quote_flags(run)
+    data: Dict[str, Any] = {"assignment": len(run.assignment()),
+                            "questions": questions, "quote_flags": added,
+                            "roster_lean": str(lean)}
+    if resubmitted and has_map:
+        # карта пересчёта не получает: назначение перестроено, но дома и
+        # findings остались от прежнего ростера — молчание читалось бы как
+        # «карта учла правку»
+        data["note"] = ("карта осталась от прежнего ростера — если состав "
+                        "сущностей изменился существенно, переподай map по "
+                        "artifacts/roster-lean.json")
+    report = protocol_report(run)
+    if report:
+        data["protocol"] = report
+    if not has_map:
+        if not (run.load("reading-context.json") or {}).get("sources"):
+            # выжимка на пустом контексте законна, но молчать о ней нельзя:
+            # имена читались без резолверов, и рекомендованный путь был другой
+            data["context_note"] = ("речевой контекст базы был пуст — выжимка "
+                                    "читала имена без резолверов; штатная "
+                                    "рекомендация на такой базе — фоллбэк "
+                                    "(map первым, по транскрипту)")
+        judge = " · узел quote-judge судит спорные цитаты → submit quotes" \
+            if pending else ""
+        return {"state": run.state, "step": run.step,
+                "next": f"узел map строит карту домов по {lean} → submit map"
+                        + judge,
+                "data": data}
     return {"state": run.state, "step": run.step,
             "next": ("узел quote-judge судит спорные цитаты → submit quotes"
                      if pending else "render summary → decide --screen summary"),
-            "data": {"assignment": len(run.assignment()), "questions": questions,
-                     "quote_flags": added}}
+            "data": data}
 
 
 def rebuild_assignment(run: Run) -> List[Dict[str, Any]]:
@@ -739,6 +1031,11 @@ def rebuild_assignment(run: Run) -> List[Dict[str, Any]]:
     пользователю, а не молчаливый дефолт.
     """
     units = run.units()
+    # перевод свободных hint'ов («инженерия» → dev) даёт карта: extract домов
+    # базы не видит и пишет hint человеческим именем, а не путём
+    hint_map = {V.normalize_line(str(k)): str(v)
+                for k, v in ((run.load("map.json") or {}).get("hint_map") or {}).items()
+                if str(v) in units}
     questions: List[Dict[str, Any]] = []
     rows: List[Dict[str, Any]] = []
     default = units[0] if units else ""
@@ -746,16 +1043,21 @@ def rebuild_assignment(run: Run) -> List[Dict[str, Any]]:
         eid = str(item.get("eid", ""))
         edited = str(item.get("unit") or "")
         hint = edited or str(item.get("unit_hint") or "")
-        unit = hint if hint in units else unit_of_file(hint, units) if hint else None
+        unit = (hint if hint in units
+                else unit_of_file(hint, units)
+                or hint_map.get(V.normalize_line(hint))) if hint else None
         source = ("edit" if edited else
                   "hint" if unit == hint else ("normalized" if unit else "default"))
         if unit is None:
             unit = default
-            message = (f"выжимка называет место {hint!r}, которого нет "
-                       f"в карте — сущность назначена {unit!r}" if hint else
-                       f"выжимка не назвала место — сущность назначена {unit!r}, "
-                       f"поправь юнит, если дом другой")
-            questions.append({"kind": "unknown_place", "eid": eid, "message": message})
+            title = str(item.get("title") or "").strip()
+            named = f"«{title}»" if title else f"сущность {eid}"
+            message = (f"{named}: место {hint!r} в базе не найдено — "
+                       f"запись пойдёт в {unit!r}" if hint else
+                       f"{named}: место не названо — запись пойдёт в {unit!r}, "
+                       f"поправьте, если дом другой")
+            questions.append({"kind": "unknown_place", "eid": eid,
+                              "title": title or None, "message": message})
         rows.append({"eid": eid, "unit": unit, "source": source, "hint": hint or None})
     run.store("assignment.json", {"assignment": rows, "questions": questions})
     return questions
@@ -865,6 +1167,10 @@ def entity_body(item: Dict[str, Any]) -> Dict[str, Any]:
 
 # --- дом протокола встречи ----------------------------------------------
 
+#: Канонический узел компании: § «Корень scaffold». Держится в коде по той же
+#: причине, что имена kit-файлов, — это канон, а не догадка о конкретной базе.
+COMPANY_UNIT = "01_company"
+
 #: Холодный архив рядом с протоколом: сюда едет копия транскрипта. Имя то же,
 #: что у служебного дерева базы (`SKIP_DIRS`), — сырьё карты его не увидит, и
 #: транскрипт не станет фоном следующего разбора.
@@ -875,6 +1181,31 @@ def meeting_topic(run: Run) -> str:
     """Тема встречи из выжимки — вторая половина имени файла протокола."""
     brief = run.load("brief.json") or {}
     return str((brief.get("meeting") or {}).get("topic") or "").strip()
+
+
+def rule_dir_of(run: Run, named: str, quote: str) -> Optional[str]:
+    """Каталог, который улика правила называет: сам дом или папка над ним.
+
+    База часто называет правилом общий каталог протоколов, а раскладку внутри
+    него ведёт «Маршрутами записи» того же README — параметрически («okr-N/»,
+    «one-to-one/<фамилия>/»). Дословной строки под конкретную подпапку в базе
+    нет и быть не может, а протокол ей всё равно принадлежит: закрытого списка
+    имён в коде тем более быть не может — какие подпапки существуют, знает
+    README базы, а не продукт.
+
+    Нотариус от этого не слабеет: улика обязана назвать СУЩЕСТВУЮЩИЙ каталог
+    целиком, как и раньше, — просто им может оказаться родитель дома. Разница
+    между «улика назвала дом» и «улика назвала родителя» не теряется: во втором
+    случае дом выбрал узел, и адрес показывается человеку до записи.
+    """
+    candidate = named
+    while candidate:
+        if base_dir_exists(run, candidate) and V.mentions_path(quote, candidate):
+            return candidate
+        if "/" not in candidate:
+            return None
+        candidate = candidate.rsplit("/", 1)[0]
+    return None
 
 
 def protocol_home(run: Run) -> Dict[str, Any]:
@@ -909,43 +1240,436 @@ def protocol_home(run: Run) -> Dict[str, Any]:
     named = edited or str(declared.get("dir") or "").strip()
     row: Dict[str, Any] = {
         "dir": named or None,
+        "rule_dir": None,
+        "inferred": False,
         "source": ("edit" if edited else "map" if named else None),
         "evidence": None if edited else evidence,
         "verified": False,
         "issue": None,
     }
     if not named:
-        row["issue"] = ("правило базы о месте протоколов встреч не прочитано: "
-                        "узел карты его не назвал — назови каталог протоколов сам "
-                        "либо зафиксируй правило в README базы")
+        row["issue"] = ("в базе не нашлось правила о том, где хранить протоколы "
+                        "встреч — назовите каталог сами либо запишите правило "
+                        "в README базы")
         return row
     if not base_dir_exists(run, named):
-        row["issue"] = (f"каталог протоколов {named!r} в базе не существует "
-                        "либо он служебный — назови существующий")
-        return row
-    if edited:
-        row["verified"] = True
+        row["issue"] = (f"каталога протоколов {named!r} в базе нет либо он "
+                        "служебный — назовите существующий")
         return row
     quote = str((evidence or {}).get("quote") or "").strip()
     source_file = str((evidence or {}).get("file") or "").strip()
+    if edited:
+        # адрес назвал человек — улики он не требует; но если карта успела
+        # подтвердить каталог правила, архив транскрипта остаётся при нём:
+        # человек уточняет подпапку, а не переносит архив внутрь неё
+        confirmed = None
+        if quote and source_file and V.contains_fragment(run.read_base(source_file) or "", quote):
+            confirmed = rule_dir_of(run, named, quote)
+        row["rule_dir"] = confirmed or named
+        row["verified"] = True
+        return row
     if not quote or not source_file:
-        row["issue"] = (f"каталог протоколов {named!r} назван без улики правила: "
-                        "нужен файл и дословная строка, из которой правило прочитано")
+        row["issue"] = (f"каталог протоколов {named!r} назван без опоры: не указан "
+                        "файл базы и строка, из которой это правило прочитано")
         return row
     if not V.contains_fragment(run.read_base(source_file) or "", quote):
-        row["issue"] = (f"улика правила не подтвердилась: строки {quote!r} нет "
-                        f"в {source_file} — подтверди каталог протоколов сам")
+        row["issue"] = (f"опора не подтвердилась: строки {quote!r} в {source_file} "
+                        "нет — подтвердите каталог протоколов сами")
         return row
-    if not V.mentions_path(quote, named):
+    confirmed = rule_dir_of(run, named, quote)
+    if confirmed is None:
         # улика обязана подтверждать ДОМ, а не собственное существование:
         # настоящая строка правила, названная при чужом каталоге, проходила обе
         # прежние проверки — и протокол уезжал в чужой юнит (круг ревью, Н1)
-        row["issue"] = (f"улика правила не называет каталог {named!r}: строка "
-                        f"{quote!r} из {source_file} говорит о другом месте — "
-                        "подтверди каталог протоколов сам")
+        row["issue"] = (f"строка {quote!r} из {source_file} говорит о другом месте, "
+                        f"не о каталоге {named!r} и не о том, внутри которого он "
+                        "лежит — подтвердите каталог протоколов сами")
         return row
+    row["rule_dir"] = confirmed
+    row["inferred"] = confirmed != named
     row["verified"] = True
     return row
+
+
+#: Роли канона scaffold, которыми читается РЕЧЬ встречи. Имена не догадка
+#: скилла: `speech-aliases.md` заведён каноном ровно ради разбора встреч
+#: («чтобы AI правильно разбирал встречи» — миссия файла в шаблоне), `glossary`
+#: и `profile` объявлены § «Типовые смысловые файлы», `org-structure` —
+#: канонический файл ракурса team. Знать их — то же чтение канона, каким скилл
+#: уже знает имена kit-файлов и служебных папок.
+#:
+#: `full` — файл целиком: у словаря нет другого потребителя, кроме чтения речи.
+#: `head` — преамбула до первого `##`: кто это, одной шапкой. Именованные
+#: секции кодом не режутся: живая база уже зовёт «Термины» там, где v1 искал
+#: «Термины и сокращения», и точечный парсинг тихо даёт пусто.
+READING_ROLES: Dict[str, str] = {
+    "speech-aliases": "full",
+    "glossary": "full",
+    "org-structure": "full",
+    "profile": "head",
+    "company": "head",
+}
+
+#: Роли, которых база держит по одной на дом: их отсутствие — повод поискать
+#: глазами. Профиль и досье в этот список не входят — они срез узла, а не
+#: словарь базы.
+BASE_READING_ROLES = {"speech-aliases", "glossary", "org-structure"}
+
+#: Числовой префикс имени роли не меняет: `01_org-structure.md` — та же роль.
+ROLE_PREFIX = re.compile(r"^\d+[_-]")
+
+#: Секция README, которой база вправе назвать свои источники чтения речи.
+#: Канон README её не требует (пять его блоков — другие), поэтому это opt-in
+#: поверх канонического дефолта, а не условие работы.
+READING_CONTEXT_SECTION = "Контекст перед разбором"
+
+
+def role_of_file(name: str) -> Optional[str]:
+    stem = ROLE_PREFIX.sub("", name.rsplit("/", 1)[-1])
+    stem = stem[:-3] if stem.lower().endswith(".md") else stem
+    return stem if stem in READING_ROLES else None
+
+
+#: Потолок преамбулы. Срез до первого `##` предполагает, что заголовок близко;
+#: файл без заголовков вовсе отдал бы себя целиком — а профиль пользователя
+#: бывает и на десяток килобайт. Это предохранитель формы, а не фильтр смысла.
+HEAD_LIMIT = 4000
+
+
+def head_slice(body: str) -> str:
+    """Преамбула файла: всё до первого `##`, но не длиннее потолка.
+
+    Тот же срез, что v1 делал `awk` руками координатора, — только его делает
+    код до вызова модели: глубокие разделы профиля (стиль работы, зоны
+    развития, коучинг-лог) не попадают ни в выжимку, ни в контекст координатора.
+    """
+    out: List[str] = []
+    for line in body.splitlines():
+        if line.startswith("## "):
+            break
+        out.append(line)
+    text = "\n".join(out).strip()
+    if len(text) <= HEAD_LIMIT:
+        return text
+    return text[:HEAD_LIMIT].rstrip() + "\n\n*(шапка длинная — показано начало)*"
+
+
+#: Порог нормализации словарного файла роли `full`. Раздувает словарь не число
+#: записей, а журнал внутри них: даты подтверждений встреч, кейсы, мини-досье
+#: в ячейках (живые базы: 160–286 КБ при речевом ядре в единицы КБ; канонный
+#: шаблон — строка на человека). Нормализация сохраняет каждую строку-запись и
+#: режет только её хвост. Это правило формы, а не имён секций: точечный парсинг
+#: заголовков v1 тихо давал пусто, сюда он не возвращается.
+ROLE_FULL_LIMIT = 32_000
+#: Потолок хвоста записи — ячейки таблицы и прозаической строки. Канон и
+#: варианты живут в начале записи; длинный хвост — журнал подтверждений.
+#: Замер на живом словаре 280 КБ: масса байтов лежит в записях 100–400
+#: символов, потолок выше 120 нормализацию выхолащивает.
+CELL_LIMIT = 120
+LINE_LIMIT = 120
+
+
+#: Минимум, ниже которого предложение не считается ядром записи: защита от
+#: обрезки по инициалу («Т. Иванов») и по аббревиатуре в самом начале.
+TRIM_FLOOR = 40
+
+
+def _trim_tail(text: str, limit: int) -> str:
+    """Запись длиннее потолка режется до ПЕРВОГО предложения: канон словарной
+    записи — «кто/что это», первым предложением; дальше идёт журнал."""
+    text = text.strip()
+    if len(text) <= limit:
+        return text
+    for sep in (". ", "; "):
+        pos = text.find(sep, TRIM_FLOOR, limit)
+        if pos != -1:
+            return text[:pos + 1].rstrip() + " …"
+    return text[:limit].rstrip() + " …"
+
+
+def normalize_slice(body: str, rel: str) -> str:
+    """Словарь больше порога: каждая запись остаётся, хвосты усечены.
+
+    Таблица не теряет ни строки — усечены ячейки; прозаическая строка режется
+    до предложения в пределах потолка. Заголовки, разделители и короткие строки
+    проходят как есть. Полный файл остаётся в базе и назван в пометке — узел
+    видит, что читает срез, а не весь словарь.
+    """
+    raw = body.strip()
+    if raw.startswith("*(словарь нормализован кодом"):
+        # вход всегда сырой файл базы; guard делает повторный вызов
+        # безвредным (f(f(x)) = f(x)) вместо порчи собственной пометки
+        return raw
+    raw_bytes = len(raw.encode("utf-8"))
+    if raw_bytes <= ROLE_FULL_LIMIT:
+        return raw
+    out: List[str] = []
+    for line in raw.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("|") and not set(stripped) <= {"|", "-", ":", " "}:
+            indent = line[:len(line) - len(line.lstrip())]
+            cells = stripped.strip("|").split("|")
+            out.append(indent + "| "
+                       + " | ".join(_trim_tail(c, CELL_LIMIT) for c in cells) + " |")
+        elif len(stripped) > LINE_LIMIT and not stripped.startswith("#"):
+            indent = line[:len(line) - len(line.lstrip())]
+            out.append(indent + _trim_tail(stripped, LINE_LIMIT))
+        else:
+            out.append(line)
+    text = "\n".join(out).strip()
+    note = (f"*(словарь нормализован кодом: {raw_bytes // 1024} КБ → "
+            f"{len(text.encode('utf-8')) // 1024} КБ; длинные ячейки и абзацы "
+            f"усечены, записи сохранены все; полный файл — {rel})*")
+    return note + "\n\n" + text
+
+
+def home_area(run: Run, rel: str) -> str:
+    """Каталог дома: у юнита-файла свои соседи живут в его папке.
+
+    Дом бывает и md-файлом (`clients/acme.md`), и папкой. Профиль и досье
+    ищутся рядом с домом, поэтому область считается по каталогу — иначе дом-файл
+    не получил бы собственной шапки.
+    """
+    parts = [part for part in str(rel).split("/") if part]
+    try:
+        if parts and run.base_file(rel).is_file():
+            parts = parts[:-1]
+    except SpineError:
+        return ""
+    return "/".join(parts)
+
+
+def reading_areas(run: Run) -> List[str]:
+    """Где ищутся источники чтения речи: корень, компания, дома встречи и их
+    предки. Вся остальная база не читается — десять глоссариев несвязанных
+    направлений к этой встрече отношения не имеют, а фильтр здесь — карта,
+    которая уже сдана."""
+    areas: List[str] = ["."]
+    if base_dir_exists(run, COMPANY_UNIT):
+        areas.append(COMPANY_UNIT)
+    named = list(run.units()) + counterparties(run)
+    for rel in named:
+        parts = [part for part in home_area(run, rel).split("/") if part]
+        for depth in range(1, len(parts) + 1):
+            areas.append("/".join(parts[:depth]))
+    ordered: List[str] = []
+    for area in areas:
+        if area not in ordered:
+            ordered.append(area)
+    return ordered
+
+
+def counterparties(run: Run, rejected: Optional[List[Dict[str, str]]] = None
+                   ) -> List[str]:
+    """Досье, названные картой ради ЧТЕНИЯ речи.
+
+    Отдельно от `units`, потому что вопросы разные: `units` — чей это разговор
+    и куда писать; `counterparties` — чья речь звучит. Внутренний разбор про
+    клиента пишет в свои юниты, а имена и язык читает из его досье.
+    """
+    payload = run.load("map.json") or {}
+    out: List[str] = []
+    for rel in payload.get("counterparties", []) or []:
+        name = str(rel).strip().strip("/")
+        if not name:
+            continue
+        if not unit_exists(run, name):
+            if rejected is not None:
+                rejected.append({"file": name,
+                                 "why": "досье не найдено: такого места в базе нет "
+                                        "либо оно служебное"})
+            continue
+        if name not in out:
+            out.append(name)
+    return out
+
+
+def declared_sources(run: Run, rejected: Optional[List[Dict[str, str]]] = None
+                     ) -> List[Dict[str, str]]:
+    """Источники, названные картой руками: база отклонилась от канона.
+
+    Фоллбэк к суждению там, где дефолт не сработал: файл лежит не в
+    каноническом месте, зовётся иначе, живёт в чужой папке. Область здесь не
+    проверяется — в том и смысл, — но границы базы, служебные каталоги и записи
+    встреч закрыты так же, как везде.
+    """
+    payload = run.load("map.json") or {}
+    out: List[Dict[str, str]] = []
+    drop = rejected if rejected is not None else []
+    for row in payload.get("reading_sources", []) or []:
+        if not isinstance(row, dict):
+            drop.append({"file": "", "why": "источник описывается объектом {file, role}"})
+            continue
+        rel = str(row.get("file") or "").strip()
+        role = str(row.get("role") or "").strip() or role_of_file(rel) or "glossary"
+        if not rel:
+            drop.append({"file": "", "why": "имя файла не названо"})
+            continue
+        if role not in READING_ROLES:
+            drop.append({"file": rel, "why": f"роль {role!r} неизвестна — допустимы "
+                                             f"{sorted(READING_ROLES)}"})
+            continue
+        try:
+            path = run.base_file(rel)
+        except SpineError:
+            drop.append({"file": rel, "why": "путь выходит за пределы базы"})
+            continue
+        if not path.is_file():
+            drop.append({"file": rel, "why": "файла нет по этому пути"})
+            continue
+        if path.is_symlink():
+            drop.append({"file": rel, "why": "символическая ссылка не читается"})
+            continue
+        if is_historic_record(rel):
+            drop.append({"file": rel, "why": "это запись встречи, а не словарь базы"})
+            continue
+        if service_parts(tuple(rel.split("/"))):
+            drop.append({"file": rel, "why": "служебный каталог базы"})
+            continue
+        out.append({"file": rel, "role": role})
+    return out
+
+
+def area_files(run: Run, area: str) -> List[str]:
+    """Md-файлы каталога — с живого диска, а не из снимка старта.
+
+    Снимок `base-raw.json` заморожен на `check`, а между ним и картой проходит
+    вызов модели: в длинной сессии и на синхронизируемой папке файл успевает
+    появиться. Каталогов здесь единицы, обхода дерева нет — цена нулевая.
+    """
+    try:
+        path = run.base_file(area) if area != "." else run.base
+    except SpineError:
+        return []
+    if not path.is_dir():
+        return []
+    try:
+        return sorted(entry.name for entry in os.scandir(path)
+                      if entry.is_file(follow_symlinks=False)
+                      and entry.name.lower().endswith(".md"))
+    except OSError:
+        return []
+
+
+def collect_reading_sources(run: Run, rejected: Optional[List[Dict[str, str]]] = None
+                           ) -> List[Dict[str, str]]:
+    """Канонический дефолт плюс названное картой, в порядке близости к встрече."""
+    found: List[Dict[str, str]] = []
+    seen: Set[str] = set()
+    homes = {home_area(run, rel) for rel in list(run.units()) + counterparties(run)}
+    # дом, названный md-файлом, — сам себе шапка: соседей по имени у него нет
+    for rel in counterparties(run) + list(run.units()):
+        try:
+            if run.base_file(rel).is_file() and rel not in seen:
+                seen.add(rel)
+                found.append({"file": rel, "role": "profile", "source": "canon"})
+        except SpineError:
+            continue
+    for area in reading_areas(run):
+        # ракурс team живёт подпапкой узла: оргструктура канонически там
+        for directory in (area, f"{area}/02_team" if area != "." else "02_team"):
+            for name in area_files(run, directory):
+                role = role_of_file(name)
+                if role is None:
+                    continue
+                # профиль и досье читаются только у названных домов: чужая
+                # шапка к чтению этой речи отношения не имеет
+                if READING_ROLES[role] == "head" and area not in homes:
+                    continue
+                rel = name if directory == "." else f"{directory}/{name}"
+                if rel not in seen:
+                    seen.add(rel)
+                    found.append({"file": rel, "role": role, "source": "canon"})
+    for row in declared_sources(run, rejected):
+        if row["file"] not in seen:
+            seen.add(row["file"])
+            found.append({**row, "source": "declared"})
+    return found
+
+
+def build_reading_context(run: Run) -> Dict[str, Any]:
+    """Речевой контекст собирает КОД — и кладёт его файлом рядом с прогоном.
+
+    Узел extract читает транскрипт без базы, и это защита: фон, поданный
+    содержанием, протекает в выжимку. Но резолв имён, ASR-ошибок и жаргона
+    фоном не является — без него выжимка врёт в именах, а ошибка расходится по
+    всему конвейеру: владелец, профиль, маршрут.
+
+    Прошлая версия спрашивала базу, что читать, секцией, которой канон README
+    не знает: на каждой развёрнутой базе это давало пусто. Здесь состав решает
+    канон, область — карта, а суждение остаётся ровно там, где канон молчит:
+    база отклонилась — карта называет свои файлы (`reading_sources`).
+
+    Координатор получает ПУТЬ артефакта, а не текст: большой глоссарий в его
+    сессии — тот же класс дефекта, что прочитанный им транскрипт.
+    """
+    rejected: List[Dict[str, str]] = []
+    counterparties(run, rejected)
+    sources = collect_reading_sources(run, rejected)
+    blocks: List[str] = ["# Речевой контекст встречи", "",
+                         "Резолверы «кто и что»: имена, роли, термины, варианты "
+                         "произношения. Источником содержания выжимки не является.", ""]
+    hint = run.manifest.get("meeting_hint") or {}
+    if hint:
+        blocks += ["## О встрече со слов пользователя", ""]
+        blocks += [f"- {name}: {value}" for name, value in hint.items() if value]
+        blocks.append("")
+    used: List[Dict[str, Any]] = []
+    for row in sources:
+        body = run.read_base(row["file"])
+        if body is None:
+            # файл есть, а прочитать нечем: чужая кодировка или права. Молчание
+            # здесь означало бы «словаря в базе нет», а он есть и не работает
+            rejected.append({"file": row["file"],
+                             "why": "файл не читается: не UTF-8 либо нет прав"})
+            continue
+        if READING_ROLES[row["role"]] == "head":
+            text = head_slice(body)
+        else:
+            text = normalize_slice(body, row["file"])
+        if not text:
+            continue
+        blocks += ["---", "", f"## Источник: {row['file']} · роль: {row['role']}",
+                   "", text, ""]
+        entry = {**row, "bytes": len(text.encode("utf-8"))}
+        raw_bytes = len(body.strip().encode("utf-8"))
+        if entry["bytes"] < raw_bytes:
+            entry["raw_bytes"] = raw_bytes
+        used.append(entry)
+    path = run.artifact("reading-context.md")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    text = "\n".join(blocks).rstrip() + "\n"
+    atomic_write(path, text)
+    # спрашивается только то, что база держит для чтения речи как таковой:
+    # профиль и досье — срез конкретного узла, их отсутствие означает лишь, что
+    # узел не развёрнут, и посылать координатора искать их по базе незачем
+    missing = sorted(BASE_READING_ROLES - {row["role"] for row in used})
+    report = {"file": str(path), "sources": used, "missing_roles": missing,
+              "areas": reading_areas(run), "bytes": len(text.encode("utf-8"))}
+    if rejected:
+        report["rejected"] = rejected
+    return report
+
+
+#: Порог, после которого о размере контекста говорят вслух. Нормализация выше
+#: уже срезала журнальные хвосты словарей; контекст всё ещё велик — значит,
+#: велико само число записей, и решение о сужении состава остаётся карте и
+#: человеку, а не машинному ножу.
+READING_CONTEXT_LOUD = 120_000
+
+
+def declared_reading_lines(run: Run) -> Dict[str, Any]:
+    """Объявление базы, если она его завела: opt-in поверх канона."""
+    home = protocol_home(run)
+    for directory in (str(home.get("rule_dir") or ""), ""):
+        rel = f"{directory}/README.md" if directory else "README.md"
+        body = run.read_base(rel)
+        if not body:
+            continue
+        found = readme_sections(body, (READING_CONTEXT_SECTION,))
+        if found.get(READING_CONTEXT_SECTION):
+            return {"source": rel, "lines": found[READING_CONTEXT_SECTION]}
+    return {"source": None, "lines": []}
 
 
 def protocol_targets(run: Run) -> Optional[Dict[str, str]]:
@@ -960,16 +1684,22 @@ def protocol_targets(run: Run) -> Optional[Dict[str, str]]:
     if not home["verified"] or not topic:
         return None
     stem = f"{run.manifest['meeting_date']}_{topic}"
+    # Архив сырья висит при каталоге ПРАВИЛА, а не при выбранной подпапке:
+    # база держит один архив транскриптов на весь каталог протоколов, и
+    # `zz_archive` в каждой тематической подпапке — новая папка в чужой
+    # структуре, которой разбор заводить не вправе.
+    archive_root = str(home.get("rule_dir") or home["dir"])
     return {"dir": str(home["dir"]),
+            "rule_dir": archive_root,
             "summary": f"{home['dir']}/{stem}_summary.md",
-            "transcript": f"{home['dir']}/{PROTOCOL_ARCHIVE}/{stem}_transcript.md"}
+            "transcript": f"{archive_root}/{PROTOCOL_ARCHIVE}/{stem}_transcript.md"}
 
 
 def protocol_absence(run: Run) -> Optional[Dict[str, Any]]:
     """Почему протокола в базе НЕ будет — именованным полем и человеческим текстом.
 
-    Дом не подтверждён — адреса нет, раздел `protocol` из материала применения
-    просто исчезает. Исчезнувшее поле не видит никто: шаг тихо не случается, и
+    Дом не подтверждён — адреса нет, и выжимка в базу не ложится вовсе.
+    Молчание тут не видит никто: шаг тихо не случается, и
     замечают это через недели по обрыву дат в базе — ровно тот класс дефекта,
     который чинит весь этот пакет. Поэтому отсутствие называется там же, где
     стояло бы присутствие: в материале применения и в состоянии прогона.
@@ -1021,13 +1751,29 @@ def summary_questions(run: Run) -> List[Dict[str, Any]]:
         else:
             out.append({"kind": "node_question", "message": str(question)})
     out.extend(assignment.get("questions", []))
+    titles = roster_titles(run)
     for eid in sorted(fabricated_eids(run)):
+        title = titles.get(eid, "")
+        named = f"«{title}»" if title else f"сущность {eid}"
         out.append({"kind": "quote_fabricated", "eid": eid,
-                    "message": f"цитата-опора сущности {eid} не подтверждена: "
-                               f"судья не нашёл её смысла в транскрипте"})
+                    "title": title or None,
+                    "message": f"{named}: цитата, на которой стоит эта запись, "
+                               "не подтвердилась — такой фразы на встрече "
+                               "не прозвучало"})
     home = protocol_home(run)
     if home["issue"]:
         out.append({"kind": "protocol_home", "message": home["issue"]})
+    elif home.get("inferred"):
+        # дом внутри каталога правила выбрал узел, а не улика: человек видит
+        # адрес до записи и вправе назвать другой. Без правки подтверждение
+        # экрана означает согласие — лишнего цикла это не стоит
+        targets = protocol_targets(run)
+        where = (targets or {}).get("summary") or f"{home['dir']}/…"
+        out.append({"kind": "protocol_home",
+                    "message": f"протокол встречи ляжет в {where} — подпапку выбрал "
+                               f"разбор по маршрутам записи каталога "
+                               f"{home['rule_dir']!r}; подтвердите или назовите "
+                               "другой каталог"})
     out.extend(open_escalations(run))
     return out
 
@@ -1035,9 +1781,20 @@ def summary_questions(run: Run) -> List[Dict[str, Any]]:
 def open_escalations(run: Run) -> List[Dict[str, Any]]:
     """Эскалации «узел не исправил со второй попытки» доезжают до экранов,
     а не остаются строкой events.jsonl, которую никто не читает."""
-    return [{"kind": "node_escalation", "eid": event.get("eid"),
-             "message": event.get("message"), "code": event.get("code")}
-            for event in run.events() if event.get("event") == "question"]
+    titles = roster_titles(run)
+    out: List[Dict[str, Any]] = []
+    for event in run.events():
+        if event.get("event") != "question":
+            continue
+        eid = str(event.get("eid") or "")
+        title = titles.get(eid, "")
+        message = str(event.get("message") or "")
+        if title:
+            message = f"«{title}»: {message}"
+        out.append({"kind": "node_escalation", "eid": eid or None,
+                    "title": title or None, "message": message,
+                    "code": event.get("code")})
+    return out
 
 
 def summary_groups(run: Run) -> Dict[str, List[Dict[str, Any]]]:
@@ -1097,6 +1854,10 @@ def summary_state(run: Run) -> Dict[str, Any]:
     return {"intent": "confirm_summary",
             "gist": (brief.get("meeting") or {}).get("gist") or brief.get("gist"),
             "topic": meeting_topic(run) or None,
+            # метаданные и нарратив — тело протокола: они подписываются вместе
+            # с ростером, иначе человек подтверждает не тот файл, который ляжет
+            # в базу (тот же закон, что у дома протокола)
+            "meeting": brief.get("meeting") or {},
             "protocol": {key: home[key]
                          for key in ("dir", "source", "evidence", "verified")},
             "meeting_questions": groups["meeting_questions"],
@@ -1106,16 +1867,33 @@ def summary_state(run: Run) -> Dict[str, Any]:
             "roster": roster}
 
 
+#: Тяжёлые части метаданных: нарратив на три абзаца и ключевые цитаты — тело
+#: файла, а не экран. В коротком показе они превратили бы «короткий экран» в
+#: чтение вслух того, что человек и так откроет в базе.
+SUMMARY_HEAVY = ("narrative", "key_quotes")
+
+
 def summary_view(run: Run, full: bool) -> Dict[str, Any]:
     """Показ паузы 1: полный — ровно подписанное состояние, короткий — оно же
-    без построчного ростера (его место занимают счётчики). Других различий
-    между формами нет."""
+    без построчного ростера (его место занимают счётчики) и без тяжёлых частей
+    метаданных. Подпись считается от полного состояния в обеих формах."""
     state = summary_state(run)
-    return state if full else {k: v for k, v in state.items() if k != "roster"}
+    if full:
+        return state
+    short = {k: v for k, v in state.items() if k != "roster"}
+    meeting = short.get("meeting")
+    if isinstance(meeting, dict):
+        short["meeting"] = {k: v for k, v in meeting.items() if k not in SUMMARY_HEAVY}
+    return short
 
 
 def render_summary(run: Run, full: bool) -> Dict[str, Any]:
     require_state(run, ("briefed", "confirmed"))
+    if not run.load("map.json"):
+        raise SpineError(
+            "map_missing",
+            "карты ещё нет — пауза 1 без домов, находок и назначения не собирается",
+            hint="узел map строит карту по artifacts/roster-lean.json → submit map")
     pending = pending_quote_flags(run)
     if pending:
         raise SpineError("phase_order",
@@ -1150,12 +1928,13 @@ def decide_summary(run: Run, payload: Dict[str, Any], digest: str) -> Dict[str, 
     # журналируется — отказ по любому элементу не оставляет в журнале строк
     # о правках, которых нет в артефактах (круг 3: Sonnet P0-1, kimi m1)
     known = {str(item.get("eid")) for item in run.roster()}
+    titles = roster_titles(run)
     units = run.units()
     edits: List[Tuple[str, Dict[str, Any]]] = []
     for edit in payload.get("edits", []) or []:
         eid = str(edit.get("eid", ""))
         if eid not in known:
-            raise SpineError("bad_usage", f"правка неизвестной сущности {eid}", field="edits")
+            raise SpineError("bad_usage", f"правка неизвестной записи {eid}", field="edits")
         fields = {k: v for k, v in edit.items()
                   if k in ("title", "type", "modality", "owner", "due", "unit") and v}
         unit_value = str(fields.get("unit") or "")
@@ -1163,18 +1942,22 @@ def decide_summary(run: Run, payload: Dict[str, Any], digest: str) -> Dict[str, 
                 and not unit_of_file(unit_value, units):
             # отказ здесь, а не вопрос после подтверждения: вопрос, рождённый
             # после экрана, никто не увидит (kimi m10)
+            named = titles.get(eid) or eid
             raise SpineError("unknown_unit",
-                             f"правка {eid}: юнита {unit_value!r} нет в карте",
-                             field="edits", hint=f"юниты карты: {units}")
+                             f"правка «{named}»: места {unit_value!r} в базе нет",
+                             field="edits",
+                             hint=f"места этой встречи: {units}")
         edits.append((eid, fields))
     removals: List[Tuple[str, str]] = []
     for row in payload.get("withdraw", []) or []:
         eid = str(row.get("eid", ""))
         if eid not in known:
-            raise SpineError("bad_usage", f"снятие неизвестной сущности {eid}", field="withdraw")
+            raise SpineError("bad_usage", f"снятие неизвестной записи {eid}", field="withdraw")
         reason = (row.get("reason") or "").strip()
         if not reason:
-            raise SpineError("bad_usage", f"снятие {eid} без причины", field="withdraw",
+            raise SpineError("bad_usage",
+                             f"снятие «{titles.get(eid) or eid}» без причины",
+                             field="withdraw",
                              hint="причина уходит в журнал: снятое не исчезает молча")
         removals.append((eid, reason))
     # дом протокола пользователь правит тем же механизмом, что и ростер, и по
@@ -1202,6 +1985,7 @@ def decide_summary(run: Run, payload: Dict[str, Any], digest: str) -> Dict[str, 
                              field="protocol_home",
                              hint="назови существующий каталог базы — путь "
                                   "от её корня")
+    lexicon, lexicon_skipped = check_lexicon(run, payload.get("lexicon") or [], known)
     overrides = run.load("roster-overrides.json") or {}
     for eid, fields in edits:
         overrides[eid] = {**overrides.get(eid, {}), **fields}
@@ -1215,6 +1999,12 @@ def decide_summary(run: Run, payload: Dict[str, Any], digest: str) -> Dict[str, 
     if protocol_dir:
         run.store("protocol-override.json", {"dir": protocol_dir})
         run.journal("protocol_home_edited", dir=protocol_dir)
+    if lexicon:
+        stored = (run.load("lexicon.json") or {}).get("entries", [])
+        run.store("lexicon.json", {"entries": stored + lexicon})
+        for row in lexicon:
+            run.journal("user_correction", eid=row.get("eid"), heard=row["heard"],
+                        canonical=row["canonical"], kind=row["kind"], file=row["file"])
     # назначение пересчитывается и без подтверждения: повторный render summary
     # обязан показывать юнит с учётом правок (круг 3: Sonnet P1-1)
     rebuild_assignment(run)
@@ -1251,12 +2041,139 @@ def decide_summary(run: Run, payload: Dict[str, Any], digest: str) -> Dict[str, 
     # путь входа редактора называет ядро: правило склейки имени файла (`unit_key`)
     # внутреннее, и координатор, воспроизводящий его руками, рано или поздно
     # соберёт редактору второй вход другой свежести
+    data: Dict[str, Any] = {
+        "units": assigned_units(run),
+        "contexts": {unit: str(run.artifact(f"context/{run.unit_key(unit)}.json"))
+                     for unit in assigned_units(run)}}
+    # человека спросили «разовая правка или так теперь и писать» — он обязан
+    # узнать, что стало с его ответом: молчание здесь читается как «принято»
+    if lexicon or lexicon_skipped:
+        data["lexicon"] = {"accepted": [{"was": row["heard"], "now": row["canonical"],
+                                         "file": row["file"]} for row in lexicon],
+                           "skipped": lexicon_skipped}
+    # выжимка в базе переписана подтверждённой: правки паузы 1 и ответы на
+    # «Требует уточнения» доехали до файла, который читают вместо транскрипта
+    report = protocol_report(run)
+    if report:
+        data["protocol"] = report
     return {"state": run.state, "step": run.step,
             "next": "редакторы юнитов → submit operations --unit …; "
                     "затем контролёры → submit verdicts --unit …",
-            "data": {"units": assigned_units(run),
-                     "contexts": {unit: str(run.artifact(f"context/{run.unit_key(unit)}.json"))
-                                  for unit in assigned_units(run)}}}
+            "data": data}
+
+
+#: Куда ложится устойчивая поправка пользователя: имя и произношение — в
+#: словарь речи, понятие — в глоссарий. Оба файла объявлены каноном scaffold.
+LEXICON_ROLES = {"speech_alias": "speech-aliases", "term": "glossary"}
+
+
+def lexicon_target(run: Run, unit: str, role: str) -> str:
+    """Ближайший существующий словарь: юнит → его предки → компания → корень.
+
+    Словаря нет нигде — адресом становится канонический файл в юните: пункт
+    экрана покажет его создание, и без принятия человеком файл не появится.
+    """
+    parts = [part for part in unit.split("/") if part]
+    chain = ["/".join(parts[:depth]) for depth in range(len(parts), 0, -1)]
+    for area in chain + [COMPANY_UNIT, ""]:
+        rel = f"{area}/{role}.md" if area else f"{role}.md"
+        try:
+            if run.base_file(rel).is_file():
+                return rel
+        except SpineError:
+            continue
+    home = home_area(run, unit)
+    return f"{home}/{role}.md" if home else f"{role}.md"
+
+
+def check_lexicon(run: Run, rows: Any, known: Set[str]
+                  ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Устойчивая поправка вычитки: «слышится X → писать Y».
+
+    Разовую правку от устойчивой отличает не вопрос и не догадка кода, а сам
+    факт подачи: `edits` чинит только эту выжимку, `lexicon` говорит «сохранить
+    на будущее». Записью это станет на экране решений, не здесь.
+    """
+    out: List[Dict[str, Any]] = []
+    skipped: List[Dict[str, Any]] = []
+    if not isinstance(rows, list):
+        raise SpineError("bad_usage", "lexicon — список поправок", field="lexicon")
+    assignment = run.assignment()
+    units = run.units()
+    # ключ нормализованный: «Ерик → Эрик» и «ерик → эрик» — одна поправка, и
+    # две одинаковые пары в пакете не должны дать двух одинаковых записей
+    stored = (run.load("lexicon.json") or {}).get("entries", [])
+    seen = {(V.normalize_line(row["heard"]), V.normalize_line(row["canonical"]))
+            for row in stored}
+    for row in rows:
+        if not isinstance(row, dict):
+            raise SpineError("bad_usage", "поправка словаря — объект", field="lexicon")
+        heard = str(row.get("heard") or "").strip()
+        canonical = str(row.get("canonical") or "").strip()
+        kind = str(row.get("kind") or "speech_alias")
+        eid = str(row.get("eid") or "")
+        if not heard or not canonical or heard == canonical:
+            raise SpineError("bad_usage",
+                             "поправка словаря — пара «как слышится» → «как писать»",
+                             field="lexicon",
+                             hint='{"heard": "Ерик", "canonical": "Эрик", '
+                                  '"kind": "speech_alias"}')
+        if kind not in LEXICON_ROLES:
+            raise SpineError("bad_usage", f"неизвестный вид поправки {kind!r}",
+                             field="lexicon", hint=f"допустимо: {sorted(LEXICON_ROLES)}")
+        if eid and eid not in known:
+            raise SpineError("bad_usage", f"поправка ссылается на неизвестную сущность {eid}",
+                             field="lexicon")
+        unit = str(row.get("unit") or "").strip() or assignment.get(eid) or (
+            units[0] if units else "")
+        if unit and unit not in units and not unit_of_file(unit, units):
+            raise SpineError("unknown_unit", f"поправка словаря: юнита {unit!r} нет в карте",
+                             field="lexicon", hint=f"юниты карты: {units}")
+        target = lexicon_target(run, unit, LEXICON_ROLES[kind])
+        body = run.read_base(target) or ""
+        if any(V.contains_fragment(line, canonical) and V.contains_fragment(line, heard)
+               for line in body.splitlines()):
+            # пара уже стоит в словаре одной строкой — предлагать её незачем.
+            # Врозь эти слова ничего не значат: «Эрик» автором строки и «Ерик»
+            # в чужом пункте — не запись о том, что одно читается как другое
+            skipped.append({"heard": heard, "canonical": canonical, "file": target,
+                            "why": "пара уже стоит в словаре"})
+            continue
+        key = (V.normalize_line(heard), V.normalize_line(canonical))
+        if key in seen:
+            skipped.append({"heard": heard, "canonical": canonical, "file": target,
+                            "why": "такая пара уже принята в этом разборе"})
+            continue
+        seen.add(key)
+        out.append({"eid": eid or None, "heard": heard, "canonical": canonical,
+                    "kind": kind, "unit": unit, "file": target,
+                    "exists": bool(body)})
+    return out, skipped
+
+
+def lexicon_items(run: Run, start: int) -> List[Dict[str, Any]]:
+    """Пункты экрана решений из поправок вычитки — их строит код.
+
+    Через редакторов юнитов этот путь не проходит по построению: словарь речи
+    обычно лежит вне домов встречи, а операции заперты в своём юните. Iron Law
+    соблюдён — запись всё равно делает applier после экрана.
+    """
+    entries = (run.load("lexicon.json") or {}).get("entries", [])
+    items: List[Dict[str, Any]] = []
+    for offset, row in enumerate(entries, start=1):
+        text = (f"| {row['canonical']} | {row['heard']} |  |" if row["kind"] == "speech_alias"
+                else f"- **{row['canonical']}** — в речи: {row['heard']}")
+        doubt = ("словарь речи ещё не развёрнут — принятие создаст файл"
+                 if not row["exists"] else
+                 "поправка вычитки: сохранить на будущее или это разовая правка?")
+        items.append({"n": start + offset - 1, "eid": f"LEX{offset:02d}",
+                      "about": row.get("eid"),
+                      "unit": row["unit"], "op": "new", "file": row["file"],
+                      "text": text, "title": f"{row['heard']} → {row['canonical']}",
+                      "owner": None, "due": None,
+                      "kind": "lexicon", "was": row["heard"], "now": row["canonical"],
+                      "section": "doubtful", "doubts": [doubt]})
+    return items
 
 
 def assigned_units(run: Run) -> List[str]:
@@ -1269,7 +2186,6 @@ def assigned_units(run: Run) -> List[str]:
 #: Сколько файлов юнита приезжают редактору головами: адреса дёшевы и едут все,
 #: дорога только голова. Срез назван числом `omitted_heads` — узел видит неполноту.
 CONTEXT_HEADS = 60
-
 
 def build_context(run: Run, unit: str) -> None:
     """Единственный вход редактора юнита: назначенное ему и его файлы.
@@ -1299,7 +2215,11 @@ def build_context(run: Run, unit: str) -> None:
             return 0.0
 
     core = [rel for rel in files if is_core(rel)]
-    rest = sorted((rel for rel in files if rel not in set(core)), key=freshness, reverse=True)
+    # записи встреч сюда не доходят вовсе — `unit_files` их не отдаёт: они
+    # исторический слой, и собственная выжимка этого прогона не должна
+    # возвращаться редактору уликой дубля
+    rest = sorted((rel for rel in files if rel not in set(core)),
+                  key=lambda rel: -freshness(rel))
     chosen = set(core) | set(rest[:max(0, CONTEXT_HEADS - len(core))])
     slices = []
     for rel in files:
@@ -1358,6 +2278,10 @@ def submit_operations(run: Run, payload: Any, unit: Optional[str]) -> Dict[str, 
     violations.extend(check_targets(run, unit, payload))
     raise_violations(run, violations, "operations")
     soften_known_paraphrases(run, payload)
+    # переподача начинается с гашения флагов прежнего пакета: суд над фразой,
+    # которой в новом тексте нет, экран держать не должен
+    if run.operations(unit) is not None:
+        drop_unit_quote_flags(run, unit)
     # корпус цитат встречи для редактора — выжимка: транскрипта ему не выдают,
     # и совпадение с транскриптом — совпадение, а не подтверждение
     brief_text = json.dumps(run.load("brief.json") or {}, ensure_ascii=False)
@@ -1368,7 +2292,8 @@ def submit_operations(run: Run, payload: Any, unit: Optional[str]) -> Dict[str, 
     added = store_quote_flags(run, fresh)
     # порядок слагаемых значим: ноты размещения первыми — так их читает экран
     evidence_notes = check_placement_evidence(run, unit, payload) \
-        + check_base_quotes(run, unit, payload)
+        + check_base_quotes(run, unit, payload) \
+        + check_replace_anchors(run, payload)
     # файл пишется всегда, в том числе пустым: иначе переподанный чистый пакет
     # оставил бы на экране залипшие ноты прежней версии
     run.store(f"evidence-notes/{run.unit_key(unit)}.json", {"notes": evidence_notes})
@@ -1406,6 +2331,32 @@ def drop_unit_derivatives(run: Run, unit: str) -> None:
                 if str(row.get("eid")) not in prior]
         if len(kept) != len(stored.get("relocations", [])):
             run.store("relocations.json", {"relocations": kept})
+def drop_unit_quote_flags(run: Run, unit: str) -> None:
+    """Флаги цитат прежнего пакета юнита: они сняты с текста, которого больше нет.
+
+    Зовётся ДО разбора нового пакета — иначе стёрлись бы флаги этой же подачи.
+    Оставленные, старые флаги держат экран в ожидании суда над исчезнувшей
+    фразой и делают спорным пункт, переписанный начисто.
+    """
+    flags = run.load("quote-flags.json")
+    dropped = []
+    if flags:
+        kept = [row for row in flags.get("flags", [])
+                if not (row.get("stage") == "operations" and row.get("unit") == unit)]
+        dropped = [row.get("quote") for row in flags.get("flags", []) if row not in kept]
+        if len(kept) != len(flags.get("flags", [])):
+            run.store("quote-flags.json", {"flags": kept})
+            run.event("quote_flags_dropped", unit=unit)
+    # вердикт судьи снят с фразы прежнего текста: оставленный, он держит пункт
+    # спорным по цитате, которой в новом тексте больше нет
+    verdicts = run.load("quote-verdicts.json")
+    if not verdicts or not dropped:
+        return
+    live = [row for row in verdicts.get("quotes", [])
+            if row.get("quote") not in dropped]
+    if len(live) != len(verdicts.get("quotes", [])):
+        run.store("quote-verdicts.json", {"quotes": live})
+        run.event("quote_verdicts_dropped", unit=unit)
 
 
 def soften_known_paraphrases(run: Run, payload: Dict[str, Any]) -> None:
@@ -1432,18 +2383,133 @@ def soften_known_paraphrases(run: Run, payload: Dict[str, Any]) -> None:
                 text = stripped
 
 
+def under_dir(rel: str, directory: str) -> bool:
+    """Путь лежит в каталоге (или это он сам). Сравниваются сегменты, не строки."""
+    if not directory or not rel:
+        return False
+    directory = directory.rstrip("/")
+    return rel == directory or rel.startswith(directory + "/")
+
+
+def address_violations(run: Run, rel: Optional[str], op_kind: str,
+                       field: str, eid: str, anchor: str = "") -> List[V.Violation]:
+    """Что нельзя писать по этому адресу — в одном месте на весь пайплайн.
+
+    Адрес приходит тремя путями: `target` операции, её `projections[]` и подмена
+    при переезде записи в другой дом. Правило, написанное только для первого,
+    обходится двумя остальными — так и случилось с журналом решений, пока
+    проверка стояла в цикле операций.
+    """
+    out: List[V.Violation] = []
+    if not rel:
+        return out
+    # `new` с якорем законен ровно в журнале решений: новая запись называет
+    # прежнее решение, которое отменяет, — по нему applier ставит пометку
+    # `Superseded`. Везде ещё якорь у `new` означал бы «сотри вот это»
+    if op_kind == "new" and anchor and not is_decision_log(rel):
+        out.append(V.Violation(
+            "schema_invalid", "у операции new стоит якорь записи",
+            field=field, eid=eid,
+            hint="replaces называет существующую запись; у new он законен только в "
+                 "журнале решений, где новая запись помечает прежнюю Superseded"))
+    if op_kind in V.ANCHORED_OPS and is_decision_log(rel):
+        out.append(V.Violation(
+            "decision_log_append_only",
+            f"{rel} — журнал решений, правка прежней записи там запрещена каноном панели",
+            field=field, eid=eid,
+            hint="принятое решение не переписывается и не снимается: пересмотр — "
+                 "новая запись (op: new) со ссылкой на прежнюю; пометку Superseded "
+                 "к старой записи applier поставит сам как часть новой"))
+    # правка существующей записи в файле, которого нет: заменять и снимать там
+    # нечего. `new` в новый файл законен — он его и создаёт
+    if op_kind in V.ANCHORED_OPS and run.read_base(rel) is None:
+        try:
+            exists = run.base_file(rel).exists()
+        except SpineError:
+            exists = False
+        if not exists:
+            out.append(V.Violation(
+                "target_absent",
+                f"{rel} в базе нет, а операция {op_kind} правит существующую запись",
+                field=field, eid=eid,
+                hint="проверь путь по фактическому дереву: файл мог называться иначе. "
+                     "Записи там правда ещё нет — это op: new"))
+    return out
+
+
+def base_relative_hits(run: Run, rel: str, units: Sequence[str]) -> List[str]:
+    """Полные адреса, которыми этот путь становится, если он отсчитан от юнита.
+
+    Отказ обязан быть исполнимым. Путь `02_active.md` вместо `product/02_active.md`
+    ядро отбивало как «файл не принадлежит юниту» и звало в проекцию или переезд —
+    то есть чинить не то (живой прогон 14.08: отбились оба больших пакета).
+    Догадки здесь нет: адрес называется, только когда он существует в базе,
+    действительно лежит в названном юните — и виден узлу.
+
+    Последнее условие не косметика: подсказка утверждает «ровно так этот файл
+    стоит в списке `files` твоего контекста», а записи встреч из контекста
+    срезаны. Назвав такой адрес, ядро само вернуло бы узел в исторический слой,
+    от которого его только что увели (круг ревью 17.08 — сошлись все четыре
+    ревьюера). Каталог адресом записи тоже не бывает.
+    """
+    if not rel or rel.startswith("/") or "\\" in rel or ".." in rel.split("/"):
+        return []
+    out: List[str] = []
+    for unit in units:
+        candidate = f"{unit.rstrip('/')}/{rel}"
+        if unit_of_file(candidate, run.units()) != unit:
+            continue
+        if is_historic_record(candidate):
+            continue
+        try:
+            # `base_file` держит границу базы: путь, уводящий наружу симлинком,
+            # отказывает здесь же, а не превращается в подсказку
+            if run.base_file(candidate).is_file():
+                out.append(candidate)
+        except SpineError:
+            continue
+    return out
+
+
 def check_targets(run: Run, unit: str, payload: Dict[str, Any]) -> List[V.Violation]:
     """Адрес операции: файл своего юнита; нового файла это не запрещает.
 
     Якорей больше нет — куда именно внутри файла, решает applier по канону
-    формы. Код проверяет только принадлежность и что путь не убегает из базы.
+    формы. Код проверяет только принадлежность, что путь не убегает из базы —
+    и что он не ведёт в каталог протоколов.
+
+    Последнее — граница исторического слоя. Протоколы прошлых встреч лежат
+    внутри юнита и по принадлежности проходят: редактор `01_company` вправе
+    адресовать любой из сотен своих файлов, включая протокол трёхмесячной
+    давности. Штамп `run_id` туда не достаёт — он стережёт один адрес, который
+    ядро пишет само. Разбор дописывает базу, а не правит историю; выжимку этой
+    встречи кладёт ядро, и другого законного повода писать в этот каталог
+    у операции нет.
     """
     out: List[V.Violation] = []
+    home = protocol_home(run)
+    protocol_root = str(home.get("rule_dir") or home.get("dir") or "")
+
+    def protocol_violation(rel: str, field: str, eid: str) -> Optional[V.Violation]:
+        if not under_dir(rel, protocol_root):
+            return None
+        return V.Violation("protocol_immutable",
+                           f"{rel} лежит в каталоге протоколов {protocol_root} — "
+                           "разбор туда не пишет",
+                           field=field, eid=eid,
+                           hint="выжимку этой встречи кладёт в базу само ядро; "
+                                "протоколы прошлых встреч — исторический слой "
+                                "базы, он не правится разбором. Запись предназначена "
+                                "живому файлу юнита — назови его")
+
     for idx, op in enumerate(payload.get("operations", []) or []):
         if not isinstance(op, dict):
             continue
         eid = str(op.get("eid", ""))
         rel = (op.get("target") or {}).get("file")
+        out += address_violations(run, rel, str(op.get("op") or ""),
+                                  f"operations[{idx}].target.file", eid,
+                                  V.anchor_text(op))
         if rel:
             try:
                 run.base_file(rel)
@@ -1453,13 +2519,21 @@ def check_targets(run: Run, unit: str, payload: Dict[str, Any]) -> List[V.Violat
                                        field=f"operations[{idx}].target.file", eid=eid))
             else:
                 if unit_of_file(rel, run.units()) != unit:
+                    hits = base_relative_hits(run, rel, [unit])
                     out.append(V.Violation("schema_invalid",
                                            f"файл {rel} не принадлежит юниту {unit}",
                                            field=f"operations[{idx}].target.file",
                                            eid=eid,
-                                           hint="запись в чужой дом — проекция "
-                                                "(projections[]) либо вердикт "
-                                                "wrong_file контролёра"))
+                                           hint=(f"путь пишется от корня базы: назови "
+                                                 f"{hits[0]} — ровно так этот файл стоит "
+                                                 "в списке files твоего контекста"
+                                                 if hits else
+                                                 "запись в чужой дом — проекция "
+                                                 "(projections[]) либо вердикт "
+                                                 "wrong_file контролёра")))
+                breach = protocol_violation(rel, f"operations[{idx}].target.file", eid)
+                if breach:
+                    out.append(breach)
         # проекции проверяются независимо от target: у noop/journal_only
         # операций target нет, а мусор в projections не должен жить и там
         for projection in op.get("projections") or []:
@@ -1480,9 +2554,22 @@ def check_targets(run: Run, unit: str, payload: Dict[str, Any]) -> List[V.Violat
                                        field=f"operations[{idx}].projections", eid=eid))
                 continue
             if unit_of_file(pfile, run.units()) is None:
+                # тот же класс, что у target: путь отсчитан от каталога, а не от
+                # корня базы. Подсказка выдаётся, только если такой файл в базе
+                # ровно один — двусмысленный адрес чинит редактор, не ядро
+                hits = base_relative_hits(run, pfile, run.units())
                 out.append(V.Violation("schema_invalid",
                                        f"проекция в {pfile}: места нет в карте",
-                                       field=f"operations[{idx}].projections", eid=eid))
+                                       field=f"operations[{idx}].projections", eid=eid,
+                                       hint=(f"путь пишется от корня базы: назови "
+                                             f"{hits[0]}" if len(hits) == 1 else "")))
+            # отражение записи — такая же запись: правила адреса на него те же,
+            # иначе гарантия обходится проекцией
+            out += address_violations(run, pfile, str(op.get("op") or ""),
+                                      f"operations[{idx}].projections", eid)
+            breach = protocol_violation(pfile, f"operations[{idx}].projections", eid)
+            if breach:
+                out.append(breach)
     return out
 
 
@@ -1522,6 +2609,46 @@ def check_base_quotes(run: Run, unit: str,
         notes.append({"eid": claim["eid"], "kind": "base_quote_unverified",
                       "file": claim["source_file"], "quote": claim["quote"]})
         run.event("evidence_invalid", eid=claim["eid"], code="base_quote_unverified")
+    return notes
+
+
+def check_replace_anchors(run: Run, payload: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Якорь замены проверяется файлом: есть ли строка и одна ли она.
+
+    Якорь необязателен по форме — редактор видит файл срезом; здесь проверяется
+    факт названного. Пакет это не отбивает: как и у прочих улик, ненайденный
+    якорь едет на экран спорным пунктом — файл мог измениться после того, как
+    редактор его читал, и решать это человеку, а не отказом узлу.
+
+    Неоднозначный якорь опаснее ненайденного: applier заменил бы первое
+    вхождение и стёр бы чужую запись, отчитавшись `written`.
+    """
+    notes: List[Dict[str, Any]] = []
+    for op in payload.get("operations", []) or []:
+        if not isinstance(op, dict):
+            continue
+        if op.get("op") not in V.ANCHORED_OPS:
+            continue
+        rel = str((op.get("target") or {}).get("file") or "")
+        body = run.read_base(rel)
+        if body is None:
+            # файла нет — это отказ формы (`check_targets`), а не улика: править
+            # существующую запись там негде, и на экран пункт не поедет вовсе
+            continue
+        text = V.anchor_text(op)
+        # у операции, которая ничего не вытесняет, якоря нет по форме — её
+        # отбил валидатор, и второй раз шуметь о ней на экране незачем
+        if not text:
+            continue
+        body = body or ""
+        hits = sum(1 for line in body.splitlines()
+                   if V.normalize_line(line) == V.normalize_line(text))
+        if hits == 1:
+            continue
+        kind = "replace_anchor_missing" if hits == 0 else "replace_anchor_ambiguous"
+        notes.append({"eid": str(op.get("eid", "")), "kind": kind,
+                      "file": rel, "quote": text, "hits": hits})
+        run.event("evidence_invalid", eid=str(op.get("eid", "")), code=kind)
     return notes
 
 
@@ -1582,20 +2709,29 @@ def judge_evidence(run: Run, unit: str, payload: Dict[str, Any]) -> List[Dict[st
     """
     out: List[Dict[str, Any]] = []
     brief_text = json.dumps(run.load("brief.json") or {}, ensure_ascii=False)
+    titles = roster_titles(run)
     for row in payload.get("verdicts", []) or []:
         eid = str(row.get("eid", ""))
+        title = titles.get(eid) or None
         kind = row.get("verdict")
         evidence = row.get("evidence") or {}
         if kind == "duplicate":
-            body = run.read_base(str(evidence.get("file", ""))) or ""
+            rel = str(evidence.get("file", ""))
+            # запись встречи не доказывает дубля — ни именем файла, ни местом:
+            # каталог `meetings/` держит и выжимку ЭТОГО прогона, а имена в нём
+            # произвольны. Улика оттуда не отсеивает — пункт едет человеку
+            historic = is_historic_record(rel)
+            body = "" if historic else (run.read_base(rel) or "")
             if V.contains_fragment(body, str(evidence.get("quote", ""))):
                 run.event("filtered", eid=eid, unit=unit, code="duplicate")
                 run.journal("filtered", eid=eid, unit=unit, code="duplicate",
                             evidence=evidence)
-                out.append({"kind": "filtered", "eid": eid, "code": "duplicate"})
+                out.append({"kind": "filtered", "eid": eid, "title": title,
+                            "code": "duplicate"})
             else:
                 run.event("evidence_invalid", eid=eid, code="duplicate")
-                out.append({"kind": "doubt", "eid": eid, "code": "duplicate_unverified"})
+                out.append({"kind": "doubt", "eid": eid, "title": title,
+                            "code": "duplicate_unverified"})
         elif kind == "episode":
             quote = str(evidence.get("quote", ""))
             # улика эпизода живёт в выжимке либо в транскрипте: цитата встречи,
@@ -1606,27 +2742,32 @@ def judge_evidence(run: Run, unit: str, payload: Dict[str, Any]) -> List[Dict[st
                 run.event("filtered", eid=eid, unit=unit, code="episode")
                 run.journal("filtered", eid=eid, unit=unit, code="episode",
                             evidence=evidence)
-                out.append({"kind": "filtered", "eid": eid, "code": "episode"})
+                out.append({"kind": "filtered", "eid": eid, "title": title,
+                            "code": "episode"})
             else:
                 run.event("evidence_invalid", eid=eid, code="episode")
-                out.append({"kind": "doubt", "eid": eid, "code": "episode_unverified"})
+                out.append({"kind": "doubt", "eid": eid, "title": title,
+                            "code": "episode_unverified"})
         elif kind == "wrong_file":
             path = str(evidence.get("path", ""))
             home = unit_of_file(path, run.units())
             if home and home != unit:
-                out.append({"kind": "wrong_file", "eid": eid, "path": home})
+                out.append({"kind": "wrong_file", "eid": eid, "title": title,
+                            "path": home})
             else:
                 run.event("evidence_invalid", eid=eid, code="wrong_file")
-                out.append({"kind": "doubt", "eid": eid, "code": "wrong_file_unverified"})
+                out.append({"kind": "doubt", "eid": eid, "title": title,
+                            "code": "wrong_file_unverified"})
         elif kind == "contradiction":
             body = run.read_base(str(evidence.get("file", ""))) or ""
             verified = V.contains_fragment(body, str(evidence.get("quote", "")))
             if not verified:
                 run.event("evidence_invalid", eid=eid, code="contradiction")
-            out.append({"kind": "doubt", "eid": eid,
+            out.append({"kind": "doubt", "eid": eid, "title": title,
                         "code": "contradiction" if verified else "contradiction_unverified"})
         elif kind == "doubt":
-            out.append({"kind": "doubt", "eid": eid, "code": "doubt"})
+            out.append({"kind": "doubt", "eid": eid, "title": title,
+                        "code": "doubt"})
     return out
 
 
@@ -1659,11 +2800,23 @@ def submit_relocation(run: Run, payload: Any) -> Dict[str, Any]:
             raise SpineError("unknown_unit",
                              f"файл {target.get('file')} не принадлежит ни одному юниту карты",
                              field="relocation.target.file")
+        # адрес переезда проходит те же ворота, что адрес операции: иначе через
+        # смену дома в защищённый файл заезжает то, что туда не пускают прямо
+        source_op = next((op for unit in run.units_with_operations()
+                          for op in (run.operations(unit) or {}).get("operations", [])
+                          if str(op.get("eid", "")) == eid), {})
+        raise_violations(run, address_violations(
+            run, str(target.get("file", "")), str(source_op.get("op") or ""),
+            "relocation.target.file", eid, V.anchor_text(source_op)), "relocation")
         row["target"] = target
         row["to_unit"] = to_unit
         duplicate = payload.get("duplicate")
         if isinstance(duplicate, dict) and duplicate.get("quote"):
-            body = run.read_base(str(duplicate.get("file", ""))) or ""
+            # тот же исторический слой, что и у вердикта контролёра: иначе отсев
+            # по протоколу этой же встречи заезжает через переезд — вход, где
+            # проверка стояла своя (круг ревью 3, находка Codex)
+            rel = str(duplicate.get("file", ""))
+            body = "" if is_historic_record(rel) else (run.read_base(rel) or "")
             if V.contains_fragment(body, str(duplicate["quote"])):
                 run.event("filtered", eid=eid, unit=to_unit, code="duplicate")
                 run.journal("filtered", eid=eid, unit=to_unit, code="duplicate",
@@ -1709,8 +2862,27 @@ def relocation_map(run: Run) -> Dict[str, Dict[str, Any]]:
     return {str(row.get("eid")): row for row in run.relocations()}
 
 
+def disputed_noop(run: Run, unit: str, op: Dict[str, Any]) -> bool:
+    """`noop`, с которым контролёр юнита не согласился.
+
+    Молчаливый `noop` — законный ответ редактора и уходит в журнал отсева. Но
+    когда контролёр возразил, а улика его не подтвердилась, сущность исчезала
+    между ними двумя: `duplicate_unverified` ядро выносило честно, а до экрана
+    пункт не доезжал — `noop` отсекался раньше, чем читались вердикты. Ровно
+    так пропали 9 сущностей юнита `product` на прогоне 14.08 (находка Codex,
+    круг ревью 17.08).
+
+    Подтверждённая улика сюда не попадает: она уже в `filtered`, и отсев
+    засчитан машинно — там спорить не о чем.
+    """
+    if op.get("op") != "noop":
+        return False
+    verdict = verdict_for(run, unit, str(op.get("eid", ""))) or {}
+    return str(verdict.get("verdict") or "accept") != "accept"
+
+
 def effective_operations(run: Run) -> List[Tuple[str, Dict[str, Any]]]:
-    """Операции, дошедшие до экрана: без noop, отсеянных и снятых человеком.
+    """Операции, дошедшие до экрана: без молчаливых noop, отсеянных и снятых.
 
     Принятый переезд подменяет юнит и адрес операции здесь — в одном месте,
     которое читают и экран, и материал применения.
@@ -1723,7 +2895,9 @@ def effective_operations(run: Run) -> List[Tuple[str, Dict[str, Any]]]:
         package = run.operations(unit) or {}
         for op in package.get("operations", []):
             eid = str(op.get("eid", ""))
-            if op.get("op") == "noop" or op.get("journal_only") or eid in withdrawn:
+            if op.get("journal_only") or eid in withdrawn:
+                continue
+            if op.get("op") == "noop" and not disputed_noop(run, unit, op):
                 continue
             move = relocations.get(eid)
             moved = bool(move and move.get("accepted") and move.get("to_unit"))
@@ -1731,7 +2905,11 @@ def effective_operations(run: Run) -> List[Tuple[str, Dict[str, Any]]]:
             if (unit, eid) in filtered or (home, eid) in filtered:
                 continue
             if moved:
-                out.append((home, {**op, "target": move.get("target") or op.get("target"),
+                # якорь подтверждали в прежнем файле — в новом доме он ничего не
+                # значит и указал бы applier'у на строку, которой там нет
+                moved_op = {key: value for key, value in op.items() if key != "replaces"}
+                out.append((home, {**moved_op,
+                                   "target": move.get("target") or op.get("target"),
                                    "relocated_from": unit}))
             else:
                 out.append((unit, op))
@@ -1747,11 +2925,13 @@ def journal_fates(run: Run) -> None:
     logged = {(row.get("event"), row.get("eid"))
               for row in read_jsonl(run.journal_path())
               if row.get("run_id") == run.manifest["run_id"]}
+    titles = roster_titles(run)
     for unit in run.units_with_operations():
         for op in (run.operations(unit) or {}).get("operations", []):
             eid = str(op.get("eid", ""))
             if op.get("op") == "noop" and ("noop", eid) not in logged:
-                run.journal("noop", eid=eid, unit=unit, reason=op.get("noop_reason"))
+                run.journal("noop", eid=eid, title=titles.get(eid), unit=unit,
+                            reason=op.get("noop_reason"))
                 logged.add(("noop", eid))
             elif op.get("journal_only") and ("journal_fate", eid) not in logged:
                 run.journal("journal_fate", eid=eid, unit=unit, op=op.get("op"),
@@ -1826,7 +3006,47 @@ def review_debts(run: Run) -> Dict[str, List[str]]:
     return {"no_operations": no_operations, "stale_packages": stale_packages,
             "no_verdicts": no_verdicts,
             "open_relocations": sorted(set(open_reroutes)),
-            "pending_quotes": [row["eid"] for row in pending_quote_flags(run)]}
+            "pending_quotes": sorted({row["eid"] for row in pending_quote_flags(run)})}
+
+
+#: Сущности, которые предписывают, а не описывают: принцип действует всегда,
+#: договорённость задаёт порядок работы впредь (канон типов — prompts/extract.md).
+#: Записать такую — значит поменять правило, по которому база живёт дальше и по
+#: которому будут приниматься следующие разборы. Это методологическое решение, и
+#: человек принимает его отдельно, а не пакетом «беру всё рекомендованное»:
+#: спорным пункт становится всегда, даже когда контролёр к нему не придрался.
+#: Признак читается у сущности, а не у файла: файл каноном себя не объявляет —
+#: `version:` стоит и на живых 05_decisions, куда разбор пишет штатно.
+RULE_TYPES = {"principle", "agreement"}
+
+#: Механика разбора в текст человеку не едет. На экране стоит предмет решения:
+#: что записываем, что исчезнет, почему сомнение, — а не имя операции, вердикта
+#: или узла (правило Эрика 17.08). Ярлыки живут одним словарём: разойдясь по
+#: строкам, техническое слово протекает в первый же новый текст.
+VERDICT_LABELS = {
+    "doubt": "сомнение проверяющего",
+    "contradiction": "противоречие с тем, что уже записано",
+    "duplicate": "похоже на уже записанное",
+    "episode": "эпизод разговора, а не факт для базы",
+    "wrong_file": "спор о месте записи",
+}
+
+NOOP_REASON_LABELS = {
+    "already_covered": "это уже записано в базе",
+    "not_valuable": "записывать нечего",
+    "episode": "это эпизод разговора",
+}
+
+
+def roster_titles(run: Run) -> Dict[str, str]:
+    """Название каждой сущности по её номеру — один проход по ростеру.
+
+    Номер сущности человеку ничего не говорит: «E48 не подтверждена» и
+    «E48 назначена product» — строки, в которых не видно предмета. Название
+    едет рядом с номером везде, где о сущности говорят человеку.
+    """
+    return {str(item.get("eid", "")): str(item.get("title") or "")
+            for item in run.roster() if item.get("eid")}
 
 
 def build_decision(run: Run) -> Dict[str, Any]:
@@ -1852,37 +3072,97 @@ def build_decision(run: Run) -> Dict[str, Any]:
         verdict = verdict_for(run, source_unit, eid) or {}
         doubts: List[str] = []
         if verdict.get("verdict") in ("doubt", "contradiction"):
-            doubts.append(f"{verdict['verdict']}: {verdict.get('note') or ''}".strip(": "))
+            label = VERDICT_LABELS.get(str(verdict.get("verdict")), "сомнение")
+            doubts.append(f"{label}: {verdict.get('note') or ''}".strip(": "))
         if verdict.get("verdict") in ("duplicate", "episode") \
                 and (source_unit, eid) not in filtered:
-            doubts.append(f"{verdict['verdict']} — улика не подтвердилась, решает человек")
+            label = VERDICT_LABELS.get(str(verdict.get("verdict")), "сомнение")
+            doubts.append(f"{label} — подтверждения в базе не нашлось, "
+                          "решение за вами")
         move = relocations.get(eid)
         if verdict.get("verdict") == "wrong_file" and move and not move.get("accepted"):
-            doubts.append("переезд отклонён редактором адресата: "
+            doubts.append("хозяин названного места забирать запись не стал: "
                           + (move.get("note") or "без причины"))
         if eid in fabricated:
-            doubts.append("цитата не подтверждена судьёй цитат")
+            doubts.append("цитата не подтвердилась: такой фразы на встрече "
+                          "не прозвучало")
         if eid in conflicts:
-            doubts.append(f"сущность предложена в юнитах: {', '.join(conflicts[eid])}")
+            doubts.append("запись предложена сразу в двух местах базы: "
+                          + ", ".join(conflicts[eid]) + " — выберите одно")
         if op.get("relocated_from"):
-            doubts.append(f"переезд из {op['relocated_from']} — проверь путь")
+            doubts.append(f"запись пришла из другого места базы ({op['relocated_from']}) "
+                          "— проверьте адрес")
         for note in evidence_notes.get((source_unit, eid), []):
-            if note.get("kind") == "base_quote_unverified":
+            # улики якоря считались по файлу прежнего дома: после переезда они
+            # говорят о чужом адресе, и место правки applier ищет заново
+            if op.get("relocated_from") and str(note.get("kind", "")).startswith("replace_"):
+                continue
+            if note.get("kind") == "replace_anchor_missing":
+                doubts.append(f"прежняя запись не найдена: строки {note.get('quote')!r} "
+                              f"в {note.get('file')} нет — замена не выполнится")
+            elif note.get("kind") == "replace_anchor_ambiguous":
+                doubts.append(f"непонятно, что именно заменяется: строка {note.get('quote')!r} "
+                              f"встречается в {note.get('file')} {note.get('hits')} раза")
+            elif note.get("kind") == "base_quote_unverified":
                 doubts.append(f"цитата из базы не найдена: {note.get('quote')!r} "
                               f"нет в {note.get('file')}")
             else:
-                doubts.append("опора размещения не подтвердилась: "
-                              f"{note.get('quote')!r} нет в {note.get('file')}")
+                doubts.append("обоснование места не подтвердилось: строки "
+                              f"{note.get('quote')!r} в {note.get('file')} нет")
+        # замена вслепую: якоря нет — applier будет искать запись сам, и человек
+        # принимает необратимую правку, не видя, что исчезнет. Пакет за это не
+        # отбивается (редактор видит файл срезом и вправе строки не знать), но
+        # молча такой пункт не проходит
+        if op.get("op") in V.ANCHORED_OPS and not V.anchor_text(op):
+            doubts.append("прежняя запись не названа: место правки определится "
+                          "по фактическому состоянию файла, и что именно "
+                          "исчезнет — на экране не видно")
         entity = roster.get(eid, {})
+        # правило решается отдельно и когда вводится, и когда снимается: тихо
+        # убранная норма стоит не меньше тихо заведённой, а формулировка
+        # сомнения у этих случаев разная — иначе текст врёт человеку
+        if str(entity.get("type") or "") in RULE_TYPES:
+            if op.get("op") in ("new", "update"):
+                doubts.append("правило работы, а не факт встречи: запись будет действовать "
+                              "на следующие решения — прими её отдельно и только если "
+                              "правило объявлено на встрече, а не прозвучало рассуждением")
+            else:
+                doubts.append("снимается правило работы: оно перестанет действовать на "
+                              "следующие разборы — подтверди, что на встрече его правда "
+                              "отменили")
+        # оспоренный отсев: записи за ним нет — ни текста, ни адреса. Пункт
+        # спрашивает человека о судьбе сущности, а не предлагает запись, и
+        # исходы у него поэтому свои (`decide_decision`)
+        if op.get("op") == "noop":
+            because = NOOP_REASON_LABELS.get(str(op.get("noop_reason") or ""),
+                                             "записывать нечего")
+            doubts.insert(0, f"это решили не записывать — {because}, — но "
+                             "проверка не согласилась и подтверждения в базе "
+                             "не нашла. Готовой записи за этим пунктом нет: "
+                             "решите, оставить как есть или считать, что "
+                             "предмет записан раньше")
         item = {
             "n": number, "eid": eid, "unit": unit, "op": op.get("op"),
             "file": (op.get("target") or {}).get("file"),
-            "text": op.get("proposed_text") or entity.get("title") or "",
+            # у оспоренного отсева записи не существует: подставить сюда
+            # название сущности значило бы выдать его за «точный текст записи»,
+            # который человек принимает дословно (круг ревью 2, находка Codex)
+            "text": "" if op.get("op") == "noop"
+                    else (op.get("proposed_text") or entity.get("title") or ""),
             "title": entity.get("title"), "owner": entity.get("owner"),
             "due": entity.get("due"),
             "section": "doubtful" if doubts else "recommended",
             "doubts": doubts,
         }
+        if op.get("op") == "noop":
+            item["kind"] = "disputed_noop"
+        # якорь замены едет вместе с пунктом: applier видит только материал
+        # применения, и без якоря в нём замена снова стала бы догадкой. Едет
+        # только у операций над существующей записью — у `new` якорь означал бы
+        # «сотри вот это», чего операция не просила
+        anchor = V.anchor_text(op)
+        if anchor and op.get("op") in V.ANCHORED_OPS:
+            item["replaces"] = {"text": anchor}
         # проекция — часть пункта: пользователь принимает обе записи разом,
         # и applier получает её из решения, а не из пакета редактора
         projections = [{"file": p.get("file"), "proposed_text": p.get("proposed_text")}
@@ -1890,6 +3170,25 @@ def build_decision(run: Run) -> Dict[str, Any]:
         if projections:
             item["projections"] = projections
         items.append(item)
+    # два пункта об одной записи: применяются они последовательно, и второй
+    # либо затрёт правку первого, либо честно упадёт — принятое человеком
+    # изменение теряется молча. Ловим здесь, пока решение ещё не принято
+    by_anchor: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
+    for item in items:
+        anchor = str((item.get("replaces") or {}).get("text") or "")
+        if anchor and item.get("file"):
+            by_anchor.setdefault((str(item["file"]), V.normalize_line(anchor)),
+                                 []).append(item)
+    for (path, _), rows in by_anchor.items():
+        if len(rows) < 2:
+            continue
+        for item in rows:
+            item["doubts"].append(
+                "ту же запись " + path + " правят пункты "
+                + ", ".join(str(row["n"]) for row in rows)
+                + " — примите один, иначе второй затрёт первый")
+            item["section"] = "doubtful"
+    items += lexicon_items(run, number + 1)
     payload = {"intent": "decision", "items": items,
                "journal": {"filtered": len(filtered_eids(run)),
                            "withdrawn": len(run.withdrawn())}}
@@ -1935,6 +3234,19 @@ def decide_decision(run: Run, payload: Dict[str, Any], digest: str) -> Dict[str,
         if outcome == "edit" and not (row.get("text") or "").strip():
             raise SpineError("bad_usage", f"исход edit пункта {n} без текста",
                              field="decisions")
+        # оспоренный отсев записи не несёт: применять нечего, и текст записи,
+        # придуманный на экране, был бы записью, которой не формулировал никто
+        if items[n].get("kind") == "disputed_noop" \
+                and outcome not in ("reject", "already"):
+            named = items[n].get("title") or f"пункт {n}"
+            raise SpineError("bad_usage",
+                             f"«{named}»: готовой записи за этим пунктом нет, "
+                             "применять нечего",
+                             field="decisions",
+                             hint="здесь два решения: оставить как есть либо "
+                                  "считать, что предмет записан раньше. Нужна "
+                                  "запись — верните сущность в разбор этого "
+                                  "места и переподайте его пакет")
         seen[n] = row
     missing = sorted(set(items) - set(seen))
     if missing:
@@ -1963,10 +3275,11 @@ def decide_decision(run: Run, payload: Dict[str, Any], digest: str) -> Dict[str,
         resolved.append({**item, "outcome": "take" if outcome == "edit" else outcome,
                          "text": text, "edited": outcome == "edit"})
         if outcome == "already":
-            run.journal("already", eid=item["eid"], unit=item["unit"])
+            run.journal("already", eid=item["eid"], title=item.get("title"),
+                        unit=item["unit"])
         if outcome == "reject":
-            run.journal("rejected", eid=item["eid"], unit=item["unit"],
-                        reason=row.get("reason"))
+            run.journal("rejected", eid=item["eid"], title=item.get("title"),
+                        unit=item["unit"], reason=row.get("reason"))
     run.store("decision.json", {"items": resolved, "digest": digest})
     # принятый набор целиком — в журнал базы: расследование и калибровка
     # невозможны по памяти о том, что предлагалось
@@ -2020,22 +3333,125 @@ def check_applied_files(run: Run, payload: Any) -> List[V.Violation]:
     return out
 
 
-def protocol_line(row: Dict[str, Any]) -> str:
-    """Строка сущности в протоколе: заголовок, факты, реплика-опора."""
-    facts = [str(row[key]) for key in ("type", "modality") if row.get(key)]
-    if row.get("owner"):
-        facts.append(f"отв. {row['owner']}")
+#: Секции протокола: тип сущности → заголовок. Порядок — канон v1 (Решения,
+#: Задачи, Цели, Запросы, Идеи, Инсайты, Факты, Принципы, Метрики, Открытые
+#: вопросы, Риски); типы, которых v1 не знал, стоят рядом по смыслу. Тип вне
+#: словаря не теряется — он уходит в «Прочее» последней секцией.
+PROTOCOL_SECTIONS = (
+    ("decision", "Решения"),
+    ("agreement", "Договорённости"),
+    ("task", "Задачи"),
+    ("goal", "Цели"),
+    ("request", "Запросы"),
+    ("idea", "Идеи"),
+    ("insight", "Инсайты"),
+    ("fact", "Факты"),
+    ("principle", "Принципы"),
+    ("metric", "Метрики"),
+    ("question", "Открытые вопросы"),
+    ("risk", "Риски"),
+    ("people-observation", "Наблюдения о людях"),
+    ("glossary-term", "Термины"),
+)
+
+PROTOCOL_SECTION_OTHER = "Прочее"
+
+#: Модальность по-русски: протокол читает человек, а не машина.
+MODALITY_LABELS = {
+    "committed": "обязательство",
+    "intention": "намерение",
+    "deprioritized": "отложено",
+    "cancelled": "отменено на встрече",
+    "done_in_meeting": "сделано на встрече",
+}
+
+#: Этап разбора человеческим языком. Печатается в протоколе, только пока разбор
+#: не дошёл до конца: файл со `status: briefed` в базе обязан сам объяснить, что
+#: правки по этой встрече ещё не применялись.
+STATE_LABELS = {
+    "ready": "разбор только начат — выжимки ещё нет",
+    "mapped": "карта базы построена, выжимки ещё нет",
+    "briefed": "выжимка сдана, человек её ещё не подтвердил",
+    "confirmed": "выжимка подтверждена, предложения по базе готовятся",
+    "review": "предложения по базе проходят контроль",
+    "decided": "решения приняты, записи в базу ещё не сделаны",
+    "writing": "записи в базу применяются",
+    "applied": "записи в базу применены, сводка участникам не отправлена",
+}
+
+
+def protocol_line(row: Dict[str, Any], task: bool = False) -> List[str]:
+    """Строка сущности в протоколе: заголовок, факты, дом, опора.
+
+    Задача печатается чекбоксом и живёт под именем владельца — форма v1;
+    сделанное в кадре отмечается сразу закрытым, потому что оно и правда
+    закрыто. Спецификация идёт вложенным списком: сжатая в заголовок, она
+    перестаёт быть спецификацией.
+    """
+    title = str(row.get("title") or row.get("eid") or "").strip()
+    done = row.get("modality") == "done_in_meeting"
+    head = f"- [{'x' if done else ' '}] {title}" if task else f"- {title}"
+    facts: List[str] = []
     if row.get("due"):
+        # срок печатается у любой сущности: горизонт цели или запроса теряется
+        # ровно так же, как срок задачи, — а ищут по протоколу и его тоже
         facts.append(f"срок: {row['due']}")
-    if row.get("unit"):
-        facts.append(f"дом: {row['unit']}")
-    line = f"- **{row.get('title') or row.get('eid')}**"
+    if not task and row.get("owner"):
+        facts.append(f"отв. {row['owner']}")
+    if row.get("author"):
+        facts.append(str(row["author"]))
+    label = MODALITY_LABELS.get(str(row.get("modality") or ""))
+    if label:
+        facts.append(f"*({label})*")
+    if row.get("next_meeting"):
+        facts.append("[→след.встреча]")
     if facts:
-        line += " — " + " · ".join(facts)
+        head += " — " + " · ".join(facts)
+    # тема в строке не печатается: она задаёт порядок записей (`by_thread`), а
+    # тегом у каждой строки только шумит — читателю она видна тем, что записи
+    # одной темы стоят подряд
+    tail = [f"{name}: {row[key]}" for key, name in (("unit", "дом"),)
+            if row.get(key)]
+    if tail:
+        head += ". " + " · ".join(tail)
     quote = str(row.get("quote") or "").strip()
     if quote:
-        line += f"\n  > {quote}"
-    return line
+        head += f'. Опора: "{quote}"'
+    lines = [head]
+    spec = row.get("spec")
+    lines += [f"  - {item}" for item in (spec if isinstance(spec, list) else [])
+              if str(item).strip()]
+    return lines
+
+
+def by_thread(rows: Sequence[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Записи одной темы — подряд: тема в строке не печатается, но задаёт
+    порядок, и разговор об одном предмете читается вместе, а не вразбивку.
+
+    Темы идут в порядке первого появления в подписанном ростере (правки паузы 1
+    его порядок могли изменить — «порядок встречи» не обещаем); внутри темы
+    порядок ростера сохранён, сортировка стабильна. Записи без темы собираются
+    одной группой на месте первой такой записи.
+    """
+    order: Dict[str, int] = {}
+    for row in rows:
+        order.setdefault(str(row.get("thread") or ""), len(order))
+    return sorted(rows, key=lambda row: order[str(row.get("thread") or "")])
+
+
+def protocol_tasks(rows: Sequence[Dict[str, Any]]) -> List[str]:
+    """Блок задач: по владельцу, безымянные — последними; внутри — по темам."""
+    by_owner: Dict[str, List[Dict[str, Any]]] = {}
+    for row in rows:
+        owner = str(row.get("owner") or "").strip() or "Не назначен"
+        by_owner.setdefault(owner, []).append(row)
+    lines: List[str] = []
+    for owner in sorted(by_owner, key=lambda name: (name == "Не назначен", name)):
+        lines.append(f"{owner}:")
+        for row in by_thread(by_owner[owner]):
+            lines += protocol_line(row, task=True)
+        lines.append("")
+    return lines
 
 
 def confirmed_state(run: Run) -> Dict[str, Any]:
@@ -2060,195 +3476,283 @@ def protocol_text(run: Run) -> str:
     Источник ровно один: снимок `summary_state`, снятый в момент подписи.
     """
     state = confirmed_state(run)
+    meeting = state.get("meeting") or {}
     date = run.manifest["meeting_date"]
     topic = str(state.get("topic") or "")
     lines = ["---", f'title: "Протокол встречи {date} — {topic}"', "type: meeting",
-             f"date: {date}", f"topic: {topic}", "---", "",
-             f"# Встреча {date}", "", "## О чём была встреча", "",
-             str(state.get("gist") or "—"), ""]
-    threads: Dict[str, List[Dict[str, Any]]] = {}
-    for row in state["roster"]:
-        if row.get("withdrawn"):
+             f"date: {date}", f"topic: {topic}", f"status: {run.state}",
+             f"run_id: {run.manifest['run_id']}", "---", "",
+             f"# Встреча {date}", "", "## Метаданные", f"Дата: {date}"]
+    people = [str(person.get("name") or "").strip()
+              + (f" ({person['role']})" if person.get("role") else "")
+              for person in meeting.get("participants") or []
+              if isinstance(person, dict) and str(person.get("name") or "").strip()]
+    lines.append("Участники: " + (", ".join(people) if people else "не названы"))
+    if meeting.get("duration"):
+        lines.append(f"Длительность: {meeting['duration']}")
+    lines.append(f"Тип встречи: {meeting.get('kind') or 'неизвестно'}")
+    lines += ["", "## Содержание встречи", "",
+              str(meeting.get("narrative") or state.get("gist") or "—"), ""]
+    live = [row for row in state["roster"] if not row.get("withdrawn")]
+    # отдельной секции тем в протоколе нет: список тем повторял оглавление того,
+    # что и так стоит ниже строками. Тема осталась порядком записей внутри секций
+    known = {name for name, _ in PROTOCOL_SECTIONS}
+    buckets: Dict[str, List[Dict[str, Any]]] = {}
+    for row in live:
+        kind = str(row.get("type") or "")
+        buckets.setdefault(kind if kind in known else PROTOCOL_SECTION_OTHER, []).append(row)
+    if live:
+        lines += ["## Извлечённые сущности", ""]
+    for kind, heading in PROTOCOL_SECTIONS + ((PROTOCOL_SECTION_OTHER,
+                                               PROTOCOL_SECTION_OTHER),):
+        rows = buckets.get(kind)
+        if not rows:
             continue
-        threads.setdefault(str(row.get("thread") or "—"), []).append(row)
-    if threads:
-        lines += ["## Разобрано", ""]
-        for thread in sorted(threads):
-            lines += [f"### {thread}", ""]
-            lines += [protocol_line(row) for row in threads[thread]]
+        lines += [f"### {heading}", ""]
+        if kind == "task":
+            lines += protocol_tasks(rows)
+        else:
+            for row in by_thread(rows):
+                lines += protocol_line(row)
             lines.append("")
+    quotes = [row for row in (meeting.get("key_quotes") or [])
+              if isinstance(row, dict) and str(row.get("quote") or "").strip()]
+    if quotes:
+        lines += ["## Ключевые цитаты", ""]
+        for row in quotes:
+            note = " — ".join(str(row[key]).strip() for key in ("speaker", "context")
+                              if str(row.get(key) or "").strip())
+            lines.append(f'- "{str(row["quote"]).strip()}"' + (f" — {note}" if note else ""))
+        lines.append("")
+    # Вопрос, на который человек ответил, в файле не висит: ответ на паузе 1 —
+    # это правка или снятие сущности, о которой спрашивали. Неоднозначности
+    # разбора (дефолтный дом, дом протокола) закрывает само подтверждение —
+    # после него они не «требуют уточнения», а приняты
+    answered = set(run.load("roster-overrides.json") or {})
+    answered |= {row["eid"] for row in state["roster"] if row.get("withdrawn")}
+    open_questions = [row for row in state["meeting_questions"]
+                      if str(row.get("eid") or "") not in answered]
+    if run.state == "briefed":
+        open_questions += state["ambiguities"]
+    if open_questions:
+        lines += ["## Требует уточнения", ""]
+        lines += [f"- {row.get('message')}" for row in open_questions]
+        lines.append("")
     withdrawn = [row for row in state["roster"] if row.get("withdrawn")]
     if withdrawn:
         lines += ["## Снято на подтверждении", ""]
         lines += [f"- {row.get('title') or row.get('eid')} — {row['withdrawn']}"
                   for row in withdrawn]
         lines.append("")
-    if state["meeting_questions"]:
-        lines += ["## Открытые вопросы", ""]
-        lines += [f"- {row.get('message')}" for row in state["meeting_questions"]]
-        lines.append("")
+    # разбор, оборванный на середине, обязан сказать это сам: файл живёт в базе
+    # дольше сессии, и через месяц отличить «так и было» от «не доехало» нечем
+    if run.state != "done":
+        lines += ["---", "",
+                  f"*Разбор на этом файле остановился: {STATE_LABELS.get(run.state, run.state)}.*"]
     return "\n".join(lines).rstrip() + "\n"
 
 
-def protocol_material(run: Run) -> Optional[Dict[str, Any]]:
-    """Протокол и транскрипт для applier — ПУТЯМИ, а не текстами.
+#: По этим строкам шапки протокол узнаёт своего хозяина и его состояние: файл,
+#: написанный ЭТИМ прогоном, он вправе переписать; чужой — только если тот
+#: прогон разбор бросил.
+RUN_STAMP = re.compile(r"^run_id:\s*(\S+)\s*$", re.MULTILINE)
+STATUS_STAMP = re.compile(r"^status:\s*(\S+)\s*$", re.MULTILINE)
 
-    Выжимка рендерится в рабочий каталог прогона: ядро в базу не пишет ничего и
-    после этой правки. В базу оба файла кладёт applier копированием — транскрипт
-    живой встречи весит сотни килобайт, и прогон его через модель означал бы
-    усечение и выдумку вместо архива. Транскрипт именно КОПИРУЕТСЯ: он приходит
-    произвольным путём, часто вне базы, и удалять исходник пользователя скилл
-    не вправе.
 
-    Существующий протокол за ту же дату не перезаписывается никогда — правило
-    v1: ядро называет факт `exists`, а переписать или пропустить решает не оно.
+def protocol_stamp(path: Path) -> Dict[str, Optional[str]]:
+    """Штамп файла по адресу протокола: чей прогон и на чём он встал.
+
+    Читается только шапка. Файл нечитаемый или не в UTF-8 (протокол, набранный
+    руками в другой кодировке, — бытовой случай русскоязычной базы) — штампа
+    нет, и файл считается чужим: молчаливая перезапись здесь необратима.
+    """
+    try:
+        head = path.read_text(encoding="utf-8", errors="replace")[:1000]
+    except OSError:
+        return {"run_id": None, "status": None}
+    run_match = RUN_STAMP.search(head)
+    status_match = STATUS_STAMP.search(head)
+    return {"run_id": run_match.group(1) if run_match else None,
+            "status": status_match.group(1) if status_match else None}
+
+
+def drop_orphan_protocol(run: Run, part: str, keep: str) -> Optional[str]:
+    """Прежний файл, оставшийся не по адресу, убирается своим прогоном.
+
+    Адрес меняется по двум законным поводам: человек назвал другой каталог
+    протоколов на паузе 1, узел переподал выжимку с другой темой. Оставленный
+    файл застывает со `status: briefed` и врёт ровно тем способом, который весь
+    этот механизм и чинит; оставленная копия транскрипта просто задваивает
+    сотни килобайт. Работает для обеих частей: выжимка узнаётся по штампу
+    `run_id`, архив — по совпадению с исходником прогона побайтово.
+    """
+    previous = ((run.load("protocol-status.json") or {}).get(part) or {}).get("file")
+    if not previous or previous == keep:
+        return None
+    try:
+        stale = run.base_file(str(previous))
+    except SpineError:
+        return None
+    if not stale.is_file():
+        return None
+    if part == "summary":
+        if protocol_stamp(stale)["run_id"] != run.manifest["run_id"]:
+            return None
+    else:
+        try:
+            source = Path(run.manifest["transcript"]["path"]).read_bytes()
+            if sha256_bytes(stale.read_bytes()) != sha256_bytes(source):
+                return None
+        except OSError:
+            return None
+    try:
+        stale.unlink()
+    except OSError:
+        return None
+    run.journal("protocol_moved", part=part, was=previous, now=keep)
+    return str(previous)
+
+
+def write_protocol(run: Run) -> Dict[str, Any]:
+    """Выжимку встречи и архивную копию транскрипта в базу кладёт ЯДРО.
+
+    Причина исключения: это не предложение к записи, а артефакт разбора —
+    выжимка, которую человек видит и правит на паузе 1. Через applier она шла
+    в самом конце, и оборванный разбор не оставлял в базе ничего: встречу
+    разобрали, а найти её через месяц нечем. Теперь файл появляется сразу после
+    выжимки и переписывается на каждой смене фазы — его `status` называет этап,
+    на котором разбор стоит.
+
+    Чужой файл по адресу: доведённый до конца (`status: done`) и файл без штампа
+    (написан руками) не трогаются никогда — правило v1. Брошенный на середине
+    прогон — другое дело: перезапуск разбора после обрыва штатен, и вечно
+    лежащий огрызок чужого прогона хуже свежей выжимки. Перезапись называется
+    вслух в отчёте.
+
+    Транскрипт копируется, а не переносится: он приходит произвольным путём,
+    часто вне базы, и удалять исходник пользователя скилл не вправе.
     """
     targets = protocol_targets(run)
     if targets is None:
-        return None
-    rendered = run.artifact("protocol") / Path(targets["summary"]).name
-    rendered.parent.mkdir(parents=True, exist_ok=True)
-    atomic_write(rendered, protocol_text(run))
-    return {
-        "action": "copy",
-        "rule": "оба файла кладутся в базу копированием файла, не пересказом: "
-                "содержимое через модель не проходит. Файл на месте (exists) — "
-                "статус skipped с причиной: существующий протокол не "
-                "перезаписывается никогда",
-        "summary": {"source": str(rendered), "target": targets["summary"],
-                    "exists": run.base_file(targets["summary"]).is_file()},
-        "transcript": {"source": run.manifest["transcript"]["path"],
-                       "target": targets["transcript"],
-                       "exists": run.base_file(targets["transcript"]).is_file(),
-                       "note": "копируется, а не переносится: исходник "
-                               "пользователя остаётся на месте"},
-    }
+        absence = protocol_absence(run) or {}
+        return {"written": False, **absence}
+    report: Dict[str, Any] = {"written": True}
+    summary_rel = targets["summary"]
+    path = run.base_file(summary_rel)
+    stamp = protocol_stamp(path) if path.is_file() else {"run_id": None, "status": None}
+    mine = stamp["run_id"] == run.manifest["run_id"]
+    abandoned = bool(stamp["run_id"]) and not mine and stamp["status"] not in (None, "done")
+    if path.is_file() and not mine and not abandoned:
+        report["summary"] = {
+            "status": "skipped", "file": summary_rel,
+            "note": "выжимка этой встречи в базе уже есть, и писал её не этот "
+                    "разбор — существующий протокол не перезаписывается"}
+        report["written"] = False
+    else:
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            atomic_write(path, protocol_text(run))
+            report["summary"] = {"status": "written", "file": summary_rel}
+            if abandoned:
+                report["summary"]["note"] = (
+                    "поверх выжимки брошенного разбора "
+                    f"({stamp['run_id']}, остановился на этапе {stamp['status']})")
+                run.journal("protocol_replaced", file=summary_rel,
+                            was_run=stamp["run_id"], was_status=stamp["status"])
+            moved = drop_orphan_protocol(run, "summary", summary_rel)
+            if moved:
+                report["summary"]["note"] = f"адрес изменился, прежний файл убран: {moved}"
+        except OSError as error:
+            report["summary"] = {"status": "failed", "file": summary_rel,
+                                 "note": f"запись не удалась: {error}"}
+            report["written"] = False
+    transcript_rel = targets["transcript"]
+    archive = run.base_file(transcript_rel)
+    copied = ((run.load("protocol-status.json") or {}).get("transcript") or {})
+    moved_archive = drop_orphan_protocol(run, "transcript", transcript_rel)
+    if archive.is_file():
+        # копия делается один раз; статус честный — «положил этот прогон», а не
+        # «уже лежала», иначе финальный отчёт врёт о собственной работе
+        report["transcript"] = {
+            "status": "written" if copied.get("file") == transcript_rel
+            and copied.get("status") == "written" else "skipped",
+            "file": transcript_rel,
+            "note": None if copied.get("status") == "written"
+            else "копия транскрипта уже лежала в архиве до этого разбора"}
+    else:
+        try:
+            archive.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(run.manifest["transcript"]["path"], archive)
+            report["transcript"] = {"status": "written", "file": transcript_rel}
+            if moved_archive:
+                report["transcript"]["note"] = (
+                    f"адрес изменился, прежняя копия убрана: {moved_archive}")
+        except OSError as error:
+            report["transcript"] = {"status": "failed", "file": transcript_rel,
+                                    "note": f"копия не удалась: {error}"}
+    return report
 
 
-def protocol_declared(run: Run) -> Dict[str, Dict[str, Any]]:
-    """Раздел протокола ВЫДАННОГО материала: адреса и снимок занятости.
+def sync_protocol(run: Run) -> None:
+    """Держит выжимку в базе синхронной состоянию прогона.
 
-    Спрашивается ровно то, что было обещано: материал читается из артефакта, а
-    не пересчитывается, иначе отчёт отвечал бы на другой вопрос, чем задавали.
-    Один владелец на оба вопроса — «по каким частям ждём статус» и «против чего
-    его сверять»: два источника разъехались бы при первой правке материала.
+    Зовётся из `set_state` — единственной точки, через которую проходит любая
+    смена фазы. Провал записи прогон не валит и не исчезает: он ложится в отчёт,
+    который координатор называет пользователю, и в события прогона. Ловится
+    ЛЮБОЕ исключение, не только файловое: смена состояния уже записана в
+    манифест, и падение отсюда оставило бы прогон в фазе, из которой нет выхода
+    ни вперёд, ни назад — команда падала бы на том же месте снова и снова.
     """
-    material = (run.load("apply-material.json") or {}).get("payload") or {}
-    protocol = material.get("protocol")
-    protocol = protocol if isinstance(protocol, dict) else {}
-    out: Dict[str, Dict[str, Any]] = {}
-    for part in ("summary", "transcript"):
-        row = protocol.get(part)
-        if isinstance(row, dict):
-            out[part] = row
-    return out
-
-
-def protocol_parts(run: Run) -> Tuple[str, ...]:
-    """Части протокола, по которым ядро ждёт статус, — по выданному материалу."""
-    return tuple(protocol_declared(run))
-
-
-def prepared_sha(row: Dict[str, Any]) -> Optional[str]:
-    """Отпечаток файла, приготовленного ядром к копированию, — или ничего.
-
-    `source` обеих частей называет само ядро: у выжимки это отрендеренный
-    протокол в каталоге прогона, у транскрипта — исходник прогона. Файл не
-    читается — судить не о чем, и ядро молчит вместо догадки.
-    """
+    if not run.load("brief.json"):
+        return
     try:
-        return sha256_bytes(Path(str(row.get("source") or "")).read_bytes())
-    except OSError:
-        return None
-
-
-def check_protocol_report(run: Run, payload: Any) -> List[V.Violation]:
-    """Статус по файлу протокола: свой адрес и никакой записи поверх чужого файла.
-
-    Две гарантии, обе фактом, обе за один взгляд на диск.
-
-    1. Адрес статуса — адрес из материала. Симметрично строкам пунктов
-       (`check_applied_files`): статус, названный чужим файлом, отчитывается не
-       о том файле, который выдало ядро.
-    2. `written` не принимается, пока по адресу стоит ЧУЖОЙ файл. Чужой — это
-       любой файл в снимке материала (приготовленного ядром там ещё нет) и файл
-       с не тем содержимым в момент отчёта: оба файла кладутся копированием,
-       значит побайтово совпадают с приготовленным. «Существующий протокол не
-       перезаписывается никогда» держится этой проверкой, а не послушанием узла.
-
-    Окно между материалом и записью ядро не наблюдает: точки вызова между ними
-    нет, а перезапись уничтожает улику. Поэтому снимок берётся не заранее, а в
-    `render apply` — непосредственно перед вызовом applier, и всё, что успело
-    появиться и уцелеть, ловится вторым взглядом здесь.
-    """
-    if not isinstance(payload, dict):
-        return []
-    report = payload.get("protocol")
-    report = report if isinstance(report, dict) else {}
-    out: List[V.Violation] = []
-    for part, declared in protocol_declared(run).items():
+        report = write_protocol(run)
+    except SpineError as error:
+        report = {"written": False, "reason": error.message,
+                  "say": "выжимка этой встречи в базу не легла: " + error.message}
+    except Exception as error:  # noqa: BLE001 — см. докстринг: фаза уже сменилась
+        reason = f"{type(error).__name__}: {error}"
+        report = {"written": False, "reason": reason,
+                  "say": "выжимка этой встречи в базу не легла из-за сбоя записи: "
+                         + reason}
+    previous = run.load("protocol-status.json") or {}
+    run.store("protocol-status.json", report)
+    if report.get("reason") and previous.get("reason") != report.get("reason"):
+        run.event("protocol_status", code="absent", message=report["reason"])
+    for part in ("summary", "transcript"):
         row = report.get(part)
-        if not isinstance(row, dict):
+        if not isinstance(row, dict) or row.get("status") == "written":
             continue
-        where = f"applied.protocol.{part}"
-        target = str(declared.get("target") or "")
-        named = str(row.get("file") or "").strip()
-        if named and target and named != target:
-            out.append(V.Violation(
-                "schema_invalid",
-                f"статус по файлу протокола ({part}) назван файлом {named}, "
-                f"адрес материала — {target}",
-                field=f"{where}.file",
-                hint="строка статуса называет адрес, который выдало ядро: "
-                     "запись по другому адресу — не этот файл"))
-        if row.get("status") != "written":
+        # событие пишется на смену положения дел, а не на каждую фазу: иначе
+        # журнал забивается повтором одного и того же факта
+        if (previous.get(part) or {}).get("status") == row.get("status"):
             continue
-        if declared.get("exists"):
-            out.append(V.Violation(
-                "protocol_overwrite",
-                f"файл протокола ({part}) по адресу {target} существовал до "
-                "записи — статус written утверждает запись поверх него",
-                field=f"{where}.status",
-                hint="существующий протокол не перезаписывается никогда: "
-                     "верни по нему skipped с причиной"))
-            continue
-        prepared = prepared_sha(declared)
-        standing = run.base_file(target) if target else None
-        if prepared and standing is not None and standing.is_file() \
-                and sha256_bytes(standing.read_bytes()) != prepared:
-            out.append(V.Violation(
-                "protocol_overwrite",
-                f"по адресу {target} лежит не тот файл, который приготовило "
-                f"ядро, — статус written по файлу протокола ({part}) не принят",
-                field=f"{where}.status",
-                hint="файл появился по адресу помимо этого разбора: оба файла "
-                     "кладутся копированием и совпадают с приготовленным "
-                     "побайтово; чужой протокол не перезаписывается"))
-    return out
+        run.event("protocol_status", code=row.get("status"),
+                  message=f"{part}: {row.get('note')}")
+
+
+def protocol_report(run: Run) -> Optional[Dict[str, Any]]:
+    """Что ядро сделало с протоколом на последней смене фазы."""
+    report = run.load("protocol-status.json")
+    return report if isinstance(report, dict) else None
 
 
 def render_apply(run: Run) -> Dict[str, Any]:
     """Замок 1 пройден по построению: `decided` не наступает без исходов по всем
     пунктам. Материал applier — узкий вход: принятые пункты, целевые файлы,
-    протокол встречи путями, канон формы. Правило узла: перечитай файл перед
-    правкой.
+    канон формы. Правило узла: перечитай файл перед правкой.
 
-    Ранняя ветка закрывает фазу, только когда писать нечего ВООБЩЕ. Пока она
-    считала одни принятые пункты, прогон без единого take означал «встречу
-    разобрали, в базе пусто» — ровно ту дыру, которую чинит протокол.
-
-    Протокола не будет — это стоит в материале названным полем `protocol_absent`,
-    обеими ветками. Мимо этой команды к сводке дороги нет: `applied` наступает
-    только отсюда, — значит, факт нельзя пройти ни разу его не увидев.
+    Протокол встречи сюда не входит: он лежит в базе с момента выжимки, его
+    пишет и обновляет ядро (`write_protocol`). Прогон без единого `take` больше
+    не означает «встречу разобрали, в базе пусто» — файл встречи там уже есть.
     """
     require_state(run, ("decided", "writing"))
     items = accepted_items(run)
-    protocol = protocol_material(run)
-    absent = protocol_absence(run) if not protocol else None
-    if not items and not protocol:
+    if not items:
         run.set_state("applied", "completed")
         data: Dict[str, Any] = {"items": [],
                                 "message": "принятых записей нет — писать нечего"}
+        absent = protocol_absence(run)
         if absent:
             data["protocol_absent"] = absent
         return {"state": run.state, "step": run.step, "next": next_action(run),
@@ -2261,6 +3765,15 @@ def render_apply(run: Run) -> Dict[str, Any]:
         entry = {"n": row["n"], "eid": row["eid"], "unit": row["unit"],
                  "op": row["op"], "outcome": row["outcome"], "file": row["file"],
                  "text": row["text"], "owner": row.get("owner"), "due": row.get("due")}
+        if row.get("replaces"):
+            # якорь замены: строка, которую узел найдёт в файле и заменит целой
+            # записью. Без него `update` — догадка о том, что вытеснять
+            entry["replaces"] = row["replaces"]
+        if row.get("kind"):
+            # словарная пара пишется в форму СВОЕГО файла, а не строкой active:
+            # без этой пометки узел догадывается о жанре по имени файла
+            entry["kind"] = row["kind"]
+            entry["title"] = row.get("title")
         if row.get("projections"):
             entry["projections"] = row["projections"]
         rows.append(entry)
@@ -2273,13 +3786,10 @@ def render_apply(run: Run) -> Dict[str, Any]:
         "items": rows,
         "files": files,
     }
-    if protocol:
-        # отдельным разделом, не строкой `files`: группы файлов координатор режет
-        # по юнитам принятых пунктов, а протокол — не пункт и юниту не принадлежит
-        payload["protocol"] = protocol
-    elif absent:
-        # присутствие названо разделом, отсутствие — полем: пропуск протокола
-        # обязан быть громким. Статуса ядро по нему не спрашивает — писать нечего
+    absent = protocol_absence(run)
+    if absent:
+        # пропуск выжимки обязан быть громким в обеих ветках: материал с
+        # принятыми пунктами читают внимательнее пустого
         payload["protocol_absent"] = absent
     digest = V.digest(payload)
     run.store("apply-material.json", {"payload": payload, "digest": digest})
@@ -2292,41 +3802,37 @@ def render_apply(run: Run) -> Dict[str, Any]:
 def submit_applied(run: Run, payload: Any) -> Dict[str, Any]:
     """Замок 2: статус записи по каждому принятому пункту — до этого сводки нет.
 
-    Протокол встречи и архивная копия транскрипта — отдельная часть отчёта, и
-    спрашиваются они так же строго: материал их нёс — статус обязателен. Иначе
-    «встречу разобрали» означало бы неизвестно что. Статус этой части сверяется
-    с фактом файла (`check_protocol_report`): свой адрес, и никакого `written`
-    поверх файла, которого ядро не готовило.
+    Протокол встречи в этот отчёт не входит: его пишет ядро, и статус по нему
+    ядро знает само (`protocol_report`) — спрашивать узел о работе, которой он
+    не делал, значит получить выдумку.
 
     Отчёт один, applier'ов может быть несколько: большой write-set координатор
     делит на непересекающиеся группы файлов и склеивает строки в один `results`.
     """
     require_state(run, ("writing",))
     expected = [row["eid"] for row in accepted_items(run)]
-    violations = V.validate_applied(payload, expected, protocol_parts(run))
+    violations = V.validate_applied(payload, expected)
     violations.extend(check_applied_files(run, payload))
-    violations.extend(check_protocol_report(run, payload))
     raise_violations(run, violations, "applied")
     run.store("applied.json", payload)
     for row in payload.get("results", []):
         run.journal("apply_status", eid=row.get("eid"), file=row.get("file"),
                     status=row.get("status"), note=row.get("note"),
                     applier_id=row.get("applier_id"))
-    protocol = payload.get("protocol") if isinstance(payload.get("protocol"), dict) else {}
-    for part in protocol_parts(run):
-        row = protocol.get(part) or {}
-        run.journal("protocol_status", part=part, status=row.get("status"),
-                    file=row.get("file"), note=row.get("note"),
-                    applier_id=row.get("applier_id"))
     statuses = {row.get("status") for row in payload.get("results", [])}
     run.set_state("applied", "completed")
+    titles = roster_titles(run)
     data: Dict[str, Any] = {"written": sum(1 for r in payload["results"]
                                            if r.get("status") == "written"),
-                            "unwritten": [r for r in payload["results"]
+                            "unwritten": [{**r, "title": titles.get(str(r.get("eid")))}
+                                          for r in payload["results"]
                                           if r.get("status") != "written"],
                             "statuses": sorted(s for s in statuses if s)}
-    if protocol_parts(run):
-        data["protocol"] = {part: protocol.get(part) for part in protocol_parts(run)}
+    report = protocol_report(run)
+    if report:
+        # статус протокола ядро называет там же, где статусы записи: пользователь
+        # видит судьбу всех файлов встречи одним взглядом
+        data["protocol"] = report
     return {"state": run.state, "step": run.step, "next": next_action(run),
             "data": data}
 
@@ -2400,21 +3906,44 @@ def render_delivery(run: Run) -> Dict[str, Any]:
             "data": material}
 
 
+#: Обёртка строки базы: маркер списка и чекбокс. Строка файла — не фраза для
+#: участника встречи, и разметка в мессенджере читается мусором.
+LIST_MARK = re.compile(r"^[ \t]*(?:[-*+][ \t]+(?:\[[ xX]\][ \t]+)?|\d+[.)][ \t]+)")
+
+
+def plain_item(text: Optional[str]) -> Optional[str]:
+    if not isinstance(text, str):
+        return text
+    return LIST_MARK.sub("", text).strip() or None
+
+
 def delivery_material(run: Run) -> Dict[str, Any]:
     """Содержание сводки — от отражения в базе, а не от полного нарратива:
     в базу записывается важное, и сводка не вправе выдавать обсуждённое за
     зафиксированное (дефект прогона 07.08). Отражение — written ∪ already ∪
     duplicate: неважно, новая это дельта или предмет уже был записан ранее
-    (решение пользователя 10.08)."""
+    (решение пользователя 10.08).
+
+    Шапка сводки (кто был, какая встреча, когда) и тип каждого пункта едут
+    отсюда же: без них узел не соберёт формат v1 — заголовок, задачи по
+    исполнителям, решения отдельно от задач.
+    """
     results = applied_results(run)
     written = {str(r.get("eid")) for r in results if r.get("status") == "written"}
     decision_items = (run.load("decision.json") or {}).get("items", [])
     brief = run.load("brief.json") or {}
+    meeting = brief.get("meeting") or {}
     roster = {str(item.get("eid")): item for item in run.roster()}
     reflected: List[Dict[str, Any]] = []
     seen: Set[str] = set()
+    # заголовок, доехавший до сводки, — один и тот же в обоих блоках: пункт,
+    # отредактированный человеком, не может уехать участникам в двух редакциях
+    titles: Dict[str, str] = {}
     for row in decision_items:
         eid = str(row.get("eid"))
+        if row.get("kind") == "lexicon":
+            # поправка словаря — внутренняя работа базы, не итог встречи
+            continue
         if row.get("outcome") in ("take", "closed") and eid in written:
             kind = "written"
         elif row.get("outcome") == "already":
@@ -2424,41 +3953,60 @@ def delivery_material(run: Run) -> Dict[str, Any]:
             # отражением не является — тема уходит в фон
             continue
         entity = roster.get(eid) or {}
-        reflected.append({"title": row.get("title") or row.get("text"),
+        # правка человека на экране решений сильнее исходной формулировки:
+        # заголовок, поехавший в сводку мимо неё, — дефект прогона 12.08.
+        # Обёртка строки базы (маркер списка, чекбокс) при этом снимается:
+        # участнику встречи едет смысл пункта, а не разметка файла
+        title = (plain_item(row.get("text")) if row.get("edited")
+                 else (row.get("title") or plain_item(row.get("text"))))
+        reflected.append({"title": title,
                           "text": row.get("text"), "owner": row.get("owner"),
                           "due": row.get("due"), "op": row.get("op"),
+                          "type": entity.get("type"),
                           "modality": entity.get("modality"),
+                          "outcome": row.get("outcome"),
+                          "next_meeting": bool(entity.get("next_meeting")),
                           "reflection": kind})
+        titles[eid] = str(title or "")
         seen.add(eid)
     duplicates = {eid for _, eid in filtered_eids(run, code="duplicate")}
     for eid in sorted(duplicates - seen):
         entity = roster.get(eid) or {}
         reflected.append({"title": entity.get("title"), "text": None,
                           "owner": entity.get("owner"), "due": entity.get("due"),
-                          "op": None, "modality": entity.get("modality"),
+                          "op": None, "outcome": None, "type": entity.get("type"),
+                          "modality": entity.get("modality"),
+                          "next_meeting": bool(entity.get("next_meeting")),
                           "reflection": "duplicate"})
-    # открытые вопросы встречи — сущности типа question из ростера; снятые,
-    # уже отражённые и машинно отсеянные открытыми не считаются;
-    # brief.questions — вопросы узла к пользователю, они закрыты паузой 1
+    # «к следующей встрече» — ожидания, прозвучавшие явно; они живут отдельным
+    # блоком формата и потому собираются от ростера, а не от отражения: снятое
+    # человеком не в счёт, остальное участник обязан увидеть
     withdrawn = run.withdrawn()
-    closed_eids = seen | {eid for _, eid in filtered_eids(run)}
-    open_questions = [{"title": item.get("title"), "owner": item.get("owner")}
-                      for item in run.roster()
-                      if item.get("type") == "question"
-                      and str(item.get("eid")) not in withdrawn
-                      and str(item.get("eid")) not in closed_eids]
+    next_meeting = [{"title": titles.get(str(item.get("eid"))) or item.get("title"),
+                     "owner": item.get("owner"), "due": item.get("due"),
+                     "reflection": "written" if str(item.get("eid")) in written else None}
+                    for item in run.roster()
+                    if item.get("next_meeting") and str(item.get("eid")) not in withdrawn]
     return {
         "intent": "delivery_material",
-        "gist": (brief.get("meeting") or {}).get("gist") or brief.get("gist"),
+        "meeting": {"date": run.manifest["meeting_date"],
+                    "kind": meeting.get("kind"),
+                    "duration": meeting.get("duration"),
+                    "participants": meeting.get("participants") or []},
+        "gist": meeting.get("gist") or brief.get("gist"),
         "reflected": reflected,
-        "open_questions": open_questions,
+        "next_meeting": next_meeting,
+        "limit_chars": 4000,
     }
 
 
 def submit_delivery(run: Run, payload: Any) -> Dict[str, Any]:
     require_written(run)
     raise_violations(run, V.validate_delivery(payload), "delivery")
-    leaks = leaked_technique(run, payload.get("text") or "")
+    # границы проверяются по всему, что поедет наружу: разрезанная сводка —
+    # тот же текст, и кухня, просочившаяся во вторую часть, ничем не лучше
+    parts = [part for part in payload.get("messages") or [] if isinstance(part, str)]
+    leaks = leaked_technique(run, "\n".join([payload.get("text") or ""] + parts))
     if leaks:
         raise SpineError("context_leak",
                          "в сводке участникам осталась кухня разбора: "
@@ -2481,11 +4029,22 @@ def submit_delivery(run: Run, payload: Any) -> Dict[str, Any]:
 def next_action(run: Run) -> str:
     state = run.state
     if state == "ready":
-        return "узел map → submit map"
+        # подсказка идёт за фактом контекста, тем же сигналом, что и `check`
+        sources = (run.load("reading-context.json") or {}).get("sources")
+        if not sources:
+            return ("речевой контекст базы пуст — фоллбэк: узел map по "
+                    "транскрипту → submit map")
+        return "узел extract → submit brief; карта после, по ростеру"
     if state == "mapped":
         return "узел extract → submit brief"
     if state == "briefed":
-        if pending_quote_flags(run):
+        needs_map = not run.load("map.json")
+        pending = bool(pending_quote_flags(run))
+        if needs_map:
+            return ("узел map строит карту по artifacts/roster-lean.json → "
+                    "submit map" + (" · узел quote-judge → submit quotes"
+                                    if pending else ""))
+        if pending:
             return "узел quote-judge → submit quotes"
         return "render summary → decide --screen summary"
     if state == "confirmed":
@@ -2538,6 +4097,9 @@ def render_state(run: Run, full: bool) -> Dict[str, Any]:
         absent = protocol_absence(run)
         if absent:
             data["protocol_absent"] = absent
+        report = protocol_report(run)
+        if report:
+            data["protocol"] = report
     if full:
         data["transitions"] = V.TRANSITIONS
     return {"state": run.state, "step": run.step, "next": next_action(run), "data": data}
@@ -2681,6 +4243,11 @@ def build_parser() -> argparse.ArgumentParser:
     check.add_argument("--base", required=True)
     check.add_argument("--transcript", required=True)
     check.add_argument("--meeting-date", required=True)
+    # тип и цель встречи со слов пользователя: v1 их спрашивал и подавал
+    # экстрактору как фокус чтения. База их не выводит, код не угадывает —
+    # не названы, поля нет
+    check.add_argument("--meeting-kind", default=None)
+    check.add_argument("--meeting-goal", default=None)
     check.set_defaults(func=cmd_check)
 
     submit = sub.add_parser("submit", help="приём артефакта узла")
@@ -2719,6 +4286,19 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "code": error.code, "message": error.message, "field": error.field,
             "hint": error.hint, "error_class": error.error_class,
             "next": error.next_command, "issues": error.issues, "data": error.data,
+        }}, ensure_ascii=False, indent=2))
+        return 1
+    except InjectedFault:
+        raise
+    except Exception as error:  # noqa: BLE001
+        # координатор разговаривает с ядром только через JSON: трассировка в
+        # stdout означает для него тишину — ни кода, ни подсказки, ни шага
+        print(json.dumps({"error": {
+            "code": "internal_error",
+            "message": f"{type(error).__name__}: {error}",
+            "hint": "это дефект ядра, а не входа: скажи пользователю и приложи "
+                    "команду; разбор придётся перезапустить",
+            "error_class": V.BLOCKER, "next": "", "issues": [], "data": {},
         }}, ensure_ascii=False, indent=2))
         return 1
     print(json.dumps(result, ensure_ascii=False, indent=2))

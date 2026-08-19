@@ -186,7 +186,7 @@ OpenAI описывает как AI меняет каждую фазу цикл�
 - [Anthropic: 2026 Agentic Coding Trends Report (PDF)](https://resources.anthropic.com/hubfs/2026%20Agentic%20Coding%20Trends%20Report.pdf)
 - [TechCrunch: Spotify AI coding](https://techcrunch.com/2026/02/12/spotify-says-its-best-developers-havent-written-a-line-of-code-since-december-thanks-to-ai/) — 12 февраля 2026
 - [Birgitta Böckeler: Harness Engineering](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html) — 17 февраля 2026
-- [Boris Cherny — How I use Claude Code (X thread)](https://x.com/bcherny/status/2007179832300581177)
+- [Boris Cherny — How I use Claude Code (X thread)](https://x.com/bcherny/status/2007179832300581177); его эмпирическая методология (ablation, elicitation, verification) → [../prompting/model-elicitation.md](../prompting/model-elicitation.md)
 - [Simon Willison — Embracing the parallel coding agent lifestyle](https://simonw.substack.com/p/embracing-the-parallel-coding-agent)
 - [Addy Osmani — Agentic Code Review](https://addyosmani.com/blog/agentic-code-review/)
 - [METR 2025 — Early-2025 AI on experienced OS developers](https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/)

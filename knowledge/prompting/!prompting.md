@@ -2,9 +2,9 @@
 title: "Промптинг — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-08-03
+updated: 2026-08-14
 review_by: 2026-07-27
-tags: [prompting, system-prompts, prompt-optimization, claude-5, effort, unknowns]
+tags: [prompting, system-prompts, prompt-optimization, claude-5, effort, unknowns, elicitation, ablation]
 publish: false
 ---
 
@@ -22,7 +22,9 @@ publish: false
 
 Второй слой — управление unknowns (полевой гайд Anthropic): качество упирается в разрыв между картой (промпт, скиллы, контекст) и территорией (реальная кодовая база). Техники сокращения разрыва — blind spot pass, интервью по одному вопросу, прототипы вместо описаний, исходник как референс, квиз после работы.
 
-Готовые формулировки из официального руководства, типовые сбои и техники unknowns → [claude-5-prompting.md](claude-5-prompting.md). Архитектурная сторона (что вообще класть в системный промпт, CLAUDE.md, скиллы, референсы) → [../context/context-engineering-claude5.md](../context/context-engineering-claude5.md).
+Третий слой — эмпирическая методология Boris Cherny (создатель Claude Code): модель — «организм», под каждое поколение харнес сносится целиком и пересобирается методом ablation (инструкция возвращается только при повторном сбое); ключевой навык — не prompt engineering, а model elicitation (задача чуть сложнее, чем кажется по силам + guardrails + exit criteria) и verification (дать модели способ проверять свою работу). Правило для пользователей: раз в 6 месяцев сносить CLAUDE.md, скиллы и хуки.
+
+Готовые формулировки из официального руководства, типовые сбои и техники unknowns → [claude-5-prompting.md](claude-5-prompting.md). Методология ablation/elicitation с кейсами и критикой → [model-elicitation.md](model-elicitation.md). Архитектурная сторона (что вообще класть в системный промпт, CLAUDE.md, скиллы, референсы) → [../context/context-engineering-claude5.md](../context/context-engineering-claude5.md).
 
 ---
 

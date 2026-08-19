@@ -16,7 +16,7 @@ version: 3
 
 - [architecture.md](architecture.md) — как продукт устроен внутри (слои, компоненты, связи)
 - [05_decisions.md](05_decisions.md) — продуктовые решения (границы, runtime, путь skills)
-- ../01_company/01_strategic/vision.md — vision проекта svaib (связь ①: блок «Продукт» ссылается сюда)
+- [../01_company/01_strategic/vision.md](../01_company/01_strategic/vision.md) — vision проекта svaib (связь ①: блок «Продукт» ссылается сюда)
 
 ---
 

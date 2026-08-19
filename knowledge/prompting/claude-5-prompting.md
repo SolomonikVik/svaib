@@ -124,6 +124,7 @@ When the user is describing a problem, asking a question, or thinking out loud r
 ## Связанные файлы
 
 - [../context/context-engineering-claude5.md](../context/context-engineering-claude5.md) — архитектурная сторона: что класть в системный промпт, CLAUDE.md, скиллы, референсы
+- [model-elicitation.md](model-elicitation.md) — методология Черни: ablation харнеса, elicitation, verification (интервью-первоисточник того же сдвига)
 - [!prompting.md](!prompting.md) — сводка по техникам промптинга
 - [../skills/!skills.md](../skills/!skills.md) — проектирование скиллов, пересборка под новое поколение
 - [../coding/claude-code.md](../coding/claude-code.md) — dynamic workflows, verification loops, отложенные инструменты

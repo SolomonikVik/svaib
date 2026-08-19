@@ -1,6 +1,6 @@
 ---
 title: "Skills — исполняемые навыки Second Value AI Brain"
-updated: 2026-07-23
+updated: 2026-08-15
 version: 5
 scope: "product_core"
 priority: high
@@ -10,7 +10,7 @@ priority: high
 
 ## Кратко
 
-Скиллы, которые реально едут клиенту в составе plugin. Организация по доменам (задачам бизнеса), не по типу артефакта.
+Скиллы, которые реально едут клиенту в составе plugin. Организация по доменам (задачам бизнеса), не по типу артефакта. Здесь же живут внутренние инструменты нашей стороны (помечены в таблице статусов): их ставит тот же сборщик, но в клиентскую поставку они пока не входят.
 
 ## Связанные файлы
 
@@ -35,6 +35,7 @@ plugin/skills/
 ├── scaffold/                       ← деплой каркаса клиенту (init-brain), в разработке
 │   ├── _draft_spec.md              ← черновик спеки скилла
 │   └── template/                   ← сам каркас клиента (был product/scaffold/)
+├── scaffold-align/                 ← выравнивание живого пространства по канону scaffold (внутренний, обкатка); роль-носитель — ../commands/svaib-keeper.md
 ├── email-assistant/                ← триаж почты
 ├── meeting-analysis/                ← анализ встреч (spine-пайплайн)
 │   ├── SKILL.md                    ← точка входа; процесс ведёт scripts/meeting_spine.py
@@ -86,6 +87,7 @@ prompt → skill → agent
 |-------|--------|-----------|
 | `channels/send-telegram` | есть | канал доставки в Telegram (plain + rich), общий ресурс для meeting/email/др. Канон — `channels/send-telegram/SKILL.md`, установка — `skills/send-telegram/` |
 | `scaffold` (`init-brain`) | в разработке | спека — `scaffold/_draft_spec.md`, разворачивает `scaffold/template/` клиенту |
+| `scaffold-align` | внутренний, обкатка | приведение живого управленческого пространства к канону scaffold; клиенту пока не едет — нужен доступ к методологии (артефакты разработки — `dev/skills/scaffold-align/`); роль-носитель `/svaib-keeper` — `../commands/svaib-keeper.md`; тестовая поставка — профиль обкатки в `dev/plugin-builder/profiles/` |
 | `email-assistant` | есть | триаж почты |
 | `meeting-analysis` | есть | исполняемая точка входа `meeting-analysis/SKILL.md`, карта пайплайна — `meeting-analysis/README.md` |
 | `metrics-analysis` | есть | вертикаль метрик |

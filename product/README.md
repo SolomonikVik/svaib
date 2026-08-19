@@ -26,9 +26,13 @@ priority: high
 ### Смысловое ядро продукта
 
 - [01_overview.md](01_overview.md) — что за продукт, для кого, принципы, границы, бизнес-модель
+- [01_alpha-dod.md](01_alpha-dod.md) — DoD альфы к 30.09: что считаем сделанным, что явно не входит, открытые вопросы
 - [architecture.md](architecture.md) — как продукт устроен внутри (слои, компоненты, связи)
 - [vision/README.md](vision/README.md) — карта целевого образа продукта, семи контуров, доказательной базы, исследований и target architecture
 - [05_decisions.md](05_decisions.md) — продуктовые решения (runtime, границы, путь skills)
+- [glossary.md](glossary.md) — канонический словарь продукта: одно принятое имя и одно определение на понятие
+- [development-operating-model.md](development-operating-model.md) — как команда версионирует и ведёт разработку: релизы, оси, бэклог, актив, статусы файлов
+- CHANGELOG.md — заметные изменения продукта по версиям; верхняя секция уходит в релизный коммит
 
 ### Операционка направления
 
@@ -40,8 +44,8 @@ priority: high
 
 ### Связи наружу
 
-- ../01_company/01_strategic/vision.md — vision проекта svaib (связь ①: блок «Продукт» → [01_overview.md](01_overview.md))
-- ../01_company/01_strategic/goal.md — цели svaib (связь ②: фокус «Продукт» → операционка [02_active.md](02_active.md))
+- [../01_company/01_strategic/vision.md](../01_company/01_strategic/vision.md) — vision проекта svaib (связь ①: блок «Продукт» → [01_overview.md](01_overview.md))
+- [../01_company/01_strategic/goal.md](../01_company/01_strategic/goal.md) — цели svaib (связь ②: фокус «Продукт» → операционка [02_active.md](02_active.md))
 - ../01_company/04_progress/weekly-progress.md — агрегатор svaib (связь ③: [04_progress.md](04_progress.md) → туда)
 - ../clients/playbook/delivery/01_delivery_plan.md — delivery plan (онбординг, ДЗ, инструменты)
 
@@ -103,8 +107,8 @@ Vision меняется при уточнении целевого образа.
 
 | № | Откуда | Куда | Частота |
 |---|--------|------|---------|
-| ① | ../01_company/01_strategic/vision.md (блок «Продукт») | [01_overview.md](01_overview.md) | Стабильная, меняется при пивотах |
-| ② | ../01_company/01_strategic/goal.md (фокус «Продукт») | [02_active.md](02_active.md) | Оперативно (недели) |
+| ① | [../01_company/01_strategic/vision.md](../01_company/01_strategic/vision.md) (блок «Продукт») | [01_overview.md](01_overview.md) | Стабильная, меняется при пивотах |
+| ② | [../01_company/01_strategic/goal.md](../01_company/01_strategic/goal.md) (фокус «Продукт») | [02_active.md](02_active.md) | Оперативно (недели) |
 | ③ | [04_progress.md](04_progress.md) | ../01_company/04_progress/weekly-progress.md | Еженедельно |
 
 ### Две скорости жизни
@@ -128,6 +132,7 @@ Vision меняется при уточнении целевого образа.
 | Понять что горит сейчас | [02_active.md](02_active.md) | Активные задачи, Session Handoff |
 | Зафиксировать/найти продуктовую идею с синка | [ideas.md](ideas.md) | Идеи, инсайты, открытые вопросы, принципы-кандидаты |
 | Узнать почему выбрано так | [05_decisions.md](05_decisions.md) | Runtime, границы, путь skills |
+| Свериться с названием понятия или ввести новый термин | [glossary.md](glossary.md) | Принятые продуктовые термины и правила пополнения |
 | Разобраться в сущностях | [methodology/ontology/](methodology/ontology/) | Файлы, связи, правила размещения |
 | Как агент работает с информацией | [methodology/memory/01_context_memory.md](methodology/memory/01_context_memory.md) | Протокол чтения, сбор контекста, хуки, детерминированность |
 | Понять как работать с X | [methodology/](methodology/) | Протоколы, decision frames, ритуалы |
@@ -139,7 +144,7 @@ Vision меняется при уточнении целевого образа.
 | Спроектировать навык | [plugin/skills/](plugin/skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |
 | Контур «Цели и показатели»: методология метрик | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md`; внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
-| Работа со встречами | [methodology/meeting_analysis.md](methodology/meeting_analysis.md) | Пайплайн анализа транскриптов |
+| Работа со встречами | [methodology/rhythm/meeting-analysis/meeting_analysis.md](methodology/rhythm/meeting-analysis/meeting_analysis.md) | Пайплайн анализа транскриптов |
 | Онбординг клиента | [methodology/onboarding.md](methodology/onboarding.md) | Последовательность освоения |
 | Формат файлов | [methodology/scaffold/02_file-spec.md](methodology/scaffold/02_file-spec.md) | Действующий канон: YAML, шапка, секции, связи |
 

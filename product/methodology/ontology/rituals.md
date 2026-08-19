@@ -109,8 +109,8 @@ version: 2
 - **Триггер:** по мере (разговор с участниками)
 - **Вход:** транскрипт
 - **Сущности:** все типы атомарных сущностей
-- **Выход:** выжимка → meeting_analysis.md описывает методологию
-- **Шаги:** см. [meeting_analysis.md](../meeting_analysis.md)
+- **Выход:** выжимка → rhythm/meeting-analysis/meeting_analysis.md описывает методологию
+- **Шаги:** см. [meeting_analysis.md](../rhythm/meeting-analysis/meeting_analysis.md)
 
 ### Стратсессия
 

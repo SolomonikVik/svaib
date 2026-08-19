@@ -19,6 +19,11 @@ CHANNEL_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=_channel_common.sh
 source "$CHANNEL_SCRIPT_DIR/_channel_common.sh"
 
+if [ "${1:-}" = "--check" ]; then
+  channel_report_route
+  exit 0
+fi
+
 channel_parse_args "$@" || exit 3
 MD="$CHANNEL_TEXT"
 # непустой и не только из пробелов/переводов строк

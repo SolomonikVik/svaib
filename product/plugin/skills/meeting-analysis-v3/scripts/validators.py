@@ -46,7 +46,9 @@ _CLASSES = {
     "digest_mismatch": BLOCKER,
     "decision_incomplete": BLOCKER,
     "apply_status_missing": BLOCKER,
-    "protocol_overwrite": BLOCKER,
+    "protocol_immutable": REWORK,
+    "decision_log_append_only": REWORK,
+    "target_absent": REWORK,
 }
 
 #: Реестр переходов: у каждого отказа есть исполнимый выход. Реестр мал по
@@ -75,7 +77,9 @@ TRANSITIONS: Dict[str, str] = {
     "digest_mismatch": "render — покажи экран заново и решай против свежего показа",
     "decision_incomplete": "render decision — реши оставшиеся пункты",
     "apply_status_missing": "submit applied — статус записи нужен по каждому принятому пункту",
-    "protocol_overwrite": "верни по этому файлу протокола skipped с причиной и подай отчёт заново; файл уже перезаписан — скажи это пользователю: восстановление идёт версионной историей базы",
+    "protocol_immutable": "перезапусти редактора: каталог протоколов встреч операциям закрыт — назови файл юнита",
+    "decision_log_append_only": "перезапусти редактора: в журнале решений принятое не правят — пересмотр оформляется новой записью",
+    "target_absent": "перезапусти редактора: назови существующий файл по фактическому дереву либо оформи запись как new",
 }
 
 
@@ -219,11 +223,15 @@ def mentions_path(text: str, rel: str) -> bool:
     адрес, и совпадением не считается. Хвостовой слэш каталога допустим, потому
     что это тот же путь. Ни одного имени каталога здесь нет и быть не может:
     сравнивается то, что назвали, с тем, что написано.
+
+    Точка следом — конец предложения, а не продолжение адреса: «протоколы
+    лежат в `01_company/meetings/`.» называет тот же каталог, что и строка без
+    точки. Продолжением остаётся только точка перед словом (`01_company.md`).
     """
     needle = normalize_line(rel).strip("/")
     if not needle:
         return False
-    pattern = re.compile(r"(?<![\w./-])" + re.escape(needle) + r"/?(?![\w./-])")
+    pattern = re.compile(r"(?<![\w./-])" + re.escape(needle) + r"/?(?![\w/-])(?!\.\w)")
     return bool(pattern.search(normalize_line(text)))
 
 
@@ -246,6 +254,29 @@ def digest(payload: Any) -> str:
 # --- словари ------------------------------------------------------------
 
 OPS = {"new", "update", "done", "dropped", "deferred", "noop"}
+#: Операции над уже существующей записью: только у них законен её якорь
+#: (`replaces.text`). У `new` якоря быть не может — она ничего не вытесняет.
+#: Якорь необязателен: редактор видит файл срезом и вправе не знать строку —
+#: тогда запись ищет applier, единственный узел, который читает файл целиком
+#: перед правкой. Требовать дословную цитату от того, кто её не видит, значит
+#: получать выдумку или откат к `new` — то есть те самые дубли.
+ANCHORED_OPS = {"update", "done", "dropped", "deferred"}
+
+
+def anchor_text(op: Any) -> str:
+    """Якорь записи операции — пустая строка, если его нет.
+
+    Одно место чтения на весь пайплайн: форма (валидатор), факт в файле
+    (`check_replace_anchors`) и материал применения обязаны понимать якорь
+    одинаково, иначе пакет пройдёт форму и потеряет якорь по дороге.
+    """
+    if not isinstance(op, dict):
+        return ""
+    anchor = op.get("replaces")
+    if not isinstance(anchor, dict):
+        return ""
+    text = anchor.get("text")
+    return text.strip() if isinstance(text, str) else ""
 #: Источник закавыченной фразы объявляется явно и бывает ровно двух видов:
 #: фраза встречи (её судит судья цитат) и строка файла базы (её проверяет код
 #: по названному файлу). Третьего вида нет: незадекларированная кавычка — отказ формы.
@@ -401,6 +432,15 @@ def validate_map(payload: Any) -> List[Violation]:
         return [Violation("schema_invalid", "карта должна быть объектом", field="$")]
     out = require_fields(payload, ["units"], "map")
     units = payload.get("units")
+    if units is not None and not isinstance(units, list):
+        return out + [Violation("schema_invalid", "units — список домов встречи",
+                                field="map.units",
+                                hint='[{"unit": "product", "reason": "…"}]')]
+    for name, kind in (("counterparties", "путей досье"), ("reading_sources", "объектов")):
+        value = payload.get(name)
+        if value is not None and not isinstance(value, list):
+            out.append(Violation("schema_invalid", f"{name} — список {kind}",
+                                 field=f"map.{name}"))
     if isinstance(units, list) and not units:
         out.append(Violation("schema_invalid", "карта без юнитов: встреча кого-то касалась",
                              field="map.units",
@@ -451,6 +491,30 @@ def validate_brief(payload: Any, transcript: str) -> Tuple[List[Violation], List
             out.append(Violation("schema_invalid", "нет meeting.gist — о чём была встреча",
                                  field="brief.meeting.gist",
                                  hint="три–пять фраз; их увидит человек на паузе 1"))
+        # нарратив и участники — тело протокола, а не украшение: без них файл в
+        # базе перестаёт заменять транскрипт, ради чего он и пишется
+        if not str(meeting.get("narrative") or "").strip():
+            out.append(Violation("schema_invalid",
+                                 "нет meeting.narrative — содержания встречи",
+                                 field="brief.meeting.narrative",
+                                 hint="1–3 абзаца: логика разговора, динамика, к чему "
+                                      "пришли. Это текст протокола, gist его не заменяет"))
+        people = meeting.get("participants")
+        if not isinstance(people, list) or not people:
+            out.append(Violation("schema_invalid",
+                                 "нет meeting.participants — кто был на встрече",
+                                 field="brief.meeting.participants",
+                                 hint='[{"name": "Виктор", "role": "продукт"}]; '
+                                      "роль не понята — только имя"))
+        else:
+            for idx, person in enumerate(people):
+                if not isinstance(person, dict) or not str(person.get("name") or "").strip():
+                    out.append(Violation("schema_invalid", "участник называется именем",
+                                         field=f"brief.meeting.participants[{idx}].name"))
+        quotes = meeting.get("key_quotes")
+        if quotes is not None and not isinstance(quotes, list):
+            out.append(Violation("schema_invalid", "key_quotes — список реплик",
+                                 field="brief.meeting.key_quotes"))
         topic = str(meeting.get("topic") or "").strip()
         if not topic:
             out.append(Violation("schema_invalid",
@@ -473,7 +537,7 @@ def validate_brief(payload: Any, transcript: str) -> Tuple[List[Violation], List
                                 field="brief.roster")], []
 
     seen_eids: Dict[str, int] = {}
-    seen_quotes: Dict[str, str] = {}
+    seen_quotes: Dict[Tuple[str, str], str] = {}
     for idx, item in enumerate(roster):
         where = f"brief.roster[{idx}]"
         if not isinstance(item, dict):
@@ -495,9 +559,14 @@ def validate_brief(payload: Any, transcript: str) -> Tuple[List[Violation], List
             seen_eids[eid] = idx
         quote = str(item.get("quote", ""))
         if quote:
-            key = " ".join(quote_tokens(quote))
-            if key and key in seen_quotes and seen_quotes[key] != eid:
-                out.append(Violation("brief_duplicate", "цитата повторяется у разных сущностей",
+            # одна реплика законно порождает сущности РАЗНЫХ типов: «договорились
+            # делать пилот, Эрик готовит к пятнице» — это решение И задача, и
+            # правило v1 «одна цитата, разные типы — не дубли» здесь в силе.
+            # Дубль — две сущности ОДНОГО типа на одной цитате
+            key = (" ".join(quote_tokens(quote)), str(item.get("type") or ""))
+            if key[0] and key in seen_quotes and seen_quotes[key] != eid:
+                out.append(Violation("brief_duplicate",
+                                     "цитата повторяется у двух сущностей одного типа",
                                      field=f"{where}.quote", eid=eid))
             seen_quotes[key] = eid
             if not quote_in_text(quote, transcript):
@@ -566,6 +635,16 @@ def validate_operations(payload: Any, unit: str, assigned: Sequence[str],
                                      hint="одна сущность — одна судьба; проекция — поле "
                                           "projections[], не вторая операция"))
             covered[eid] = idx
+        # журнальная судьба — про отменённое на встрече и не записанное в базе:
+        # у пишущей операции она означала бы запись, которую человек не увидит
+        # на экране и никто не применит
+        if op.get("journal_only") and kind != "dropped":
+            out.append(Violation("schema_invalid",
+                                 f"journal_only у операции {kind}",
+                                 field=f"{where}.journal_only", eid=eid,
+                                 hint="журнальная судьба законна у dropped без записи "
+                                      "в базе (отменено на встрече); всё, что пишет "
+                                      "или снимает, идёт на экран решений"))
         if kind == "noop" and op.get("noop_reason") not in NOOP_REASONS:
             out.append(Violation("schema_invalid", "у noop нет основания из закрытого списка",
                                  field=f"{where}.noop_reason", eid=eid,
@@ -583,6 +662,17 @@ def validate_operations(payload: Any, unit: str, assigned: Sequence[str],
         if kind in ("new", "update") and not (op.get("proposed_text") or "").strip():
             out.append(Violation("schema_invalid", f"операция {kind} без текста записи",
                                  field=f"{where}.proposed_text", eid=eid))
+        anchor = anchor_text(op)
+        # якорь у операции, которая ничего не вытесняет, — самый дорогой вид
+        # опечатки: applier исполнит его как замену и сотрёт запись, которую
+        # операция собиралась дополнить. У `new` исключение одно, и его знает
+        # ядро (журнал решений: новая запись помечает прежнюю Superseded)
+        if anchor and kind not in ANCHORED_OPS and kind != "new":
+            out.append(Violation("schema_invalid",
+                                 f"у операции {kind} стоит якорь записи",
+                                 field=f"{where}.replaces", eid=eid,
+                                 hint=f"replaces называет существующую запись и уместен у "
+                                      f"{sorted(ANCHORED_OPS)}"))
         provenance, meeting_spans, _ = quote_provenance(op, where, eid)
         out += provenance
         for span in meeting_spans:
@@ -691,11 +781,7 @@ def validate_relocation(payload: Any) -> List[Violation]:
 
 def status_row(row: Dict[str, Any], where: str, subject: str,
                eid: str = "") -> List[Violation]:
-    """Общая форма статуса записи: словарь, причина у неудачи, адрес у `written`.
-
-    Одна на обе половины отчёта — строку пункта и файл протокола: два списка
-    правил, обязанных совпадать, разъехались бы при первой правке словаря.
-    """
+    """Общая форма статуса записи: словарь, причина у неудачи, адрес у `written`."""
     out: List[Violation] = []
     status = row.get("status")
     if status not in APPLY_STATUSES:
@@ -716,34 +802,18 @@ def status_row(row: Dict[str, Any], where: str, subject: str,
     return out
 
 
-def validate_applied(payload: Any, expected: Sequence[str],
-                     protocol_parts: Sequence[str] = ()) -> List[Violation]:
+def validate_applied(payload: Any, expected: Sequence[str]) -> List[Violation]:
     """Статусы записи: по каждому принятому пункту, из закрытого словаря.
 
     Отчёт может быть склеен из строк нескольких applier'ов: статус один на
     пункт, каждая строка называет адрес своего пункта.
 
-    Вторая половина отчёта — протокол встречи и архивная копия транскрипта.
-    Пунктами они не являются (пункт — судьба сущности), поэтому живут отдельным
-    разделом; спрашиваются так же строго: материал их нёс — статус обязателен,
-    иначе замок 2 пропустил бы сводку о неизвестно чём.
+    Протокола встречи в отчёте нет: его пишет ядро, и статус по нему ядро знает
+    без узла.
     """
     if not isinstance(payload, dict):
         return [Violation("schema_invalid", "отчёт о записи должен быть объектом", field="$")]
     out = require_fields(payload, ["applier_id", "results"], "applied")
-    protocol = payload.get("protocol")
-    protocol = protocol if isinstance(protocol, dict) else {}
-    for part in protocol_parts:
-        row = protocol.get(part)
-        if not isinstance(row, dict) or not str(row.get("status") or "").strip():
-            out.append(Violation(
-                "apply_status_missing",
-                f"файл протокола ({part}) остался без статуса записи",
-                field=f"applied.protocol.{part}.status",
-                hint='protocol: {"summary": {"status": "written", "file": "…"}, '
-                     '"transcript": {"status": "skipped", "note": "…"}}'))
-            continue
-        out += status_row(row, f"applied.protocol.{part}", f"файла протокола ({part})")
     rows = payload.get("results")
     if not isinstance(rows, list):
         return out + [Violation("schema_invalid", "results должен быть списком",
@@ -789,4 +859,23 @@ def validate_delivery(payload: Any) -> List[Violation]:
                              field="delivery.text",
                              hint="пустой текст не сдаётся: отправлять нечего — "
                                   "скажи это пользователю прямо"))
+    parts = payload.get("messages")
+    if parts is not None:
+        if not isinstance(parts, list) or len(parts) < 2:
+            out.append(Violation("schema_invalid",
+                                 "messages — это разрезанная сводка от двух частей",
+                                 field="delivery.messages",
+                                 hint="влезает одним сообщением — поля нет"))
+        else:
+            for idx, part in enumerate(parts):
+                if not isinstance(part, str) or not part.strip():
+                    out.append(Violation("schema_invalid", "часть сводки пуста",
+                                         field=f"delivery.messages[{idx}]"))
+                elif len(part) > 4096:
+                    out.append(Violation("schema_invalid",
+                                         f"часть {idx + 1} длиннее лимита сообщения "
+                                         f"({len(part)} знаков)",
+                                         field=f"delivery.messages[{idx}]",
+                                         hint="режь по границам секций: лимит 4000, "
+                                              "предел мессенджера 4096"))
     return out

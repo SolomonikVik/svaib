@@ -10,9 +10,10 @@
 
 | Что | Папка | Что делает                                                                                                       |
 |-----|-------|------------------------------------------------------------------------------------------------------------------|
-| Skills | `skills/` | Методология в исполняемом формате:  channels/send-telegram (доставка), scaffold (в разработке), email-assistant, meeting-analysis, metrics-analysis |
+| Skills | `skills/` | Методология в исполняемом формате:  channels/send-telegram (доставка), scaffold (в разработке), email-assistant, meeting-analysis, metrics-analysis; внутренние: scaffold-align (выравнивание пространства по канону) |
 | Hooks | `hooks/` | Детерминированные правила сессии (только Claude Code): личность пользователя, запрет отложенных действий, Stop-backstop гейтов meeting-analysis |
 | Agents | `agents/` | Скелет. Автоматизация: диспетчер задач, обновление документации                                                  |
+| Commands | `commands/` | Роли-режимы сессий. Сейчас: `svaib-keeper` (хранитель канона scaffold) — внутренний инструмент, клиенту пока не едет |
 
 ## Как пакет попадает к клиенту
 

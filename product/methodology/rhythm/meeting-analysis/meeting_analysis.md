@@ -19,21 +19,21 @@ priority: high
 
 ## Связанные файлы
 
-- ontology/entities.md — каталог бизнес-сущностей (что извлекаем, речевые маркеры, правила разграничения)
-- ontology/behavioral_patterns.md — каталог поведенческих паттернов (что наблюдаем в динамике встречи)
-- ontology/ontology.md — файловая структура (куда раскладываются извлечённые сущности)
-- ontology/rituals.md — каталог ритуалов (встреча как ритуал, связь с другими процессами)
-- ../architecture.md — архитектура продукта (выжимка = Данные, процесс = Помощники, контексты = Память)
+- ../../ontology/entities.md — каталог бизнес-сущностей (что извлекаем, речевые маркеры, правила разграничения)
+- ../../ontology/behavioral_patterns.md — каталог поведенческих паттернов (что наблюдаем в динамике встречи)
+- ../../ontology/ontology.md — файловая структура (куда раскладываются извлечённые сущности)
+- ../../ontology/rituals.md — каталог ритуалов (встреча как ритуал, связь с другими процессами)
+- ../../../architecture.md — архитектура продукта (выжимка = Данные, процесс = Помощники, контексты = Память)
 - meeting_overlays.md — надстройки над выжимкой (Слой 2: протокол, обновление файлов, longitudinal)
-- ../plugin/skills/meeting-analysis/ — промпты и скиллы на основе этой методологии
+- ../../../plugin/skills/meeting-analysis/ — промпты и скиллы на основе этой методологии
 
 ---
 
 ## Порядок изменений
 
-Изменения в этом домене идут по канонической цепочке (→ [architecture.md](../architecture.md)):
+Изменения в этом домене идут по канонической цепочке (→ [architecture.md](../../../architecture.md)):
 
-**этот файл** (методология, контракт) → schema ([entities.md](ontology/entities.md), [protocol_format.md](ontology/protocol_format.md)) → промпты и процедуры ([skills/meeting-analysis/](../plugin/skills/meeting-analysis/)) → оркестратор → README → производная документация
+**этот файл** (методология, контракт) → schema ([entities.md](../../ontology/entities.md), [protocol_format.md](../../ontology/protocol_format.md)) → промпты и процедуры ([skills/meeting-analysis/](../../../plugin/skills/meeting-analysis/)) → оркестратор → README → производная документация
 
 Каждый нижний слой реализует контракт верхнего.
 
@@ -86,7 +86,7 @@ priority: high
 надстройки L2 (протокол, Telegram, обновление файлов)
 ```
 
-Процесс ведёт скилл [meeting-analysis](../plugin/skills/meeting-analysis/SKILL.md) (`scripts/meeting_spine.py`)
+Процесс ведёт скилл [meeting-analysis](../../../plugin/skills/meeting-analysis/SKILL.md) (`scripts/meeting_spine.py`)
 
 **Целевая архитектура** (entity + behavioral):
 
@@ -253,4 +253,3 @@ Opus 1M контекст тянет ~180KB монолитно (≈2-часова
 - Пустые секции не пишем
 - Порядок секций фиксированный. Приоритизация — задача надстройки
 - Цитаты-опоры остаются — для верификации и надстроек
-

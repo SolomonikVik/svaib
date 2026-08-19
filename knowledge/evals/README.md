@@ -8,6 +8,7 @@
 
 - [!evals.md](!evals.md) — сводка знаний
 - [evaluation-design.md](evaluation-design.md) — цели, единицы оценки, датасеты, метрики, статистика, воспроизводимость
+- [summarization-evaluation.md](summarization-evaluation.md) — сохранность содержания при суммаризации и очищении диалогов: атомарные единицы, coverage, faithfulness, evidence
 - [agent-evaluation.md](agent-evaluation.md) — траектории, tool use, состояние среды, multi-step и end-to-end evals
 - [llm-as-judge.md](llm-as-judge.md) — рубрики, калибровка, bias, надёжность и границы применимости
 - [eval-tooling.md](eval-tooling.md) — карта фреймворков и критерии выбора. Только карта рынка и объективные критерии — не путать с нашей процедурой принятия решения build/buy/adopt (lab/eval-methodology/playbooks/external-tool-selection.md)

@@ -47,6 +47,6 @@ title: "vision — карта целевого продукта"
 - [Svaib Management System](../methodology/ontology/01_svaib-management-system.md) — канонические объекты, семь контуров, сущности и управленческие представления.
 - [Product overview](../01_overview.md) — стабильное описание продукта, аудитории, принципов и границ.
 - [Product architecture](../architecture.md) — текущий канон устройства продукта.
-- Vision проекта svaib — верхнеуровневый замысел компании, из которого следует продукт.
+- [Vision проекта svaib](../../01_company/01_strategic/vision.md) — верхнеуровневый замысел компании, из которого следует продукт.
 - [Scaffold architecture](../methodology/scaffold/01_architecture.md) — проекция управленческой модели в пространство данных клиента.
 - [Product active](../02_active.md) и [Product backlog](../03_backlog.md) — текущая реализация и будущая работа, которые не должны попадать в целевой vision.

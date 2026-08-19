@@ -75,6 +75,7 @@ publish: false
 ## Связанные файлы
 
 - [../prompting/claude-5-prompting.md](../prompting/claude-5-prompting.md) — как формулировать промпты под это поколение: effort, длинные прогоны, готовые формулировки из офдоки, поиск unknowns
+- [../prompting/model-elicitation.md](../prompting/model-elicitation.md) — та же методология из уст Черни (интервью YC): процедура ablation, правило «сноса раз в 6 месяцев», elicitation, verification
 - [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов AI-ассистентов, эмпирика по размеру и качеству CLAUDE.md
 - [skill-graphs/](skill-graphs/skill-graphs.md) — progressive disclosure как архитектура навигации по знаниям
 - [../skills/!skills.md](../skills/!skills.md) — принципы проектирования скиллов, включая пересборку под Claude 5
