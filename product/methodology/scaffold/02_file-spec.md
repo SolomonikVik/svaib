@@ -1,8 +1,8 @@
 ---
 title: "Scaffold file spec — канон md-файла scaffold"
 created: 2026-05-05
-updated: 2026-08-07
-version: 4.1
+updated: 2026-08-27
+version: 4.2
 status: final
 ---
 
@@ -46,7 +46,7 @@ status: final
 **Общая формула:**
 
 ```text
-{optional-prefix}_{semantic-name}_{optional-type}.md
+{optional-prefix}_{semantic-name}.md
 ```
 
 **Semantic-name:**
@@ -54,12 +54,9 @@ status: final
 
 **Optional-prefix:**
 - **Числовой** двузначный + `_` (`NN_`) — см. § Нумерация и порядок ниже.
-- **Датированный.** ISO 8601, всегда первый: `YYYY-MM-DD_{semantic-name}.md`. Используется в `meetings/`, `decisions/`.
+- **Датированный.** ISO 8601, всегда первый: `YYYY-MM-DD_{semantic-name}.md`. Используется там, где дата важна, например `decisions/`.
 
-**Optional-type:**
-- Для обработки встреч:
-  - `_summary` — обработанная выжимка;
-  - `_transcript` — сырая транскрибация.
+**Файлы папки встречи** — фиксированные имена по жизненному циклу: `agenda.md`, `transcript.md`, `summary.md`, `protocol.md`. Дата и тип встречи — в имени папки ([meeting-types.md](../ontology/meeting-types.md)); канон папки встречи — [02_folder-spec § meetings/](02_folder-spec.md).
 
 ### 🔹 Нумерация и порядок
 
@@ -88,7 +85,7 @@ title: "..."
 ---
 ```
 
-Для такого файла обязательный YAML — только `title`. `created` / `updated` не ставятся: даты событий, решений, встреч и прогресса фиксируются в теле файла, рядом с самими записями.
+Для такого файла обязательный YAML — только `title`. `created` / `updated` не ставятся: даты событий, решений и прогресса фиксируются в теле файла, рядом с самими записями.
 
 **SOT / canon / spec / methodology / skills / template registry** — канонический файл, где важны версия, история формы или статус готовности. Здесь допустимы `created`, `updated`, `version`, `status`:
 
@@ -120,7 +117,6 @@ status: final
 
 - `progress` — дата события в H2 или строке события.
 - `decisions` — дата решения рядом с решением.
-- `meetings` — дата встречи в имени файла, H2 или теле summary.
 - `active` / `backlog` — даты только если они относятся к задаче, дедлайну или событию.
 
 Не обновлять YAML ради каждого смыслового изменения живого scaffold-файла.

@@ -15,7 +15,7 @@ priority: medium
 
 ## Связанные файлы
 
-- meeting_analysis.md — методология Слоя 1 (пайплайн: транскрипт → выжимка)
+- workflow.md — канон workflow аналитика встреч (транскрипт → выжимка → обновление базы)
 - ../../ontology/entities.md — каталог сущностей (что лежит в выжимке)
 - ../../ontology/behavioral_patterns.md — каталог паттернов (что лежит в выжимке)
 - ../../../plugin/skills/meeting-analysis/ — реализация (промпты и скиллы)

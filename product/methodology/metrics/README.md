@@ -1,6 +1,6 @@
 ---
 title: Metrics — карта вертикали
-updated: 2026-05-23
+updated: 2026-08-28
 version: 2
 ---
 
@@ -20,16 +20,28 @@ version: 2
 | [architecture.md](architecture.md) | final | Опорный документ вертикали: линия данных, линия анализа, оркестратор, надёжность |
 | [metrics-spec.md](metrics-spec.md) | final | Source of truth для формата `business-metrics.md` и `{domain}-metrics.md` |
 | [extractor.md](extractor.md) | draft | Построение per-client extractor'а: контракт скилла-писателя, probe-процедура, раскладка, формат JSON-выхода, schema-hash, патологии источников |
+| [use-cases.md](use-cases.md) | draft | Карта вопросов руководителя по семействам с разметкой контуров доверия; вход для дизайна метрик-скилла |
 
 ## Skills
 
+Поставляемая часть — `plugin/skills/metrics-analysis/`:
+
 | Файл | Статус | Роль сейчас |
 |---|---|---|
+| [SKILL.md](../../plugin/skills/metrics-analysis/SKILL.md) | final | Инструкция скилла: разбор запроса, чтение описаний метрик, добыча книги, форма ответа |
+| [scripts/read_metrics.py](../../plugin/skills/metrics-analysis/scripts/read_metrics.py) | code | Чтение значений из книги по карте адресов: строка по меткам, ось периодов, единицы, пометки |
+| [scripts/calculator.py](../../plugin/skills/metrics-analysis/scripts/calculator.py) | code | Производные: выполнение плана, отклонение, изменение к периоду, рост к прошлому году |
+| [scripts/snapshot.py](../../plugin/skills/metrics-analysis/scripts/snapshot.py) | code | Кэш снимка книги вне базы клиента, свежесть по дате изменения файла |
 | [business-metrics-intake.md](../../plugin/skills/metrics-analysis/business-metrics-intake.md) | final | Промпт-помощник заполнения `business-metrics.md` с CEO |
-| [README.md](../../plugin/skills/metrics-analysis/README.md) | — | Карта skill-папки |
-| [orchestrator-metrics.md](../../plugin/skills/metrics-analysis/orchestrator-metrics.md) | draft | Операционный пайплайн оркестратора: чем исполняется каждый шаг потока в проде. Приведён к `architecture.md` v2 |
-| [probe_xlsx.py](../../plugin/skills/metrics-analysis/probe_xlsx.py) | code | Helper разведки xlsx — выверен, архитектурно-нейтрален |
-| [defects.md](../../plugin/skills/metrics-analysis/defects.md) | draft | Дефект-лист семантического слоя по итогам первого живого прогона (30.07): 9 дефектов в 4 категориях, вход для правок `metrics-spec.md` / `architecture.md` |
+
+Инженерный трек — `dev/skills/metrics-analysis/`, к клиенту не едет:
+
+| Файл | Статус | Роль сейчас |
+|---|---|---|
+| orchestrator-metrics.md | draft | Операционный пайплайн вертикали |
+| defects.md | draft | Дефект-лист семантического слоя (30.07): 9 дефектов, 4 категории; вход для правок канона |
+| connector-gsheets-mcp.md | draft | Чтение Google Sheets через Drive MCP: xlsx-выгрузка, guard-и, свежесть снимка |
+| l1/runtime/ | code | Наследство серверного контура: раннер, extractor, verifier, catalog, схемы контракта. Контур снят 26.08, код покрыт 173 тестами |
 
 ## Scaffold
 

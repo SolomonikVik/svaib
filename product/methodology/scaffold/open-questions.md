@@ -1,7 +1,7 @@
 ---
 title: Scaffold — open questions
 updated: 2026-07-12
-version: 4.1
+version: 4.2
 status: final
 ---
 

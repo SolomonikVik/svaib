@@ -15,6 +15,8 @@ title: "vision — карта целевого продукта"
 - [customer-evidence.md](customer-evidence.md) — обезличенные клиентские свидетельства, которые подтверждают, уточняют или оспаривают Product Vision. Читать: когда нужно проверить продуктовое обещание реальным спросом.
 - [market-research.md](market-research.md) — внешние исследования управленческих проблем и ожиданий от AI. Читать: когда нужна внешняя фактура; не использовать как принятое решение о продукте.
 - [target-architecture.md](target-architecture.md) — рабочий перевод Product Vision в возможную архитектуру реализации. Читать: когда нужно связать целевой образ со scaffold, памятью, skills, runtime и представлениями.
+- [saas-platform.md](saas-platform.md) — продуктовая сторона серверного SaaS-слоя: арендаторы, пользователи и права, услуги через каналы, обслуживание пространств, память и представления. Читать: когда нужно принять инженерное решение в серверных треках или понять, что платформа обещает клиенту.
+- [saas-platform-user.md](saas-platform-user.md) — тот же образ серверного слоя, рассказанный будущему пользователю: сценарии, живые запросы, что человек напишет и что получит. Читать: когда продукт нужно показать клиенту или проверить обещание его же языком.
 
 ## Маршруты чтения
 
@@ -22,6 +24,8 @@ title: "vision — карта целевого продукта"
 - Разобрать конкретный управленческий контур → [Svaib Management System](../methodology/ontology/01_svaib-management-system.md) → соответствующий раздел [Vision семи контуров](02_contours.md) → подробный файл в [02_contours/](02_contours/), если он существует.
 - Проверить продуктовое утверждение фактурой → [Customer Evidence](customer-evidence.md) → при необходимости [Market Research](market-research.md).
 - Перевести vision в инженерное решение → [Product Vision](01_product-vision.md) → [Vision семи контуров](02_contours.md) → [Target Architecture](target-architecture.md).
+- Понять серверную сторону продукта → [SaaS-платформа](saas-platform.md) → [Target Architecture](target-architecture.md).
+- Показать серверную сторону клиенту → [Презентация для пользователя](saas-platform-user.md).
 
 ## Маршруты записи
 
@@ -31,6 +35,7 @@ title: "vision — карта целевого продукта"
 - Новое клиентское свидетельство → [customer-evidence.md](customer-evidence.md).
 - Новая внешняя фактура → [market-research.md](market-research.md).
 - Гипотеза о технической реализации → [target-architecture.md](target-architecture.md).
+- Бизнес-функция или обещание серверного слоя → [saas-platform.md](saas-platform.md); парная формулировка на языке пользователя → [saas-platform-user.md](saas-platform-user.md).
 - Непринятая продуктовая идея или открытый вопрос → [Product ideas](../ideas.md), не напрямую в vision.
 - Статус и порядок самой работы над vision → [00_masterplan.md](00_masterplan.md).
 

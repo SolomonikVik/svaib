@@ -2,7 +2,7 @@
 title: Management kit — управленческая панель узла
 created: 2026-05-19
 updated: 2026-07-12
-version: 4.1
+version: 4.2
 status: final
 ---
 # Management kit — управленческая панель узла

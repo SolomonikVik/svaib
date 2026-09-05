@@ -1,7 +1,7 @@
 ---
 title: "Skills — исполняемые навыки Second Value AI Brain"
-updated: 2026-08-15
-version: 5
+updated: 2026-09-04
+version: 6
 scope: "product_core"
 priority: high
 ---
@@ -20,31 +20,20 @@ priority: high
 - [../../methodology/ontology/entities.md](../../methodology/ontology/entities.md) — каталог сущностей (используется в промптах)
 - [../../methodology/ontology/behavioral_patterns.md](../../methodology/ontology/behavioral_patterns.md) — каталог паттернов (используется в промптах)
 - [../../architecture.md](../../architecture.md) — архитектура продукта
+- lab/skill-methodology/meta-spec.md — стандарт скилла: layout, frontmatter, пути к своим файлам, границы
 
 ---
 
 ## Структура
 
-По доменам. Каждый домен = папка. Внутри — файлы с префиксами по типу артефакта.
+По доменам: домен = папка, внутри — `SKILL.md` и его комплект (`scripts/`, `prompts/`, `references/`, `schema/` — по необходимости).
 
-```
-plugin/skills/
-├── README.md                       ← этот файл
-├── channels/                       ← общие каналы доставки (shared-слой, не домен)
-│   └── send-telegram/              ← Telegram Bot API: SKILL.md + scripts/ (send_telegram.sh plain, send_telegram_rich.sh rich); ставится в .claude/skills/send-telegram/
-├── scaffold/                       ← деплой каркаса клиенту (init-brain), в разработке
-│   ├── _draft_spec.md              ← черновик спеки скилла
-│   └── template/                   ← сам каркас клиента (был product/scaffold/)
-├── scaffold-align/                 ← выравнивание живого пространства по канону scaffold (внутренний, обкатка); роль-носитель — ../commands/svaib-keeper.md
-├── email-assistant/                ← триаж почты
-├── meeting-analysis/                ← анализ встреч (spine-пайплайн)
-│   ├── SKILL.md                    ← точка входа; процесс ведёт scripts/meeting_spine.py
-│   ├── scripts/                    ← meeting_spine.py (state machine) + validate_deltas.py
-│   ├── prompts/                    ← промпты узлов (выжимка, дельты, ревью, протоколы)
-│   ├── references/                 ← справочники (routing и др.)
-│   └── schema/                     ← машинные контракты артефактов
-└── metrics-analysis/                ← вертикаль метрик
-```
+Два исключения из «папка = домен»:
+
+- `channels/` — общий слой доставки, не домен: каналы отсюда ставятся клиенту в корень его `skills/` (`channels/send-telegram/` → `.claude/skills/send-telegram/`);
+- `scaffold/` — материалы разработки каркаса, `SKILL.md` пока нет.
+
+Что здесь фактически лежит — таблица «Фактический состав» ниже.
 
 ---
 
@@ -81,21 +70,24 @@ prompt → skill → agent
 
 ---
 
-## Что уже есть / что в планах
+## Фактический состав
 
-| Скилл | Статус | Примечание |
-|-------|--------|-----------|
-| `channels/send-telegram` | есть | канал доставки в Telegram (plain + rich), общий ресурс для meeting/email/др. Канон — `channels/send-telegram/SKILL.md`, установка — `skills/send-telegram/` |
-| `scaffold` (`init-brain`) | в разработке | спека — `scaffold/_draft_spec.md`, разворачивает `scaffold/template/` клиенту |
-| `scaffold-align` | внутренний, обкатка | приведение живого управленческого пространства к канону scaffold; клиенту пока не едет — нужен доступ к методологии (артефакты разработки — `dev/skills/scaffold-align/`); роль-носитель `/svaib-keeper` — `../commands/svaib-keeper.md`; тестовая поставка — профиль обкатки в `dev/plugin-builder/profiles/` |
-| `email-assistant` | есть | триаж почты |
-| `meeting-analysis` | есть | исполняемая точка входа `meeting-analysis/SKILL.md`, карта пайплайна — `meeting-analysis/README.md` |
-| `metrics-analysis` | есть | вертикаль метрик |
-| `weekly-review` | план | еженедельный ритуал: итоги → weekly_progress, новый план |
-| `/today` | план | план дня: читает CLAUDE.md + 03_plan.md |
-| `/week` | план | план недели: итоги прошлой → новый план |
-| `/month-review` | план | анализ месяца: weekly_progress + goal + timeline |
-| `/quarter-plan` | план | планирование квартала: goal + ideas + plan |
+Продуктовый реестр управленческих скиллов и обязательств — [skills-catalog.md](../../skills-catalog.md). Ниже перечислены фактические исходники этой папки, у которых есть `SKILL.md`; это технические артефакты, а не продуктовый roadmap.
+
+| Исходник | Назначение |
+|---|---|
+| `channels/send-telegram` | Доставка результата в Telegram |
+| `content-update` | Обновление файлов после подтверждения человека |
+| `email-assistant` | Триаж входящей почты |
+| `agenda` | Повестка к предстоящей встрече: SKILL.md + каркас формы + валидатор формы и поиск принятых решений (кандидат v2, принят 03.09) |
+| `metrics-analysis` | Живые значения метрик из книг клиента: SKILL.md + три скрипта (чтение, производные, кэш снимка) |
+| `meeting-analysis` | Канонический разбор встречи |
+| `meeting-analysis-beta` | Тестовая версия разбора встречи |
+| `meeting-protocol` | Подготовка протокола участникам |
+| `scaffold-align` | Проверка и выравнивание пространства по канону scaffold; канон читает из публичного релиза |
+| `transcript-extract` | Извлечение содержания из транскрипта |
+
+`scaffold` содержит материалы разработки, но сейчас не имеет `SKILL.md`; поэтому в таблицу исполняемых исходников не входит.
 
 ---
 

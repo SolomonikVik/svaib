@@ -1,7 +1,7 @@
 ---
 title: "L2.5: Промпт ревьюера предложенных изменений"
 status: final
-updated: 2026-07-27
+updated: 2026-08-25
 version: 3
 type: prompt
 ---
@@ -41,9 +41,9 @@ type: prompt
 При вердикте `reject` или `escalate_*` обязательно классифицируй предмет спора полем `dispute_class`:
 - `fact` — спор о факте, формулировке, атрибуции или о том, было ли это сказано;
 - `node` — спор о самом узле (нужен ли узел этой встрече);
-- `home_antipattern` — дом нарушает канон (решение в active, задача в decisions, хроника вне progress);
-- `home_choice` — спор ТОЛЬКО о выборе между легитимными домами одного типа (юнит-active vs карточка проекта; active vs backlog), сам факт и узел не оспариваются.
-Сомневаешься и в факте, и в доме → `fact` (жёстче).
+- `placement_antipattern` — размещение нарушает канон (решение в active, задача в decisions, хроника вне progress);
+- `placement_choice` — спор ТОЛЬКО о выборе между легитимными местами размещения одного типа (юнит-active vs карточка проекта; active vs backlog), сам факт и узел не оспариваются.
+Сомневаешься и в факте, и в размещении → `fact` (жёстче).
 
 Ответь ТОЛЬКО одним yaml-блоком:
 
@@ -51,7 +51,7 @@ type: prompt
 - id: D1
   attack: "<какая атака удалась/не удалась, с цитатой существующего пункта если п.2>"
   verdict: <accept|revise|reject|escalate_insufficient_evidence|escalate_spec_gap>
-  dispute_class: <fact|node|home_antipattern|home_choice — только при reject/escalate_*>
+  dispute_class: <fact|node|placement_antipattern|placement_choice — только при reject/escalate_*>
   reason: "<одно-два предложения>"
   revised_text: "<только при revise>"
 ```

@@ -18,7 +18,7 @@ status: draft
 ## Связанные файлы
 
 - entities.md — каталог бизнес-сущностей (что извлекаем из речи)
-- ../rhythm/meeting-analysis/meeting_analysis.md — как эти паттерны используются в анализе встреч
+- ../rhythm/meeting-analysis/workflow.md — канон workflow аналитика встреч
 
 ---
 

@@ -2,7 +2,7 @@
 title: Scaffold node review — QA-гейт узла на соответствие канону v4.1
 created: 2026-05-24
 updated: 2026-07-12
-version: 4.1
+version: 4.2
 status: final
 ---
 

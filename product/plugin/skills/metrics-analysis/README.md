@@ -1,37 +1,25 @@
 ---
-title: "metrics-analysis — skill (промпты + код вертикали metrics)"
-updated: 2026-05-14
-version: 2
+title: "metrics-analysis — скилл живых значений метрик"
 scope: product_core
-priority: high
-type: reference
+type: index
 ---
 
-# metrics-analysis — skill
+# metrics-analysis
 
-Здесь живёт **только собственно skill** вертикали `metrics` — промпты и код. Методология вертикали и карта — в [`../../methodology/metrics/`](../../../methodology/metrics/).
+Клиентский скилл: приносит значения метрик из книг руководителя и считает производные. Инструкция — [SKILL.md](SKILL.md).
 
-**Точка входа в вертикаль:** [`../../methodology/metrics/README.md`](../../../methodology/metrics/README.md).
+## Состав поставки
 
-## Что в этой папке
+| Файл | Что делает |
+|---|---|
+| [SKILL.md](SKILL.md) | как агент разбирает запрос, читает описания метрик, добывает книгу и отвечает |
+| [scripts/read_metrics.py](scripts/read_metrics.py) | чтение значений из книги по карте адресов: строка по меткам, ось периодов, единицы, пометки о расхождениях |
+| [scripts/calculator.py](scripts/calculator.py) | производные: выполнение плана, отклонение, изменение к прошлому периоду, рост к прошлому году |
+| [scripts/snapshot.py](scripts/snapshot.py) | кэш снимка книги вне базы клиента, свежесть по дате изменения файла |
+| [business-metrics-intake.md](business-metrics-intake.md) | промпт-помощник заполнения описаний метрик с руководителем |
 
-| Файл | Тип | Что делает |
-|------|-----|-----------|
-| [`README.md`](README.md) | index | Этот файл |
-| [`business-metrics-intake.md`](business-metrics-intake.md) | procedure | Промпт-помощник заполнения клиентского `business-metrics.md`: ведёт диалог с CEO, собирает каноническое имя / бизнес-смысл / правило расчёта / единицу / направление по каждой метрике, по спеке [`metrics-spec.md`](../../../methodology/metrics/metrics-spec.md) |
-| [`orchestrator-metrics.md`](orchestrator-metrics.md) | procedure | Операционный пайплайн оркестратора: чем исполняется каждый шаг потока обработки запроса в проде. Приведён к `architecture.md` v2 |
-| [`probe_xlsx.py`](probe_xlsx.py) | code | Универсальный helper разведки xlsx: листы, размеры, объединённые ячейки, формулы, cached errors, заполненность колонок |
-| [`defects.md`](defects.md) | spec | Дефект-лист семантического слоя (SDD на починку): что сломалось на живом прогоне вертикали, по категориям, с требованиями к решению. Правки в `final`-канон из него выносятся отдельно |
-| [`connector-gsheets-mcp.md`](connector-gsheets-mcp.md) | procedure | Коннектор Google Sheets через Drive MCP: xlsx-выгрузка → python, guard-и, свежесть snapshot. Минимальная часть, без eval |
+## Чего здесь нет
 
-## Что НЕ живёт здесь
+Наследство серверного контура повесток (раннер `run_vertical.py`, extractor, verifier, catalog, схемы контракта, помощник онбординга источника) живёт в инженерном треке — dev/skills/metrics-analysis/l1/runtime/. Контур снят 26.08, к клиенту этот код не едет; он остаётся справочником решений и покрыт 173 тестами контракта.
 
-- **Per-client extractor** — код клиента, лежит в `metrics/extractors/` клиентского scaffold, не в общей библиотеке skill. Как строится — [`../../methodology/metrics/extractor.md`](../../../methodology/metrics/extractor.md).
-- **Методология цикла** (architecture, metrics-spec, extractor) — в [`../../methodology/metrics/`](../../../methodology/metrics/).
-- **Шаблоны клиента** (`business-metrics.md`, READMEs папок) — в [`../scaffold/template/01_company/03_metrics/`](../scaffold/template/01_company/03_metrics/).
-
-## Связи
-
-- [`../../methodology/metrics/README.md`](../../../methodology/metrics/README.md) — карта всей вертикали (точка входа)
-- [`../../methodology/metrics/architecture.md`](../../../methodology/metrics/architecture.md) — источник правды по устройству вертикали
-- [`../scaffold/template/01_company/03_metrics/`](../scaffold/template/01_company/03_metrics/) — каркас, который разворачивается у клиента
+Методология вертикали и канон — [product/methodology/metrics/](../../../methodology/metrics/README.md). Дефект-лист семантики, операционный пайплайн и коннектор Google Sheets — в треке.

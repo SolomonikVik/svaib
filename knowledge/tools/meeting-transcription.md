@@ -246,4 +246,4 @@ publish: false
 
 - [russian-stt-models.md](russian-stt-models.md) — качество STT-моделей для русского (GigaAM, Whisper, T-one), бэкенды, облачные API
 - [cowork.md](cowork.md) — Fireflies как плагин Cowork
-- [../../product/methodology/rhythm/meeting-analysis/meeting_analysis.md](../../product/methodology/rhythm/meeting-analysis/meeting_analysis.md) — что происходит с транскриптом дальше: пайплайн анализа встречи
+- [../../product/methodology/rhythm/meeting-analysis/workflow.md](../../product/methodology/rhythm/meeting-analysis/workflow.md) — что происходит с транскриптом дальше: пайплайн анализа встречи

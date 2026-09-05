@@ -2,7 +2,7 @@
 title: "Scaffold methodology — source of truth слоя scaffold"
 created: 2026-05-06
 updated: 2026-08-07
-version: 4.1
+version: 4.2
 status: final
 ---
 
@@ -12,7 +12,7 @@ status: final
 
 ## 🔵 Актуальная модель
 
-Scaffold v4.1 строится как **composable management architecture**.
+Scaffold строится как **composable management architecture**.
 
 - **Unit** — объект управления: компания, направление, продукт, филиал, клиентский портфель.
 - **Aspect** — управленческий ракурс: сторона, через которую смотрим на объект управления.
@@ -32,17 +32,18 @@ Scaffold v4.1 строится как **composable management architecture**.
 | [management-kit.md](management-kit.md) | Миссии файлов управленческой панели: overview, active, backlog, progress, decisions | Когда создаёшь или правишь управленческую панель узла |
 | [02_folder-spec.md](02_folder-spec.md) | Грамматика папки: management / infrastructure / client workspace, имя, миссия, жизненный цикл | При проектировании структуры или разворачивании папок |
 | [02_file-spec.md](02_file-spec.md) | Канон md-файла: имя, YAML, шапка, H2, текст, правила, связи | При создании или ревизии любого md-файла scaffold |
+| [file-specs/](file-specs/README.md) | ⁉️ Спецификации типов файлов панели (active, progress, decisions, overview, backlog, reference) и формы выжимки — детализация 02_file-spec по типам. Не выверены Виктором | Когда агент меняет файл конкретного типа; выверка — задача бэклога продукта |
 | [02_readme-spec.md](02_readme-spec.md) | Канон README как карты папки | При создании или ревизии README в любой папке |
 | [deployment.md](deployment.md) | Развёртывание каркаса у клиента: стартовый минимум, триггеры расширения, выбор формы узла | При первичной сборке scaffold у клиента |
 | [deployment-node-review.md](deployment-node-review.md) | QA-гейт узла перед выгрузкой: промпт ревьюера по клиентскому канону scaffold | Перед финальной передачей scaffold клиенту |
 | [open-questions.md](open-questions.md) | Открытые вопросы v4.1: lifecycle миграций, визуальный UX, finance, нумерация | Когда тема упирается в нерешённый вопрос |
-| [scaffold-evolution-log.md](scaffold-evolution-log.md) | Историческая память: эволюция модели | Когда нужно понять, как развивалась модель |
+| [04_progress.md](04_progress.md) | Прогресс scaffold: версии канона и вехи | Когда нужно понять, как развивалась модель |
 
 ## Маршруты чтения
 
 | Триггер задачи | Что читать |
 |---|---|
-| Понять scaffold v4.1 целиком | [01_architecture.md](01_architecture.md) → [management-unit.md](management-unit.md) → [management-aspect.md](management-aspect.md) → [management-kit.md](management-kit.md) |
+| Понять scaffold целиком | [01_architecture.md](01_architecture.md) → [management-unit.md](management-unit.md) → [management-aspect.md](management-aspect.md) → [management-kit.md](management-kit.md) |
 | Развернуть scaffold у нового клиента | [deployment.md](deployment.md) → [management-unit.md](management-unit.md) |
 | Проверить узел перед выгрузкой клиенту | [deployment-node-review.md](deployment-node-review.md) |
 | Создать или ревизовать scaffold-файл | [02_file-spec.md](02_file-spec.md), для README — [02_readme-spec.md](02_readme-spec.md) |

@@ -89,7 +89,7 @@ awk '/^## /{exit} {print}' {project_dir}/profile.md   # срез до перво
 Запусти L1-субагента через Agent tool. По умолчанию используй Sonnet (`model: "sonnet"`); явно выбранная исполнителем модель имеет приоритет:
 
 ```
-Прочитай промпт из файла meeting-analysis/L1-prompt-entity-extractor.md в каталоге skills рабочего пространства (найди каталог skills сам: `.claude/skills/` или `claude/skills/` в корне пространства)
+Прочитай промпт из файла meeting-analysis/L1-prompt-entity-extractor.md в каталоге skills рабочего пространства (каталог скилла — `.claude/skills/meeting-analysis/` от корня пространства)
 (секция "Промпт", содержимое внутри блока ```).
 
 Подай контекстный пакет (собранный координатором на шаге 0):
@@ -151,7 +151,7 @@ awk '/^## /{exit} {print}' {project_dir}/profile.md   # срез до перво
 Если да — запусти субагент:
 
 ```
-Прочитай промпт из файла meeting-analysis/L2-prompt-protocol-telegram.md в каталоге skills рабочего пространства (найди каталог skills сам: `.claude/skills/` или `claude/skills/` в корне пространства)
+Прочитай промпт из файла meeting-analysis/L2-prompt-protocol-telegram.md в каталоге skills рабочего пространства (каталог скилла — `.claude/skills/meeting-analysis/` от корня пространства)
 (секция "Промпт", содержимое внутри блока ```).
 
 Прочитай выжимку: {project_dir}/meetings/{date}_{topic}_summary.md

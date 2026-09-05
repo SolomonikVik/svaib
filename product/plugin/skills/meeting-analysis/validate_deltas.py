@@ -32,8 +32,8 @@ stdin: JSON с полями:
                       resolved_from_unclear: причина (Фаза B разрешила сомнение)}
     deltas         — дельты: {id, entity_id, entity_type, spec_id, role,
                      target_file, operation, section: recommended|doubtful,
-                     owner, proposed_text, doubt_reason, home_question,
-                     card_home, canonical_external}
+                     owner, proposed_text, doubt_reason, placement_question,
+                     card_target_file, canonical_external}
     dropped_nodes  — только для final/both: [{node, reason}] — узлы, снятые
                      Фазой B как ложные, с причиной
 
@@ -41,7 +41,7 @@ stdin: JSON с полями:
     контракт дельты — в L2-procedure-scaffold-update.md (Шаг 3, Фаза A).
 
 Дельты протокола (entity_type=protocol либо target_file под protocol_path) —
-вне ролевой единственности (exempt): S5/B-инварианты дома к ним не применяются.
+вне ролевой единственности (exempt): S5/B-инварианты размещения к ним не применяются.
 Протокол — контейнер, не канал раскладки: дельта под protocol_path
 обязана иметь entity_type=protocol (иначе S11_protocol_channel), а
 protocol-дельты не считаются покрытием не-protocol сущностей — исключены из
@@ -64,7 +64,7 @@ DISPOSITIONS = {"write", "summary_only", "unclear"}
 SECTIONS = {"recommended", "doubtful"}
 # Классы файлов вне uniqueness-инварианта: хроника, глоссарий, наблюдения о людях
 EXEMPT_CLASSES = {"progress", "glossary", "team"}
-# Core-классы: у одной сущности ≤1 canonical-дома СУММАРНО по всем этим классам
+# Core-классы: у одной сущности ≤1 канонического места СУММАРНО по всем этим классам
 # (не по-классово: canonical в active + canonical в overview = дубль; проекция
 # в другой класс — это role=reference, не второй canonical).
 CORE_CLASSES = {"active", "backlog", "decisions", "overview"}
@@ -211,14 +211,14 @@ def check(payload, phase):
             continue
         if disp == "unclear":
             visible = any(d.get("section") == "doubtful" for d in own) or any(
-                d.get("section") == "recommended" and d.get("home_question")
+                d.get("section") == "recommended" and d.get("placement_question")
                 for d in own) or (
                 (e.get("resolved_from_unclear") or "").strip()
                 and any(d.get("section") == "recommended" for d in own))
             if not visible:
                 add("S7", f"unclear-сущность {eid} ({e.get('label', '')}) невидима: "
                           f"нужна doubtful-дельта, recommended-дельта с "
-                          f"home_question или resolved_from_unclear с "
+                          f"placement_question или resolved_from_unclear с "
                           f"recommended-дельтой")
         if disp == "summary_only" and own:
             add("S9", f"summary_only-сущность {eid} имеет дельты — противоречие "
@@ -259,9 +259,9 @@ def check(payload, phase):
                 add("A4", f"entity_id {eid} отсутствует в ростере",
                     [d.get("id", "?")], ph="coverage")
 
-    # --- Фаза B: единственность дома и монотонность ---
-    # Инварианты дома (B1/B2/B4/B6/B7) применяются к section=recommended:
-    # doubtful — легитимное место альтернатив и спорных домов, ждущих решения
+    # --- Фаза B: единственность размещения и монотонность ---
+    # инварианты размещения (B1/B2/B4/B6/B7) применяются к section=recommended:
+    # doubtful — легитимное место альтернатив и спорных вариантов размещения, ждущих решения
     # согласующего; считать их нарушением = ложный violation на каждом споре.
     if fin:
         canonical = {}
@@ -277,13 +277,13 @@ def check(payload, phase):
             canonical.setdefault(key, []).append(d)
         for (eid, group), items in canonical.items():
             if len(items) > 1:
-                add("B1", f"сущность {eid}: {len(items)} canonical-дома "
+                add("B1", f"сущность {eid}: {len(items)} канонического места "
                           f"({group}) — {[i.get('target_file') for i in items]}; "
-                          f"дом один, прочие вхождения — reference/consequence",
+                          f"каноническое место одно, прочие вхождения — reference/consequence",
                     [i.get("id", "?") for i in items], ph="final")
         # Resolved reference: ссылка/следствие в recommended обязаны иметь
         # canonical той же сущности в recommended — либо явный флаг
-        # canonical_external (дом уже существует в файле вне этого прогона).
+        # canonical_external (каноническая запись уже существует вне этого прогона).
         rec_canonical_eids = {d.get("entity_id") for d in deltas
                               if d.get("role") == "canonical"
                               and d.get("section") == "recommended"}
@@ -298,7 +298,7 @@ def check(payload, phase):
             if eid and eid not in rec_canonical_eids:
                 add("B9", f"{d.get('role')}-дельта сущности {eid} без "
                           f"canonical-дельты в recommended: битая ссылка "
-                          f"(дом уже в базе → пометь canonical_external)",
+                          f"(каноническая запись уже в базе → пометь canonical_external)",
                     [d.get("id", "?")], ph="final")
         for d in deltas:
             if d.get("section") != "recommended" or is_protocol(d):
@@ -306,7 +306,7 @@ def check(payload, phase):
             if d.get("role") == "canonical" \
                     and d.get("entity_type") == "decision" \
                     and file_class(d.get("target_file", "")) in ("active", "backlog"):
-                add("B2", f"decision-сущность {d.get('entity_id')} с canonical-домом "
+                add("B2", f"decision-сущность {d.get('entity_id')} с каноническим местом "
                           f"в {d.get('target_file')}: решение живёт в decisions; "
                           f"в active — только reference или consequence с owner",
                     [d.get("id", "?")], ph="final")
@@ -314,13 +314,13 @@ def check(payload, phase):
                     and d.get("entity_type") in ("task", "risk", "question") \
                     and file_class(d.get("target_file", "")) == "decisions":
                 add("B2", f"{d.get('entity_type')}-сущность {d.get('entity_id')} "
-                          f"с canonical-домом в {d.get('target_file')}: "
+                          f"с каноническим местом в {d.get('target_file')}: "
                           f"задачи/риски/вопросы не живут в decisions",
                     [d.get("id", "?")], ph="final")
             if d.get("role") == "canonical" \
                     and file_class(d.get("target_file", "")) in ("progress", "glossary"):
-                add("B2", f"canonical-дом в {d.get('target_file')}: хроника и "
-                          f"глоссарий — не дом сущности", [d.get("id", "?")],
+                add("B2", f"каноническое место в {d.get('target_file')}: хроника и "
+                          f"глоссарий — не каноническое место сущности", [d.get("id", "?")],
                     ph="final")
             if file_class(d.get("target_file", "")) == "progress" \
                     and len(d.get("proposed_text") or "") > 700:
@@ -372,7 +372,7 @@ def check(payload, phase):
                 continue
             if d.get("role") == "reference" \
                     and len(d.get("proposed_text") or "") > 240:
-                add("B7", "reference — короткая проекция/ссылка на canonical-дом "
+                add("B7", "reference — короткая проекция/ссылка на каноническое место "
                           "(≤240 символов), не копия текста сущности",
                     [d.get("id", "?")], ph="final")
             if d.get("role") == "consequence" and not (d.get("owner") or "").strip():
@@ -390,17 +390,17 @@ def check(payload, phase):
         for d in deltas:
             if is_protocol(d):
                 continue
-            if d.get("home_question") and not (
+            if d.get("placement_question") and not (
                     d.get("role") == "canonical"
                     and d.get("section") == "recommended"):
-                add("B10", "home_question допустим только на canonical-дельте в "
-                           "recommended (вопрос о выборе легитимного дома, не "
+                add("B10", "placement_question допустим только на canonical-дельте в "
+                           "recommended (вопрос о выборе легитимного места размещения, не "
                            "замена doubtful)", [d.get("id", "?")], ph="final")
-            if d.get("card_home") and d.get("role") == "canonical" \
-                    and d.get("target_file") != d.get("card_home") \
-                    and not d.get("home_question"):
-                add("B11", f"пометка card_home={d.get('card_home')} Фазы A "
-                           f"проигнорирована без home_question — канонизатор не "
+            if d.get("card_target_file") and d.get("role") == "canonical" \
+                    and d.get("target_file") != d.get("card_target_file") \
+                    and not d.get("placement_question"):
+                add("B11", f"пометка card_target_file={d.get('card_target_file')} Фазы A "
+                           f"проигнорирована без placement_question — канонизатор не "
                            f"пересматривает предметность молча",
                     [d.get("id", "?")], ph="final")
         specs = {}

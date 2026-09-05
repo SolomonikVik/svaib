@@ -2,7 +2,7 @@
 title: Scaffold deployment — развёртывание каркаса у клиента
 created: 2026-05-05
 updated: 2026-08-07
-version: 4.1
+version: 4.2
 status: final
 ---
 

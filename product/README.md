@@ -1,6 +1,6 @@
 ---
 title: "Product — ядро продукта Second Value AI Brain"
-updated: 2026-07-17
+updated: 2026-08-31
 version: 13
 scope: "product_core"
 priority: high
@@ -27,7 +27,9 @@ priority: high
 
 - [01_overview.md](01_overview.md) — что за продукт, для кого, принципы, границы, бизнес-модель
 - [01_alpha-dod.md](01_alpha-dod.md) — DoD альфы к 30.09: что считаем сделанным, что явно не входит, открытые вопросы
+- [skills-catalog.md](skills-catalog.md) — единый реестр управленческих скиллов по контурам: что получает руководитель, статус (в продукте · альфа · бэклог), ссылки на методологию и реализацию
 - [architecture.md](architecture.md) — как продукт устроен внутри (слои, компоненты, связи)
+- [docs/README.md](docs/README.md) — документация продукта для клиента: как пользователь с ним работает (пара к методологии — «как устроено»); внутри — [docs/mcp-platform.md](docs/mcp-platform.md) (🚧 draft: что клиент получает через MCP)
 - [vision/README.md](vision/README.md) — карта целевого образа продукта, семи контуров, доказательной базы, исследований и target architecture
 - [05_decisions.md](05_decisions.md) — продуктовые решения (runtime, границы, путь skills)
 - [glossary.md](glossary.md) — канонический словарь продукта: одно принятое имя и одно определение на понятие
@@ -129,6 +131,7 @@ Vision меняется при уточнении целевого образа.
 | Понять целевой образ продукта | [vision/README.md](vision/README.md) | Product Vision, семь контуров, клиентская доказательная база, исследования, target architecture |
 | Понять работу svaib в семи контурах | [vision/02_contours.md](vision/02_contours.md) | Роли svaib, способы работы, результаты, границы и связи контуров |
 | Найти/зафиксировать клиентское свидетельство для vision | [vision/customer-evidence.md](vision/customer-evidence.md) | Что клиенты реально говорят и как это подтверждает, уточняет или ломает vision |
+| Найти скилл и проверить его результат и статус | [skills-catalog.md](skills-catalog.md) | Реестр управленческих скиллов по контурам, статусы и ссылки |
 | Понять что горит сейчас | [02_active.md](02_active.md) | Активные задачи, Session Handoff |
 | Зафиксировать/найти продуктовую идею с синка | [ideas.md](ideas.md) | Идеи, инсайты, открытые вопросы, принципы-кандидаты |
 | Узнать почему выбрано так | [05_decisions.md](05_decisions.md) | Runtime, границы, путь skills |
@@ -144,7 +147,7 @@ Vision меняется при уточнении целевого образа.
 | Спроектировать навык | [plugin/skills/](plugin/skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |
 | Контур «Цели и показатели»: методология метрик | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md`; внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
-| Работа со встречами | [methodology/rhythm/meeting-analysis/meeting_analysis.md](methodology/rhythm/meeting-analysis/meeting_analysis.md) | Пайплайн анализа транскриптов |
+| Работа со встречами | [methodology/rhythm/meeting-analysis/workflow.md](methodology/rhythm/meeting-analysis/workflow.md) | Пайплайн анализа транскриптов |
 | Онбординг клиента | [methodology/onboarding.md](methodology/onboarding.md) | Последовательность освоения |
 | Формат файлов | [methodology/scaffold/02_file-spec.md](methodology/scaffold/02_file-spec.md) | Действующий канон: YAML, шапка, секции, связи |
 

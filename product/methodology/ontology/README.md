@@ -9,6 +9,7 @@
 ## Вторичные файлы
 
 - [entities.md](entities.md) — рабочий каталог управленческих сущностей; будет пересобран после принятия базовой модели.
+- [meeting-types.md](meeting-types.md) — словарь типов встреч, периодичность и правило имени папки встречи.
 - [behavioral_patterns.md](behavioral_patterns.md) — специализированный каталог поведенческих паттернов на встречах.
 - [protocol_format.md](protocol_format.md) — схема семейства протоколов: маппинг сущностей на секции и общие правила.
 
@@ -21,4 +22,4 @@
 - [management_cycles.md](management_cycles.md) — прежняя модель девяти управленческих циклов.
 - [rituals.md](rituals.md) — прежний каталог ритуалов.
 
-Оставшаяся работа — в [_plan.md](_plan.md). Канон формата файла — [02_file-spec.md](../scaffold/02_file-spec.md).
+Оставшаяся работа — в _plan.md. Канон формата файла — [02_file-spec.md](../scaffold/02_file-spec.md).
