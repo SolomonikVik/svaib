@@ -17,6 +17,7 @@ type: index
 | [scripts/calculator.py](scripts/calculator.py) | производные: выполнение плана, отклонение, изменение к прошлому периоду, рост к прошлому году |
 | [scripts/snapshot.py](scripts/snapshot.py) | кэш снимка книги вне базы клиента, свежесть по дате изменения файла |
 | [business-metrics-intake.md](business-metrics-intake.md) | промпт-помощник заполнения описаний метрик с руководителем |
+| [tests/](tests/) | разбор шапки периодов `read_metrics.py`: `python3 -m unittest discover -s tests` из папки скилла |
 
 ## Чего здесь нет
 

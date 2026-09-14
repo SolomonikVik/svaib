@@ -166,6 +166,41 @@ class TestApplyCheck(unittest.TestCase):
                          {"06.08", "notes/runtime.md"})
         self.assertTrue(any("объединении" in r for r in stats["red"]), stats["red"])
 
+    def test_drift_flags_human_edit_after_read(self):
+        """Дрейф области: правка человека между сборкой пакета и записью видна до копирования.
+        Мутация: без drift тот же дифф check признаёт покрытым якорем записи (круг ревью 10.09)."""
+        apply_check.snapshot(self.scope, ["kit/02_active.md", "kit/05_decisions.md"],
+                             self.run / "read", [])
+        self.assertEqual(apply_check.drift(self.scope, self.run / "read"), ([], []))
+        human = ACTIVE.replace("стенд собран, детали", "стенд собран 09.09, детали")  # подстрока под прежним якорем
+        self.active.write_text(human, encoding="utf-8")
+        changed, vanished = apply_check.drift(self.scope, self.run / "read")
+        self.assertEqual((changed, vanished), (["kit/02_active.md"], []))
+        # та же правка глазами check: снимок before уже несёт правку человека, proposed — прежнюю подстроку
+        self.resnap(["kit/02_active.md"])
+        self.active.write_text(ACTIVE.replace("до 05.09", "до 05.09 (уточнено)"), encoding="utf-8")
+        _, stats = self.run_check("изменена: [ ] Первая версия машинного слоя — отв. Эрик, до 05.09\n")
+        self.assertEqual(stats["losses"], [])  # потеря «09.09» для check невидима: подстрока покрыта якорем записи
+        self.decisions.unlink()
+        self.assertEqual(apply_check.drift(self.scope, self.run / "read")[1], ["kit/05_decisions.md"])
+
+    def test_drift_cli_exit_codes(self):
+        """CLI drift: чистая область — 0, дрейф — 1."""
+        apply_check.snapshot(self.scope, ["kit/02_active.md"], self.run / "read", [])
+        argv = ["drift", "--scope", str(self.scope), "--read", str(self.run / "read")]
+        self.assertEqual(apply_check.main(argv), 0)
+        self.active.write_text(ACTIVE + "- [ ] Правка человека\n", encoding="utf-8")
+        self.assertEqual(apply_check.main(argv), 1)
+
+    def test_closed_outcome_parsed_and_counted(self):
+        """«закрыта» — исход канона §6: леджер его разбирает и считает (круг ревью 10.09)."""
+        self.resnap(["kit/02_active.md"])
+        self.active.write_text(ACTIVE.replace("- [ ] Обновить сайт — отв. Виктор\n", ""), encoding="utf-8")
+        report, stats = self.run_check("закрыта: [ ] Обновить сайт — отв. Виктор\n")
+        self.assertEqual((stats["losses"], stats["red"]), ([], []))
+        self.assertEqual(stats["outcomes"], {"закрыта": 1})
+        self.assertIn("закрыта 1", report)
+
     def test_header_counters_match_stats(self):
         """Счётчики шапки отчёта равны фактическому содержимому stats."""
         self.active.write_text(ACTIVE + "- [ ] Новая задача — отв. Эрик\n", encoding="utf-8")

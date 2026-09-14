@@ -2,8 +2,8 @@
 title: "Plugins — система расширения AI-агентов: формат, экосистема, best practices"
 status: processed
 added: 2026-02-13
-updated: 2026-08-11
-review_by: 2026-11-11
+updated: 2026-09-09
+review_by: 2026-12-08
 tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
 ---
@@ -257,13 +257,32 @@ claude plugin install <name> --scope project
 
 Ядро контента (Skills + MCP-коннекторы) — на открытых стандартах, портабельно. Автоматика (hooks, commands) — переписывается, потому что это обёртка, а не экспертиза. Клиент не залочен на одну платформу: ценность в содержании Skills, не в формате доставки.
 
-### Claude Code ↔ Cowork
+### Claude Code ↔ Cowork ↔ Desktop
 
-Формат плагинов **идентичен**. "Built for Cowork, also compatible with Claude Code" (Anthropic). Один плагин — работает в обоих, **кроме hooks**.
+Формат плагинов **идентичен**. "Built for Cowork, also compatible with Claude Code" (Anthropic). Хуки работают во всех трёх средах — с оговорками ниже.
 
-**Hooks молча не срабатывают в Cowork.** Cowork запускает Claude CLI в sandboxed VM с флагом `--setting-sources user`, который исключает plugin-scoped hook discovery; host-файл `~/.claude/settings.json` в VM не монтируется. Skills, commands и MCP из того же плагина работают штатно — только hooks не срабатывают, без ошибки и без записи в лог. Известный открытый баг Anthropic (не закрыт на июль 2026), затрагивает все marketplace-плагины с хуками в Cowork, а не только конкретный плагин: [#27398](https://github.com/anthropics/claude-code/issues/27398) · [#40495](https://github.com/anthropics/claude-code/issues/40495) · [#51281](https://github.com/anthropics/claude-code/issues/51281) · [#63360](https://github.com/anthropics/claude-code/issues/63360).
+**Хуки плагина работают. Замер 09.09.2026** — зонд на все 10 событий, стенд [runtime-probe](https://github.com/JazzShapka/runtime-probe).
 
-**Для продукта:** enforcement-логика, завязанная на hooks (см. [coding/claude-code.md](../coding/claude-code.md) — "хук решает то, что скилл может проигнорировать"), не сработает в клиентской поставке через Cowork. Нужна альтернатива для этого канала (кандидат — MCP-based enforcement).
+| Событие | Cowork cloud | Desktop, режим Code |
+|---|---|---|
+| `SessionStart` | 🔴 не эмитится | ✅ |
+| `UserPromptSubmit` | ✅ | ✅ |
+| `PreToolUse` / `PostToolUse` (Bash и Agent) | ✅ | ✅ |
+| `Stop`, `SubagentStart`, `SubagentStop` | ✅ | ✅ |
+| `SessionEnd` | ⚪️ | ✅ |
+| `Notification` | ✅ | ⚪️ |
+| `PreCompact` | ⚪️ | ⚪️ |
+| `deny` / `ask` | ✅ блокирует / показывает диалог | ✅ блокирует / показывает диалог |
+
+⚪️ — в прогоне не наблюдалось за отсутствием повода, не отказ.
+
+**Особенности, которые меняют проектирование:**
+
+- **Источник хуков зависит от среды.** Desktop читает и плагин, и `.claude/settings.json` открытой папки — одновременно, оба срабатывают на одно событие. В Cowork сессия живёт в песочнице (`/root`), проектная `.claude/`-обвязка туда не попадает: доехать может только плагин.
+- **`SessionStart` в Cowork мёртв.** Доставка контекста впрыском строится на `UserPromptSubmit` — он срабатывает на каждый промпт и `additionalContext` доходит до модели.
+- **Модель не видит слой разрешений.** Диалог подтверждения по `ask` показывается пользователю, но в контекст агента не попадает: он сообщает «подтверждения не запрашивали» и достраивает объяснение. UI-эффекты проверяются только человеком.
+
+**Для продукта:** enforcement на хуках переносится в клиентскую поставку, если едет плагином и не опирается на `SessionStart`. Гвард «блокировать опасную операцию» — это `PreToolUse` + `deny`, работает везде. Цена ставки на `SessionStart` в живом примере — [../cases/coman-os.md](../cases/coman-os.md).
 
 ---
 

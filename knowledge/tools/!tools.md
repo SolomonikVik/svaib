@@ -5,7 +5,7 @@ added: 2026-01-30
 review_by: 2026-10-21
 tags: [tools, automation, platforms, index]
 publish: false
-updated: 2026-07-27
+updated: 2026-09-09
 ---
 
 # Tools — AI-инструменты и платформы
@@ -28,7 +28,7 @@ updated: 2026-07-27
 
 ### Cowork и плагины
 
-Agent platform Anthropic для не-разработчиков. Формат плагинов идентичен Claude Code, **кроме hooks** — они молча не срабатывают в sandboxed VM Cowork (открытый баг Anthropic), значит enforcement-логика на хуках для этого канала delivery не годится. → [cowork.md](cowork.md)
+Agent platform Anthropic для не-разработчиков. Формат плагинов идентичен Claude Code, **включая hooks**: работают, `deny` реально блокирует вызов. Две особенности канала — источником служит только установленный плагин (`.claude/` подключённой папки не читается) и не эмитится `SessionStart`. Значит enforcement на хуках здесь годится, если едет плагином и не построен на старте сессии. → [cowork.md](cowork.md)
 
 ### Buildin — клиентское no-code пространство
 

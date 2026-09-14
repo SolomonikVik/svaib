@@ -8,6 +8,14 @@
   snapshot --scope <корень области> --files <файл ...> --out <run>/before [--exclude <путь> ...]
       Снимки всех файлов пакета до записи (откат = восстановить их) и манифест
       хэшей всей области — им ловятся незапланированные правки.
+  drift --scope <корень области> --read <run>/read
+      Дрейф области после чтения: файлы из <run>/read (снимки того, что модуль
+      прочитал при сборке пакета, той же командой snapshot) сверяются с живой
+      областью по хэшу. Изменился или исчез — красный список: при «записи» такой
+      файл не применяется и возвращается спорным, при повторном «пакете» —
+      перечитывается. Иначе состояние из proposed/ затирало бы правку человека,
+      сделанную между сборкой и записью, а check признал бы её покрытой якорем
+      записи (круг ревью 10.09).
   check --scope <корень области> --before <run>/before --ledger <файл>
         [--extra <путь> ...] [--out <отчёт.md>]
       Дифф записи против снимков и якорного леджера пакета:
@@ -23,7 +31,8 @@
 
 Леджер — плоский файл, строка = тронутая запись пакета:
   <исход>: <дословная первая строка прежней записи>
-исход — изменена | удалена | заменена | объединена; строка без исхода — якорь
+исход — изменена | объединена | закрыта | удалена (пять исходов канона §6 без
+«добавить»; «заменена» принимается как прежнее имя); строка без исхода — якорь
 с любым исходом. Добавленные записи в леджер не пишутся: добавления не потеря.
 
 Красный выход (код 1) чинится модулем, отчёт применения перевыпускается.
@@ -38,7 +47,7 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-OUTCOMES = ("изменена", "удалена", "заменена", "объединена")
+OUTCOMES = ("изменена", "объединена", "закрыта", "удалена", "заменена")  # заменена — прежнее имя, принимается ради старых пакетов
 SKIP_DIRS = {".git", "__pycache__"}
 MANIFEST = "manifest.tsv"
 BULLET = re.compile(r"^(?:[-*+]\s+|\d+[.)]\s+|#{1,6}\s+|>\s+)+")  # чекбокс [x]/[ ] — содержание: его смена без якоря = потеря
@@ -203,6 +212,24 @@ def snapshot(scope, files, out, excludes):
     return rels, manifest
 
 
+def drift(scope, read_dir):
+    """Файлы из read_dir, чьё живое состояние в области не совпадает со снимком.
+    Возвращает (changed, vanished) — списки относительных путей."""
+    if not read_dir.is_dir():
+        fail(f"нет снимков чтения {read_dir} — при сборке пакета они делаются командой snapshot")
+    changed, vanished = [], []
+    for p in sorted(read_dir.rglob("*")):
+        if not p.is_file() or p.name == MANIFEST:
+            continue
+        rel = p.relative_to(read_dir).as_posix()
+        live = scope / rel
+        if not live.is_file():
+            vanished.append(rel)
+        elif sha256(live) != sha256(p):
+            changed.append(rel)
+    return changed, vanished
+
+
 def check(scope, before, ledger_text, extras=(), excludes_extra=()):
     """Возвращает (отчёт md, stats). stats['red'] — список причин красного выхода."""
     manifest_path = before / MANIFEST
@@ -348,6 +375,9 @@ def main(argv=None):
     s.add_argument("--files", nargs="+", required=True)
     s.add_argument("--out", required=True)
     s.add_argument("--exclude", action="append", default=[])
+    d = sub.add_parser("drift")
+    d.add_argument("--scope", required=True)
+    d.add_argument("--read", required=True)
     c = sub.add_parser("check")
     c.add_argument("--scope", required=True)
     c.add_argument("--before", required=True)
@@ -365,6 +395,15 @@ def main(argv=None):
         rels, manifest = snapshot(scope, args.files, Path(args.out).resolve(), excludes)
         print(f"Снимков: {len(rels)} · файлов в манифесте области: {len(manifest)}")
         return 0
+    if args.cmd == "drift":
+        changed, vanished = drift(scope, Path(args.read).resolve())
+        for rel in changed:
+            print(f"изменён после чтения: {rel}")
+        for rel in vanished:
+            print(f"исчез после чтения: {rel}")
+        print(f"Дрейф области: изменено {len(changed)} · исчезло {len(vanished)}"
+              + ("" if changed or vanished else " · OK"))
+        return 1 if changed or vanished else 0
     ledger_path = Path(args.ledger)
     if not ledger_path.is_file():
         fail(f"леджера нет: {ledger_path}")

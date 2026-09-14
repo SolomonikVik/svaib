@@ -8,3 +8,4 @@
 
 - [!cases.md](!cases.md) — сводка знаний
 - [arscontexta.md](arscontexta.md) — arscontexta: Claude Code плагин для генерации персональных knowledge systems (конкурент/коллега SVAIB)
+- [coman-os.md](coman-os.md) — CoMan OS: управленческая ОС из трёх слоёв поверх connecting tree OKR и её публичная поставка «Иван» — помощник руководителя плагином под Claude Code и Codex

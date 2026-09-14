@@ -4,7 +4,7 @@ source: "https://claude.com/blog/cowork-research-preview"
 source_type: docs
 status: processed
 added: 2026-02-01
-updated: 2026-08-07
+updated: 2026-09-09
 review_by: 2026-10-21
 tags: [cowork, anthropic, plugins, knowledge-work, agents, svaib-product]
 publish: false
@@ -34,11 +34,17 @@ Cowork — фича Claude Desktop (macOS, Windows), запущена в янв�
 
 ## Ключевые возможности
 
-**Plugins.** Система расширения через Skills + Commands + Agents + Hooks + MCP. Всё файловое (Markdown + JSON). **Hooks — исключение:** в sandboxed VM Cowork они молча не срабатывают (известный открытый баг Anthropic, не конкретного плагина) — Skills/Commands/MCP того же плагина работают штатно. Подробнее о формате, экосистеме и этом ограничении → [plugins/!plugins.md](../plugins/!plugins.md) (раздел "Claude Code ↔ Cowork").
+**Plugins.** Система расширения через Skills + Commands + Agents + Hooks + MCP. Всё файловое (Markdown + JSON).
+
+**Hooks — работают, источник только плагин.** Замер 09.09.2026 зондом на все 10 событий ([runtime-probe](https://github.com/JazzShapka/runtime-probe), три сессии Cowork cloud): срабатывают `UserPromptSubmit`, `PreToolUse`, `PostToolUse` (и на Bash, и на Agent), `Notification`, `Stop`, `SubagentStart`, `SubagentStop`; `deny` реально блокирует вызов, `ask` показывает пользователю диалог подтверждения. **Исключение — `SessionStart`: в Cowork не эмитится** (0 срабатываний, в том числе при старте сессии сразу с команды). `PreCompact` и `SessionEnd` в прогоне не наблюдались за отсутствием повода.
+
+Сессия живёт в песочнице (`/root`, права root), поэтому `.claude/settings.json` подключённой папки источником хуков не служит — доехать может только установленный плагин. Следствия: enforcement для этого канала упаковывается в плагин, а доставка контекста впрыском строится на `UserPromptSubmit` вместо `SessionStart`. Сравнение сред и продуктовые следствия → [plugins/!plugins.md](../plugins/!plugins.md).
 
 **Skills.** Три канала установки: встроенный каталог (Customize), загрузка своего скилла (папка/ZIP), и `.claude/skills/` подключённой папки — последнее подтверждено живым прогоном meeting-analysis 30.07.2026 (сборка builder'ом, скилл подхватился и отработал полный цикл). Skills доступны на всех платных планах.
 
 **Deliverable-first вывод (критично для HITL-скиллов).** Cowork системно склоняет модель к схеме «результат = файл, в чате — краткий статус»: это заявленный дизайн платформы (запросил документ — получил .docx, не текст в чате). Следствие: скилл, требующий показать согласующему полный текст в чате (HITL-экраны), в Cowork молча деградирует до «смотрите файл» — воспроизведено на живом прогоне meeting-analysis 30.07.2026 (выжимка не показана в чате). Инструкция показа должна явно запрещать замену показа ссылкой/превью/пересказом. Отсылка к файлу вдобавок ненадёжна: известный баг пустого превью в панели Cowork ([#33499](https://github.com/anthropics/claude-code/issues/33499)).
+
+**Отчёт агента о собственной среде ненадёжен.** Модель не видит слой разрешений: диалог подтверждения показывается пользователю, а в контекст агента не попадает — он сообщает «подтверждения не запрашивали» и достраивает объяснение. Воспроизведено и в Cowork, и в Desktop. Следствие: UI-эффекты при проверке сред подтверждает человек, а не пересказ агента.
 
 **Scheduled Tasks.** Recurring и on-demand задачи через `/schedule`. Docs: [Anthropic](https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-cowork).
 
@@ -64,7 +70,7 @@ Cowork выполняет все команды в sandboxed VM. Исходящ�
 
 При **ON + All domains** произвольный домен вне списка dev-доменов проходит: `curl` к стороннему HTTPS отдаёт `200`, переменных прокси в окружении нет. Обе половины картины сошлись — фильтрация включается вместе с настройкой, а не действует всегда (проверено 07.08.2026).
 
-> Отчёты расследований: `clients/_inbox/cowork-telegram-debug-report.md` (31.03.2026) · `dev/gateway/env-probe.md` (07.08.2026)
+> Отчёты расследований: `clients/_inbox/cowork-telegram-debug-report.md` (31.03.2026) · `dev/saas/gateway/env-probe.md` (07.08.2026)
 
 ## Файловая система: что переживает сессию
 

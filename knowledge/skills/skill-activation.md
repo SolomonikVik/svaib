@@ -172,6 +172,7 @@ agent: Explore
 ## Связанные файлы
 
 - [skill-tooling.md](skill-tooling.md) — конкретные инструменты для решения проблемы активации: rule-based routing (claude-code-showcase), SessionStart hooks (claude-pipeline), preloaded skills в агентах (shanraisshan)
+- [rule-enforcement.md](rule-enforcement.md) — следующий шаг после активации: правило загрузилось, но чем оно удерживается — класс enforcement, три критерия завершённости, ловушки проектирования проверок
 
 ## Ссылки
 

@@ -52,10 +52,22 @@ def norm(s):
     return '' if s is None else re.sub(r'\s+', ' ', str(s)).strip().lower()
 
 
+# Шапка периодов бывает и машинной: «2026-09» (ISO), «2026/09», «09.2026» —
+# так ведут книги, которые заполняет скрипт, а не человек. Год берётся из
+# карты (`year`), как и для шапки из названий месяцев. Только год и месяц:
+# «2026-09-01» и настоящие даты ячеек намеренно не месяц — дневной лист иначе
+# читался бы как месячный, а это хуже отказа.
+ISO_MONTH = re.compile(r'^(?:(\d{4})[-/.](\d{1,2})|(\d{1,2})[./](\d{4}))$')
+
+
 def parse_month(v):
     k = norm(v).replace('.', '')
     if not k:
         return None
+    iso = ISO_MONTH.match(norm(v))
+    if iso:
+        month = int(iso.group(2) or iso.group(3))
+        return month if 1 <= month <= 12 else None
     if k in MONTHS:
         return MONTHS[k]
     for name, m in sorted(MONTHS.items(), key=lambda x: -len(x[0])):
