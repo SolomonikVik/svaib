@@ -4,7 +4,7 @@ source: "https://agents.md/"
 source_type: article
 status: processed
 added: 2026-02-28
-updated: 2026-08-03
+updated: 2026-09-20
 review_by: 2026-09-19
 tags: [claude-md, agents-md, dotfiles, ai-config, soul-md, memory, context-engineering, imports, hooks, codex, claude-5]
 publish: false
@@ -48,9 +48,9 @@ publish: false
 | Gemini CLI | да (через настройку) | настраивается | да |
 | Codex | да | через fallback-имена | — |
 | Cursor | да | — | — |
-| Claude Code | нет | да | — |
+| Claude Code | да, с v2.1.277 (при отсутствии `CLAUDE.md`) | да | — |
 
-Claude Code — единственный крупный инструмент, который не читает AGENTS.md нативно. Обходной путь — симлинк `ln -s AGENTS.md CLAUDE.md`.
+Claude Code долго был единственным крупным инструментом, не читавшим AGENTS.md нативно. С v2.1.277 читает — но только когда в рабочем каталоге и выше нет ни одного `CLAUDE.md`; при наличии `CLAUDE.md` побеждает он, и `AGENTS.md` подключается импортом. Из папок, подключённых через `--add-dir`, `AGENTS.md` не грузится вовсе (сверено с [докой Memory](https://code.claude.com/docs/en/memory) 20.09.2026).
 
 ### Три модели загрузки контекста
 
@@ -65,6 +65,8 @@ Claude Code — единственный крупный инструмент, к
 Частая ошибка — перенести Claude-модель `@import` на Codex. Механики разные (field-tested 2026-06).
 
 **Claude Code — `@path` реально импортирует.** `@file.md` в `CLAUDE.md` инлайнит содержимое в контекст при старте: относит./абсолют./`~`-пути, рекурсивно до 5 хопов, путь в backtick'ах не импортируется, парсер пропускает code-блоки, первый внешний импорт → диалог подтверждения. Цепочка `CLAUDE.md` собирается по иерархии папок (вложенные — lazy).
+
+❗️ **Разворачивается только `CLAUDE.md` из cwd.** Для файлов выше по дереву тело грузится, а строки `@path` внутри него **молча игнорируются** ([issue #79046](https://github.com/anthropics/claude-code/issues/79046), закрыт как not planned — это поведение, а не баг). Замер 20.09.2026 на 2.1.278: запуск из подпапки пространства — канон из корневого `CLAUDE.md` не доехал; та же картина для папки, подключённой через `--add-dir`. Последствие шире, чем кажется: репозиторий, где общий канон вынесен в `AGENTS.md` и подключён импортом, теряет его в каждой сессии, открытой не в корне. Для `--add-dir` дополнительно: `CLAUDE.md` такой папки грузится при `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`, а её `AGENTS.md` не грузится вовсе. Что из этого следует для доставки правил — [../skills/rule-enforcement.md](../skills/rule-enforcement.md).
 
 **Codex — `@import` нет.** `@file.md` в `AGENTS.md` = просто текст, не разворачивается (запрос codex#17401 открыт, не реализован). Вместо этого Codex **конкатенирует цепочку `AGENTS.md` от git-root вниз до cwd**: ≤1 файл на папку, ближе к cwd перебивает; глобальный `~/.codex/` первым; `AGENTS.override.md` бьёт обычный; стоп на 32 KiB (`project_doc_max_bytes`); fallback-имена через `project_doc_fallback_filenames`.
 

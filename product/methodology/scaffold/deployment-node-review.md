@@ -26,10 +26,10 @@ status: final
 Ты судишь ФОРМУ узла по канону, не наполненность данными и не право узла на существование. Пустой kit (02_active без задач, 04_decisions без решений) и стартовая рамка с подсказками — НОРМАЛЬНОЕ состояние свежесозданного узла, не нарушение: данные внесёт клиент в работе. Нужен ли узел и пора ли его наполнять — решает координатор с контекстом запроса клиента, не ты.
 
 КАНОН (читай отсюда, это всё, что видит агент-сборщик у клиента):
-- product/plugin/skills/scaffold/template/_templates/README.md — механика сборки, словарь, формула миссии файла
-- product/plugin/skills/scaffold/template/README.md — карта пространства
+- product/plugin/skills/space/scaffold/templates/README.md — механика сборки, словарь, формула миссии файла
+- product/plugin/skills/space/scaffold/templates/root/README.md — карта пространства
 - найди корень проверяемого клиентского пространства, содержащего {path}, и прочитай поставленную туда корневую рабочую инструкцию: AGENTS.md или, при Claude-only поставке, CLAUDE.md — правила агента: размещение, как писать
-- product/plugin/skills/scaffold/template/_templates/ — сами шаблоны (management-kit/, nodes/, aspects/), сверь живые файлы с болванками
+- product/plugin/skills/space/scaffold/templates/ — сами шаблоны (management-kit/, nodes/, aspects/), сверь живые файлы с болванками
 Нашу методологию (product/methodology/scaffold/) НЕ читай — её в клиентском пакете нет.
 
 Затем прочитай все файлы узла {path}.

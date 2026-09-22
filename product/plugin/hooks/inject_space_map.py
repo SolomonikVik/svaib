@@ -22,7 +22,7 @@ email аккаунта Claude + корень пространства; TTL 24 ч
 
 Подкарта узла — при входе в узел (решения Эрика 10–11.09, уточнено 14.09). Узел — папка
 верхнего уровня безусловно (кроме служебных, `_inbox`, `zz_archive`) **и** любая папка глубже
-только при наличии `README.md` (`commercial/sales`, `customer-success/projects/e-invoicing`):
+только при наличии `README.md` (`commercial/sales`, `customer-success/projects`):
 границу вложенного узла задаёт README, а не overview — узел получает подкарту независимо от
 того, юнит это (полноценный объект управления с менеджмент-китом) или нет; в подкарте узел с
 китом помечен «юнит», без кита — «узел» (термины — канон scaffold,
@@ -78,7 +78,7 @@ ROOT_MARKERS = ("CLAUDE.md", "AGENTS.md")  # README.md есть у каждог�
 MODEL_HEADINGS = ("## Карта пространства", "## Space Map")
 MARKER_TTL_DAYS = 7
 SID_RE = re.compile(r"[^A-Za-z0-9_.-]")
-SERVICE_DIRS = {"_templates", "_state", "node_modules", "_map"}   # как в генераторе
+SERVICE_DIRS = {"_templates", "_state", "node_modules", "_map", "__pycache__"}   # как в генераторе
 NOT_NODES = {"zz_archive", "_inbox"}                               # карта их узлами не считает
 GLOB_CHARS = set("*?[{")
 ENTER_TOOLS = ("Read", "Glob", "Grep", "Bash")   # Bash — агент читает и через cat/ls/rg: карта и там (решение Эрика 11.09)
@@ -87,7 +87,8 @@ ENTER_TOOLS = ("Read", "Glob", "Grep", "Bash")   # Bash — агент чита�
 # в `tool_input.command`, то есть совместимо с Claude; но команда завёрнута в `/bin/bash -lc`,
 # и без снятия обёртки путь не разбирается. Имена ниже — страховка на code-mode, где вызов
 # приходит под своим именем; незнакомый инструмент пишется в лог и входом не считается.
-SHELL_TOOLS = ("exec", "shell", "local_shell", "unified_exec", "exec_command", "container.exec")
+SHELL_TOOLS = ("exec", "shell", "local_shell", "unified_exec", "exec_command", "container.exec",
+               "mcp__workspace__bash")   # Cowork «Only on this computer»: bash в VM — MCP-инструмент (19.09)
 SHELL_INPUT_KEYS = ("command", "cmd", "input", "script", "code")   # где лежит текст команды
 # code-mode: команда лежит внутри JS-вызова — `await tools.exec_command({cmd:"sed …"})`
 JS_EXEC_RE = re.compile(r"""exec_command\s*\(\s*\{[^{}]*?(?:cmd|command)\s*:\s*(["'`])(.*?)\1""",
@@ -105,18 +106,15 @@ def nested_mode() -> str:
     return {"0": "0", "off": "0", "1": "chain", "chain": "chain", "nearest": "nearest", "deepest": "nearest"}.get(v, "nearest")
 
 
-NODE_LEAD = ("`map_node: {node}` — подкарта узла, сгенерирована из дерева при первом обращении к нему; "
-             "адреса файлов узла бери отсюда, не угадывай. Подпапка с пометкой «узел» — вложенный узел со своей "
-             "картой, с пометкой «юнит, кит: …» — ещё и полноценный менеджмент-юнит (его `02_active`, "
-             "`03_metrics`, `05_decisions`…); его подкарта придёт при первом обращении к ней.")
+NODE_LEAD = "`map_node: {node}` — адреса файлов узла бери отсюда, не угадывай."
 
 ASK_WHOAMI = (
-    "Кто пользователь и его зона ответственности — от платформы: **вызови `whoami` (MCP svaib) "
+    "Кто пользователь и его зона ответственности — от серверной части svaib: **вызови `whoami` (MCP svaib) "
     "первым действием** — до его ответа не обращайся к пользователю по имени и не считай его владельцем "
     "пространства; персональная подкарта зоны придёт в контекст автоматически (хук), ничего "
     "копировать и запускать не нужно. Если `workspace.profile_path` в ответе пуст — спроси, где в "
     "пространстве лежит профиль пользователя, и запиши через `update_me`. Если MCP svaib недоступен — "
-    "исходи из сведений об аккаунте в контексте и спроси при неясности."
+    "пользователя не угадывай и имя не подставляй; при неясности спроси."
 )
 
 
@@ -162,7 +160,37 @@ def find_root(start: str) -> str | None:
     return found
 
 
+def workspace_root() -> str | None:
+    """Cowork «Only on this computer»: cwd и CLAUDE_PROJECT_DIR — служебная папка сессии,
+    подключённые папки — в CLAUDE_CODE_WORKSPACE_HOST_PATHS (замер 19.09).
+    Одна папка: с маркером — корень как есть, как CLAUDE_PROJECT_DIR (агенту Cowork доступна
+    только она), без маркера — подъём к корню. Несколько папок: пространство — та, где лежит
+    `.svaib/`, остальные просто подключены; ни одной или больше одной — корня нет.
+    Несколько папок desktop-приложение склеивает через `|` (userSelectedFolders.join("|"), 19.09);
+    сначала значение целиком — вдруг `|` окажется в имени единственной папки."""
+    raw = (os.environ.get("CLAUDE_CODE_WORKSPACE_HOST_PATHS") or "").strip()
+    parts = [raw] if os.path.isdir(raw) else raw.split("|")
+    folders = []
+    for p in (x.strip() for x in parts):
+        if p and os.path.isdir(p) and os.path.abspath(p) not in folders:
+            folders.append(os.path.abspath(p))
+    if len(folders) == 1:
+        p = folders[0]
+        return p if is_space_root(p) else find_root(p)
+    spaces = [p for p in folders if os.path.isdir(os.path.join(p, ".svaib"))]
+    if len(spaces) == 1:
+        return spaces[0]
+    if folders:
+        log("skip", reason="workspace folders: .svaib in %d of %d" % (len(spaces), len(folders)), folders=folders)
+        print("inject_space_map: подключено %d папок, `.svaib/` в %d — не понять, какая из них пространство"
+              % (len(folders), len(spaces)), file=sys.stderr)
+    return None
+
 def resolve_root(hook_input: dict) -> str | None:
+    # Cowork с подключёнными папками: их ответ окончательный, отказ тоже — служебные
+    # CLAUDE_PROJECT_DIR и cwd привели бы к чужому маркеру. Вне Cowork переменная не читается.
+    if os.environ.get("CLAUDE_CODE_IS_COWORK") == "1" and (os.environ.get("CLAUDE_CODE_WORKSPACE_HOST_PATHS") or "").strip():
+        return workspace_root()
     env = os.environ.get("CLAUDE_PROJECT_DIR")
     if env and os.path.isdir(env) and is_space_root(env):
         return os.path.abspath(env)
@@ -278,16 +306,25 @@ def bash_paths(command: str, cwd: str, root: str) -> list[str]:
     out = []
     cmd = ""
     skip_pattern = False
+    glued = False
     for t in toks:
+        if glued:                               # прошлый токен кончался `;` — новая команда
+            cmd, glued = "", False
         if t in ("|", "||", "&&", ";"):
             cmd = ""
             continue
+        if t.endswith(";") and len(t) > 1:     # `for f in "a.md" "b.md"; do …` — `;` прилип к пути
+            t, glued = t[:-1], True
         if not cmd and not re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", t):
             cmd = os.path.basename(t)
             skip_pattern = cmd in BASH_PATTERN_CMDS
             continue
         if not t or t.startswith("-") or t in (">", ">>", "<"):
             continue
+        if cmd == "cd":   # `cd X && cat a.md`: дальше пути от X (так агент Cowork ходит по VM)
+            d = os.path.abspath(os.path.join(cwd, os.path.expanduser(t)))
+            if os.path.isdir(d):
+                cwd = d
         if skip_pattern:
             skip_pattern = False
             continue
@@ -333,7 +370,34 @@ def shell_text(ti: dict) -> str:
         parts = [v for v in ti.values() if isinstance(v, str)]
     text = "\n".join(parts)
     inner = [m.group(2) for m in JS_EXEC_RE.finditer(text)]
-    return "\n".join(unwrap_shell(t) for t in (inner or [text]))
+    return vm_to_host("\n".join(unwrap_shell(t) for t in (inner or [text])))
+
+
+def vm_to_host(text: str) -> str:
+    """Cowork «Only on this computer»: bash исполняется в VM, подключённая папка там —
+    `/sessions/<сессия>/mnt/<имя папки>` (19.09); хук живёт на хосте. Переводим в путь хоста
+    по имени папки из CLAUDE_CODE_WORKSPACE_HOST_PATHS. Вне Cowork — без изменений."""
+    if os.environ.get("CLAUDE_CODE_IS_COWORK") != "1" or "/mnt/" not in text:
+        return text
+    raw = (os.environ.get("CLAUDE_CODE_WORKSPACE_HOST_PATHS") or "").strip()
+    folders = [raw] if os.path.isdir(raw) else raw.split("|")
+    by_name: dict[str, str] = {}
+    twins = set()
+    for f in (x.strip().rstrip("/") for x in folders):
+        if f and os.path.isdir(f):
+            n = os.path.basename(f)
+            if n in by_name and by_name[n] != f:
+                twins.add(n)        # две папки с одним именем: путь VM неоднозначен — не переводим
+            by_name[n] = f
+    if twins:
+        log("vm-path-ambiguous", names=sorted(twins))
+    by_name = {n: f for n, f in by_name.items() if n not in twins}
+    if not by_name:
+        return text
+    # путь VM — только с начала токена: подстрока внутри чужого пути не переводится
+    rx = re.compile(r"(?<![^\s'\"`=(;&|<>])/sessions/[^/\s'\"]+/mnt/(" + "|".join(re.escape(n) for n in by_name)
+                    + r")(?=[/\s'\"`;&|)]|$)")
+    return rx.sub(lambda m: by_name[m.group(1)], text)
 
 
 def targets_of(hook_input: dict, root: str) -> list[str]:
@@ -394,7 +458,7 @@ def node_of(root: str, target: str) -> str | None:
 
 def nodes_of(root: str, target: str) -> list[str]:
     """Узлы на пути к target сверху вниз: верхний уровень + каждая папка глубже с
-    README.md (вложенный узел: commercial/sales, customer-success/projects/e-invoicing) —
+    README.md (вложенный узел: commercial/sales, customer-success/projects) —
     юнит это или нет, не важно, важно наличие своей карты (уточнение Эрика 14.09).
     Папка-цель (Glob/Grep по каталогу) тоже считается входом в неё."""
     top = node_of(root, target)
@@ -442,12 +506,14 @@ def map_context(gen, root: str, when: str, ask: bool) -> tuple[str, dict]:
     body = gen.emit_text(base, focus=units, no_model=no_model,
                          no_skills=os.environ.get("SVAIB_MAP_SKILLS") != "1")
     if personal:
-        zone = " · ".join(f"`{u}/`" for u in units) or "юниты не выведены"
+        zone = " · ".join(f"`{u}/`" for u in units) or "management units не выведены"
         head = (f"## Карта пространства {when}\n\n"
-                f"`map_profile: {cache['subject']}` — персональная: пользователь запомнен на этой машине "
-                f"по прошлому `whoami` (профиль `{cache.get('profile_path') or '—'}`, зона: {zone}).")
+                f"{gen.who_line(cache['subject'], cache.get('name', ''))}, профиль "
+                f"`{cache.get('profile_path') or '—'}`, зона {zone} — запомнен на этой машине по прошлому `whoami`."
+                f"{gen.keyboard_line(cache.get('name', ''))}"
+                f"{gen.preferences_line(cache.get('preferences', ''))}")
         if not units:
-            head += (" Юниты зоны не выведены — работай по общей карте: подкарта узла придёт "
+            head += (" Management units зоны не выведены — работай по общей карте: подкарта узла придёт "
                      "при первом обращении к его файлам.")
     else:
         head = (f"## Карта пространства {when}\n\n"
@@ -457,7 +523,8 @@ def map_context(gen, root: str, when: str, ask: bool) -> tuple[str, dict]:
     meta = {"profile": cache["subject"] if personal else "general", "units": units, "no_model": no_model}
     if body.startswith("## Карта пространства"):
         body = body.split("\n", 1)[1].lstrip("\n")  # H2 генератора — лишний, заголовок даёт хук
-    return head + "\n\n" + body, meta
+    rules = gen.space_rules(base)
+    return head + "\n\n" + body + ("\n\n" + rules if rules else ""), meta   # правила — после карты, не разрывают её
 
 
 def personalize_context(gen, root: str, hook_input: dict) -> tuple[str, dict]:
@@ -475,7 +542,7 @@ def node_context(gen, root: str, node: str) -> str:
     body = gen.emit_node_text(Path(root), node)
     if body.startswith("## Карта узла"):
         body = body.split("\n", 1)[1].lstrip("\n")
-    return f"## Подкарта узла `{node}/` (вход в узел)\n\n" + NODE_LEAD.format(node=node) + "\n\n" + body
+    return f"## Подкарта узла `{node}/`\n\n" + NODE_LEAD.format(node=node) + "\n\n" + body
 
 
 def emit(context: str, event: str) -> None:
@@ -488,6 +555,7 @@ EVENT = {"first-prompt": "UserPromptSubmit", "post-whoami": "PostToolUse", "node
 
 
 MODES = ("first-prompt", "post-whoami", "node-enter", "compact", "plain")
+WHOAMI_RE = re.compile(r"^mcp__.+__whoami$")
 
 
 def run(mode: str, hook_input: dict) -> None:
@@ -502,6 +570,10 @@ def run(mode: str, hook_input: dict) -> None:
             return
         if marker_exists(sid):
             return
+    if mode == "node-enter" and WHOAMI_RE.match(hook_input.get("tool_name") or ""):
+        # Codex (17.09, ревью): отдельной регистрации на whoami у него нет, вызов приходит сюда —
+        # персонализация та же, что у Claude по matcher `mcp__.*__whoami`
+        mode = "post-whoami"
     root = resolve_root(hook_input)
     if not root:
         if mode == "node-enter":

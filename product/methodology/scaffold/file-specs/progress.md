@@ -17,7 +17,7 @@ status: draft
 
 ## Структура секций **[канон, шаблон]**
 
-Плоский список датированных блоков, **свежее сверху**. По [_templates/management-kit/04_progress.md](../../../plugin/skills/scaffold/template/_templates/management-kit/04_progress.md) шаблон даёт две формы блока:
+Плоский список датированных блоков, **свежее сверху**. По [templates/management-kit/04_progress.md](../../../plugin/skills/space/scaffold/templates/management-kit/04_progress.md) шаблон даёт две формы блока:
 
 - событие: `## YYYY-MM-DD — {событие / сдвиг}` + **Что произошло** + **Почему важно**;
 - встреча: `## YYYY-MM-DD — встреча: {тема}` + **Участники** + **Ключевое** (2–4 строки) + **Источник:** ссылка на протокол в `meetings/`.

@@ -10,7 +10,8 @@
   ./space_map.py --base <корень> --emit [--focus dev,lab] [--no-model] [--no-skills]
   ./space_map.py --base <корень> --emit-node dev
   ./space_map.py --base <корень> --personalize --whoami-file <json>
-  ./space_map.py --base <корень> --print-model          # стабильный блок для CLAUDE.md/AGENTS.md
+  ./space_map.py --base <корень> --print-model          # стабильный блок корневого файла
+  ./space_map.py --base <корень> --write-model          # переписать его в AGENTS.md
   ./space_map.py --base <корень> --cache-json           # кэш пользователя этой машины
 
 Оснастка замера (режимы --replace/--single/--focus-lazy/--k1..k3, запись копий
@@ -34,53 +35,124 @@ from pathlib import Path
 MARK_BEGIN = "<!-- SPACE-MAP:BEGIN generated -->"
 MARK_END = "<!-- SPACE-MAP:END -->"
 DATED_RE = re.compile(r"^\d{4}-\d{2}-\d{2}")
-SERVICE_DIRS = {"_templates", "_state", "node_modules", "_map"}
+SERVICE_DIRS = {"_templates", "_state", "node_modules", "_map", "__pycache__"}
 ROOT_BUDGET_LINES = 60
 NODE_BUDGET_LINES = 50
 
 MODEL_BLOCK = """\
 **Модель пространства.** Папка = объект управления (компания, направление, команда).
-Менеджмент-кит объекта: `01_overview` (обзор) · `02_active` (текущее + план) ·
+Management kit объекта: `01_overview` (обзор) · `02_active` (текущее + план) ·
 `03_backlog` (будущее) · `04_progress` (хроника) · `05_decisions` (решения).
 `README.md` папки — её карта. Встречи и датированные артефакты: `YYYY-MM-DD_*`.
 
 **Куда идти за классом вопроса.** Сущность живёт там, где ею управляют:
-текущая работа, планы и повестки юнита → его `02_active` · решения → `05_decisions`
+текущая работа, планы и повестки management unit → его `02_active` · решения → `05_decisions`
 своего уровня · метрики → `03_metrics/` своего уровня · люди и профили → `02_team/`
-своего уровня · встречи юнита → его `meetings/` · курс, цели и стратегия компании →
-`01_company/` · личное руководителя → `00_ceo/` · неразобранное → `_inbox/`.
+своего уровня · встречи management unit → его `meetings/` · курс, цели и стратегия компании →
+`01_company/` · личное руководителя → `00_ceo/` · неразобранное → `_inbox/` ·
+правила работы агента на всё пространство, находки о расхождениях с каноном и служебное агента → `.svaib/`.
 Вопрос уровня компании решается в `01_company/`, вопрос направления — в его папке.
 
-**Как ходить.** Адрес файла бери из карты и подкарт юнитов, не угадывай.
+**Как ходить.** Адрес файла бери из карты и подкарт узлов, не угадывай.
 **Адрес в ответе называй полным путём от корня; факт о содержимом файла — только
 после чтения этого файла.**
-Когда нужен раздел, а не весь файл: сначала карточка — `Grep '^## ' <файл>` даст
-оглавление с номерами строк, затем `Read` только нужного диапазона. Файл длиннее
-~150 строк без карточки целиком не читай.
-Свежий датированный артефакт выбирай листингом папки (Glob), не по памяти.
-У каждого юнита в списке показан состав его менеджмент-кита («кит: …») — отвечая
-про устройство, опирайся на него, а не на догадку.
+Нужен раздел, а не весь файл — сначала получи оглавление файла: поиск строк `^## ` в файле
+даёт заголовки с номерами строк; затем прочитай только нужный диапазон. Файл длиннее
+~150 строк без оглавления целиком не читай.
+Файл выбирай по полному пути и `title` (нет `title` — H1), не открывая. Кандидатов из поиска
+или из папки без подкарты сверяй одним поиском `^title:` по папке, затем читай выбранный.
+Создавая файл, давай ему путь и `title`, понятные без чтения.
+Форму нового файла или узла и требования к типу файла даёт скилл `scaffold`:
+шаблоны и спецификации лежат у него, в пространстве их нет.
+Свежий датированный артефакт выбирай листингом папки, не по памяти.
+Отвечая про устройство, опирайся на состав management kit из списка («kit: …»),
+а не на догадку. В подкарте пометка «узел» — вложенная папка со своей подкартой;
+«unit, kit: …» — ещё и management unit со своими `02_active`, `03_metrics`, `05_decisions`.
 
-**Границы карты.** {built}Глубина — юниты и их первый
-уровень; содержимого в ней нет, только адреса и миссии.{coverage} «В карте нет» ≠ «в
+**Границы карты.** {built}Глубина — management units и их первый
+уровень; содержимого в карте нет, только адреса и миссии.{coverage} «В карте нет» ≠ «в
 пространстве нет»: прежде чем ответить, что чего-то не существует, проверь
-Glob/листингом. Если карта противоречит дереву — прав диск."""
+листингом. Если карта противоречит дереву — прав диск."""
 
 # R1 (12.09): строка, зовущая скаута пространства. Замеры показали, что субагент сам
 # почти никогда не запускается (3 прогона из 36), а по прямой просьбе даёт лучшую верность
 # и вчетверо меньшее окно координатора; скаут с правилами карты (`agents/svaib-scout.md`)
-# читает вчетверо меньше типового. ❗️ В прод-форму строка пока не включена: она меняет
-# измеренный стабильный блок, поэтому живёт за флагом `SVAIB_MAP_SCOUT=1` до своей серии.
+# читает вчетверо меньше типового. 17.09 (решение Эрика): строка включена по умолчанию и едет
+# клиентам со скаутом; своя серия замера не гонялась — в бэклоге трека. Выключить: `SVAIB_MAP_SCOUT=0`.
 SCOUT_BLOCK = """\
-**Поиск по пространству отдавай скауту.** Если ответа нет в карте и нужен обход файлов —
-вызови субагента `svaib-scout` (инструмент Agent) вместо самостоятельного поиска: он знает
-канон пространства, возвращает выжимку с адресами и не расходует твой контекст. Сам читай
-только то, что он назвал."""
+**Поиск по пространству отдавай скауту.** Если ответа нет в карте и нужен обход файлов,
+не ищи сам широким обходом — передай поиск субагенту `svaib-scout`, он приезжает с плагином svaib.
+Скаута в этой среде нет — отдай поиск встроенному субагенту: в Codex это коллаборация
+субагентов (`multi_agent`); нет и его — ищи сам, но узким запросом по названным адресам.
+Скаут не видит карту — назови ему известные адреса и границу поиска. Он возвращает выжимку
+с адресами и не расходует твой контекст; сам читай только то, что он назвал."""
+
+# 17.09 (решение Эрика): один текст для Claude и Codex — инструкция живёт в AGENTS.md,
+# CLAUDE.md импортирует её; прежний SCOUT_BLOCK_CODEX с брифом целиком снят.
+
+
+# N3 (16.09, решение Эрика): роли выделяются правилом стабильной модели, без хуков
+# переключения; пометка роли — начало `description` «Роль svaib.», её видят модель и код.
+# 17.09: носитель роли — команда в Claude, скилл в Codex (решение продукта 14.09).
+ROLES_BLOCK = """\
+**Роли партнёра.** По умолчанию работаешь как общий партнёр, без роли. Роль svaib оформлена
+командой (в Codex — скиллом), её описание начинается с «Роль svaib.»; остальные команды и
+скиллы — инструменты, не роли. Роль подключай сам, когда предмет разговора в её контуре; предмет сменился —
+подключи нужную роль или вернись к общему партнёру. Каждое подключение и смену роли
+называй одной строкой, чтобы пользователь видел, в какой роли ты работаешь."""
+
+# Метка карты — правило доставки хуками (whoami, подкарта при входе); с 17.09 одна для Claude и Codex.
+LABEL_BLOCK = """\
+**`map_profile` в контексте.** В контексте должна быть секция с `map_profile: …`. Кто пользователь — имя, профиль, зона — бери из неё. `map_profile` нет или он `general` — вызови `whoami` (MCP svaib), подкарта зоны придёт сама; `whoami` недоступен — пользователя не угадывай и имя не подставляй. Подкарта узла приходит сама при первом обращении к его файлам — чтением, поиском или командой; заходя в узел по вопросу о его устройстве или составе, сначала посмотри подкарту, потом читай файлы. Секции с `map_profile` нет вовсе — карта не пришла: ходи по `README.md` папок; требования владельца пространства — в `.svaib/rules.md`."""
+
+# Раздел стабильной модели — в AGENTS.md корня (канон scaffold: инструкция в AGENTS.md,
+# CLAUDE.md — импорт `@AGENTS.md`; решение Эрика 17.09 — один текст для обеих платформ)
+ROOT_MODEL_TARGETS = (("AGENTS.md", "## Карта пространства"),)
+
+
+def model_text() -> str:
+    """Стабильная часть карты для корневого файла — единственный источник текста."""
+    parts = [MODEL_BLOCK.format(
+        built="Дата сборки и покрытие — в динамической части (секция с `map_profile`). ", coverage="")]
+    if scout_enabled():
+        parts.append(SCOUT_BLOCK)
+    parts.append(ROLES_BLOCK)
+    parts.append(LABEL_BLOCK)
+    return "\n\n".join(parts)
+
+
+def write_model(base: Path) -> list[str]:
+    """Переписать раздел стабильной модели в AGENTS.md корня: от заголовка до
+    следующего `## `. Файла или заголовка нет — пропуск (раздел не вставляется молча).
+    Разовая операция сопровождения — при смене канона или генератора, не знание агента:
+    `space_map.py --base . --write-model` (с `SVAIB_MAP_SCOUT=0` абзац скаута выпадет)."""
+    report = []
+    for name, heading in ROOT_MODEL_TARGETS:
+        fp = base / name
+        if not fp.is_file():
+            report.append(f"{name}: нет файла — пропущен")
+            continue
+        lines = fp.read_text(encoding="utf-8").split("\n")
+        try:
+            start = next(i for i, l in enumerate(lines) if l.rstrip() == heading)
+        except StopIteration:
+            report.append(f"{name}: нет заголовка «{heading}» — пропущен")
+            continue
+        end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
+        new = lines[:start] + [heading, ""] + model_text().split("\n") + [""] + lines[end:]
+        if new == lines:
+            report.append(f"{name}: без изменений")
+            continue
+        tmp = fp.with_name(fp.name + ".tmp")
+        tmp.write_text("\n".join(new), encoding="utf-8")
+        os.replace(tmp, fp)
+        report.append(f"{name}: раздел «{heading}» переписан")
+    return report
 
 
 def scout_enabled() -> bool:
-    """Строка о скауте в карте — за флагом до своей серии замеров (R1, 12.09)."""
-    return os.environ.get("SVAIB_MAP_SCOUT", "0") == "1"
+    """Строка о скауте в карте: по умолчанию включена (17.09), `SVAIB_MAP_SCOUT=0` выключает."""
+    return os.environ.get("SVAIB_MAP_SCOUT", "1") != "0"
 
 
 # N2: блок «подкарта по требованию» — в emit-режиме юнитовые CLAUDE.md не пишутся,
@@ -96,8 +168,8 @@ def coverage_line(base: Path, units, listed_files: int) -> str:
     """Счётчики покрытия для «Границ карты»: полна на уровне юнитов, неполна на
     уровне файлов — и говорит, насколько (форма признака неполноты, 10.09)."""
     total = md_counts(base).get(base.resolve(), 0)
-    return (f" Покрытие: юнитов {len(units)} — все верхнего уровня; файлов с адресом "
-            f"в карте {listed_files} из {total} в дереве — карта полна по юнитам и "
+    return (f" Покрытие: management units {len(units)} — все верхнего уровня; файлов с адресом "
+            f"в карте {listed_files} из {total} в дереве — карта полна по management units и "
             f"НЕполна по файлам.")
 
 
@@ -223,7 +295,7 @@ def describe_dir_line(d: Path, base: Path) -> str:
     if d.name == "_inbox":
         return f"- `{rel}/` — входящее до разбора (файлов: {n})"
     kit = kit_of(d)
-    kit_part = f" (кит: {kit}; файлов: {n})" if kit else (f" (файлов: {n})" if n else "")
+    kit_part = f" (kit: {kit}; файлов: {n})" if kit else (f" (файлов: {n})" if n else "")
     return f"- `{rel}/` — {mission or d.name}{kit_part}"
 
 
@@ -299,12 +371,11 @@ def node_routes(node: Path, base: Path) -> str | None:
     body = text[m.end():]
     nxt = re.search(r"^#{1,6}\s", body, re.M)   # любой заголовок закрывает секцию (### тоже)
     body = body[:nxt.start()] if nxt else body
-    kept, total, broken = [], 0, 0
+    kept = []
     for raw in body.splitlines():
         line = raw.strip()
         if not (line.startswith(("-", "*")) or re.match(r"^\d+[.)]", line)):
             continue
-        total += 1
         targets = _route_targets(line)
         if not _route_is_custom(line, targets):
             continue
@@ -318,7 +389,6 @@ def node_routes(node: Path, base: Path) -> str | None:
             return rel if p.exists() else None
         ok = all(t.startswith("http") or "{" in t or _rel(t) is not None for t in targets)
         if not ok:
-            broken += 1
             continue
         # адреса — от корня пространства: ссылки и backtick-пути README относительны папке узла
         def _abs(mm):
@@ -334,14 +404,13 @@ def node_routes(node: Path, base: Path) -> str | None:
         kept.append("- " + line.lstrip("-* ").strip())
     if not kept:
         return None
-    head = (f"**Маршруты узла** (из README, только логика узла; строк {len(kept)} из {total}, "
-            f"с целями не в дереве отброшено: {broken}):")
+    head = "**Маршруты узла** (из README):"
     return "\n".join([head] + kept[:ROUTES_MAX_LINES]
                      + ([f"- … ещё {len(kept) - ROUTES_MAX_LINES} — в README узла"] if len(kept) > ROUTES_MAX_LINES else []))
 
 
 def node_map(node: Path, base: Path, deep: bool = False) -> str:
-    lines = [f"## Карта узла (сгенерирована из дерева)", ""]
+    lines = ["## Карта узла", ""]
     mission = mission_of_dir(node)
     rel = node.resolve().relative_to(base.resolve()).as_posix() if base.resolve() in node.resolve().parents else node.name
     if mission:
@@ -370,7 +439,7 @@ def node_map(node: Path, base: Path, deep: bool = False) -> str:
         # служебные — не узлы даже с README/китом, вход туда не даёт хук (NOT_NODES; ревью 14.09)
         is_node = sd.name not in NODE_EXCLUDED and (sd / NODE_MARKER_FILE).is_file()
         kit = kit_of(sd) if is_node else None          # кит показываем только у узла со своей картой
-        kit_part = f"юнит, кит: {kit}; " if kit else ("узел; " if is_node else "")
+        kit_part = f"unit, kit: {kit}; " if kit else ("узел; " if is_node else "")
         if sd.name == "zz_archive":
             lines.append(f"- `{sd.name}/` — архив (файлов: {n}), только по явной надобности")
         elif sd.name == "_inbox":
@@ -406,21 +475,19 @@ def count_addresses(text: str) -> int:
 
 def root_map(base: Path, date: str, single: bool = False, coverage: str = "",
              emit: bool = False, model: bool = True) -> str:
-    lines = ["## Карта пространства (сгенерирована из дерева)", ""]
+    lines = ["## Карта пространства", ""]
     if model:
         lines.append(MODEL_BLOCK.format(built=f"Карта собрана из дерева {date}. ", coverage=coverage))
     else:  # стабильный блок живёт в корневом файле пространства и приходит каждый ход — не дублировать
-        lines.append(f"Правила чтения карты — в корневом файле пространства (`CLAUDE.md`/`AGENTS.md`, "
-                     f"раздел «Карта пространства» / «Space Map»). Карта собрана "
-                     f"из дерева {date}, глубина — юниты и их первый уровень.{coverage}")
+        lines.append(f"Карта собрана из дерева {date}, глубина — management units и их первый уровень.{coverage}")
     lines.append("")
     where = (" (подробные карты — ниже):" if single
              # emit без модели — доставка хуками (Claude Code): подкарта узла придёт при входе;
              # emit с моделью — сред без хуков (Codex/Cursor): подкарта по требованию (ON_DEMAND_BLOCK)
              else " (подкарты зоны — ниже, остальных — при первом обращении к файлам узла):" if emit and not model
              else " (подкарты зоны — ниже, остальных — по требованию: `--emit-node <узел>`):" if emit
-             else " (подробная карта — в `CLAUDE.md` юнита):")
-    lines.append("**Юниты**" + where)
+             else " (подробная карта — в `CLAUDE.md` management unit):")
+    lines.append("**Management units**" + where)
     lines.append("")
     for d in subdirs(base):
         lines.append(describe_dir_line(d, base))
@@ -557,6 +624,8 @@ def read_cache(email: str, base: Path) -> dict | None:
         return None
     d["fresh"] = datetime.timedelta(0) <= age < datetime.timedelta(hours=CACHE_TTL_HOURS)
     d["units"] = [u for u in d["units"] if isinstance(u, str)]
+    d["name"] = clean_name(d.get("name"))   # запись до 17.09 имени не несёт — пусто, не отказ
+    d["preferences"] = clean_block(d.get("preferences"), PREFERENCES_LIMIT)
     return d
 
 
@@ -640,6 +709,70 @@ def profile_units(base: Path, profile_path: str, units_all: list[str]) -> list[s
     return units_in_text(zone_text, units_all)
 
 
+def clean_name(value) -> str:
+    """Имя из whoami уходит в контекст агента: одна строка без разметки, не длиннее 120."""
+    if not isinstance(value, str):
+        return ""
+    return re.sub(r"[`*_\[\]<>|\\]", "", " ".join(value.split()))[:120]
+
+
+def who_line(subject: str, name: str) -> str:
+    """Начало заголовка персональной карты: метка и, если известно, имя пользователя."""
+    return f"`map_profile: {subject}` — пользователь **{name}**" if name else f"`map_profile: {subject}` — пользователь"
+
+
+def keyboard_line(name: str) -> str:
+    """17.09, обратная связь живого прогона: метки профиля агенту мало — он шёл за именем по
+    умолчанию из корневых файлов. Прямая инструкция, кто за клавиатурой и как обращаться."""
+    if not name:
+        return ""
+    return (f"\n\n**За клавиатурой — {name}.** Обращайся к пользователю «{name}»; имя по умолчанию "
+            "из других инструкций к этому пользователю не относится.")
+
+
+PREFERENCES_LIMIT = 2000
+RULES_FILE = ".svaib/rules.md"
+RULES_LIMIT = 6000
+
+
+def clean_block(value, limit: int) -> str:
+    """Многострочный текст владельца или пользователя для контекста агента: без заголовков
+    markdown (не ломают разделы карты), без пустых серий, не длиннее limit."""
+    if not isinstance(value, str):
+        return ""
+    lines = [re.sub(r"^\s{0,3}#{1,6}\s+", "", l.rstrip()) for l in value.replace("\r", "").split("\n")]
+    text = re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
+    return text if len(text) <= limit else text[:limit].rstrip() + " …"
+
+
+def preferences_line(prefs: str) -> str:
+    """17.09 (решение Эрика): как работать с человеком — поле `preferences` в MCP (задача трека MCP).
+    Там только отличия от умолчаний; поля нет или пусто — строки нет, действует канон."""
+    if not prefs:
+        return ""
+    return ("\n\n**Как работать с пользователем** — его настройки в svaib; старшинство — `AGENTS.md`, "
+            "раздел «Что дополняет эту инструкцию»:\n\n" + prefs)
+
+
+def space_rules(base: Path) -> str:
+    """17.09 (решение Эрика): правила работы агента в этом пространстве — `.svaib/rules.md`,
+    пишет владелец. Подаются после карты; файла нет — раздела нет. Заголовки файла снимаются."""
+    fp = base / RULES_FILE
+    try:   # битая кодировка или нечитаемый файл — раздела нет, карта не должна пропасть из-за него
+        text = fp.read_text(encoding="utf-8-sig")
+    except (OSError, UnicodeDecodeError):
+        return ""
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    fm = re.match(r"^---\n.*?\n---\n", text, re.S)
+    body = text[fm.end():] if fm else text
+    body = re.sub(r"^\s*# [^\n]*\n", "", body.lstrip("\n"), count=1)
+    body = clean_block(body, RULES_LIMIT)
+    if not body:
+        return ""
+    return (f"## Требования владельца пространства (`{RULES_FILE}`)\n\nСтаршинство — `AGENTS.md`, раздел "
+            "«Что дополняет эту инструкцию».\n\n" + body)
+
+
 def parse_whoami(raw) -> dict:
     """Ответ whoami как его отдаёт PostToolUse (строка JSON) или объект."""
     data = raw
@@ -658,7 +791,9 @@ def parse_whoami(raw) -> dict:
     if not isinstance(data, dict) or not data.get("subject_id"):
         raise ValueError("в ответе whoami нет subject_id")
     ws = data.get("workspace") or {}
-    return {"subject": str(data["subject_id"]), "tenant": str(data.get("tenant_id") or ""),
+    return {"subject": str(data["subject_id"]), "name": clean_name(data.get("display_name")),
+            "preferences": clean_block(data.get("preferences"), PREFERENCES_LIMIT),
+            "tenant": str(data.get("tenant_id") or ""),
             "role": str(data.get("role") or ""), "about": str(data.get("about") or ""),
             "profile_path": str(ws.get("profile_path") or "")}
 
@@ -677,20 +812,22 @@ def personalize(base: Path, who: dict, units_override: list[str] | None = None) 
         units = [u.strip().strip("/") for u in units_override if u.strip()]
         source = "указаны"
     units = [u for u in units if u in units_all]
-    rec = {"subject": who["subject"], "tenant": who.get("tenant", ""), "role": who.get("role", ""),
+    rec = {"subject": who["subject"], "name": who.get("name", ""), "preferences": who.get("preferences", ""),
+           "tenant": who.get("tenant", ""), "role": who.get("role", ""),
            "profile_path": who.get("profile_path", ""), "units": units}
     email = account_email()
     cp = write_cache(email, base, rec)
-    remembered = (f"пользователь запомнен на этой машине на {CACHE_TTL_HOURS} ч" if cp
+    remembered = (f"запомнен на этой машине на {CACHE_TTL_HOURS} ч" if cp
                   else "аккаунт Claude на машине не определён — кэша нет, в следующей сессии снова `whoami`")
-    lines = [f"`map_profile: {who['subject']}` — персональная подкарта зоны; профиль "
-             f"`{who.get('profile_path') or '—'}`; {remembered}."]
+    lines = [f"{who_line(who['subject'], who.get('name', ''))}, профиль "
+             f"`{who.get('profile_path') or '—'}` — персональная подкарта зоны; {remembered}."
+             f"{keyboard_line(who.get('name', ''))}{preferences_line(who.get('preferences', ''))}"]
     if units:
-        lines.append(f"\n**Юниты зоны** ({source}): " + " · ".join(f"`{u}/`" for u in units))
+        lines.append(f"\n**Management units зоны** ({source}): " + " · ".join(f"`{u}/`" for u in units))
         for u in units:
             lines.append("\n" + node_map(base / u, base))
     else:
-        lines.append("\nЮниты зоны не выведены ни из профиля, ни из `about`. Персональной подкарты нет: "
+        lines.append("\nManagement units зоны не выведены ни из профиля, ни из `about`. Персональной подкарты нет: "
                      "работай по общей карте — подкарта узла приходит при первом обращении к его файлам "
                      f"(папки верхнего уровня: {', '.join(units_all)}). Точный источник зоны — поле "
                      "`units:` в шапке профиля.")
@@ -701,7 +838,7 @@ def emit_text(base: Path, focus: list[str] | None = None, no_model: bool = False
               no_skills: bool = False) -> str:
     """N2: карта как текст, репозиторий не трогается. Корень (+ подкарты зоны) (+ реестр
     скиллов). Рецепт «подкарта по требованию» — только вместе со стабильным блоком:
-    при --no-model он уже в CLAUDE.md."""
+    при --no-model он уже в корневом AGENTS.md."""
     base = base.resolve()
     date = datetime.date.today().isoformat()
     units = [u for u in subdirs(base) if u.name not in ("zz_archive", "_inbox")]
@@ -723,13 +860,14 @@ def emit_text(base: Path, focus: list[str] | None = None, no_model: bool = False
         parts.append(ON_DEMAND_BLOCK.format(tool=tool_s, base=base.as_posix()))
         if scout_enabled():   # тот же флаг, что у --print-model — единый источник (ревью 14.09)
             parts.append(SCOUT_BLOCK)
+        parts.append(ROLES_BLOCK)
     if zone_maps:
         zone = " · ".join(f"`{f}/`" for f in focus if f in names)
         parts.append(f"**Зона ответственности пользователя** — {zone}. Подробные карты этих "
-                     "юнитов — ниже; по вопросу из зоны адрес бери отсюда.")
+                     "management units — ниже; по вопросу из зоны адрес бери отсюда.")
         parts.extend(zone_maps)
     if missing:
-        parts.append("Юниты зоны, которых нет в дереве (подкарты не собраны): "
+        parts.append("Management units зоны, которых нет в дереве (подкарты не собраны): "
                      + ", ".join(f"`{m}/`" for m in missing))
     reg = None if no_skills else skills_registry(base)
     if reg:
@@ -760,11 +898,13 @@ def add_prod_args(ap: argparse.ArgumentParser) -> None:
                          "системном промпте; для Codex/Cursor реестр оставлять)")
     ap.add_argument("--no-model", action="store_true",
                     help="--emit без стабильного блока (модель пространства, как ходить): он "
-                         "живёт в CLAUDE.md корня и приходит каждый ход")
+                         "живёт в корневом AGENTS.md и приходит каждый ход")
     ap.add_argument("--cache-json", action="store_true",
                     help="напечатать кэш пользователя этой машины для --base (JSON, {} если нет)")
     ap.add_argument("--print-model", action="store_true",
-                    help="напечатать стабильный блок для CLAUDE.md корня (единый источник текста)")
+                    help="напечатать стабильный блок корневого файла (единый источник текста)")
+    ap.add_argument("--write-model", action="store_true",
+                    help="переписать раздел стабильной модели в AGENTS.md корня --base")
     ap.add_argument("--personalize", action="store_true",
                     help="N2: после whoami — подкарты зоны по профилю + кэш пользователя на машине")
     ap.add_argument("--whoami-file", default="",
@@ -786,9 +926,10 @@ def run_prod(args) -> bool:
         if args.print_model:
             # Без HTML-комментария-маркера (снят 14.09, решение Эрика): наличие блока в CLAUDE.md/AGENTS.md
             # хук узнаёт по заголовку раздела — «## Карта пространства» / «## Space Map» — а не по метке в тексте.
-            print(MODEL_BLOCK.format(built="Дата сборки и покрытие — в динамической части (секция с `map_profile`). ", coverage=""))
-            if scout_enabled():
-                print("\n" + SCOUT_BLOCK)
+            print(model_text())
+            return True
+        if args.write_model:
+            print("\n".join(write_model(src.resolve())))
             return True
         if args.personalize:
             if args.whoami_file:
@@ -821,7 +962,7 @@ def main():
     ap.add_argument("--focus", default="", help="--emit: юниты зоны через запятую — их подкарты инлайн")
     args = ap.parse_args()
     if not run_prod(args):
-        ap.error("укажи режим: --emit, --emit-node, --personalize, --print-model или --cache-json")
+        ap.error("укажи режим: --emit, --emit-node, --personalize, --print-model, --write-model или --cache-json")
 
 
 if __name__ == "__main__":

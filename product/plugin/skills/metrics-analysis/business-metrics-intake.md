@@ -8,7 +8,7 @@ status: final
 
 # business-metrics-intake — skill
 
-Помощник заполнения клиентского [`business-metrics.md`](../scaffold/template/01_company/03_metrics/business-metrics.md): ведёт диалог с CEO, собирает каноническое имя / бизнес-смысл / описание того, как считается метрика / единицу / направление, выдаёт готовый файл по спеке [`../../methodology/metrics/metrics-spec.md`](../../../methodology/metrics/metrics-spec.md).
+Помощник заполнения клиентского [`business-metrics.md`](../space/scaffold/templates/root/01_company/03_metrics/business-metrics.md): ведёт диалог с CEO, собирает каноническое имя / бизнес-смысл / описание того, как считается метрика / единицу / направление, выдаёт готовый файл по спеке [`../../methodology/metrics/metrics-spec.md`](../../../methodology/metrics/metrics-spec.md).
 
 ## Промпт
 

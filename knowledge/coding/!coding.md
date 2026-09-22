@@ -2,9 +2,9 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: processed
 added: 2026-01-30
-updated: 2026-08-03
+updated: 2026-09-17
 review_by: 2026-10-21
-tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code, workflows, claude-5]
+tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code, workflows, claude-5, openspec]
 publish: false
 ---
 
@@ -60,7 +60,7 @@ publish: false
 
 Синтез принципов из индустриальных источников (OpenAI, Anthropic, Hashimoto). Три принципа проектирования среды:
 
-1. **Spec First** — ЧТО агент должен сделать (спецификация до кода, план в файл, верификация по пунктам). Инструменты 2026: GitHub Spec Kit, AWS Kiro, Tessl, OpenSpec (лучший для brownfield), BMAD (full-lifecycle, enterprise). Контракты между узлами графа — schema-first (JSON Schema/Pydantic/Zod, `schema_version` в артефакте) + академическая рамка Agent Contracts (Inputs/Outputs/Skills/Resources/Time/Success/Termination). Кейс малой команды (4 инженера + Claude Code): скиллы `/spec-*`, детерминизм через hooks, spec-aware review, 2–3x throughput. Детали: [spec-driven-dev.md](spec-driven-dev.md)
+1. **Spec First** — ЧТО агент должен сделать (спецификация до кода, план в файл, верификация по пунктам). Инструменты 2026: GitHub Spec Kit, AWS Kiro, Tessl, OpenSpec (лучший для brownfield: спеки-состояние + изменения-дельты ADDED/MODIFIED/REMOVED, которые вливаются в спеки при архивации, артефакты без фазовых ворот; детали: [openspec.md](openspec.md)), BMAD (full-lifecycle, enterprise). Контракты между узлами графа — schema-first (JSON Schema/Pydantic/Zod, `schema_version` в артефакте) + академическая рамка Agent Contracts (Inputs/Outputs/Skills/Resources/Time/Success/Termination). Кейс малой команды (4 инженера + Claude Code): скиллы `/spec-*`, детерминизм через hooks, spec-aware review, 2–3x throughput. Кейс интегратора (~150 человек, OpenSpec как единая шина контекста аналитика → разработка → QA): ×3–5 на половине типовых задач, proposal у продукта и design у разработчика, одна спека на фронт и бэк, мета-репозиторий, справочник доменов против фантазий агента; узкие роли дали больше блокеров. Детали: [spec-driven-dev.md](spec-driven-dev.md)
 2. **Context Architecture** — ГДЕ агент работает (прогрев сверху-вниз, AGENTS.md, Memory Bank, документация как ToC)
 3. **Harness Engineering** — КАК среда контролирует качество (реактивный: ошибка → правило; проактивный/garbage collection: фоновые агенты чистят код). Детали: [engineering-harness.md](engineering-harness.md)
 

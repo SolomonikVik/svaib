@@ -16,7 +16,7 @@ status: draft
 
 - methodology.md — ритуалы и протоколы (начинают работать после онбординга)
 - ontology/ontology.md — какие сущности заполняются на каждом этапе
-- ../plugin/skills/scaffold/template/ — каркас, который клиент разворачивает и заполняет
+- ../plugin/skills/space/scaffold/templates/root/ — каркас, который клиент разворачивает и заполняет
 - ../../clients/playbook/delivery/01_delivery_plan.md — тактика онбординга (ДЗ, шаблоны сообщений, инструменты)
 
 ---

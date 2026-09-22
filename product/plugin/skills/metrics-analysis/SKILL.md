@@ -17,7 +17,7 @@ description: "Живые значения бизнес-метрик из кни�
 
 Ты добываешь книгу и выписываешь карту адресов из описания; значения читает `scripts/read_metrics.py`, производные считает `scripts/calculator.py`. Своими словами цифру не воспроизводи — переноси как есть. Не нашлось значение — так и скажи; выдуманное или «примерно такое» число хуже отсутствия.
 
-Пути ниже — от корня рабочего пространства: рабочая директория не там (например, в Cowork) — сначала `cd` в корень.
+Пути к файлам скилла ниже — от его каталога: каталог сообщает среда. Скрипты запускай из корня пространства, указав полный путь до скрипта.
 
 **Производную в уме не считаешь тоже** — ни выполнение плана, ни разницу, ни рост. «899 против плана 1137» — это 79,1%, и посчитать это должен код: в уме ошибаются и модели, и люди, а число выглядит достоверным в обоих случаях.
 
@@ -60,14 +60,14 @@ description: "Живые значения бизнес-метрик из кни�
 Свежесть решает код, чтобы не качать одно и то же:
 
 ```
-python3 .claude/skills/metrics-analysis/scripts/snapshot.py check <fileId> --modified <modifiedTime книги>
+python3 scripts/snapshot.py check <fileId> --modified <modifiedTime книги>
 ```
 
 `modifiedTime` возьми у Drive через `get_file_metadata` (метаданные файла — дешёвый вызов, книгу качать не нужно). Ответ:
 
 - `reuse` — снимок актуален, бери путь из ответа, ничего не качай;
 - `download` — качай книгу **в формате xlsx** (не CSV: в CSV один лист и числа строками) и положи в кэш:
-  `python3 .claude/skills/metrics-analysis/scripts/snapshot.py put <fileId> --file <скачанный>.xlsx --modified <modifiedTime> --title <название>`.
+  `python3 scripts/snapshot.py put <fileId> --file <скачанный>.xlsx --modified <modifiedTime> --title <название>`.
   Маршрут через Drive MCP: `download_file_content` с экспортом в xlsx. Ответ приходит в base64 и на большой книге превышает лимит инструмента — среда сбрасывает его в файл; возьми поле `content` из этого файла, раскодируй base64 в `.xlsx` и клади в кэш уже его;
 - `reuse_unverified` — метаданные недоступны, снимок ещё годен; перенеси пометку в ответ;
 - `refuse` — свежесть не подтверждена и снимок старый; значений не даёшь.
@@ -110,7 +110,7 @@ python3 .claude/skills/metrics-analysis/scripts/snapshot.py check <fileId> --mod
 ### 5. Чтение
 
 ```
-python3 .claude/skills/metrics-analysis/scripts/read_metrics.py --book <снимок>.xlsx --card <карта>.json
+python3 scripts/read_metrics.py --book <снимок>.xlsx --card <карта>.json
 ```
 
 Вернётся таблица по каждой метрике: период · план · факт · пометки.
@@ -120,8 +120,8 @@ python3 .claude/skills/metrics-analysis/scripts/read_metrics.py --book <сним
 Спросили выполнение плана, разницу, рост, «что просело» — считает код:
 
 ```
-python3 .claude/skills/metrics-analysis/scripts/read_metrics.py --book <снимок>.xlsx --card <карта>.json --json > values.json
-python3 .claude/skills/metrics-analysis/scripts/calculator.py --values values.json [--period 2026-08]
+python3 scripts/read_metrics.py --book <снимок>.xlsx --card <карта>.json --json > values.json
+python3 scripts/calculator.py --values values.json [--period 2026-08]
 ```
 
 Вернёт по каждой метрике: выполнение плана и отклонение, изменение к прошлому периоду, рост к прошлому году — там, где для этого есть обе величины.

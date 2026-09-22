@@ -17,7 +17,7 @@ status: draft
 
 ## Структура секций **[канон, шаблон]**
 
-По [_templates/management-kit/03_backlog.md](../../../plugin/skills/scaffold/template/_templates/management-kit/03_backlog.md):
+По [templates/management-kit/03_backlog.md](../../../plugin/skills/space/scaffold/templates/management-kit/03_backlog.md):
 
 1. **План** — задачи и проекты, сгруппированные по фокусам, вехам, темам или приоритетам: `### {Фокус / веха}` → `- [ ] Задача` → подзадачи, вложенность любая.
 2. **Идеи и гипотезы** — сырой материал, который ещё нужно обдумать перед постановкой в работу: `- [ ] {Идея — источник / дата}`.

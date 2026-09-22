@@ -4,7 +4,7 @@ source: "https://code.claude.com/docs"
 source_type: docs
 status: processed
 added: 2026-01-30
-updated: 2026-08-14
+updated: 2026-09-15
 review_by: 2026-11-03
 tags: [claude-code, tools, plugins, mcp, hooks, agents, anthropic, permissions, sandbox, remote-control, workflows, verification, routines]
 publish: false
@@ -261,7 +261,9 @@ Hooks — автоматические перехватчики событий �
 
 **Skills в субагентах:** субагенты **НЕ наследуют skills от родителя**. Указывать явно: `skills: ["skill-name"]` в YAML. При dispatch загружается **весь SKILL.md целиком**, но progressive disclosure (bundled resources, файлы по ссылкам) **не работает** (источник: курс Anthropic, не проверено на практике). Рекомендация: для субагентных skills держать всю информацию в самом SKILL.md.
 
-**Паттерн:** main agent делает основную работу, sub-agents (code review, testing) работают в изолированных контекстах, возвращают только результаты — context-efficient approach.
+**Паттерн:** main agent делает основную работу, sub-agents (code review, testing) работают в изолированных контекстах, возвращают только результаты — context-efficient approach. Цель по [офдоке](https://code.claude.com/docs/en/sub-agents): сберечь контекст основной сессии — субагент берёт на себя побочную задачу, которая завалила бы разговор результатами поиска, логами и содержимым файлов, и возвращает только выжимку; типовое применение — исследование кодовой базы ([best practices](https://code.claude.com/docs/en/best-practices)).
+
+**Страж отчётов:** Write в субагенте (и у teammate) отклоняет `.md`, чьё имя начинается с `REPORT`, `SUMMARY`, `FINDINGS` или `ANALYSIS` (регистр не важен): «Subagents should return findings as text, not write report files». Отключить нельзя, в документации не описано ([issue #44657](https://github.com/anthropics/claude-code/issues/44657)). Другое начало имени (`draft_summary.md`) проходит; Edit и Bash страж не проверяет.
 
 ## Dynamic Workflows
 

@@ -13,7 +13,7 @@ Source of truth для формата metrics-файлов клиента (`busi
 Metrics-файлы — это семантический слой вертикали: описывают бизнес-смысл метрик (что метрика значит, как считается, в каких единицах, куда растёт). Без него LLM гадает — у одного клиента `revenue` это отгрузка, у другого оплата, у третьего признание выручки.
 
 Связанные артефакты:
-- [`../../plugin/skills/scaffold/template/01_company/03_metrics/business-metrics.md`](../../plugin/skills/scaffold/template/01_company/03_metrics/business-metrics.md) — шаблон базового файла метрик бизнеса
+- [`../../plugin/skills/space/scaffold/templates/root/01_company/03_metrics/business-metrics.md`](../../plugin/skills/space/scaffold/templates/root/01_company/03_metrics/business-metrics.md) — шаблон базового файла метрик бизнеса
 - [`../../plugin/skills/metrics-analysis/business-metrics-intake.md`](../../plugin/skills/metrics-analysis/business-metrics-intake.md) — промпт-помощник заполнения `business-metrics.md` с CEO
 - **Ориентир:** [Open Semantic Interchange](https://open-semantic-interchange.org/) — внешний reference по semantic models, не источник контракта svaib.
 

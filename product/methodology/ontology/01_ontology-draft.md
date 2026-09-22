@@ -139,7 +139,7 @@ status: draft
 ### Черновик
 как реализуется связь данного файла и
 [management_cycles](management_cycles.md)
-[operating-model](../../plugin/skills/scaffold/template/01_company/operating-model.md)
+[operating-model](../../plugin/skills/space/scaffold/templates/root/01_company/operating-model.md)
 Чтобы понять общую схему управления нам нужно простроить 6 контуров, которые плотно друг с другом пересекаются - отчего и трудно человеку удерживать все целостно, а svaib - может помочь
 1. Общая стратегическая рамка (вижн-стратегия-долгосрочные цели) (цикл стратегии)
 2. Как эта рамка реализуется в цифрах: долгосрочные цели -> цели ключевые результаты -> метрики (цикл метрик)

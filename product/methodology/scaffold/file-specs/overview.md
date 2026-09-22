@@ -17,7 +17,7 @@ status: draft
 
 ## Структура секций **[канон, шаблон]**
 
-По [_templates/management-kit/01_overview.md](../../../plugin/skills/scaffold/template/_templates/management-kit/01_overview.md):
+По [templates/management-kit/01_overview.md](../../../plugin/skills/space/scaffold/templates/management-kit/01_overview.md):
 
 1. **Суть** — что это за узел и какую задачу он решает; для родительского узла — что объединяет дочерние. Два-три предложения.
 2. **Статус, сроки и условия** — опционально, для проектов и клиентов: статус, сроки, бюджет/условия, формат. Постоянному направлению не заполняется.

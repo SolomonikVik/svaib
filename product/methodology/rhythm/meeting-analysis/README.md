@@ -24,6 +24,6 @@ title: "Meeting analysis — методология анализа встреч"
 
 - [Онтология управленческих сущностей](../../ontology/entities.md) — типы сущностей, извлекаемых из встречи.
 - [Словарь типов встреч](../../ontology/meeting-types.md) — типы встреч и правило имени папки встречи.
-- [Meeting analysis skill](../../../plugin/skills/meeting-analysis/) — действующая production-реализация (v3).
+- [Meeting analysis skill](../../../plugin/skills/meeting-analysis/) — действующая реализация (линия v4e); предыдущая — `meeting-analysis-old`.
 - [Продуктовые eval-сценарии](../../../evals/meeting-analysis.md) — проверяемые продуктовые ситуации.
 - Исполняемый eval-контур — проверки и результаты прогонов.

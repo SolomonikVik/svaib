@@ -212,6 +212,7 @@ Claude Code Agent Teams:
 - CLAUDE.md — project-level инструкции
 - Inbox JSON — сообщения между агентами
 - Plans/ — планы выполнения, доступные всем агентам
+- Результат субагента файлом — имя `REPORT*/SUMMARY*/FINDINGS*/ANALYSIS*.md` блокируется, см. «Страж отчётов» в [../coding/claude-code.md](../coding/claude-code.md#agents--субагенты)
 
 ## Lifecycle
 

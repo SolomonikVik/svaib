@@ -315,7 +315,7 @@ Causes и solutions:
 
 При конфликте имён — побеждает более высокий уровень.
 
-**Установка:** Вручную (скопировать папку), CLI `npx skills add owner/repo` (Vercel, 40+ агентов), плагин-система Claude Code (`/plugin marketplace add`), CLI `npx plugins add owner/repo` — ставит плагин стандарта [Agent Plugins 1.0](../plugins/agent-plugins-standard.md) в любую распознанную цель (Claude Code, Cursor, Codex, Copilot CLI, VS Code и др.), транслируя формат под клиента. Скиллы переживают такую трансляцию, хуки и субагенты — нет.
+**Установка:** Вручную (скопировать папку), CLI `npx skills add owner/repo` (Vercel, 40+ агентов), плагин-система Claude Code (`/plugin marketplace add`), CLI `npx plugins add owner/repo` — ставит плагин стандарта [Agent Plugins 1.0](../plugins/agent-plugins-standard.md) в любую распознанную цель (Claude Code, Cursor, Codex, Copilot CLI, VS Code и др.), транслируя формат под клиента. Скиллы переживают такую трансляцию, хуки и субагенты — нет. Codex ставит и нетранслированный плагин Claude Code — [../plugins/codex-plugins.md](../plugins/codex-plugins.md).
 
 ### Где найти скиллы
 

@@ -15,7 +15,7 @@ status: draft
 
 ## Структура секций **[канон, шаблон]**
 
-По [_templates/management-kit/02_active.md](../../../plugin/skills/scaffold/template/_templates/management-kit/02_active.md):
+По [templates/management-kit/02_active.md](../../../plugin/skills/space/scaffold/templates/management-kit/02_active.md):
 
 1. **Повестка ближайшей встречи** — дата и пункты, если у узла есть регулярная встреча.
 2. **Задачи** — текущие задачи, сгруппированные по исполнителям (`### {Владелец}`, плюс `### Не назначено`). Исполнитель один — группировка не нужна.

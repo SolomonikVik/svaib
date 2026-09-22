@@ -4,7 +4,7 @@ source: "https://agent-plugins.org/"
 source_type: docs
 status: processed
 added: 2026-08-11
-updated: 2026-09-08
+updated: 2026-09-18
 review_by: 2026-11-11
 tags: [plugins, agent-plugins, standard, skills, mcp, portability, interop, openai, vercel]
 publish: false
@@ -117,6 +117,8 @@ my-plugin/
 
 Клиенты с нативной поддержкой на старте: ChatGPT, Codex, Cursor, GitHub Copilot, Kiro, VS Code. Ещё несколько получают плагины через CLI-трансляцию (см. ниже): Claude Code, Grok Build, Kimi Code.
 
+**Нативная поддержка ≠ полная.** В Codex (сверено с кодом, сентябрь 2026) из формата Agent Plugins грузятся только скиллы и `mcp.json`: хуки и apps, объявленные через `extensions.com.openai`, локальный рантайм не активирует, хотя документация OpenAI их так и описывает. Полный набор компонентов Codex берёт из legacy-манифестов, включая `.claude-plugin/plugin.json`. Если рядом лежит корневой `plugin.json` с `$schema` стандарта, он перехватывает приоритет и отключает хуки. Подробно — [codex-plugins.md](codex-plugins.md).
+
 ## Отношение к формату Anthropic
 
 Оба компонента стандарта созданы Anthropic: MCP (ноябрь 2024) и Agent Skills (открытый стандарт с декабря 2025). При этом Anthropic не входит ни в техкомитет, ни в список launch-партнёров, а её собственный формат плагинов Claude Code / Cowork с Agent Plugins несовместим:
@@ -129,6 +131,8 @@ my-plugin/
 | Команды, субагенты, LSP | `commands/`, `agents/`, `.lsp.json` | вне стандарта |
 | Переменные | `${CLAUDE_PLUGIN_ROOT}` | `${PLUGIN_ROOT}`, `${PLUGIN_DATA}` |
 | Дистрибуция | Git-маркетплейсы (`marketplace.json`), scopes, авто-обновление | не покрыта |
+
+Codex обходит коллизию порядком поиска: корневой `plugin.json` со `$schema` стандарта, затем `.codex-plugin/`, `.claude-plugin/`, `.cursor-plugin/` — пакет в формате Claude Code он ставит без трансляции ([codex-plugins.md](codex-plugins.md)).
 
 Совпадение имени `plugin.json` при разных схемах и разном расположении — известная коллизия, из-за которой клиенту приходится определять формат, а не просто читать файл. VS Code, например, распознаёт четыре варианта: Agent Plugins 1.0 (`plugin.json` с `$schema`), Copilot (`plugin.json` без схемы), Claude (`.claude-plugin/plugin.json`) и legacy OpenPlugin (`.plugin/plugin.json`).
 
@@ -180,5 +184,6 @@ my-plugin/
 - [../agents/mcp.md](../agents/mcp.md) — MCP: протокол, транспорты, экосистема
 - [../coding/claude-code.md](../coding/claude-code.md) — Claude Code: среда с собственным форматом плагинов
 - [../tools/cowork.md](../tools/cowork.md) — Cowork: та же plugin-архитектура Anthropic
+- [codex-plugins.md](codex-plugins.md) — плагины Codex: какие компоненты грузятся из формата стандарта, а какие только из legacy-манифестов
 - [../cases/coman-os.md](../cases/coman-os.md) — живая поставка одного плагина под два хоста: что пришлось написать руками
 - [../skills/rule-enforcement.md](../skills/rule-enforcement.md) — класс правила и проектирование проверок, которые этот адаптер обслуживает

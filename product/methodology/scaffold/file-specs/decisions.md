@@ -17,7 +17,7 @@ status: draft
 
 ## Структура секций **[канон, шаблон]**
 
-Плоский список записей, **свежее сверху**. По [_templates/management-kit/05_decisions.md](../../../plugin/skills/scaffold/template/_templates/management-kit/05_decisions.md):
+Плоский список записей, **свежее сверху**. По [templates/management-kit/05_decisions.md](../../../plugin/skills/space/scaffold/templates/management-kit/05_decisions.md):
 
 `## YYYY-MM-DD: {Название решения}` → **Решение** (что именно решили) · **Почему** (кратко) · **Альтернативы** (если важны).
 

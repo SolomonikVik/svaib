@@ -9,7 +9,7 @@
 ## Файлы
 
 - [!tools.md](!tools.md) — сводка знаний
-- [cowork.md](cowork.md) — Cowork: агентная платформа Anthropic для knowledge workers
+- [cowork.md](cowork.md) — Cowork: агентная платформа Anthropic для knowledge workers; два режима исполнения (облачный и «Only on this computer»), что работает у плагина в каждом — быстро меняющаяся среда, смотри дату замера
 - [openclaw.md](openclaw.md) — OpenClaw: open-source self-hosted автономный агент
 - [manus.md](manus.md) — Manus: автономный AI-агент (Meta), Telegram-бот
 - [paperclip.md](paperclip.md) — Paperclip: open-source оркестратор AI-агентов как компании (org chart, бюджеты, governance) — слой над OpenClaw/Manus

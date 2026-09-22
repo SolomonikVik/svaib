@@ -122,4 +122,5 @@ CoMan OS (Cognitive Management Operating System) — авторская архи
 - [../skills/rule-enforcement.md](../skills/rule-enforcement.md) — переносимая методология: класс правила, замер до заведения, независимый судья
 - [arscontexta.md](arscontexta.md) — сосед по классу: персональная система знаний как плагин Claude Code, но про граф знаний, а не про поведение
 - [../plugins/!plugins.md](../plugins/!plugins.md) — формат плагинов, разрыв хуков в Cowork
+- [../plugins/codex-plugins.md](../plugins/codex-plugins.md) — плагины Codex: хуки плагина, доверие к ним и один пакет для Codex и Claude Code
 - [../skills/skill-activation.md](../skills/skill-activation.md) — почему доставка правил навыком ненадёжна без хука

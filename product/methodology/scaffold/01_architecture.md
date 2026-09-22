@@ -210,7 +210,7 @@ scaffold/
 - `speech-aliases.md` — словарь распознавания речи: варианты имён, ASR-ошибки, жаргон, сокращения и неоднозначные упоминания.
 - `glossary.md` — канонический словарь терминов: принятые названия сущностей, определения и маппинг разговорных или старых названий к канону.
 
-Список всех типовых файлов — [_templates/semantic-files/](../../plugin/skills/scaffold/template/_templates/semantic-files/). Формы, уникальные для одного типа узла (`00_ceo/01_profile.md`, `product/profile.md`, `01_company/operating-model.md`), сюда не входят — они описаны в [management-unit.md](management-unit.md).
+Список всех типовых файлов — [шаблоны semantic-files/](../../plugin/skills/space/scaffold/templates/semantic-files/). Формы, уникальные для одного типа узла (`00_ceo/01_profile.md`, `product/profile.md`, `01_company/operating-model.md`), сюда не входят — они описаны в [management-unit.md](management-unit.md).
 
 ### 🔹 Навигация и метаданные
 

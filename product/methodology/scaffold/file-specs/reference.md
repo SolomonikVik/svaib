@@ -13,7 +13,7 @@ status: draft
 
 Файлы, описывающие **устойчивое положение дел, а не работу**: профиль человека, паспорт сущности, описание бизнеса, устройство системы, конфигурация и статус поставки, словари. Отвечают на вопрос: **как устроено то, с чем мы работаем** **[стенд]**.
 
-Типовые смысловые файлы канона ([01_architecture:202](../01_architecture.md#L202), [_templates/semantic-files/](../../../plugin/skills/scaffold/template/_templates)):
+Типовые смысловые файлы канона ([01_architecture:202](../01_architecture.md#L202), [templates/semantic-files/](../../../plugin/skills/space/scaffold/templates/semantic-files/)):
 
 | Файл | Миссия |
 |---|---|

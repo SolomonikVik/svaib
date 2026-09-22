@@ -10,7 +10,7 @@ status: final
 
 Опорный документ metrics-вертикали: цель и границы, из чего она состоит у клиента, по каким принципам собрана. Единственный источник правды по устройству вертикали — линия данных, линия анализа, оркестратор, надёжность. Формат metrics-файлов вынесен в отдельный контракт — [`metrics-spec.md`](metrics-spec.md).
 
-**Связанные артефакты.** Скиллы — [`../../plugin/skills/metrics-analysis/`](../../plugin/skills/metrics-analysis/). Company metrics-aspect — [`../../plugin/skills/scaffold/template/01_company/03_metrics/`](../../plugin/skills/scaffold/template/01_company/03_metrics/).
+**Связанные артефакты.** Скиллы — [`../../plugin/skills/metrics-analysis/`](../../plugin/skills/metrics-analysis/). Company metrics-aspect — [`../../plugin/skills/space/scaffold/templates/root/01_company/03_metrics/`](../../plugin/skills/space/scaffold/templates/root/01_company/03_metrics/).
 
 ## 🔵 Архитектурные принципы
 

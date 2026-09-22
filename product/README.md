@@ -28,10 +28,11 @@ priority: high
 - [01_overview.md](01_overview.md) — что за продукт, для кого, принципы, границы, бизнес-модель
 - [01_alpha-dod.md](01_alpha-dod.md) — DoD альфы к 30.09: что считаем сделанным, что явно не входит, открытые вопросы
 - [skills-catalog.md](skills-catalog.md) — единый реестр управленческих скиллов по контурам: что получает руководитель, статус (в продукте · альфа · бэклог), ссылки на методологию и реализацию
+- [offerings-and-pricing/](offerings-and-pricing/README.md) — что продаёт svaib, что входит и не входит в продукт, стоимость
 - [architecture.md](architecture.md) — как продукт устроен внутри (слои, компоненты, связи)
 - [docs/README.md](docs/README.md) — документация продукта для клиента: как пользователь с ним работает (пара к методологии — «как устроено»); внутри — [docs/mcp-platform.md](docs/mcp-platform.md) (🚧 draft: что клиент получает через MCP)
 - [vision/README.md](vision/README.md) — карта целевого образа продукта, семи контуров, доказательной базы, исследований и target architecture
-- [05_decisions.md](05_decisions.md) — продуктовые решения (runtime, границы, путь skills)
+- [05_decisions.md](05_decisions.md) — журнал продуктовых решений: архитектура, поставка, границы, развитие
 - [glossary.md](glossary.md) — канонический словарь продукта: одно принятое имя и одно определение на понятие
 - [development-operating-model.md](development-operating-model.md) — как команда версионирует и ведёт разработку: релизы, оси, бэклог, актив, статусы файлов
 - CHANGELOG.md — заметные изменения продукта по версиям; верхняя секция уходит в релизный коммит
@@ -134,21 +135,20 @@ Vision меняется при уточнении целевого образа.
 | Найти скилл и проверить его результат и статус | [skills-catalog.md](skills-catalog.md) | Реестр управленческих скиллов по контурам, статусы и ссылки |
 | Понять что горит сейчас | [02_active.md](02_active.md) | Компактный список задач и целей релиза, ссылки на планы |
 | Зафиксировать/найти продуктовую идею с синка | [ideas.md](ideas.md) | Идеи, инсайты, открытые вопросы, принципы-кандидаты |
-| Узнать почему выбрано так | [05_decisions.md](05_decisions.md) | Runtime, границы, путь skills |
+| Узнать почему выбрано так | [05_decisions.md](05_decisions.md) | Архитектура, поставка, границы |
 | Свериться с названием понятия или ввести новый термин | [glossary.md](glossary.md) | Принятые продуктовые термины и правила пополнения |
 | Разобраться в сущностях | [methodology/ontology/](methodology/ontology/) | Файлы, связи, правила размещения |
 | Как агент работает с информацией | [methodology/memory/01_context_memory.md](methodology/memory/01_context_memory.md) | Протокол чтения, сбор контекста, хуки, детерминированность |
 | Понять как работать с X | [methodology/](methodology/) | Протоколы, decision frames, ритуалы |
 | Добавить/изменить сущность | [methodology/ontology/entities.md](methodology/ontology/entities.md) | Каталог атомарных сущностей |
-| Создать/улучшить шаблон | [plugin/skills/scaffold/template/](plugin/skills/scaffold/template/) | Готовый каркас + спецификации |
+| Создать/улучшить шаблон | [plugin/skills/space/scaffold/templates/root/](plugin/skills/space/scaffold/templates/root/) | Готовый каркас + спецификации |
 | Понять архитектуру scaffold | [methodology/scaffold/01_architecture.md](methodology/scaffold/01_architecture.md) | Требования, принципы, модель верхнего уровня |
 | Спроектировать структуру папок | [methodology/scaffold/02_folder-spec.md](methodology/scaffold/02_folder-spec.md) | Спецификация папок scaffold |
-| Развернуть scaffold для клиента | [plugin/skills/scaffold/template/](plugin/skills/scaffold/template/) | Канонический scaffold продукта |
+| Развернуть scaffold для клиента | [plugin/skills/space/scaffold/templates/root/](plugin/skills/space/scaffold/templates/root/) | Канонический scaffold продукта |
 | Спроектировать навык | [plugin/skills/](plugin/skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |
 | Контур «Цели и показатели»: методология метрик | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md`; внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
 | Работа со встречами | [methodology/rhythm/meeting-analysis/workflow.md](methodology/rhythm/meeting-analysis/workflow.md) | Пайплайн анализа транскриптов |
-| Онбординг клиента | [methodology/onboarding.md](methodology/onboarding.md) | Последовательность освоения |
 | Формат файлов | [methodology/scaffold/02_file-spec.md](methodology/scaffold/02_file-spec.md) | Действующий канон: YAML, шапка, секции, связи |
 
 ---
@@ -158,9 +158,3 @@ Vision меняется при уточнении целевого образа.
 **Соло / малый бизнес:** ядро продукта + управленческий контекст. Один человек, LLM помогает.
 
 **CEO с командой (до 100-200 чел):** та же структура, но для личного пространства CEO. Разница — в глубине наполнения, не в количестве файлов.
-
----
-
-## Модель поставки
-
-Данные у клиента (развёрнутый scaffold). Методология у нас (обновляемый plugin). Плагин не хранит данные — интеллектуальный слой поверх.

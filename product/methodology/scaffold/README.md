@@ -8,7 +8,7 @@ status: final
 
 # Scaffold methodology — source of truth слоя scaffold
 
-Канон слоя `scaffold`: архитектура клиентского каркаса, грамматика папок/файлов/README и миссии управленческих сущностей. Старт — [01_architecture.md](01_architecture.md), шаблоны — в [../../plugin/skills/scaffold/template/](../../plugin/skills/scaffold/template/).
+Канон слоя `scaffold`: архитектура клиентского каркаса, грамматика папок/файлов/README и миссии управленческих сущностей. Старт — [01_architecture.md](01_architecture.md), шаблоны — в [../../plugin/skills/space/scaffold/templates/root/](../../plugin/skills/space/scaffold/templates/root/).
 
 ## 🔵 Актуальная модель
 
@@ -50,7 +50,7 @@ Scaffold строится как **composable management architecture**.
 
 ## Связанные контексты
 
-- [../../plugin/skills/scaffold/template/](../../plugin/skills/scaffold/template/) — клиентский каркас scaffold v4.1, практическая реализация (не SOT методологии)
-- [../../plugin/skills/scaffold/](../../plugin/skills/scaffold/) — автоматизация развёртывания scaffold
+- [../../plugin/skills/space/scaffold/templates/root/](../../plugin/skills/space/scaffold/templates/root/) — клиентский каркас scaffold v4.1, практическая реализация (не SOT методологии)
+- [../../plugin/skills/space/scaffold/](../../plugin/skills/space/scaffold/) — автоматизация развёртывания scaffold
 - [../memory/01_context_memory.md](../memory/01_context_memory.md) — протокол навигации агента
 - [Клиентский scaffold-конфигуратор](https://svaib.com/tools/scaffold) — интерактивный инструмент сборки scaffold с клиентом на встрече (визуализирует модель unit/aspect/панель). Исходник — scaffold-configurator.html.

@@ -47,11 +47,11 @@ version: 2
 
 | Файл | Роль сейчас |
 |---|---|
-| [business-metrics.md](../../plugin/skills/scaffold/template/01_company/03_metrics/business-metrics.md) | Уникальный company-level шаблон базового файла метрик, собран по `metrics-spec.md` |
-| [domain-metrics.md](../../plugin/skills/scaffold/template/_templates/aspects/03_metrics/domain-metrics.md) | Шаблон функционального domain-файла метрик |
-| [README.md](../../plugin/skills/scaffold/template/_templates/aspects/03_metrics/README.md) | Карта metrics-aspect |
-| [source/README.md](../../plugin/skills/scaffold/template/_templates/aspects/03_metrics/source/README.md) | Краткий README папки источников клиента |
-| [extractors/README.md](../../plugin/skills/scaffold/template/_templates/aspects/03_metrics/extractors/README.md) | Краткий README папки per-client extractor'ов |
+| [business-metrics.md](../../plugin/skills/space/scaffold/templates/root/01_company/03_metrics/business-metrics.md) | Уникальный company-level шаблон базового файла метрик, собран по `metrics-spec.md` |
+| [domain-metrics.md](../../plugin/skills/space/scaffold/templates/aspects/03_metrics/domain-metrics.md) | Шаблон функционального domain-файла метрик |
+| [README.md](../../plugin/skills/space/scaffold/templates/aspects/03_metrics/README.md) | Карта metrics-aspect |
+| [source/README.md](../../plugin/skills/space/scaffold/templates/aspects/03_metrics/source/README.md) | Краткий README папки источников клиента |
+| [extractors/README.md](../../plugin/skills/space/scaffold/templates/aspects/03_metrics/extractors/README.md) | Краткий README папки per-client extractor'ов |
 
 ## Правило обновления карты
 
