@@ -210,5 +210,5 @@ status: final
 
 **Scaffold** — одна из проекций Svaib Management System в управленческое пространство клиента: в его архитектуре объекты управления и актуальные для них контуры получают своё место.
 
-Правила физической реализации описаны в [архитектуре scaffold](../scaffold/01_architecture.md).
+Правила физической реализации описаны в [архитектуре scaffold](../space/scaffold/01_architecture.md).
 [`operating-model.md`](../../plugin/skills/space/scaffold/templates/root/01_company/operating-model.md) связывает модель Svaib с системой управления конкретной компании: описывает, как в ней устроено управление, и указывает, где находится актуальная информация.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Карта пространства — генератор (поставка клиенту, трек space-map).
+"""Карта пространства — генератор (поставка клиенту).
 
 Собирает карту из дерева управленческого пространства: корень (юниты с миссиями и
 составом менеджмент-кита, файлы корня, покрытие), подкарта узла (файлы с миссиями,
@@ -14,9 +14,6 @@
   ./space_map.py --base <корень> --write-model          # переписать его в AGENTS.md
   ./space_map.py --base <корень> --cache-json           # кэш пользователя этой машины
 
-Оснастка замера (режимы --replace/--single/--focus-lazy/--k1..k3, запись копий
-снимка) живёт в репозитории svaib — dev/space-map/engine/tools/build_map.py — и
-импортирует этот файл: один источник генерации, в поставку едет только он.
 Python 3.9+, stdlib.
 """
 
@@ -62,7 +59,7 @@ Management kit объекта: `01_overview` (обзор) · `02_active` (тек
 Файл выбирай по полному пути и `title` (нет `title` — H1), не открывая. Кандидатов из поиска
 или из папки без подкарты сверяй одним поиском `^title:` по папке, затем читай выбранный.
 Создавая файл, давай ему путь и `title`, понятные без чтения.
-Форму нового файла или узла и требования к типу файла даёт скилл `scaffold`:
+Форму нового файла или узла и требования к типу файла даёт скилл `space-scaffold`:
 шаблоны и спецификации лежат у него, в пространстве их нет.
 Свежий датированный артефакт выбирай листингом папки, не по памяти.
 Отвечая про устройство, опирайся на состав management kit из списка («kit: …»),
@@ -74,11 +71,11 @@ Management kit объекта: `01_overview` (обзор) · `02_active` (тек
 пространстве нет»: прежде чем ответить, что чего-то не существует, проверь
 листингом. Если карта противоречит дереву — прав диск."""
 
-# R1 (12.09): строка, зовущая скаута пространства. Замеры показали, что субагент сам
+# Строка, зовущая скаута пространства. Замеры показали, что субагент сам
 # почти никогда не запускается (3 прогона из 36), а по прямой просьбе даёт лучшую верность
 # и вчетверо меньшее окно координатора; скаут с правилами карты (`agents/svaib-scout.md`)
-# читает вчетверо меньше типового. 17.09 (решение Эрика): строка включена по умолчанию и едет
-# клиентам со скаутом; своя серия замера не гонялась — в бэклоге трека. Выключить: `SVAIB_MAP_SCOUT=0`.
+# читает вчетверо меньше типового. Строка включена по умолчанию и едет
+# клиентам со скаутом. Выключить: `SVAIB_MAP_SCOUT=0`.
 SCOUT_BLOCK = """\
 **Поиск по пространству отдавай скауту.** Если ответа нет в карте и нужен обход файлов,
 не ищи сам широким обходом — передай поиск субагенту `svaib-scout`, он приезжает с плагином svaib.
@@ -87,26 +84,25 @@ SCOUT_BLOCK = """\
 Скаут не видит карту — назови ему известные адреса и границу поиска. Он возвращает выжимку
 с адресами и не расходует твой контекст; сам читай только то, что он назвал."""
 
-# 17.09 (решение Эрика): один текст для Claude и Codex — инструкция живёт в AGENTS.md,
-# CLAUDE.md импортирует её; прежний SCOUT_BLOCK_CODEX с брифом целиком снят.
+# Один текст для Claude и Codex — инструкция живёт в AGENTS.md,
+# CLAUDE.md импортирует её.
 
 
-# N3 (16.09, решение Эрика): роли выделяются правилом стабильной модели, без хуков
+# Роли выделяются правилом стабильной модели, без хуков
 # переключения; пометка роли — начало `description` «Роль svaib.», её видят модель и код.
-# 17.09: носитель роли — команда в Claude, скилл в Codex (решение продукта 14.09).
+# Носитель роли — скилл в обоих хостах.
 ROLES_BLOCK = """\
-**Роли партнёра.** По умолчанию работаешь как общий партнёр, без роли. Роль svaib оформлена
-командой (в Codex — скиллом), её описание начинается с «Роль svaib.»; остальные команды и
-скиллы — инструменты, не роли. Роль подключай сам, когда предмет разговора в её контуре; предмет сменился —
+**Роли партнёра.** По умолчанию работаешь как общий партнёр, без роли. Роль svaib — скилл,
+чьё описание начинается с «Роль svaib.»; остальные скиллы — инструменты, не роли, и доступны в любой роли и без роли. Роль подключай сам, когда предмет разговора в её контуре; предмет сменился —
 подключи нужную роль или вернись к общему партнёру. Каждое подключение и смену роли
 называй одной строкой, чтобы пользователь видел, в какой роли ты работаешь."""
 
-# Метка карты — правило доставки хуками (whoami, подкарта при входе); с 17.09 одна для Claude и Codex.
+# Метка карты — правило доставки хуками (whoami, подкарта при входе); одна для Claude и Codex.
 LABEL_BLOCK = """\
 **`map_profile` в контексте.** В контексте должна быть секция с `map_profile: …`. Кто пользователь — имя, профиль, зона — бери из неё. `map_profile` нет или он `general` — вызови `whoami` (MCP svaib), подкарта зоны придёт сама; `whoami` недоступен — пользователя не угадывай и имя не подставляй. Подкарта узла приходит сама при первом обращении к его файлам — чтением, поиском или командой; заходя в узел по вопросу о его устройстве или составе, сначала посмотри подкарту, потом читай файлы. Секции с `map_profile` нет вовсе — карта не пришла: ходи по `README.md` папок; требования владельца пространства — в `.svaib/rules.md`."""
 
 # Раздел стабильной модели — в AGENTS.md корня (канон scaffold: инструкция в AGENTS.md,
-# CLAUDE.md — импорт `@AGENTS.md`; решение Эрика 17.09 — один текст для обеих платформ)
+# CLAUDE.md — импорт `@AGENTS.md`; один текст для обеих платформ)
 ROOT_MODEL_TARGETS = (("AGENTS.md", "## Карта пространства"),)
 
 
@@ -151,12 +147,12 @@ def write_model(base: Path) -> list[str]:
 
 
 def scout_enabled() -> bool:
-    """Строка о скауте в карте: по умолчанию включена (17.09), `SVAIB_MAP_SCOUT=0` выключает."""
+    """Строка о скауте в карте: по умолчанию включена, `SVAIB_MAP_SCOUT=0` выключает."""
     return os.environ.get("SVAIB_MAP_SCOUT", "1") != "0"
 
 
-# N2: блок «подкарта по требованию» — в emit-режиме юнитовые CLAUDE.md не пишутся,
-# подкарту узла вне зоны агент получает вызовом генератора (шаг к модулю-навигатору)
+# Блок «подкарта по требованию» — в emit-режиме юнитовые CLAUDE.md не пишутся,
+# подкарту узла вне зоны агент получает вызовом генератора
 ON_DEMAND_BLOCK = """\
 **Подкарта узла вне зоны** (файлы с миссиями, подпапки, датированные группы) —
 по требованию: `python3 "{tool}" --base "{base}" --emit-node <узел>` (Bash, ~0.1 с,
@@ -166,7 +162,7 @@ ON_DEMAND_BLOCK = """\
 
 def coverage_line(base: Path, units, listed_files: int) -> str:
     """Счётчики покрытия для «Границ карты»: полна на уровне юнитов, неполна на
-    уровне файлов — и говорит, насколько (форма признака неполноты, 10.09)."""
+    уровне файлов — и говорит, насколько."""
     total = md_counts(base).get(base.resolve(), 0)
     return (f" Покрытие: management units {len(units)} — все верхнего уровня; файлов с адресом "
             f"в карте {listed_files} из {total} в дереве — карта полна по management units и "
@@ -231,7 +227,7 @@ _MD_COUNTS: dict = {}
 
 def md_counts(base: Path) -> dict:
     """Число .md в каждом каталоге дерева (рекурсивно), один os.walk на базу —
-    вместо rglob на каждый юнит и на всё дерево (ревью 10.09: Drive)."""
+    вместо rglob на каждый юнит и на всё дерево (Drive)."""
     base = base.resolve()
     if base in _MD_COUNTS:
         return _MD_COUNTS[base]
@@ -256,11 +252,19 @@ def subdirs(d: Path):
     )
 
 
-def dated_summary(files) -> str | None:
-    dated = sorted(f.name for f in files if DATED_RE.match(f.name))
+def dated_dirs(d: Path) -> list:
+    return [p for p in subdirs(d) if DATED_RE.match(p.name)]
+
+
+def dated_summary(files, dirs=()) -> str | None:
+    """Датированные файлы и папки — одной строкой: встреча с 4.2 — папка, а не файл."""
+    df = [f.name for f in files if DATED_RE.match(f.name)]
+    dd = [p.name for p in dirs if DATED_RE.match(p.name)]
+    dated = sorted(df + dd)
     if len(dated) < 3:
         return None
-    return f"{len(dated)} датированных файлов, {dated[0][:10]} … {dated[-1][:10]} — свежий выбирай листингом"
+    kind = "файлов и папок" if df and dd else ("папок" if dd else "файлов")
+    return f"{len(dated)} датированных {kind}, {dated[0][:10]} … {dated[-1][:10]} — свежий выбирай листингом"
 
 
 KIT_ELEMENTS = [
@@ -270,7 +274,7 @@ KIT_ELEMENTS = [
 ]
 
 
-NODE_MARKER_FILE = "README.md"        # узел = папка с README.md, не с 01_overview.md (уточнение Эрика 14.09; тот же предикат в хуке).
+NODE_MARKER_FILE = "README.md"        # узел = папка с README.md, не с 01_overview.md (тот же предикат в хуке).
                                        # Узел — любая управляемая папка со своей картой (канон scaffold); юнит —
                                        # узел с менеджмент-китом, полноценный объект управления (не путать: NODE_MARKER_FILE
                                        # задаёт границу узла, а не юнита).
@@ -300,13 +304,13 @@ def describe_dir_line(d: Path, base: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Маршруты чтения из README узла (эксперимент 11.09, решение Эрика). В подкарту идёт
+# Маршруты чтения из README узла. В подкарту идёт
 # только кастомная логика узла — то, что из дерева не выводится: цепочки из ≥2 целей,
 # цели вне узла, указатели на раздел файла, условия, «читать первым», внешние ссылки.
 # Строки уровня канона («Войти → 01_overview», «Что в работе → 02_active») и строки с
 # одной целью-файлом без оговорок отбрасываются — их несут стабильный блок и миссии
 # файлов в подкарте. Каждая цель проверяется по дереву: битые строки выбрасываются,
-# счётчик «проверены M из N» — признак честности. Прод-форма с 11.09 (решение Эрика):
+# счётчик «проверены M из N» — признак честности. По умолчанию
 # включено; SVAIB_MAP_ROUTES=0 выключает (стенд, откат). Маршруты README корня — с корневой картой.
 # ---------------------------------------------------------------------------
 
@@ -417,7 +421,7 @@ def node_map(node: Path, base: Path, deep: bool = False) -> str:
         lines.append(f"**{rel}/** — {mission}")
         lines.append("")
     files = md_files(node)
-    ds = dated_summary(files)
+    ds = dated_summary(files, dated_dirs(node))
     plain = [f for f in files if not (DATED_RE.match(f.name) and ds)
              and f.name not in ("CLAUDE.md", "AGENTS.md")]
     for f in plain[:15]:
@@ -429,14 +433,18 @@ def node_map(node: Path, base: Path, deep: bool = False) -> str:
         lines.append(f"- {ds}")
     # счётчики: если дерево базы уже обойдено (корневая карта) — берём его; иначе обходим
     # только узел (хук node-enter: отдельный процесс на каждый вход, полный обход svaib
-    # под нагрузкой стенда стоил 0,6–1,4 с на вызов — замер 10.09 вечер)
+    # под нагрузкой стенда стоил 0,6–1,4 с на вызов)
     counts = _MD_COUNTS.get(base.resolve()) or md_counts(node)
+    if (node / ".svaib").is_dir():                     # скрытая, но на неё ведут маршруты корня
+        lines.append("- `.svaib/` — служебное агента: правила владельца, находки, версия пространства")
     for sd in subdirs(node):
+        if ds and DATED_RE.match(sd.name):
+            continue                                   # датированная папка — в строке сводки выше
         sfiles = md_files(sd)
-        sds = dated_summary(sfiles)
+        sds = dated_summary(sfiles, dated_dirs(sd))
         m = mission_of_dir(sd)
         n = counts.get(sd.resolve(), 0)
-        # служебные — не узлы даже с README/китом, вход туда не даёт хук (NOT_NODES; ревью 14.09)
+        # служебные — не узлы даже с README/китом, вход туда не даёт хук (NOT_NODES)
         is_node = sd.name not in NODE_EXCLUDED and (sd / NODE_MARKER_FILE).is_file()
         kit = kit_of(sd) if is_node else None          # кит показываем только у узла со своей картой
         kit_part = f"unit, kit: {kit}; " if kit else ("узел; " if is_node else "")
@@ -445,7 +453,7 @@ def node_map(node: Path, base: Path, deep: bool = False) -> str:
         elif sd.name == "_inbox":
             lines.append(f"- `{sd.name}/` — входящее до разбора (файлов: {n})")
         elif sds:
-            tag = f" ({kit_part.rstrip('; ')})" if kit_part else ""   # пометка не терялась у датированных групп (ревью 14.09)
+            tag = f" ({kit_part.rstrip('; ')})" if kit_part else ""   # пометка не терялась у датированных групп
             lines.append(f"- `{sd.name}/` — {m or sd.name}: {sds}{tag}")
         else:
             lines.append(f"- `{sd.name}/` — {m or sd.name} ({kit_part}файлов: {n})")
@@ -537,7 +545,7 @@ def skills_registry(base: Path) -> str | None:
     """Реестр инструментов из .claude/skills/*/SKILL.md — выводится из дерева.
 
     Курация вариантов — тоже из дерева: если рядом с `X` лежит `X-beta`/`X-v2`,
-    головным считается `X`, вариант помечается (ловушка T7/S13)."""
+    головным считается `X`, вариант помечается."""
     items = {}
     for sk in sorted(base.glob(".claude/skills/*/SKILL.md")):
         head = "".join(read_head(sk, 30))
@@ -558,19 +566,19 @@ def skills_registry(base: Path) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# N2 · идентичность от платформы, кэш на машине (решение Эрика 10.09; ревью 10.09)
+# Идентичность от платформы, кэш на машине
 #
 # «Кто» приходит из MCP `whoami` (subject, tenant, profile_path, about). Ответ
 # ловит PostToolUse-хук и отдаёт сюда JSON целиком — без интерполяции в shell.
 # Генератор по profile_path читает профиль в пространстве, выводит юниты зоны
 # и пишет кэш в state-каталог машины — ВНЕ репозитория и Drive. Кэш ключуется
-# email аккаунта Claude + корнем пространства (ревью: один аккаунт, две базы),
+# email аккаунта Claude + корнем пространства (один аккаунт, две базы),
 # хранит tenant для сверки, живёт CACHE_TTL_HOURS. Без email кэша нет: каждая
 # сессия персонализируется заново через whoami (Cowork).
 # ---------------------------------------------------------------------------
 
 CACHE_TTL_HOURS = 24
-CACHE_VERSION = 2
+CACHE_VERSION = 3   # 3 — запись несёт `onboarding` из whoami; старая версия не читается, агент зовёт whoami заново
 
 
 def state_dir() -> Path:
@@ -624,13 +632,15 @@ def read_cache(email: str, base: Path) -> dict | None:
         return None
     d["fresh"] = datetime.timedelta(0) <= age < datetime.timedelta(hours=CACHE_TTL_HOURS)
     d["units"] = [u for u in d["units"] if isinstance(u, str)]
-    d["name"] = clean_name(d.get("name"))   # запись до 17.09 имени не несёт — пусто, не отказ
+    d["name"] = clean_name(d.get("name"))   # старая запись имени не несёт — пусто, не отказ
     d["preferences"] = clean_block(d.get("preferences"), PREFERENCES_LIMIT)
+    d["onboarding"] = d["onboarding"] if isinstance(d.get("onboarding"), dict) else None
     return d
 
 
 def write_cache(email: str, base: Path, rec: dict) -> Path | None:
-    """0600, атомарно (tmp + replace); без email — не пишется."""
+    """0600, атомарно (tmp + replace); без email — не пишется. `ts` записи сохраняется, если
+    есть: срок кэша отсчитывается от `whoami`, а не от поправки."""
     p = cache_path(email, base)
     if p is None:
         return None
@@ -639,8 +649,8 @@ def write_cache(email: str, base: Path, rec: dict) -> Path | None:
         os.chmod(p.parent, 0o700)
     except OSError:
         pass
-    rec = dict(rec, v=CACHE_VERSION, email=email, base=str(base.resolve()),
-               ts=_now().isoformat(timespec="seconds"))
+    rec = dict(rec, v=CACHE_VERSION, email=email, base=str(base.resolve()))
+    rec.setdefault("ts", _now().isoformat(timespec="seconds"))
     fd, tmp = tempfile.mkstemp(prefix=p.name + ".", suffix=".tmp", dir=str(p.parent))   # свой tmp на процесс
     os.fchmod(fd, 0o600)
     with os.fdopen(fd, "w", encoding="utf-8") as f:
@@ -685,7 +695,7 @@ def units_in_text(text: str, units_all: list[str]) -> list[str]:
 def profile_units(base: Path, profile_path: str, units_all: list[str]) -> list[str]:
     """Юниты зоны из профиля: frontmatter `units:` (канон) → имена юнитов в тексте
     секции «Роль/зона» (или первой секции — профиль не по канону). Проза наружу
-    не возвращается: в контекст едут только юниты (ревью 10.09)."""
+    не возвращается: в контекст едут только юниты."""
     if not profile_path:
         return []
     p = (base / profile_path).resolve()
@@ -722,7 +732,7 @@ def who_line(subject: str, name: str) -> str:
 
 
 def keyboard_line(name: str) -> str:
-    """17.09, обратная связь живого прогона: метки профиля агенту мало — он шёл за именем по
+    """Метки профиля агенту мало — он идёт за именем по
     умолчанию из корневых файлов. Прямая инструкция, кто за клавиатурой и как обращаться."""
     if not name:
         return ""
@@ -746,7 +756,7 @@ def clean_block(value, limit: int) -> str:
 
 
 def preferences_line(prefs: str) -> str:
-    """17.09 (решение Эрика): как работать с человеком — поле `preferences` в MCP (задача трека MCP).
+    """Как работать с человеком — поле `preferences` в MCP.
     Там только отличия от умолчаний; поля нет или пусто — строки нет, действует канон."""
     if not prefs:
         return ""
@@ -755,7 +765,7 @@ def preferences_line(prefs: str) -> str:
 
 
 def space_rules(base: Path) -> str:
-    """17.09 (решение Эрика): правила работы агента в этом пространстве — `.svaib/rules.md`,
+    """Правила работы агента в этом пространстве — `.svaib/rules.md`,
     пишет владелец. Подаются после карты; файла нет — раздела нет. Заголовки файла снимаются."""
     fp = base / RULES_FILE
     try:   # битая кодировка или нечитаемый файл — раздела нет, карта не должна пропасть из-за него
@@ -773,21 +783,31 @@ def space_rules(base: Path) -> str:
             "«Что дополняет эту инструкцию».\n\n" + body)
 
 
-def parse_whoami(raw) -> dict:
-    """Ответ whoami как его отдаёт PostToolUse (строка JSON) или объект."""
-    data = raw
-    if isinstance(data, str):
-        data = json.loads(data)
+def tool_payload(raw):
+    """Ответ MCP-ручки, как его отдаёт PostToolUse: строка JSON, content-блоки или объект
+    результата (`structuredContent` старше `content`). `structuredContent` берётся и у отказа:
+    `onboarding-conflict` несёт в нём текущий объект. Отказ без него (`isError`) — None."""
+    data = json.loads(raw) if isinstance(raw, str) else raw
+    if isinstance(data, dict) and "structuredContent" in data:
+        return data["structuredContent"]
+    if isinstance(data, dict) and data.get("isError"):
+        return None
+    if isinstance(data, dict) and isinstance(data.get("content"), list):
+        data = data["content"]
     if isinstance(data, list):  # content-блоки MCP
         for block in data:
             if isinstance(block, dict) and block.get("type") == "text":
                 try:
-                    data = json.loads(block["text"])
-                    break
-                except (ValueError, KeyError):
+                    return json.loads(block["text"])
+                except (ValueError, KeyError, TypeError):
                     continue
-    if isinstance(data, dict) and "structuredContent" in data:
-        data = data["structuredContent"]
+        return None
+    return data
+
+
+def parse_whoami(raw) -> dict:
+    """Ответ whoami как его отдаёт PostToolUse (строка JSON) или объект."""
+    data = tool_payload(raw)
     if not isinstance(data, dict) or not data.get("subject_id"):
         raise ValueError("в ответе whoami нет subject_id")
     ws = data.get("workspace") or {}
@@ -795,7 +815,130 @@ def parse_whoami(raw) -> dict:
             "preferences": clean_block(data.get("preferences"), PREFERENCES_LIMIT),
             "tenant": str(data.get("tenant_id") or ""),
             "role": str(data.get("role") or ""), "about": str(data.get("about") or ""),
-            "profile_path": str(ws.get("profile_path") or "")}
+            "profile_path": str(ws.get("profile_path") or ""),
+            "onboarding": data["onboarding"] if isinstance(data.get("onboarding"), dict) else None}
+
+
+def apply_update_me(base: Path, raw) -> bool:
+    """После `update_me`: пришедшие в ответе `onboarding` и `preferences` — в кэш этой машины
+    (пустые `preferences` очищают), срок кэша не продлевается. Отказ `onboarding-conflict` несёт
+    текущий `onboarding` — пишется только он. Ни одного из полей или нет кэша — ничего."""
+    try:
+        data = tool_payload(raw)
+    except ValueError:
+        return False
+    if not isinstance(data, dict):
+        return False
+    fields = {}
+    if isinstance(data.get("onboarding"), dict):
+        fields["onboarding"] = data["onboarding"]
+    if "preferences" in data and (data["preferences"] is None or isinstance(data["preferences"], str)):
+        fields["preferences"] = clean_block(data["preferences"] or "", PREFERENCES_LIMIT)
+    email = account_email()
+    rec = read_cache(email, base) if fields else None
+    if not rec:
+        return False
+    rec.pop("fresh", None)
+    return write_cache(email, base, dict(rec, **fields)) is not None
+
+
+# ---------------------------------------------------------------------------
+# Онбординг пользователя под строкой «За клавиатурой»: «два и два» — два последних
+# пройденных и два следующих этапа. План = каталог этапов плагина × личное человека ×
+# отметки (dev/it-onboarding/_plan.md, «Архитектура статусов»); тот же расчёт ведёт скилл
+# `space-onboarding`. Каталог — производный от таблиц методологии, его кладёт сборка рядом со
+# скиллом (как спецификации `space-scaffold` для inject_file_spec.py); без поставки блока нет.
+# ---------------------------------------------------------------------------
+
+STAGES_PATH = (Path(os.path.abspath(__file__)).parent.parent / "skills" / "space-onboarding" / "references"
+               / "stages.json")
+STATE_NOTES = {"waiting": "жду", "deferred": "отложен", "unverified": "не удалось проверить"}
+
+
+def load_stages() -> list | None:
+    try:
+        d = json.loads(STAGES_PATH.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    return d.get("stages") if isinstance(d, dict) and isinstance(d.get("stages"), list) else None
+
+
+def onboarding_near(stages: list, ob: dict, role: str) -> tuple[list, list]:
+    """«Два и два»: ([(этап, id зачёта)] — два последних пройденных по `at`, [этап] — два следующих).
+    Применим: `track=user`, `active`, `audiences` пуст или содержит `audience`, этап базовый или
+    выбран в `tools`. Пройден: `done` на своём id, а без своей отметки — на предшественнике из
+    `replaces` (зачёт — по самому позднему). Следующие — по `order` из применимых непройденных, не `skip`, с пройденными `requires`.
+    Незнакомые id отметок не участвуют."""
+    marks = ob.get("marks") if isinstance(ob.get("marks"), dict) else {}
+    tools = ob.get("tools") if isinstance(ob.get("tools"), list) else []
+    audience = ob.get("audience") if isinstance(ob.get("audience"), str) and ob.get("audience") \
+        else ("ceo" if role == "owner" else "employee")
+    catalog = {s["id"]: s for s in stages if isinstance(s, dict) and isinstance(s.get("id"), str)}
+
+    def done_by(sid: str):
+        own = marks.get(sid)
+        if isinstance(own, dict):            # явная отметка важнее наследования
+            return (own, sid) if own.get("state") == "done" else None
+        best = None                          # из пройденных предшественников — самый поздний по `at`
+        for r in (catalog.get(sid) or {}).get("replaces") or []:
+            m = marks.get(r)
+            if isinstance(m, dict) and m.get("state") == "done" \
+                    and (best is None or str(m.get("at") or "") > str(best[0].get("at") or "")):
+                best = (m, r)
+        return best
+
+    def applicable(s: dict) -> bool:
+        aud = s.get("audiences") or []
+        return (s.get("track") == "user" and s.get("active") is True and (not aud or audience in aud)
+                and (s.get("kind") == "base" or s["id"] in tools))
+
+    mine = sorted((s for s in catalog.values() if applicable(s)),
+                  key=lambda s: s["order"] if isinstance(s.get("order"), int) else 10 ** 9)
+    done, nxt = [], []
+    for s in mine:
+        hit = done_by(s["id"])
+        if hit:
+            done.append((str(hit[0].get("at") or ""), s, hit[1]))
+        elif not (isinstance(marks.get(s["id"]), dict) and marks[s["id"]].get("state") == "skip") \
+                and all(done_by(r) for r in s.get("requires") or []):
+            nxt.append(s)
+    done.sort(key=lambda d: d[0])
+    return [(s, src) for _, s, src in done[-2:]], nxt[:2]
+
+
+def onboarding_block(rec: dict) -> str:
+    """Блок онбординга под строкой «За клавиатурой». Нет `onboarding` в кэше, каталога или этапов
+    к показу, любой сбой — пусто: карта приходит и без блока."""
+    try:
+        ob = rec.get("onboarding")
+        stages = load_stages() if isinstance(ob, dict) else None
+        if not stages:
+            return ""
+        done, nxt = onboarding_near(stages, ob, rec.get("role", ""))
+        if not done and not nxt:
+            return ""
+        marks = ob.get("marks") if isinstance(ob.get("marks"), dict) else {}
+
+        def title(s: dict) -> str:
+            return f"«{clean_name(s.get('title')) or s['id']}»"
+
+        def todo(s: dict) -> str:
+            m = marks.get(s["id"]) if isinstance(marks.get(s["id"]), dict) else {}
+            note = STATE_NOTES.get(m.get("state"), "")
+            if note and m.get("state") == "waiting" and clean_name(m.get("actor")):
+                note += ": " + clean_name(m.get("actor"))
+            return title(s) + (f" ({note})" if note else "")
+
+        lines = ["\n\n**Онбординг пользователя:**"]
+        if done:
+            lines.append("- пройдено: " + ", ".join(
+                title(s) + (f" (зачтён по `{src}`)" if src != s["id"] else "") for s, src in done))
+        if nxt:
+            lines.append("- дальше: " + "; ".join(todo(s) for s in nxt))
+        lines.append("- весь путь — скилл `space-onboarding`")
+        return "\n".join(lines)
+    except Exception:  # noqa: BLE001 — блок онбординга не имеет права уронить карту
+        return ""
 
 
 def personalize(base: Path, who: dict, units_override: list[str] | None = None) -> tuple[str, dict]:
@@ -814,14 +957,15 @@ def personalize(base: Path, who: dict, units_override: list[str] | None = None) 
     units = [u for u in units if u in units_all]
     rec = {"subject": who["subject"], "name": who.get("name", ""), "preferences": who.get("preferences", ""),
            "tenant": who.get("tenant", ""), "role": who.get("role", ""),
-           "profile_path": who.get("profile_path", ""), "units": units}
+           "profile_path": who.get("profile_path", ""), "units": units, "onboarding": who.get("onboarding")}
     email = account_email()
     cp = write_cache(email, base, rec)
     remembered = (f"запомнен на этой машине на {CACHE_TTL_HOURS} ч" if cp
                   else "аккаунт Claude на машине не определён — кэша нет, в следующей сессии снова `whoami`")
     lines = [f"{who_line(who['subject'], who.get('name', ''))}, профиль "
              f"`{who.get('profile_path') or '—'}` — персональная подкарта зоны; {remembered}."
-             f"{keyboard_line(who.get('name', ''))}{preferences_line(who.get('preferences', ''))}"]
+             f"{keyboard_line(who.get('name', ''))}{onboarding_block(rec)}"
+             f"{preferences_line(who.get('preferences', ''))}"]
     if units:
         lines.append(f"\n**Management units зоны** ({source}): " + " · ".join(f"`{u}/`" for u in units))
         for u in units:
@@ -836,7 +980,7 @@ def personalize(base: Path, who: dict, units_override: list[str] | None = None) 
 
 def emit_text(base: Path, focus: list[str] | None = None, no_model: bool = False,
               no_skills: bool = False) -> str:
-    """N2: карта как текст, репозиторий не трогается. Корень (+ подкарты зоны) (+ реестр
+    """Карта как текст, репозиторий не трогается. Корень (+ подкарты зоны) (+ реестр
     скиллов). Рецепт «подкарта по требованию» — только вместе со стабильным блоком:
     при --no-model он уже в корневом AGENTS.md."""
     base = base.resolve()
@@ -850,7 +994,7 @@ def emit_text(base: Path, focus: list[str] | None = None, no_model: bool = False
     listed = len(root_named) + sum(count_addresses(z) for z in zone_maps)
     parts = [root_map(base, date, coverage=coverage_line(base, units, listed), emit=True,
                       model=not no_model)]
-    if routes_enabled():   # README корня — вместе с корневой картой (решение Эрика 11.09)
+    if routes_enabled():   # README корня — вместе с корневой картой
         rr = node_routes(base, base)
         if rr:
             parts.append(rr.replace("**Маршруты узла** (из README", "**Маршруты пространства** (из README корня", 1))
@@ -858,7 +1002,7 @@ def emit_text(base: Path, focus: list[str] | None = None, no_model: bool = False
         tool = Path(__file__).resolve()
         tool_s = tool.relative_to(base).as_posix() if base in tool.parents else tool.as_posix()
         parts.append(ON_DEMAND_BLOCK.format(tool=tool_s, base=base.as_posix()))
-        if scout_enabled():   # тот же флаг, что у --print-model — единый источник (ревью 14.09)
+        if scout_enabled():   # тот же флаг, что у --print-model — единый источник
             parts.append(SCOUT_BLOCK)
         parts.append(ROLES_BLOCK)
     if zone_maps:
@@ -889,10 +1033,10 @@ def emit_node_text(base: Path, node: str) -> str:
 def add_prod_args(ap: argparse.ArgumentParser) -> None:
     ap.add_argument("--base", required=True)
     ap.add_argument("--emit", action="store_true",
-                    help="N2/прод: напечатать карту в stdout — корень (+ подкарты --focus, реестр "
+                    help="напечатать карту в stdout — корень (+ подкарты --focus, реестр "
                          "скиллов); в файлы ничего не пишется, --out не нужен")
     ap.add_argument("--emit-node", default="",
-                    help="N2/прод: напечатать подкарту одного узла (путь от корня) и выйти")
+                    help="напечатать подкарту одного узла (путь от корня) и выйти")
     ap.add_argument("--no-skills", action="store_true",
                     help="--emit без реестра скиллов (Claude Code и так показывает скиллы в "
                          "системном промпте; для Codex/Cursor реестр оставлять)")
@@ -906,7 +1050,7 @@ def add_prod_args(ap: argparse.ArgumentParser) -> None:
     ap.add_argument("--write-model", action="store_true",
                     help="переписать раздел стабильной модели в AGENTS.md корня --base")
     ap.add_argument("--personalize", action="store_true",
-                    help="N2: после whoami — подкарты зоны по профилю + кэш пользователя на машине")
+                    help="после whoami — подкарты зоны по профилю + кэш пользователя на машине")
     ap.add_argument("--whoami-file", default="",
                     help="--personalize: файл с ответом whoami (JSON); `-` — stdin. Не через shell-аргументы")
     ap.add_argument("--subject", default="", help="--personalize без файла: subject_id из whoami")
@@ -918,13 +1062,13 @@ def run_prod(args) -> bool:
     """Выполнить прод-режим, если он запрошен. True — обработано."""
     src = Path(args.base).expanduser()
     focus = [f.strip().rstrip("/") for f in getattr(args, "focus", "").split(",") if f.strip()]
-    # --- прод-режимы (N2): ничего не пишут в пространство ---
+    # --- прод-режимы: ничего не пишут в пространство ---
     try:
         if args.cache_json:
             print(json.dumps(read_cache(account_email(), src) or {}, ensure_ascii=False))
             return True
         if args.print_model:
-            # Без HTML-комментария-маркера (снят 14.09, решение Эрика): наличие блока в CLAUDE.md/AGENTS.md
+            # Без HTML-комментария-маркера: наличие блока в CLAUDE.md/AGENTS.md
             # хук узнаёт по заголовку раздела — «## Карта пространства» / «## Space Map» — а не по метке в тексте.
             print(model_text())
             return True

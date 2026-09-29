@@ -19,6 +19,7 @@ publish: false
 
 - [../tools/team-content-platforms.md](../tools/team-content-platforms.md) — как это реализовано у конкретных платформ (M365, Workspace, Box, Notion, Nextcloud, Rovo, Glean)
 - [../agents/agent-authorization.md](../agents/agent-authorization.md) — агент как отдельный субъект прав, authorization plane
+- [../tools/company-brain.md](../tools/company-brain.md) — открытая реализация графа прав памяти: пишется в самую узкую комнату, читается тем шире, чем приватнее место вопроса; ключ хранилища обходит граф
 - [rag.md](rag.md) — сам механизм retrieval, гибридный поиск, agentic RAG
 - [search-mechanics.md](search-mechanics.md) — как ищут файлы конкретные инструменты (Claude Code, Cursor, Projects)
 

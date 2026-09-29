@@ -13,6 +13,7 @@
 - [subagents.md](subagents.md) — Субагенты и мульти-агентные архитектуры
 - [feedback-loop-evolution.md](feedback-loop-evolution.md) — Closed Feedback Loop: автономная эволюция агентов
 - [sgr.md](sgr.md) — Schema-Guided Reasoning: паттерны структурирования рассуждений (Cascade, Routing, Cycle)
+- [system-one-models.md](system-one-models.md) — типизированные решающие модели (Jev, TypeSafe): state + вопросы → выбор с вероятностями вместо текста; примитивы, калибровка, где работает и где нет, деградация на неанглийских языках
 
 ## Связи
 

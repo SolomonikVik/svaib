@@ -19,7 +19,8 @@
 - [ai-system-files.md](ai-system-files.md) — AI System Files: карта конфигурационных файлов для AI-ассистентов (CLAUDE.md, AGENTS.md, soul.md), стандартизация AAIF, best practices, архитектура памяти через файлы
 - [icm.md](icm.md) — ICM (Van Clief, 2026): оркестрация агентов через файловую структуру, 5 слоёв контекста, stage contracts, reference vs working
 - [llm-wiki.md](llm-wiki.md) — LLM Wiki (Karpathy): паттерн персональной вики, поддерживаемой LLM — Ingest/Query/Lint, комьюнити-реализации
-- [rag.md](rag.md) — RAG: подходы (гибридный поиск, agentic, GraphRAG), реализации (QMD, MemPalace), бенчмарки, связь с архитектурой SVAIB
+- [rag.md](rag.md) — RAG: выбор архитектуры (длинный контекст / пайплайн / агентный поиск), сдвиг 2026 к агентному поиску, Agentic RAG и GraphRAG, реализации (QMD, MemPalace), бенчмарки
+- [retrieval-stack.md](retrieval-stack.md) — инженерия retrieval: чанкинг по смысловым границам (заголовки vs длина), semantic entanglement многотемных чанков, эмбеддинги и квантизация, векторные базы, метаданные и стратегии фильтрации, реранкинг
 - [lightrag.md](lightrag.md) — LightRAG: облегчённый GraphRAG через LLM-экстракцию сущностей — как работает, найденные дефекты и фиксы, реальная экономика (эмпирика svaib)
 - [claude_integrations_gdrive.md](claude_integrations_gdrive.md) — Google Drive + Claude Projects + Cowork: матрица совместимости форматов, зазоры чтения/записи, варианты мостов, целевая архитектура для клиента
 
@@ -28,10 +29,11 @@
 
 - [skill-graphs/](skill-graphs/) — Skill Graphs (arscontexta): навигация агента по знаниям, progressive disclosure, wikilinks, архитектура контекста. **Вложенная под-папка — крупный блок (7 файлов, свой README)**
 
-**Как файлы связаны:** agent-memory.md — входная карта; остальные по памяти — углубления (temporal-graphs → Graphiti, практика в temporal-graphs-doronin). context-graphs.md решает свой открытый вопрос темпоральности через temporal-graphs. markdown-for-llm.md (КАК писать) и search-mechanics.md (КАК находят) — пара.
+**Как файлы связаны:** rag.md (ЧТО выбрать) и retrieval-stack.md (КАК собрать) — пара; измерение результата — [../evals/retrieval-evaluation.md](../evals/retrieval-evaluation.md). agent-memory.md — входная карта; остальные по памяти — углубления (temporal-graphs → Graphiti, практика в temporal-graphs-doronin). context-graphs.md решает свой открытый вопрос темпоральности через temporal-graphs. markdown-for-llm.md (КАК писать) и search-mechanics.md (КАК находят) — пара.
 
 ## Связи
 
 - [../prompting/](../prompting/) — как спросить (prompting) vs какую информацию дать (context)
 - [../metrics/](../metrics/) — частный случай: как числа доходят до LLM
 - [../agents/](../agents/) — память и контекст для агентных систем
+- [../evals/](../evals/) — как измерять качество retrieval и судей релевантности

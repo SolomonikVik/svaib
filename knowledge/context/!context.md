@@ -2,9 +2,9 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-08-03
-review_by: 2026-11-03
-tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, graphrag, lightrag, metrics, claude-5]
+updated: 2026-09-22
+review_by: 2026-12-22
+tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, agentic-search, graphrag, lightrag, chunking, metadata, metrics, claude-5]
 publish: false
 ---
 
@@ -29,7 +29,9 @@ publish: false
 Память агента можно организовать по-разному. Пять основных архитектур хранения: Knowledge Graph (явные связи между сущностями), Hierarchical (слои от деталей к обобщениям), Temporal Graph (факты с временными метками), Hypergraph (связи на 3+ узлов — групповые взаимодействия), Hybrid (комбинация). Жизненный цикл: extraction → storage → retrieval → evolution. Подробная карта архитектур, стратегий поиска, эволюции памяти и бенчмарков → [agent-memory.md](agent-memory.md).
 
 ### RAG (Retrieval-Augmented Generation)
-Паттерн подачи AI релевантной информации из внешнего хранилища: чанкинг → эмбеддинги → vector store → retrieval → LLM. Стандартный RAG (один вектор) устарел — работающий пайплайн 2026: гибридный поиск (BM25 + vector + RRF fusion + cross-encoder reranker). Три направления эволюции: Agentic RAG (агент решает что искать), GraphRAG (поиск по графу связей), подход Karpathy (wiki-статьи вместо чанков). Для SVAIB: RAG = реализация неструктурированного поиска в контекстной архитектуре. Подробная карта подходов, реализаций (QMD, MemPalace, GraphRAG), бенчмарков → [rag.md](rag.md). Первое собственное эмпирическое исследование конкретной реализации GraphRAG (LightRAG) — реальная экономика (деньги дёшево, время — узкое место: LLM-экстракция на каждый чанк, не векторные эмбеддинги), найденные дефекты (RU/EN дублирование сущностей, дедупликация по голому имени файла без учёта пути — критично для scaffold-корпусов с повторяющимися именами) → [lightrag.md](lightrag.md).
+Паттерн подачи AI релевантной информации из внешнего хранилища: чанкинг → эмбеддинги → vector store → retrieval → LLM. Главный сдвиг 2026 года — не «RAG против длинного контекста», а смена того, кто решает искать: агентные системы (Claude Code, Cursor, Windsurf, Amp) отказались от предварительного векторного индекса и отдают retrieval набором инструментов, а корпоративная сторона называет тот же переход context architecture. Предварительный индекс остаётся нужен там, где корпус недоступен агенту напрямую, где критична латентность и где права обязаны применяться фильтром до поиска. Внутри пайплайна отраслевой минимум прежний: гибридный поиск (BM25 + вектор + RRF + реранкер). Три направления эволюции: Agentic RAG (агент решает что искать), GraphRAG (поиск по графу связей), подход Karpathy (wiki-статьи вместо чанков). Для SVAIB: наш паттерн — Agentic RAG поверх файлов, и сдвиг года подтверждает выбор. Выбор архитектуры, реализации (QMD, MemPalace, GraphRAG) и бенчмарки → [rag.md](rag.md).
+
+**Инженерия стека.** Качество retrieval определяется препроцессингом, а не поиском: дефект чанкинга ниже по потоку не чинится. Центральная развилка — размечен текст или нет. У markdown с заголовками границы тем уже проведены автором: чанк = раздел, перекрытие не нужно и вредно (втягивает соседнюю тему в вектор), заголовочный путь в теле чанка заменяет contextual retrieval. Нарезка по длине (400–512 токенов) — способ восстановить границы там, где их нет: транскрипт, скан, поток. У многотемного чанка появилось имя и метрика — semantic entanglement и Entanglement Index: вектор усредняет темы, и Top-K точность падает втрое против нарезки по смыслу. Матрёшка и квантизация сделали размерность и стоимость хранения настраиваемыми; отдельная векторная база до ~10M векторов не окупается против pgvector. Метаданные собираются при ingest (из фронтматтера и структуры — даром), фильтруются четырьмя стратегиями, права — всегда жёстким prefilter. LLM-судья может стоять и реранкером, но это не бесплатный апгрейд: цена на три порядка выше специализированного реранкера, на выходе перестановка без калиброванных баллов, position bias не лечится настройкой. Выгоднее дистиллировать судью в cross-encoder офлайн. Подробно → [retrieval-stack.md](retrieval-stack.md); измерение качества → [../evals/retrieval-evaluation.md](../evals/retrieval-evaluation.md).
 
 ### Метрики и числа — отдельный класс контекста
 
@@ -110,6 +112,7 @@ ICM (Van Clief, McDermott, 2026) — методология, где файлов
 - [context-graphs.md](context-graphs.md) — Context Graphs: decision traces, траектории агентов (Foundation Capital)
 - [../tools/openclaw.md](../tools/openclaw.md) — пример архитектуры с Memory-компонентом (слабая темпоральность)
 - [markdown-for-llm.md](markdown-for-llm.md) — анатомия Markdown-файла для человека + LLM + RAG (YAML, структура, чанкинг, связи)
+- [retrieval-stack.md](retrieval-stack.md) — инженерный слой RAG: чанкинг, эмбеддинги, векторные базы, метаданные, реранкинг
 - [search-mechanics.md](search-mechanics.md) — как Claude Code, Cursor, Claude Projects и ChatGPT ищут файлы (механики поиска, уровни доступа)
 - [ai-system-files.md](ai-system-files.md) — карта конфигурационных файлов для AI-ассистентов: 13 инструментов, AGENTS.md стандарт, паттерн персоны, best practices
 - [skill-graphs/skill-graphs.md](skill-graphs/skill-graphs.md) — Skill Graphs: навигация по знаниям, progressive disclosure, wikilinks (arscontexta)

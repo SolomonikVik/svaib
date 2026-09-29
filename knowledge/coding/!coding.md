@@ -2,9 +2,9 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: processed
 added: 2026-01-30
-updated: 2026-09-17
+updated: 2026-09-24
 review_by: 2026-10-21
-tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code, workflows, claude-5, openspec]
+tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code, workflows, claude-5, openspec, third-party-models, llm-gateway]
 publish: false
 ---
 
@@ -27,6 +27,8 @@ publish: false
 | **GitHub Copilot** | Extension | Нет | Самый массовый, интеграция в VS Code/JetBrains |
 
 Рынок AI-кодинг инструментов меняется быстро — данные актуальны на февраль 2026.
+
+**Модель под харнессом заменяема, протокол — нет.** Claude Code и Codex принимают модель из любого эндпоинта, но каждый говорит на своём протоколе: Claude Code — Anthropic Messages, Codex — только OpenAI Responses API. Чужая модель подключается через шлюз-переводчик (LiteLLM, OpenRouter, claude-code-router): у Codex это штатный `model_providers`, у Claude Code — путь сообщества, который Anthropic не поддерживает. Agent SDK и Codex SDK запускают бинарь своего CLI и наследуют те же ограничения. На практике серверные инструменты вендора и тонкие механики харнесса (подсказки хуков, подсчёт цены) с чужой моделью ломаются молча. Детали и опыт svaib: [third-party-models.md](third-party-models.md).
 
 ## Два уровня AI-кодинга
 

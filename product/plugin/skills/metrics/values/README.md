@@ -1,0 +1,26 @@
+---
+title: "metrics-values — скилл живых значений метрик"
+scope: product_core
+type: index
+---
+
+# metrics-values
+
+Клиентский скилл: приносит значения метрик из книг руководителя и считает производные. Инструкция — [SKILL.md](SKILL.md).
+
+## Состав поставки
+
+| Файл | Что делает |
+|---|---|
+| [SKILL.md](SKILL.md) | как агент разбирает запрос, читает описания метрик, добывает книгу и отвечает |
+| [scripts/read_metrics.py](scripts/read_metrics.py) | чтение значений из книги по карте адресов: строка по меткам, ось периодов, единицы, пометки о расхождениях |
+| [scripts/calculator.py](scripts/calculator.py) | производные: выполнение плана, отклонение, изменение к прошлому периоду, рост к прошлому году |
+| [scripts/snapshot.py](scripts/snapshot.py) | кэш снимка книги вне базы клиента, свежесть по дате изменения файла |
+| [business-metrics-intake.md](business-metrics-intake.md) | промпт-помощник заполнения описаний метрик с руководителем |
+| [tests/](tests/) | разбор шапки периодов `read_metrics.py`: `python3 -m unittest discover -s tests` из папки скилла |
+
+## Чего здесь нет
+
+Наследство серверного контура повесток (раннер `run_vertical.py`, extractor, verifier, catalog, схемы контракта, помощник онбординга источника) живёт в инженерном треке — dev/skills/aspect-metrics/values/l1/runtime/. Контур снят 26.08, к клиенту этот код не едет; он остаётся справочником решений и покрыт 173 тестами контракта.
+
+Методология вертикали и канон — [product/methodology/aspect-metrics/](../../../../methodology/aspect-metrics/README.md). Дефект-лист семантики, операционный пайплайн и коннектор Google Sheets — в треке.

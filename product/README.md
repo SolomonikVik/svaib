@@ -142,14 +142,15 @@ Vision меняется при уточнении целевого образа.
 | Понять как работать с X | [methodology/](methodology/) | Протоколы, decision frames, ритуалы |
 | Добавить/изменить сущность | [methodology/ontology/entities.md](methodology/ontology/entities.md) | Каталог атомарных сущностей |
 | Создать/улучшить шаблон | [plugin/skills/space/scaffold/templates/root/](plugin/skills/space/scaffold/templates/root/) | Готовый каркас + спецификации |
-| Понять архитектуру scaffold | [methodology/scaffold/01_architecture.md](methodology/scaffold/01_architecture.md) | Требования, принципы, модель верхнего уровня |
-| Спроектировать структуру папок | [methodology/scaffold/02_folder-spec.md](methodology/scaffold/02_folder-spec.md) | Спецификация папок scaffold |
+| Понять архитектуру scaffold | [methodology/space/scaffold/01_architecture.md](methodology/space/scaffold/01_architecture.md) | Требования, принципы, модель верхнего уровня |
+| Спроектировать структуру папок | [methodology/space/scaffold/02_folder-spec.md](methodology/space/scaffold/02_folder-spec.md) | Спецификация папок scaffold |
 | Развернуть scaffold для клиента | [plugin/skills/space/scaffold/templates/root/](plugin/skills/space/scaffold/templates/root/) | Канонический scaffold продукта |
 | Спроектировать навык | [plugin/skills/](plugin/skills/) | Мастерская промптов по доменам |
 | Собрать пакет клиенту | [plugin/](plugin/) | Skills + agents + hooks |
-| Контур «Цели и показатели»: методология метрик | [methodology/metrics/](methodology/metrics/) | Точка входа — `README.md`; внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
-| Работа со встречами | [methodology/rhythm/meeting-analysis/workflow.md](methodology/rhythm/meeting-analysis/workflow.md) | Пайплайн анализа транскриптов |
-| Формат файлов | [methodology/scaffold/02_file-spec.md](methodology/scaffold/02_file-spec.md) | Действующий канон: YAML, шапка, секции, связи |
+| Контур «Цели и показатели»: методология метрик | [methodology/aspect-metrics/](methodology/aspect-metrics) | Точка входа — `README.md`; внутри: `architecture.md`, `metrics-spec.md`, `extractor.md` |
+| Работа со встречами | [methodology/aspect-rhythm/meeting-debrief/workflow.md](methodology/aspect-rhythm/meeting-debrief/workflow.md) | Пайплайн анализа транскриптов |
+| Формат файлов | [methodology/space/scaffold/02_file-spec.md](methodology/space/scaffold/02_file-spec.md) | Действующий канон: YAML, шапка, секции, связи |
+| Оформить результат скилла, собрать макет спецификации | [design/results.md](methodology/design/results.md) | Дизайн результатов: макет, элементы вида, словарь знаков |
 
 ---
 

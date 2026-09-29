@@ -13,6 +13,7 @@
 - [openclaw.md](openclaw.md) — OpenClaw: open-source self-hosted автономный агент
 - [manus.md](manus.md) — Manus: автономный AI-агент (Meta), Telegram-бот
 - [paperclip.md](paperclip.md) — Paperclip: open-source оркестратор AI-агентов как компании (org chart, бюджеты, governance) — слой над OpenClaw/Manus
+- [company-brain.md](company-brain.md) — Company Brain (Supermemory): open-source AI-сотрудник в Slack — граф прав памяти, правила записи, проактивность, расписания fail-closed, подтверждения и аренда доступа
 - [ai-workspaces.md](ai-workspaces.md) — AI-оболочки: каталог сред для работы с AI
 - [obsidian.md](obsidian.md) — Obsidian как md-платформа: командная коллаборация (Relay/CRDT), agent-writable через MCP
 - [openknowledge.md](openknowledge.md) — OpenKnowledge (Inkeep): AI-native md IDE / LLM-wiki, нативный MCP для агентов, GPL-3.0

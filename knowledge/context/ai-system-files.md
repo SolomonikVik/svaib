@@ -4,7 +4,7 @@ source: "https://agents.md/"
 source_type: article
 status: processed
 added: 2026-02-28
-updated: 2026-09-20
+updated: 2026-09-27
 review_by: 2026-09-19
 tags: [claude-md, agents-md, dotfiles, ai-config, soul-md, memory, context-engineering, imports, hooks, codex, claude-5]
 publish: false
@@ -198,7 +198,7 @@ repo/
 | **0 — Статические инструкции** | Написаны человеком, загружаются дословно | CLAUDE.md, AGENTS.md | Ноль |
 | **1 — Авто-память** | Пишет агент, загружается при старте | Claude MEMORY.md, Windsurf Memories | Ноль (локальные файлы) |
 | **2 — Файлы + семантический поиск** | Markdown + векторный индекс | OpenClaw memsearch (BM25 + vector) | Локальный embeddings |
-| **3 — Внешние memory API** | Память вне контекстного окна | Mem0 | Облачный сервис |
+| **3 — Внешние memory API** | Память вне контекстного окна | Mem0, [Supermemory](agent-memory.md#примечательные-системы) | Облачный сервис (у Supermemory есть и локальная версия) |
 | **4 — Темпоральные графы** | Entity-relationship с временными метками | Graphiti/Zep | Neo4j/FalkorDB + MCP |
 
 Файлы — «нулевой уровень» памяти (аудируемость, git-diff, ручная правка). Индексация и графы — надстройки, но source of truth остаётся в редактируемых файлах.

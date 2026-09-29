@@ -11,11 +11,13 @@
 - [summarization-evaluation.md](summarization-evaluation.md) — сохранность содержания при суммаризации и очищении диалогов: атомарные единицы, coverage, faithfulness, evidence
 - [agent-evaluation.md](agent-evaluation.md) — траектории, tool use, состояние среды, multi-step и end-to-end evals
 - [llm-as-judge.md](llm-as-judge.md) — рубрики, калибровка, bias, надёжность и границы применимости
+- [retrieval-evaluation.md](retrieval-evaluation.md) — оценка поиска в RAG: IR-метрики (recall@k, nDCG@k), слабость LLM-судьи на релевантности контекста, golden-набор и синтетика, что можно мерить в проде
 - [eval-tooling.md](eval-tooling.md) — карта фреймворков и критерии выбора. Только карта рынка и объективные критерии — не путать с нашей процедурой принятия решения build/buy/adopt (lab/eval-methodology/playbooks/external-tool-selection.md)
 
 ## Связи
 
 - [../agents/](../agents/) — общие агентные паттерны; `agent-evaluation.md` оценивает именно их поведение
 - [../coding/](../coding/) — среды разработки, CI
+- [../context/](../context/) — устройство retrieval-стека, качество которого измеряет `retrieval-evaluation.md`
 - ../../lab/eval-methodology/ — наш нормативный meta-spec, использующий эти знания как фундамент
 - ../../dev/evals/ — конкретные eval-инстансы

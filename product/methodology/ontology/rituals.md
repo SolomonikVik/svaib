@@ -110,7 +110,7 @@ version: 2
 - **Вход:** транскрипт
 - **Сущности:** все типы атомарных сущностей
 - **Выход:** выжимка → rhythm/meeting-analysis/workflow.md описывает канон разбора
-- **Шаги:** см. [workflow.md](../rhythm/meeting-analysis/workflow.md)
+- **Шаги:** см. [workflow.md](../aspect-rhythm/meeting-debrief/workflow.md)
 
 ### Стратсессия
 

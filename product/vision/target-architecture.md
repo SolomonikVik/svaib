@@ -27,13 +27,13 @@ status: draft
 - [02_contours/01_strategy.md](02_contours/01_strategy.md) — стратегия как координатная система управления.
 - ../_inbox/memory/memory-semantic-sidecar-views.md — scaffold + semantic sidecar + generated views.
 - [../architecture.md](../architecture.md) — текущий канон `Данные → Память → Помощники`, который будем эволюционировать.
-- [../methodology/scaffold/01_architecture.md](../methodology/scaffold/01_architecture.md) — composable management architecture.
+- [../methodology/scaffold/01_architecture.md](../methodology/space/scaffold/01_architecture.md) — composable management architecture.
 - [../methodology/memory/01_context_memory.md](../methodology/memory/01_context_memory.md) — текущий протокол контекстной памяти.
-- [../methodology/metrics/architecture.md](../methodology/metrics/architecture.md) — extractor, маршруты, snapshot, объяснимость.
+- [../methodology/metrics/architecture.md](../methodology/aspect-metrics/architecture.md) — extractor, маршруты, snapshot, объяснимость.
 - [../05_decisions.md](../05_decisions.md) — принятые продуктовые решения.
 - ../_inbox/scaffold/2026-06-30-ai-memory-engineering-patterns.md — инженерные паттерны памяти.
 - ../_inbox/scaffold/2026-06-30-ai-memory-market-landscape.md — рыночные паттерны context layer / work graph.
-- ../meetings/zz_archive/2026-07-06_vision_transcript.md — обсуждение Vision и архитектурных развилок.
+- ../meetings/2026-07-06_vision/transcript.md — обсуждение Vision и архитектурных развилок.
 
 ## Главный тезис
 

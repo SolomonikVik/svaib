@@ -17,8 +17,8 @@ version: 3
 ## Связанные файлы
 
 - [entities.md](entities.md) — канон атомарных сущностей (определения, маркеры, правила разграничения)
-- [../rhythm/meeting-analysis/meeting_overlays.md](../rhythm/meeting-analysis/meeting_overlays.md) — каталог L2-надстроек (протокол = одна из них)
-- [../../plugin/skills/meeting-analysis/SKILL.md](../../plugin/skills/meeting-analysis/SKILL.md) — скилл встреч: полный протокол публикует spine из принятой выжимки
+- [../rhythm/meeting-analysis/meeting_overlays.md](../aspect-rhythm/meeting-debrief/meeting_overlays.md) — каталог L2-надстроек (протокол = одна из них)
+- [../../plugin/skills/meeting-analysis/SKILL.md](../../plugin/skills/rhythm/meeting-debrief/SKILL.md) — скилл встреч: полный протокол публикует spine из принятой выжимки
 - ../../plugin/skills/meeting-analysis/prompts/protocol-telegram.md — реализация: Telegram-сводка
 
 ---

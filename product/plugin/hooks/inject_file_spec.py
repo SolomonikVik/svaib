@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Спецификация файла до записи (A7b, решение продукта 11.09: «при записи контракт подтягивается хуком»).
+Спецификация файла до записи.
 
     inject_file_spec.py pre-write   # PreToolUse (Claude: Write|Edit|MultiEdit|Bash; Codex: apply_patch и shell)
     inject_file_spec.py compact     # SessionStart compact|clear (Claude) / PostCompact (Codex)
@@ -20,8 +20,7 @@
 `cp`/`mv`/`install`/`ln`/`rsync`, явная запись в коде интерпретатора (`open(путь, 'w')`,
 `Path(путь).write_text`, `writeFile`; путь — литерал или переменная с литералом из того же скрипта),
 `apply_patch` через shell. Разбор — сито, а не парсер. Упоминание пути в коде — в тексте замены, в
-строке данных — не запись: 18.09 такое правило остановило правку черновика в `/tmp` и дописку в
-`.svaib/findings.md`. Пути — от cwd сессии, после `cd X` в той же команде — от X; тип определяется именем. В Cowork путь VM
+строке данных — не запись. Пути — от cwd сессии, после `cd X` в той же команде — от X; тип определяется именем. В Cowork путь VM
 `/sessions/<сессия>/mnt/<папка>` переводится в путь хоста (`nav.vm_to_host`).
 Не ловятся запись через переменную, `find -exec`, скрипт-файл, пишущий сам, и чтение спецификации
 агентом самим. Хук — перила для невраждебного агента, не замок.
@@ -55,8 +54,10 @@ try:
 except Exception:  # noqa: BLE001 — без соседа хук молчит, запись не блокируется
     nav = None
 SPEC_DIR_CANDIDATES = (
-    os.path.join(HOOK_DIR, "..", "skills", "space", "scaffold", "file-specs"),     # поставка плагином
-    os.path.join("product", "methodology", "scaffold", "file-specs"),               # репозиторий svaib
+    os.path.join(HOOK_DIR, "..", "skills", "space-scaffold", "file-specs"),        # поставка плагином
+    os.path.join(HOOK_DIR, "..", "skills", "space", "scaffold", "file-specs"),     # исходники до сборки
+    os.path.join("product", "methodology", "space", "scaffold", "file-specs"),     # репозиторий svaib
+    os.path.join("product", "methodology", "scaffold", "file-specs"),              # он же до переноса
 )
 # Пространство svaib, а не любой проект с CLAUDE.md: плагин ставится на пользователя и видит все его
 # проекты. Служебную папку заводит миграция структуры вместе с плагином.
@@ -88,16 +89,16 @@ PATH_ASSIGN_RE = re.compile(r"\b([A-Za-z_]\w*)\s*=\s*(?:Path\(\s*)?[rbuf]{0,2}([
 ASSIGN_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")   # `PYTHONUTF8=1 python3 …` — окружение перед командой
 PATCH_RE = re.compile(r"^\*\*\* (?:Add|Update) File: (.+?)\s*$|^\*\*\* Move to: (.+?)\s*$", re.M)
 SID_RE = re.compile(r"[^A-Za-z0-9_.-]")
-# Символов во всей причине отказа. Проверено 18.09: отказ в 18 тыс. символов доходит до агента
+# Символов во всей причине отказа. Отказ в 18 тыс. символов доходит до агента
 # целиком и в Claude Code 2.1.276, и в Codex 0.154.0; жёсткий предел Claude Code — 64 КБ stdout,
 # за ним отказ теряется и запись проходит. Пара «общие правила + тип» держится в BUDGET — страж в тестах.
 BUDGET = 20000
 # Секунд после выдачи, в которые запись того же типа считается соседним вызовом того же хода: модель
-# ещё не видела отказ (гемба 18.09 — второй параллельный Edit прошёл без спецификации). Короткий отказ
+# ещё не видела отказ. Короткий отказ
 # получает любая такая запись, и в тот же файл: пачка из нескольких Edit одного файла — частый вид
 # соседей. Эвристика, не граница хода: сосед после долгого Bash в той же пачке пройдёт, а слишком
 # быстрый повтор получит ещё один короткий отказ (~175 символов). Точная граница — новый ответ модели
-# в транскрипте; не делаем, пока лог не покажет промахов окна.
+# в транскрипте.
 SAME_TURN = 5
 MAX_NAMES = 5   # целей в тексте отказа: заплатка на сотни файлов не должна раздувать его
 
@@ -142,11 +143,20 @@ def marker_path(key: str, spec: str) -> str:
     return os.path.join(state_dir(), "sessions", f"{key}.spec.{SID_RE.sub('_', spec)}")
 
 
-def marker_set(key: str, spec: str) -> None:
+def marker_set(key: str, spec: str, call: str = "") -> None:
+    """В метке — id вызова, на котором спецификация выдана: второй экземпляр хука узнаёт свой же вызов."""
     p = marker_path(key, spec)
     os.makedirs(os.path.dirname(p), exist_ok=True)
-    with open(p, "a", encoding="utf-8"):
-        pass
+    with open(p, "w", encoding="utf-8") as f:
+        f.write(call)
+
+
+def marker_call(key: str, spec: str) -> str:
+    try:
+        with open(marker_path(key, spec), encoding="utf-8") as f:
+            return f.read().strip()
+    except OSError:
+        return ""
 
 
 def markers_clear(sid: str) -> None:
@@ -356,7 +366,7 @@ def version_note(root: str, sdir: str) -> str:
         return (f"Внимание: пространство версии {space_v} новее плагина ({plugin_v}) — спецификации ниже "
                 "могут устареть. Скажи пользователю, что плагин svaib нужно обновить.")
     return (f"Внимание: пространство версии {space_v} отстаёт от плагина ({plugin_v}) — спецификации ниже "
-            "описывают новую структуру. Предложи пользователю обновить пространство скиллом `scaffold`.")
+            "описывают новую структуру. Предложи пользователю обновить пространство скиллом `space-scaffold`.")
 
 
 def read_spec(sdir: str, spec: str) -> str:
@@ -396,6 +406,12 @@ def pre_write(hook_input: dict) -> None:
     pending = [s for s in [GENERAL] + list(files) if not os.path.exists(marker_path(key, s))]
     if not pending:
         fresh = [s for s in files if time.time() - os.path.getmtime(marker_path(key, s)) < SAME_TURN]
+        call = hook_input.get("tool_use_id") or ""
+        if fresh and call and all(marker_call(key, s) == call for s in fresh):
+            # тот же вызов: хук стоит дважды (плагин и локальная копия); хост показывает один отказ
+            # из двух, поэтому второй молчит, и в силе отказ со спецификацией
+            log("dup-instance", specs=fresh)
+            return
         if fresh:
             deny(f"Запись в {listed([f for s in fresh for f in files[s]])} остановлена: спецификация "
                  "этого типа только что выдана в отказе соседнего вызова этого же хода. Прочитай её там, "
@@ -420,7 +436,7 @@ def pre_write(hook_input: dict) -> None:
     note = version_note(root, sdir)
     reason = "\n\n".join([head] + ([note] if note else []) + ([more] if rest else []) + [part for _, part in batch])
     for s, _ in batch:                        # метка до вывода: сбой записи метки не зациклит отказы
-        marker_set(key, s)
+        marker_set(key, s, hook_input.get("tool_use_id") or "")
     deny(reason)
     log("deny", files=names, specs=[s for s, _ in batch], rest=rest, chars=len(reason))
 

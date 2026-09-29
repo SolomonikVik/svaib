@@ -478,6 +478,7 @@ Effort и thinking budget — независимые параметры. High ef
 - **Механика поиска Claude Code** — как Claude Code ищет файлы (агентный grep без индекса, двухмодельная архитектура, сравнение с Cursor и Claude Projects). См. [context/search-mechanics.md](../context/search-mechanics.md)
 - **AI System Files** — CLAUDE.md в контексте ландшафта (AGENTS.md, GEMINI.md, soul.md), кросс-чтение, стандартизация AAIF, best practices и лимиты. См. [context/ai-system-files.md](../context/ai-system-files.md)
 - **Context engineering под Claude 5** — почему накопленные инструкции и скиллы приходится сокращать при смене поколения моделей. См. [context/context-engineering-claude5.md](../context/context-engineering-claude5.md)
+- **Сторонние модели и Agent SDK** — шлюз через `ANTHROPIC_BASE_URL`, позиция Anthropic, сравнение с Codex, ловушки Agent SDK на модели OpenAI. См. [third-party-models.md](third-party-models.md)
 
 ## Источники
 

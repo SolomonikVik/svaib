@@ -21,6 +21,7 @@ publish: false
 - [../context/permission-aware-retrieval.md](../context/permission-aware-retrieval.md) — как права доезжают до выдачи (индекс vs runtime-проверка)
 - [../tools/team-content-platforms.md](../tools/team-content-platforms.md) — как это решают контентные платформы и AI-оверлеи
 - [subagents.md](subagents.md) — мульти-агентные архитектуры, где эта проблема размножается
+- [../tools/company-brain.md](../tools/company-brain.md) — acting-as в работающем коде: запись только через личное подключение и с подтверждением, общие подключения только на чтение, короткая аренда доступа у коллеги на один запрос
 
 ---
 

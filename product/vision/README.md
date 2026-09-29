@@ -52,5 +52,5 @@ title: "vision — карта целевого продукта"
 - [Product overview](../01_overview.md) — стабильное описание продукта, аудитории, принципов и границ.
 - [Product architecture](../architecture.md) — текущий канон устройства продукта.
 - [Vision проекта svaib](../../01_company/01_strategic/vision.md) — верхнеуровневый замысел компании, из которого следует продукт.
-- [Scaffold architecture](../methodology/scaffold/01_architecture.md) — проекция управленческой модели в пространство данных клиента.
+- [Scaffold architecture](../methodology/space/scaffold/01_architecture.md) — проекция управленческой модели в пространство данных клиента.
 - [Product active](../02_active.md) и [Product backlog](../03_backlog.md) — текущая реализация и будущая работа, которые не должны попадать в целевой vision.

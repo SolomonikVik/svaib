@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 """
-Карта пространства в контекст сессии (трек space-map, N2). Один скрипт, четыре события:
+Карта пространства в контекст сессии. Один скрипт, пять событий:
 
     inject_space_map.py first-prompt   # UserPromptSubmit: только на ПЕРВОМ промпте сессии
     inject_space_map.py post-whoami    # PostToolUse (matcher mcp__.*__whoami): персонализация
+    inject_space_map.py post-update-me # PostToolUse (matcher mcp__.*__update_me): онбординг и настройки в кэш, без вывода
     inject_space_map.py node-enter     # PostToolUse (matcher Read|Glob|Grep|Bash): подкарта узла при входе
     inject_space_map.py compact        # SessionStart matcher=compact|clear: вернуть карту
     inject_space_map.py plain          # голый markdown в stdout (отладка; без маркера сессии)
 
-Почему первый промпт, а не старт сессии (решение Эрика 10.09): для человека это тот же
+Почему первый промпт, а не старт сессии: для человека это тот же
 момент — до первого ответа, но к первому промпту уже подключён MCP, а в Cowork события
 SessionStart нет. SessionStart остаётся для `compact`/`clear` — единственный механизм
 вернуть контекст после сжатия (PostCompact контекст добавлять не умеет).
@@ -20,42 +21,40 @@ email аккаунта Claude + корень пространства; TTL 24 ч
 персональной картой без MCP. Кэш протух / другой аккаунт / другая база → общая карта +
 короткая просьба вызвать `whoami`. Без MCP агент исходит из сведений об аккаунте.
 
-Подкарта узла — при входе в узел (решения Эрика 10–11.09, уточнено 14.09). Узел — папка
+Под строкой «За клавиатурой» — ближайшие этапы онбординга («два и два»): статус `onboarding`
+из кэша × каталог этапов скилла `space-onboarding` (`space_map.onboarding_block`). Ответ
+`update_me` несёт итоговые статус и `preferences` — хук кладёт их в кэш, не продлевая срок записи.
+
+Подкарта узла — при входе в узел. Узел — папка
 верхнего уровня безусловно (кроме служебных, `_inbox`, `zz_archive`) **и** любая папка глубже
 только при наличии `README.md` (`commercial/sales`, `customer-success/projects`):
 границу вложенного узла задаёт README, а не overview — узел получает подкарту независимо от
 того, юнит это (полноценный объект управления с менеджмент-китом) или нет; в подкарте узел с
-китом помечен «юнит», без кита — «узел» (термины — канон scaffold,
-`product/methodology/scaffold/README.md`). Верхний уровень — исключение по замыслу
-(измерено 11.09), не забытая проверка: обход дерева не должен обрываться на папке без README
-(ревью 14.09 поднимало это как расхождение с claim — правило верно, claim неточен). Первое обращение
-к пути внутри узла — Read/Glob/Grep или Bash (пути вытаскиваются из команды, команда не
+китом помечен «юнит», без кита — «узел» (термины — канон scaffold). Верхний уровень — исключение
+по замыслу, не забытая проверка: обход дерева не должен обрываться на папке без README. Первое
+обращение к пути внутри узла — Read/Glob/Grep или Bash (пути вытаскиваются из команды, команда не
 выполняется) —
-даёт подкарту БЛИЖАЙШЕГО к цели узла (форма C: без карт пути до него; `SVAIB_MAP_NESTED` =
-`0` / `chain` — формы A/B для стенда). В подкарту входят и «Маршруты чтения» README узла
+даёт подкарту БЛИЖАЙШЕГО к цели узла (без карт пути до него; `SVAIB_MAP_NESTED` =
+`0` / `chain` — другие формы для стенда). В подкарту входят и «Маршруты чтения» README узла
 после фильтра (`SVAIB_MAP_ROUTES=0` выключает). Один раз на узел за сессию (маркер
 `<state>/sessions/<sid>.node.<путь>-<hash>`), узлы зоны помечаются при доставке персональной
 карты, после сжатия метки снимаются. Событие входа задаёт settings; хук читает
-`hook_event_name` — на PreToolUse отдаёт тот же контекст до результата инструмента (померено
-как шум, прод — PostToolUse). Отказ первого обращения (deny) померен 11.09 и отклонён —
-из кода убран (история: коммит 71a7ca66).
+`hook_event_name` — на PreToolUse отдаёт тот же контекст до результата инструмента
+(прод — PostToolUse).
 
 Стабильная часть карты живёт в CLAUDE.md/AGENTS.md корня (свой заголовок раздела в каждом —
 «## Карта пространства» / «## Space Map», текст — `space_map.py --print-model`) и приходит
 каждый ход — хук её не дублирует; нет ни одного из двух заголовков — модель пространства
-подаётся вместе с картой. HTML-комментарий-маркер снят 14.09 (решение Эрика): заголовок
-надёжнее и не портит вид файла. Канон этого файла —
-product/plugin/hooks/inject_space_map.py (едет клиенту сборщиком вместе с space_map.py);
-копия в .claude/hooks/ репозитория svaib — установка, тест держит их равными с точностью до
-подстановки путей сборщиком. Реестр скиллов в карту не входит (Claude Code показывает их в
+подаётся вместе с картой. Маркер — заголовок, а не HTML-комментарий: надёжнее и не портит вид
+файла. Реестр скиллов в карту не входит (Claude Code показывает их в
 системном промпте); стенд замера включает его через SVAIB_MAP_SKILLS=1. Генератор ищется
 рядом с хуком (поставка плагином: `space_map.py`), затем в дереве репозитория — и
 импортируется модулем: один процесс.
 
 Любой сбой — stderr и код 0: деградирует автоматизация, сессия не блокируется.
 Исходы пишутся в `<state>/space-map-hook.log` (строка на запуск, `ms` — от загрузки
-генератора до сборки контекста; старт интерпретатора ~70 мс сверх) — чтобы неделю живой
-работы было чем мерить (ревью 10.09).
+генератора до сборки контекста; старт интерпретатора ~70 мс сверх) — чтобы было чем мерить
+живую работу.
 """
 from __future__ import annotations
 
@@ -67,42 +66,47 @@ import re
 import sys
 import time
 
+
 HOOK_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HOOK_DIR)
+try:
+    import hook_space   # корень сессии — общий с хуками спецификации и учёта
+except ImportError:     # неполная поставка: сбой ловит main, сессия не падает
+    hook_space = None
 GENERATOR_CANDIDATES = (
     os.path.join(HOOK_DIR, "space_map.py"),                                 # поставка плагином (рядом с хуком)
     os.path.join("product", "plugin", "hooks", "space_map.py"),             # репозиторий svaib: канон плагина
 )
-ROOT_MARKERS = ("CLAUDE.md", "AGENTS.md")  # README.md есть у каждого узла — не маркер
-# Заголовок вместо HTML-комментария (решение Эрика 14.09): ищем любой из двух в любом корневом
-# файле — не привязываемся к имени файла (ревью 14.09: старый снимок мог получить чужой заголовок).
+# Заголовок вместо HTML-комментария: ищем любой из двух в любом корневом
+# файле — не привязываемся к имени файла (старый снимок мог получить чужой заголовок).
 MODEL_HEADINGS = ("## Карта пространства", "## Space Map")
 MARKER_TTL_DAYS = 7
 SID_RE = re.compile(r"[^A-Za-z0-9_.-]")
 SERVICE_DIRS = {"_templates", "_state", "node_modules", "_map", "__pycache__"}   # как в генераторе
 NOT_NODES = {"zz_archive", "_inbox"}                               # карта их узлами не считает
 GLOB_CHARS = set("*?[{")
-ENTER_TOOLS = ("Read", "Glob", "Grep", "Bash")   # Bash — агент читает и через cat/ls/rg: карта и там (решение Эрика 11.09)
-# Codex (12.09): типизированных Read/Glob/Grep у него нет — всё чтение идёт оболочкой.
+ENTER_TOOLS = ("Read", "Glob", "Grep", "Bash")   # Bash — агент читает и через cat/ls/rg: карта и там
+# Codex: типизированных Read/Glob/Grep у него нет — всё чтение идёт оболочкой.
 # По документации хуков Codex исполнение шелла приходит как `tool_name: "Bash"` с командой
 # в `tool_input.command`, то есть совместимо с Claude; но команда завёрнута в `/bin/bash -lc`,
 # и без снятия обёртки путь не разбирается. Имена ниже — страховка на code-mode, где вызов
 # приходит под своим именем; незнакомый инструмент пишется в лог и входом не считается.
 SHELL_TOOLS = ("exec", "shell", "local_shell", "unified_exec", "exec_command", "container.exec",
-               "mcp__workspace__bash")   # Cowork «Only on this computer»: bash в VM — MCP-инструмент (19.09)
+               "mcp__workspace__bash")   # Cowork «Only on this computer»: bash в VM — MCP-инструмент
 SHELL_INPUT_KEYS = ("command", "cmd", "input", "script", "code")   # где лежит текст команды
 # code-mode: команда лежит внутри JS-вызова — `await tools.exec_command({cmd:"sed …"})`
 JS_EXEC_RE = re.compile(r"""exec_command\s*\(\s*\{[^{}]*?(?:cmd|command)\s*:\s*(["'`])(.*?)\1""",
                         re.S)
 BASH_LIST_CMDS = {"cat", "head", "tail", "sed", "less", "more", "ls", "find", "tree", "grep", "rg", "awk", "wc", "stat", "file", "cd"}
 BASH_PATTERN_CMDS = {"grep", "rg"}   # первый не-флаг — паттерн, не путь
-NODE_MARKER_FILE = "README.md"        # вложенный узел = папка с README.md, не с 01_overview.md (уточнение Эрика 14.09)
+NODE_MARKER_FILE = "README.md"        # вложенный узел = папка с README.md, не с 01_overview.md
 
 
 def nested_mode() -> str:
-    """Подкарты вложенных узлов при входе (A/B/C на стенде 11.09):
+    """Подкарты вложенных узлов при входе:
     `0` — только узел верхнего уровня; `chain` — все узлы на пути сверху вниз;
     `nearest` — только ближайший к цели узел (без карт пути до него)."""
-    v = os.environ.get("SVAIB_MAP_NESTED", "nearest").strip().lower()   # прод-форма C (решение Эрика 11.09)
+    v = os.environ.get("SVAIB_MAP_NESTED", "nearest").strip().lower()
     return {"0": "0", "off": "0", "1": "chain", "chain": "chain", "nearest": "nearest", "deepest": "nearest"}.get(v, "nearest")
 
 
@@ -140,61 +144,18 @@ def log(outcome: str, **kv) -> None:
         pass
 
 
-def is_space_root(path: str) -> bool:
-    return any(os.path.isfile(os.path.join(path, m)) for m in ROOT_MARKERS)
-
-
 def find_root(start: str) -> str | None:
-    """Самый ВЕРХНИЙ каталог с маркером на пути от start, не доходя до $HOME:
-    у юнитов svaib тоже лежит CLAUDE.md, а в домашнем каталоге может лежать чужой."""
-    home = os.path.abspath(os.path.expanduser("~"))
-    cur = os.path.abspath(start)
-    found = None
-    while cur != home:
-        if is_space_root(cur):
-            found = cur
-        parent = os.path.dirname(cur)
-        if parent == cur:
-            break
-        cur = parent
-    return found
+    return hook_space.find_root(start)
 
 
-def workspace_root() -> str | None:
-    """Cowork «Only on this computer»: cwd и CLAUDE_PROJECT_DIR — служебная папка сессии,
-    подключённые папки — в CLAUDE_CODE_WORKSPACE_HOST_PATHS (замер 19.09).
-    Одна папка: с маркером — корень как есть, как CLAUDE_PROJECT_DIR (агенту Cowork доступна
-    только она), без маркера — подъём к корню. Несколько папок: пространство — та, где лежит
-    `.svaib/`, остальные просто подключены; ни одной или больше одной — корня нет.
-    Несколько папок desktop-приложение склеивает через `|` (userSelectedFolders.join("|"), 19.09);
-    сначала значение целиком — вдруг `|` окажется в имени единственной папки."""
-    raw = (os.environ.get("CLAUDE_CODE_WORKSPACE_HOST_PATHS") or "").strip()
-    parts = [raw] if os.path.isdir(raw) else raw.split("|")
-    folders = []
-    for p in (x.strip() for x in parts):
-        if p and os.path.isdir(p) and os.path.abspath(p) not in folders:
-            folders.append(os.path.abspath(p))
-    if len(folders) == 1:
-        p = folders[0]
-        return p if is_space_root(p) else find_root(p)
-    spaces = [p for p in folders if os.path.isdir(os.path.join(p, ".svaib"))]
-    if len(spaces) == 1:
-        return spaces[0]
-    if folders:
-        log("skip", reason="workspace folders: .svaib in %d of %d" % (len(spaces), len(folders)), folders=folders)
-        print("inject_space_map: подключено %d папок, `.svaib/` в %d — не понять, какая из них пространство"
-              % (len(folders), len(spaces)), file=sys.stderr)
-    return None
+def _cowork_ambiguous(count: int, total: int, folders: list[str]) -> None:
+    log("skip", reason="workspace folders: .svaib in %d of %d" % (count, total), folders=folders)
+    print("inject_space_map: подключено %d папок, `.svaib/` в %d — не понять, какая из них пространство"
+          % (total, count), file=sys.stderr)
+
 
 def resolve_root(hook_input: dict) -> str | None:
-    # Cowork с подключёнными папками: их ответ окончательный, отказ тоже — служебные
-    # CLAUDE_PROJECT_DIR и cwd привели бы к чужому маркеру. Вне Cowork переменная не читается.
-    if os.environ.get("CLAUDE_CODE_IS_COWORK") == "1" and (os.environ.get("CLAUDE_CODE_WORKSPACE_HOST_PATHS") or "").strip():
-        return workspace_root()
-    env = os.environ.get("CLAUDE_PROJECT_DIR")
-    if env and os.path.isdir(env) and is_space_root(env):
-        return os.path.abspath(env)
-    return find_root(hook_input.get("cwd") or os.getcwd())
+    return hook_space.resolve_root(hook_input, _cowork_ambiguous)
 
 
 def load_generator(root: str):
@@ -209,13 +170,13 @@ def load_generator(root: str):
 
 
 def model_in_root(root: str) -> bool:
-    for name in ROOT_MARKERS:
+    for name in hook_space.ROOT_MARKERS:
         try:
             with open(os.path.join(root, name), encoding="utf-8", errors="replace") as f:
                 text = f.read()
         except OSError:
             continue
-        # якорь к началу строки: голая подстрока ловила бы «### Карта пространства» (ревью 14.09)
+        # якорь к началу строки: голая подстрока ловила бы «### Карта пространства»
         if any(re.search(r"^" + re.escape(h) + r"\s*$", text, re.M) for h in MODEL_HEADINGS):
             return True
     return False
@@ -244,12 +205,20 @@ def marker_set(session_id: str) -> bool:
     return True
 
 
+def node_key(hook_input: dict) -> str:
+    """Ключ меток подкарт: у субагента — свой. Хост даёт субагенту session_id родителя и agent_id
+    (Claude Code и Codex, зонд 28.09); без agent_id скаут забирал подкарты у основного агента."""
+    sid = SID_RE.sub("_", hook_input.get("session_id") or "")[:80]
+    agent = SID_RE.sub("_", hook_input.get("agent_id") or "")[:40]
+    return f"{sid}.{agent}" if agent and sid else sid
+
+
 def node_marker_path(session_id: str, node: str) -> str:
     import hashlib
-    sid = SID_RE.sub("_", session_id)[:80]
+    sid = SID_RE.sub("_", session_id)[:121]
     raw = node.strip("/")
     digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:8]
-    # хеш — за пределами усечения (ревью 14.09): длинный путь резать можно, хеш — нет,
+    # хеш — за пределами усечения: длинный путь резать можно, хеш — нет,
     # иначе разные узлы с общим префиксом длиннее ~50 символов делят один файл-маркер
     readable = SID_RE.sub("_", raw.replace("/", "__"))[:50]
     return os.path.join(state_dir(), "sessions", f"{sid}.node.{readable}-{digest}")
@@ -272,12 +241,12 @@ def node_marker_set(session_id: str, node: str) -> bool:
 
 
 def node_markers_clear(session_id: str) -> None:
-    """После сжатия подкарты узлов из контекста ушли — пустить их снова."""
+    """После сжатия подкарты узлов из контекста ушли — пустить их снова (и субагентам сессии)."""
     sid = SID_RE.sub("_", session_id)[:80]
     d = os.path.join(state_dir(), "sessions")
     try:
         for name in os.listdir(d):
-            if name.startswith(f"{sid}.node."):
+            if name.startswith(f"{sid}.") and ".node." in name:
                 os.remove(os.path.join(d, name))
     except OSError:
         pass
@@ -375,7 +344,7 @@ def shell_text(ti: dict) -> str:
 
 def vm_to_host(text: str) -> str:
     """Cowork «Only on this computer»: bash исполняется в VM, подключённая папка там —
-    `/sessions/<сессия>/mnt/<имя папки>` (19.09); хук живёт на хосте. Переводим в путь хоста
+    `/sessions/<сессия>/mnt/<имя папки>`; хук живёт на хосте. Переводим в путь хоста
     по имени папки из CLAUDE_CODE_WORKSPACE_HOST_PATHS. Вне Cowork — без изменений."""
     if os.environ.get("CLAUDE_CODE_IS_COWORK") != "1" or "/mnt/" not in text:
         return text
@@ -459,7 +428,7 @@ def node_of(root: str, target: str) -> str | None:
 def nodes_of(root: str, target: str) -> list[str]:
     """Узлы на пути к target сверху вниз: верхний уровень + каждая папка глубже с
     README.md (вложенный узел: commercial/sales, customer-success/projects) —
-    юнит это или нет, не важно, важно наличие своей карты (уточнение Эрика 14.09).
+    юнит это или нет, не важно, важно наличие своей карты.
     Папка-цель (Glob/Grep по каталогу) тоже считается входом в неё."""
     top = node_of(root, target)
     if not top:
@@ -509,12 +478,12 @@ def map_context(gen, root: str, when: str, ask: bool) -> tuple[str, dict]:
         zone = " · ".join(f"`{u}/`" for u in units) or "management units не выведены"
         head = (f"## Карта пространства {when}\n\n"
                 f"{gen.who_line(cache['subject'], cache.get('name', ''))}, профиль "
-                f"`{cache.get('profile_path') or '—'}`, зона {zone} — запомнен на этой машине по прошлому `whoami`."
-                f"{gen.keyboard_line(cache.get('name', ''))}"
-                f"{gen.preferences_line(cache.get('preferences', ''))}")
-        if not units:
+                f"`{cache.get('profile_path') or '—'}`, зона {zone} — запомнен на этой машине по прошлому `whoami`.")
+        if not units:   # до блоков ниже: иначе фраза приклеивается к хвосту последнего из них
             head += (" Management units зоны не выведены — работай по общей карте: подкарта узла придёт "
                      "при первом обращении к его файлам.")
+        head += (f"{gen.keyboard_line(cache.get('name', ''))}{gen.onboarding_block(cache)}"
+                 f"{gen.preferences_line(cache.get('preferences', ''))}")
     else:
         head = (f"## Карта пространства {when}\n\n"
                 f"`map_profile: general` — карта общая, пользователь не установлен.")
@@ -529,10 +498,7 @@ def map_context(gen, root: str, when: str, ask: bool) -> tuple[str, dict]:
 
 def personalize_context(gen, root: str, hook_input: dict) -> tuple[str, dict]:
     from pathlib import Path
-    resp = hook_input.get("tool_response")
-    if isinstance(resp, dict) and "content" in resp and "structuredContent" not in resp:
-        resp = resp["content"]
-    who = gen.parse_whoami(resp)
+    who = gen.parse_whoami(hook_input.get("tool_response"))
     text, rec = gen.personalize(Path(root), who)
     return "## Персонализация карты (после `whoami`)\n\n" + text, {"profile": who["subject"], "units": rec["units"]}
 
@@ -554,12 +520,14 @@ EVENT = {"first-prompt": "UserPromptSubmit", "post-whoami": "PostToolUse", "node
          "compact": "SessionStart"}
 
 
-MODES = ("first-prompt", "post-whoami", "node-enter", "compact", "plain")
+MODES = ("first-prompt", "post-whoami", "post-update-me", "node-enter", "compact", "plain")
 WHOAMI_RE = re.compile(r"^mcp__.+__whoami$")
+UPDATE_ME_RE = re.compile(r"^mcp__.+__update_me$")
 
 
 def run(mode: str, hook_input: dict) -> None:
     sid = hook_input.get("session_id") or ""
+    nkey = node_key(hook_input)
     if mode not in MODES:
         log("skip", mode=mode, reason="unknown mode")
         print(f"inject_space_map: неизвестный режим {mode!r}; ожидается один из {MODES}", file=sys.stderr)
@@ -571,9 +539,11 @@ def run(mode: str, hook_input: dict) -> None:
         if marker_exists(sid):
             return
     if mode == "node-enter" and WHOAMI_RE.match(hook_input.get("tool_name") or ""):
-        # Codex (17.09, ревью): отдельной регистрации на whoami у него нет, вызов приходит сюда —
+        # Codex: отдельной регистрации на whoami у него нет, вызов приходит сюда —
         # персонализация та же, что у Claude по matcher `mcp__.*__whoami`
         mode = "post-whoami"
+    if mode == "node-enter" and UPDATE_ME_RE.match(hook_input.get("tool_name") or ""):
+        mode = "post-update-me"   # то же для update_me
     root = resolve_root(hook_input)
     if not root:
         if mode == "node-enter":
@@ -593,7 +563,7 @@ def run(mode: str, hook_input: dict) -> None:
         event = hook_input.get("hook_event_name") or "PostToolUse"   # событие задаёт settings: Pre или Post
         for t in targets_of(hook_input, root):
             for n in nodes_of(root, t):
-                if n not in nodes and not node_marker_exists(sid, n):
+                if n not in nodes and not node_marker_exists(nkey, n):
                     nodes.append(n)
         if not nodes:
             return
@@ -602,6 +572,11 @@ def run(mode: str, hook_input: dict) -> None:
     if gen is None:
         log("skip", mode=mode, reason="no generator", root=root)
         print("inject_space_map: генератор карты не найден — карта не подана", file=sys.stderr)
+        return
+    if mode == "post-update-me":
+        from pathlib import Path
+        ok = gen.apply_update_me(Path(root), hook_input.get("tool_response"))
+        log("ok" if ok else "skip", mode=mode, root=root, cache_updated=ok)
         return
     if mode == "post-whoami":
         context, meta = personalize_context(gen, root, hook_input)
@@ -613,7 +588,7 @@ def run(mode: str, hook_input: dict) -> None:
     if mode == "first-prompt" and not marker_set(sid):
         return  # параллельный запуск уже доставил
     if mode == "node-enter":
-        won = [n for n in nodes if node_marker_set(sid, n)]
+        won = [n for n in nodes if node_marker_set(nkey, n)]
         if not won:
             return  # параллельный вызов уже доставил все подкарты
         if won != nodes:   # часть подкарт доставил параллельный вызов — отдаём только свои
@@ -627,20 +602,16 @@ def run(mode: str, hook_input: dict) -> None:
         if mode == "compact":
             node_markers_clear(sid)          # подкарты узлов ушли со сжатием — пустить снова
         for u in meta.get("units") or []:    # подкарты зоны уже в контексте — при входе не дублировать
-            node_marker_set(sid, u)
+            node_marker_set(nkey, u)
     if mode == "first-prompt":
         gc_markers()
 
 
 def main():
     mode = sys.argv[1].lower() if len(sys.argv) > 1 else "first-prompt"
-    try:
+    try:   # чтение и разбор ввода — внутри той же границы: битый байт в stdin не роняет хук
         raw = sys.stdin.read()
-        hook_input = json.loads(raw) if raw.strip() else {}
-    except (json.JSONDecodeError, OSError):
-        hook_input = {}
-    try:
-        run(mode, hook_input)
+        run(mode, json.loads(raw) if raw.strip() else {})
     except Exception as e:  # noqa: BLE001 — хук не имеет права уронить сессию
         log("error", mode=mode, error=f"{type(e).__name__}: {e}")
         print(f"inject_space_map: {type(e).__name__}: {e}", file=sys.stderr)

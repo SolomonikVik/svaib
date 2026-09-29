@@ -171,11 +171,11 @@ Email, Telegram, работа с документами — **скиллы**, н
 4. **Целостность модели** — связи держат, факт в одном месте, актуальность видна
 5. **Самоподдерживаемость** — обновляется в работе CEO + AI-процедурами, без отдельной рутины
 
-Детали архитектуры scaffold, требования, принципы и модель верхнего уровня — в [methodology/scaffold/01_architecture.md](methodology/scaffold/01_architecture.md).
+Детали архитектуры scaffold, требования, принципы и модель верхнего уровня — в [methodology/space/scaffold/01_architecture.md](methodology/space/scaffold/01_architecture.md).
 
 ### Структура
 
-Структура слоя Данные реализуется через scaffold: готовый каркас папок и документов у клиента. Корневой канон, composable-модель (node/unit/aspect/kit), правила узлов и границы клиентского каркаса фиксируются в [methodology/scaffold/01_architecture.md](methodology/scaffold/01_architecture.md).
+Структура слоя Данные реализуется через scaffold: готовый каркас папок и документов у клиента. Корневой канон, composable-модель (node/unit/aspect/kit), правила узлов и границы клиентского каркаса фиксируются в [methodology/space/scaffold/01_architecture.md](methodology/space/scaffold/01_architecture.md).
 
 Наша ценность: клиент получает не пустую папку, а управленческую архитектуру — понятно что куда класть, как файлы связаны, когда какой обновлять.
 
@@ -183,7 +183,7 @@ Email, Telegram, работа с документами — **скиллы**, н
 
 Как файл устроен внутри. Правила, которые делают данные машиночитаемыми и связными.
 
-- **YAML-заголовок** — минимум `title`, `created`, `updated`; `version` и `status` — для SOT, specs и templates ([02_file-spec.md](methodology/scaffold/02_file-spec.md))
+- **YAML-заголовок** — минимум `title`, `created`, `updated`; `version` и `status` — для SOT, specs и templates ([02_file-spec.md](methodology/space/scaffold/02_file-spec.md))
 - **Шапка файла** — H1 + аннотация или `## Обзор`
 - **H2-секции** — самоописывающие блоки, удобные человеку и LLM
 - **Связи** — markdown-ссылки с контекстным link label; навигационный граф папки живёт в README
@@ -197,7 +197,7 @@ Email, Telegram, работа с документами — **скиллы**, н
 
 Свойство правильно устроенных данных — не отдельная технология, а результат структуры + обвязки + помощников.
 
-Детали протокола (как агент находит и читает файлы, как собирает контекст под задачу, как поддерживает документацию, уровни детерминированности через хуки) — в [methodology/memory/01_context_memory.md](methodology/memory/01_context_memory.md). Действующий канон формата файлов задаёт [methodology/scaffold/02_file-spec.md](methodology/scaffold/02_file-spec.md).
+Детали протокола (как агент находит и читает файлы, как собирает контекст под задачу, как поддерживает документацию, уровни детерминированности через хуки) — в [methodology/memory/01_context_memory.md](methodology/memory/01_context_memory.md). Действующий канон формата файлов задаёт [methodology/space/scaffold/02_file-spec.md](methodology/space/scaffold/02_file-spec.md).
 
 ### Протокол чтения
 
@@ -228,7 +228,7 @@ LLM знает, в каком порядке читать файлы для по
 Слой памяти владеет общими механизмами для всех вертикалей. Делятся на две группы:
 
 - **Контекстная память** (как агент находит и читает файлы, протоколы навигации, карточка файла, rule injection) — описана в [methodology/memory/01_context_memory.md](methodology/memory/01_context_memory.md).
-- **Воспроизводимость и ответ** (snapshot, версионирование сущностей, trace ответа, semantic layer как паттерн, маршруты как готовые решения, границы ответа) — пока живут в [methodology/metrics/architecture.md](methodology/metrics/architecture.md) как часть metrics-вертикали; по мере оформления как общих контрактов переедут в `methodology/memory/` отдельной задачей.
+- **Воспроизводимость и ответ** (snapshot, версионирование сущностей, trace ответа, semantic layer как паттерн, маршруты как готовые решения, границы ответа) — пока живут в [methodology/aspect-metrics/architecture.md](methodology/aspect-metrics/architecture.md) как часть metrics-вертикали; по мере оформления как общих контрактов переедут в `methodology/memory/` отдельной задачей.
 
 Любая новая вертикаль опирается на эти механизмы, а не изобретает свои.
 
@@ -271,7 +271,7 @@ LLM знает, в каком порядке читать файлы для по
 - **Маршрут + думающая ветка** — сначала готовое решение из библиотеки, затем построение нового через инструменты.
 - **Границы ответа** — когда отказаться, когда уточнить, когда не угадывать.
 
-Сейчас оба паттерна описаны в [methodology/metrics/architecture.md](methodology/metrics/architecture.md) как часть metrics-вертикали; при оформлении как общих контрактов переедут на этот слой.
+Сейчас оба паттерна описаны в [methodology/aspect-metrics/architecture.md](methodology/aspect-metrics/architecture.md) как часть metrics-вертикали; при оформлении как общих контрактов переедут на этот слой.
 
 ---
 

@@ -4,7 +4,7 @@ source: "https://arxiv.org/abs/2602.05665"
 source_type: article
 status: processed
 added: 2026-02-16
-updated: 2026-07-06
+updated: 2026-09-27
 review_by: 2026-05-16
 tags: [agent-memory, knowledge-graph, temporal-graph, hypergraph, retrieval, benchmarks]
 publish: false
@@ -62,6 +62,15 @@ Extraction → Storage → Retrieval → Evolution
 **MemPalace** (исследован 2026-04-09) — verbatim RAG на ChromaDB + метадатная фильтрация ("дворец": wings/halls/rooms) + SQLite KG. Заявлено 96.6% на LongMemEval. Реальность: hybrid scoring и reranking только в бенчмарк-скриптах, не в продукте. Авторы связаны с крипто-pump-and-dump. Инсайт про verbatim storage верный, реализация ненадёжная. Подробнее → [rag.md](rag.md).
 
 **TiMem** — temporal-hierarchical: консолидация памяти слоями, как в нейронауке (working memory → episodic → semantic).
+
+**Supermemory** (исследован 2026-09-27) — память как сервис (memory API):
+- сама извлекает факты из разговоров, обрабатывает обновления и противоречия, забывает устаревшее;
+- ведёт профиль пользователя: устойчивые факты и недавняя активность;
+- одним запросом ищет и по документам, и по памяти (гибридный поиск);
+- синхронизирует коннекторы (Drive, Gmail, Notion, OneDrive, GitHub), разбирает PDF, изображения и видео;
+- разделяет память контейнерами с тегами.
+
+Формы поставки: облачный API, MCP-сервер и плагины для кодинг-агентов, локальная версия одним бинарником (в том числе офлайн). Заявляет первое место на LongMemEval, LoCoMo и ConvoMem — это собственные замеры, независимо не проверены. Ограничение класса: извлечённые факты становятся второй правдой рядом с источником. В file-first архитектуре такой сервис годится как производный индекс или память разговора, но не как источник правды. Прикладной продукт поверх него — [company-brain.md](../tools/company-brain.md).
 
 ---
 

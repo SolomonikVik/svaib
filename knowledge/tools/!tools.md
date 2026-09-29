@@ -5,7 +5,7 @@ added: 2026-01-30
 review_by: 2026-10-21
 tags: [tools, automation, platforms, index]
 publish: false
-updated: 2026-09-19
+updated: 2026-09-27
 ---
 
 # Tools — AI-инструменты и платформы
@@ -20,7 +20,7 @@ updated: 2026-09-19
 
 ### AI-оболочки
 
-Среды, через которые пользователь работает с AI. Для SVAIB это интерфейс клиента: мы наполняем оболочку содержимым. Каталог: Claude Code, Claude Project, Cowork, OpenCode, Codex, Kojori, ValeDesk, VS Code. → [ai-workspaces.md](ai-workspaces.md)
+Среды, через которые пользователь работает с AI. Для SVAIB это интерфейс клиента: мы наполняем оболочку содержимым. Каталог: Claude Code, Claude Project, Cowork, OpenCode, Codex, bb, ValeDesk, VS Code. → [ai-workspaces.md](ai-workspaces.md)
 
 ### Claude Project
 
@@ -68,6 +68,7 @@ Open-source платформа для построения workflow-автома
 
 - **OpenClaw** (ex-Clawdbot) — open-source self-hosted. Архитектура Gateway-Agent-Skills-Memory. Мессенджеры (WhatsApp, Telegram, Slack, Discord, Signal, iMessage). Peter Steinberger (→ OpenAI). → [openclaw.md](openclaw.md)
 - **Manus** — коммерческий (Meta). Multi-agent архитектура. Skills + Connectors (Notion, Calendar, Drive). Telegram-бот (февраль 2026), планируют WhatsApp, LINE, Slack. → [manus.md](manus.md)
+- **Company Brain** (Supermemory) — open-source (Apache 2.0), разворачивается на Cloudflare. Командный, а не личный: AI-сотрудник в Slack с общей памятью команды. Ценен как референс-реализация: граф прав памяти (пишется узко, читается шире в приватном месте), запись в инструменты только через личное подключение и с подтверждением, проактивность, где неуверенность означает молчание, расписания fail-closed. → [company-brain.md](company-brain.md)
 
 Уровнем выше одиночных агентов — **оркестратор «AI-компании»**: не один бот, а команда агентов с org chart, ролями, бюджетами и governance.
 

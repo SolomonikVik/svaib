@@ -22,4 +22,4 @@
 - [management_cycles.md](management_cycles.md) — прежняя модель девяти управленческих циклов.
 - [rituals.md](rituals.md) — прежний каталог ритуалов.
 
-Оставшаяся работа — в _plan.md. Канон формата файла — [02_file-spec.md](../scaffold/02_file-spec.md).
+Оставшаяся работа — в _plan.md. Канон формата файла — [02_file-spec.md](../space/scaffold/02_file-spec.md).

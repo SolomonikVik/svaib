@@ -124,3 +124,4 @@ marketplace-repo/
 - [agent-plugins-standard.md](agent-plugins-standard.md) — Agent Plugins 1.0: портативное ядро, которое Codex поддерживает частично
 - [../cases/coman-os.md](../cases/coman-os.md) — живая поставка под Claude Code и Codex: расхождения контракта хуков
 - [../agents/mcp.md](../agents/mcp.md) — MCP: протокол и транспорты
+- [../coding/third-party-models.md](../coding/third-party-models.md) — Codex как харнесс: сторонние модели через `model_providers` (только Responses API), Codex SDK

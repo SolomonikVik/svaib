@@ -24,6 +24,7 @@
 ### Среды и инструменты
 
 - [claude-code.md](claude-code.md) — Claude Code: CLI, расширения, плагины, система расширения
+- [third-party-models.md](third-party-models.md) — сторонние модели в харнессах Claude Code и Codex: протоколы (Messages vs Responses), шлюзы (LiteLLM, OpenRouter, claude-code-router), Agent SDK / Codex SDK / OpenAI Agents SDK, опыт svaib с Agent SDK на модели OpenAI
 - [agent-teams.md](agent-teams.md) — Agent Teams в Claude Code: multi-agent разработка
 - [vscode-agents.md](vscode-agents.md) — VS Code Agent Sessions: unified workspace для агентов
 - [n8n-claude-code.md](n8n-claude-code.md) — Claude Code + n8n: MCP-серверы, скиллы, паттерны разработки автоматизаций
