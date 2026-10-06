@@ -36,7 +36,7 @@ title: ".svaib — служебная папка Second Value AI Brain"
 
 Пример строки:
 
-`- 2026-09-15 · 2026-09-15 · 10_sales/README.md · битая ссылка · ссылка на 03_backlog.md ведёт в никуда · meeting-analysis · ×1 · открыта`
+`- 2026-09-15 · 2026-09-15 · 10_sales/README.md · битая ссылка · ссылка на 03_backlog.md ведёт в никуда · rhythm-meeting-debrief · ×1 · открыта`
 
 ## Правила
 

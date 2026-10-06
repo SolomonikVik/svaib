@@ -13,7 +13,7 @@ type: log
 
 ## v4.2 — хранение встреч: папка на встречу · 27 августа 2026
 
-Единица хранения в `meetings/` — папка встречи `YYYY-MM-DD_{[периодичность-][объект-]тип}[_{тема}]/` с фиксированными именами файлов: `transcript.md`, `summary.md`, `protocol.md`, `agenda.md`; `summary.md` — источник правды о встрече. Словарь типов и периодичность вынесены в онтологию — [meeting-types.md](../../ontology/meeting-types.md). Суффиксы `_summary`/`_transcript` и вложенный `meetings/zz_archive/` ушли из канона; общий архив узла остался. Канон изменён парой [02_file-spec](02_file-spec.md) + [02_folder-spec](02_folder-spec.md), файлы методологии — единым бампом до 4.2. Клиентский rollout — после переключения write-path аналитика встреч; задачи доставки — _plan.md.
+Единица хранения в `meetings/` — папка встречи `YYYY-MM-DD_{[периодичность-][объект-]тип}[_{тема}]/` с фиксированными именами файлов: `transcript.md`, `summary.md`, `protocol.md`, `agenda.md`; `summary.md` — источник правды о встрече. Словарь типов и периодичность вынесены в онтологию — [meeting-types.md](../../management-system/meeting-types.md). Суффиксы `_summary`/`_transcript` и вложенный `meetings/zz_archive/` ушли из канона; общий архив узла остался. Канон изменён парой [02_file-spec](02_file-spec.md) + [02_folder-spec](02_folder-spec.md), файлы методологии — единым бампом до 4.2. Клиентский rollout — после переключения write-path аналитика встреч; задачи доставки — _plan.md.
 
 ## `_private` — личное приватное пространство · 3 июля — 7 августа 2026
 
@@ -51,5 +51,5 @@ Scaffold задаёт путь, триггер и порядок «сначал�
 
 - [01_architecture.md](01_architecture.md) — актуальная архитектура
 - [../../05_decisions.md § 7](../../../05_decisions.md) — ADR composable management architecture (переход v3 → v4)
-- [../ontology/management_cycles.md](../../ontology/management_cycles.md) — управленческие циклы (горизонтальный срез поверх scaffold)
+- ../ontology/management_cycles.md — управленческие циклы (горизонтальный срез поверх scaffold)
 - [../../architecture.md](../../../architecture.md) — продуктовая архитектура: слой «Данные» реализуется через scaffold

@@ -26,6 +26,6 @@ title: "{unit} — оргструктура"
   - Руководитель продукта — Мария Петрова (maria-petrova.md) → Product team (../../product/02_team/)
   - Руководитель маркетинга — Алексей Васильев (alexey-vasiliev.md) → Marketing team (../../marketing/02_team/)
   - Финансовый директор — Ирина Белова (irina-belova.md)
-    - Руководитель операций — Сергей Н. (sergey-Н..md)
+    - Руководитель операций — Сергей Николаев (sergey-nikolaev.md)
     - HR business partner — Юлия Фёдорова (yulia-fedorova.md)
 ```

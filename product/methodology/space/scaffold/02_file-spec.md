@@ -56,7 +56,7 @@ status: final
 - **Числовой** двузначный + `_` (`NN_`) — см. § Нумерация и порядок ниже.
 - **Датированный.** ISO 8601, всегда первый: `YYYY-MM-DD_{semantic-name}.md`. Используется там, где дата важна, например `decisions/`.
 
-**Файлы папки встречи** — фиксированные имена по жизненному циклу: `agenda.md`, `transcript.md`, `summary.md`, `protocol.md`. Дата и тип встречи — в имени папки ([meeting-types.md](../../ontology/meeting-types.md)); канон папки встречи — [02_folder-spec § meetings/](02_folder-spec.md).
+**Файлы папки встречи** — фиксированные имена по жизненному циклу: `agenda.md`, `transcript.md`, `summary.md`, `protocol.md`. Дата и тип встречи — в имени папки ([meeting-types.md](../../management-system/meeting-types.md)); канон папки встречи — [02_folder-spec § meetings/](02_folder-spec.md).
 
 ### 🔹 Нумерация и порядок
 

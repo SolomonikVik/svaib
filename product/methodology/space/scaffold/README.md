@@ -1,7 +1,7 @@
 ---
 title: "Scaffold methodology — source of truth слоя scaffold"
 created: 2026-05-06
-updated: 2026-08-07
+updated: 2026-10-05
 version: 4.2
 status: final
 ---
@@ -48,9 +48,15 @@ Scaffold строится как **composable management architecture**.
 | Проверить узел перед выгрузкой клиенту | [deployment-node-review.md](deployment-node-review.md) |
 | Создать или ревизовать scaffold-файл | [02_file-spec.md](02_file-spec.md), для README — [02_readme-spec.md](02_readme-spec.md) |
 
+## Маршруты записи
+
+- Канон каркаса, [система менеджмента svaib (SMS)](../../management-system/README.md) и [граф управления](../../management-graph.md) связаны и не должны противоречить друг другу: SMS задаёт понятия, каркас решает, где и как они лежат у клиента, граф показывает связи. Нашёл расхождение между ними → сам не правь: принеси Виктору вопросом.
+
 ## Связанные контексты
 
 - [../../plugin/skills/space/scaffold/templates/root/](../../../plugin/skills/space/scaffold/templates/root) — клиентский каркас scaffold v4.1, практическая реализация (не SOT методологии)
 - [../../plugin/skills/space/scaffold/](../../../plugin/skills/space/scaffold) — автоматизация развёртывания scaffold
 - [../memory/01_context_memory.md](../../memory/01_context_memory.md) — протокол навигации агента
 - [Клиентский scaffold-конфигуратор](https://svaib.com/tools/scaffold) — интерактивный инструмент сборки scaffold с клиентом на встрече (визуализирует модель unit/aspect/панель). Исходник — scaffold-configurator.html.
+- [Система менеджмента svaib](../../management-system/README.md) — понятия, по которым строится каркас: объект управления, ракурс, управленческая сущность.
+- [Граф управления](../../management-graph.md) — связи в управлении компанией. Каркас решает, где и как это лежит; граф показывает, всё ли со стороны связей однозначно и понятно.

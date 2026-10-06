@@ -22,7 +22,7 @@ publish: false
 - [../agents/mcp.md](../agents/mcp.md) — MCP-серверы: официальный Google Drive MCP и OSS-сервер с записью
 - [../tools/obsidian.md](../tools/obsidian.md) — Obsidian + Relay/MCP: альтернативный слой хранения с командной коллаборацией
 - [search-mechanics.md](search-mechanics.md) — механики поиска в Claude Projects
-- ../../clients/playbook/handouts/claude_setup_guide.md — гайд по настройке Claude для клиента
+- [../../product/docs/instructions/claude_setup_guide.md](../../product/docs/instructions/claude_setup_guide.md) — гайд по настройке Claude для клиента
 
 ---
 

@@ -14,7 +14,7 @@ Metrics-файлы — это семантический слой вертика
 
 Связанные артефакты:
 - [`../../plugin/skills/space/scaffold/templates/root/01_company/03_metrics/business-metrics.md`](../../plugin/skills/space/scaffold/templates/root/01_company/03_metrics/business-metrics.md) — шаблон базового файла метрик бизнеса
-- [`../../plugin/skills/metrics-analysis/business-metrics-intake.md`](../../plugin/skills/metrics/values/business-metrics-intake.md) — промпт-помощник заполнения `business-metrics.md` с CEO
+- [`../../plugin/skills/metrics-analysis/business-metrics-intake.md`](intake/business-metrics-intake.md) — промпт-помощник заполнения `business-metrics.md` с CEO
 - **Ориентир:** [Open Semantic Interchange](https://open-semantic-interchange.org/) — внешний reference по semantic models, не источник контракта svaib.
 
 ## 🔵 Общие правила для всех metrics-файлов

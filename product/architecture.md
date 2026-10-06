@@ -8,7 +8,7 @@ priority: high
 
 # Архитектура продукта
 
-**Устарел, на переписывании** — план консистентности. До переписывания: серверная часть svaib — часть продукта ([глоссарий](glossary.md)); модель управления — [Svaib Management System](methodology/ontology/01_svaib-management-system.md), а не вертикали управленческих циклов ниже.
+**Устарел, на переписывании** — план консистентности. До переписывания: серверная часть svaib — часть продукта ([глоссарий](glossary.md)); модель управления — [Svaib Management System](methodology/management-system/01_svaib-management-system.md), а не вертикали управленческих циклов ниже.
 
 ## Кратко
 
@@ -17,9 +17,7 @@ priority: high
 ## Связанные файлы
 
 - 01_overview.md — видение продукта, принципы, границы, бизнес-модель
-- methodology/ontology/ontology.md — сущности, связи, правила размещения
 - methodology/README.md — карта методологий слоёв и вертикалей
-- methodology/ontology/rituals.md — каталог ритуалов
 - methodology/scaffold/02_file-spec.md — формат scaffold-файлов: YAML, шапка, H2, связи
 - methodology/memory/01_context_memory.md — протокол работы агента с информацией (операционализация слоя "Память")
 - methodology/scaffold/01_architecture.md — архитектура scaffold: требования, принципы, модель верхнего уровня
@@ -69,9 +67,9 @@ priority: high
 
 Не компонент продукта, а то, что удерживает всё вместе. Источник правды.
 
-**Онтология** ([ontology.md](methodology/ontology/ontology.md)) — какие сущности существуют, как связаны, что куда кладётся. Справочник.
+**Онтология** — какие сущности существуют, как связаны, что куда кладётся. Справочник.
 
-**Методология** ([methodology/](methodology/)) — слой методологий: scaffold, metrics и будущие вертикали. Старый `methodology/methodology.md` не является текущим SOT. Каталог ритуалов — в [methodology/ontology/rituals.md](methodology/ontology/rituals.md). То, что зашивается в skills и agents.
+**Методология** ([methodology/](methodology/)) — слой методологий: scaffold, metrics и будущие вертикали. Старый `methodology/methodology.md` не является текущим SOT. То, что зашивается в skills и agents.
 
 Клиент может не читать онтологию и методологию напрямую — они зашиты в scaffold (структуру) и plugin (автоматизацию). Но они существуют как отдельные документы для развития продукта и обучения.
 
@@ -113,7 +111,7 @@ README, навигация  →  описание того что есть
 
 | Часть product           | Роль в трёх слоях                           |
 | ----------------------- | ------------------------------------------- |
-| `methodology/ontology/` | Мета-рамка: какие сущности существуют       |
+| `methodology/management-system/` | Мета-рамка: какие сущности существуют       |
 | `methodology/`          | Мета-рамка: как с этими сущностями работать |
 | `scaffold/`             | Реализация слоя **Данные** у клиента        |
 | `methodology/memory/`   | Контракты слоя **Память**                   |
@@ -124,7 +122,7 @@ README, навигация  →  описание того что есть
 
 ```text
 Вертикаль meeting:
-methodology/ontology/      → какие сущности встречи существуют
+methodology/management-system/      → какие сущности встречи существуют
 methodology/   → как анализировать встречу
 scaffold/      → где у клиента живут протоколы и транскрипты
 methodology/memory/ → как искать историю и контекст встречи
@@ -133,8 +131,6 @@ plugin/        → что устанавливается клиенту
 ```
 
 Никаких «3 vs 6 vs N» альтернатив. Это три ортогональных разреза одной системы.
-
-Онтологический источник понятия — [methodology/ontology/management_cycles.md](methodology/ontology/management_cycles.md).
 
 ### Тест границы: что в горизонтали, что в вертикали
 
@@ -153,7 +149,7 @@ Email, Telegram, работа с документами — **скиллы**, н
 
 ### Лимит
 
-Управленческие циклы конечны. **10 вертикалей максимум** в обозримой перспективе. Сейчас на горизонте: strategy, finance, team, metrics, meeting, product, marketing, sales, projects (см. [methodology/ontology/management_cycles.md](methodology/ontology/management_cycles.md)). Если режется мельче — это скиллы.
+Управленческие циклы конечны. **10 вертикалей максимум** в обозримой перспективе. Сейчас на горизонте: strategy, finance, team, metrics, meeting, product, marketing, sales, projects. Если режется мельче — это скиллы.
 
 ---
 

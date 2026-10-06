@@ -1,7 +1,7 @@
 ---
 title: Metrics — карта вертикали
-updated: 2026-08-28
-version: 2
+updated: 2026-10-02
+version: 3
 ---
 
 # Metrics — карта вертикали
@@ -32,7 +32,6 @@ version: 2
 | [scripts/read_metrics.py](../../plugin/skills/metrics/values/scripts/read_metrics.py) | code | Чтение значений из книги по карте адресов: строка по меткам, ось периодов, единицы, пометки |
 | [scripts/calculator.py](../../plugin/skills/metrics/values/scripts/calculator.py) | code | Производные: выполнение плана, отклонение, изменение к периоду, рост к прошлому году |
 | [scripts/snapshot.py](../../plugin/skills/metrics/values/scripts/snapshot.py) | code | Кэш снимка книги вне базы клиента, свежесть по дате изменения файла |
-| [business-metrics-intake.md](../../plugin/skills/metrics/values/business-metrics-intake.md) | final | Промпт-помощник заполнения `business-metrics.md` с CEO |
 
 Инженерный трек — `dev/skills/aspect-metrics/values/`, к клиенту не едет:
 
@@ -42,6 +41,10 @@ version: 2
 | defects.md | draft | Дефект-лист семантического слоя (30.07): 9 дефектов, 4 категории; вход для правок канона |
 | connector-gsheets-mcp.md | draft | Чтение Google Sheets через Drive MCP: xlsx-выгрузка, guard-и, свежесть снимка |
 | l1/runtime/ | code | Наследство серверного контура: раннер, extractor, verifier, catalog, схемы контракта. Контур снят 26.08, код покрыт 173 тестами |
+
+## Формулирование ключевых метрик
+
+[intake/](intake/README.md) — отдельная методологическая папка: исходный промпт и черновой пакет для `metrics-intake`. Инженерная сборка — dev/skills/aspect-metrics/intake/.
 
 ## Scaffold
 
