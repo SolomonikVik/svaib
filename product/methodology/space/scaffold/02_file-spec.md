@@ -1,8 +1,8 @@
 ---
 title: "Scaffold file spec — канон md-файла scaffold"
 created: 2026-05-05
-updated: 2026-08-27
-version: 4.2
+updated: 2026-10-08
+version: "4.2.2"
 status: final
 ---
 
@@ -87,14 +87,14 @@ title: "..."
 
 Для такого файла обязательный YAML — только `title`. `created` / `updated` не ставятся: даты событий, решений и прогресса фиксируются в теле файла, рядом с самими записями.
 
-**SOT / canon / spec / methodology / skills / template registry** — канонический файл, где важны версия, история формы или статус готовности. Здесь допустимы `created`, `updated`, `version`, `status`:
+**SOT / canon / spec / methodology / skills / template registry** — файл, где важны версия, история формы или статус готовности. Здесь допустимы `created`, `updated`, `version`, `status`:
 
 ```yaml
 ---
 title: "..."
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-version: N
+version: "MAJOR.MINOR.PATCH"
 status: final
 ---
 ```
@@ -102,10 +102,10 @@ status: final
 ### Поля
 
 - **`title`** — зеркало H1 для YAML-scan и карточки файла. Подробнее — § Шапка файла.
-- **`created`** (`YYYY-MM-DD`) — дата создания канонического/SOT/spec/methodology/registry-файла, если она нужна для истории формы.
-- **`updated`** (`YYYY-MM-DD`) — дата последнего смыслового обновления канонического/SOT/spec/methodology/registry-файла.
-- **`version`** — только для SOT, spec, templates, skills, где важна версия канона. Не используется в операционных клиентских файлах.
-- **`status`** (`raw` / `draft` / `review` / `final`) — стадия готовности канонического файла. `final` = редактирование агентом запрещено без согласования.
+- **`created`** (`YYYY-MM-DD`) — дата создания SOT/canon/spec/methodology/registry-файла, если она нужна для истории формы.
+- **`updated`** (`YYYY-MM-DD`) — дата последнего смыслового обновления SOT/canon/spec/methodology/registry-файла.
+- **`version`** — только для SOT, spec, templates, skills, где различают принятые редакции; поле может содержать общую версию набора файлов одного канона, не создавая отдельную версию каждого файла. Для будущей принятой редакции — строка `"MAJOR.MINOR.PATCH"` по [общему правилу версионирования](../../../development-operating-model.md#релизы-и-версии); прежние обозначения переходят по процессу своего объекта версии. Не используется в операционных клиентских файлах.
+- **`status`** (`raw` / `draft` / `review` / `final`) — стадия готовности SOT/canon/spec/methodology/registry-файла. `final` = редактирование агентом запрещено без согласования.
 
 **Опциональные поля** `domain`, `tags`, `source` — добавляются при появлении живой потребности (поиск по доменам, knowledge-теги).
 

@@ -4,7 +4,7 @@ source: "https://developers.openai.com/plugins/build/plugins"
 source_type: docs
 status: processed
 added: 2026-09-18
-updated: 2026-09-18
+updated: 2026-10-08
 review_by: 2026-12-18
 tags: [plugins, codex, openai, claude-code, marketplace, hooks, mcp, portability, agent-plugins]
 publish: false
@@ -69,6 +69,8 @@ Codex (CLI, TUI, desktop) ставит плагины из маркетплей�
 - **Вручную:** `codex plugin marketplace upgrade [NAME]`. Отдельной команды `codex plugin update` нет.
 - **Пиннинг:** на уровне маркетплейса — `--ref`, на уровне записи плагина — `ref` или `sha`.
 - **Локальные маркетплейсы** `upgrade` не трогает. При разработке меняют версию в манифесте и переустанавливают плагин. Встроенный `plugin-creator` для этого ставит суффикс `+codex.<cachebuster>`.
+
+Отдельная проверка Codex 0.161.0 от 2026-10-08: [удаление старых каталогов и риск запуска хуков по прежнему пути](plugin-update-hook-paths.md#codex). Она дополняет исторический снимок этого обзора.
 
 ## Хуки
 

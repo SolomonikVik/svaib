@@ -2,7 +2,7 @@
 title: "Plugins — система расширения AI-агентов: формат, экосистема, best practices"
 status: processed
 added: 2026-02-13
-updated: 2026-09-19
+updated: 2026-10-08
 review_by: 2026-12-08
 tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
@@ -347,6 +347,8 @@ claude plugin install <name> --scope project
 ## Кеширование и безопасность
 
 **Кеширование:** клон маркетплейса остаётся в `~/.claude/plugins/marketplaces/<имя>` (git clone `--depth 1`, рабочее дерево целиком), а сам плагин копируется в `~/.claude/plugins/cache/<маркетплейс>/<плагин>/<версия>/`. В рабочую папку проекта не попадает ничего. Исключение — плагин с относительным путём в локальном маркетплейсе-папке и `command`-источник в режиме link: они грузятся на месте. Path traversal (`../`) не работает — внешние файлы не копируются.
+
+**Жизненный цикл версии:** удержание старых каталогов и переключение хуков определяет хост. Совместимый формат пакета не обещает одинаковой безопасности обновления открытой сессии — [сравнение Codex и Claude Code](plugin-update-hook-paths.md).
 
 **Обход ограничения:** Симлинки внутри плагина (`ln -s /path/to/shared ./shared`) — копируются при установке. Или: указать parent-директорию как source в marketplace.
 

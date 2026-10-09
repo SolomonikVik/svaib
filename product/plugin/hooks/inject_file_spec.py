@@ -18,11 +18,14 @@
 
 Запись оболочкой ловится базово (`bash_writes`): перенаправление, `tee`, `sed -i`/`perl -i`, получатель
 `cp`/`mv`/`install`/`ln`/`rsync`, явная запись в коде интерпретатора (`open(путь, 'w')`,
-`Path(путь).write_text`, `writeFile`; путь — литерал или переменная с литералом из того же скрипта),
-`apply_patch` через shell. Разбор — сито, а не парсер. Упоминание пути в коде — в тексте замены, в
+`Path(путь).write_text`, `writeFile`; путь — литерал или переменная из того же скрипта),
+`apply_patch` через shell. Разбор оболочки — сито, а не полный парсер. Упоминание пути в коде — в тексте замены, в
 строке данных — не запись. Пути — от cwd сессии, после `cd X` в той же команде — от X; тип определяется именем. В Cowork путь VM
 `/sessions/<сессия>/mnt/<папка>` переводится в путь хоста (`nav.vm_to_host`).
-Не ловятся запись через переменную, `find -exec`, скрипт-файл, пишущий сам, и чтение спецификации
+Inline Python разбирается статически: присваивания по порядку, конкатенация строк, списки и кортежи
+путей, накопление ключей словаря и запись циклом по `.items()`. Код не исполняется; произвольные
+функции и динамические выражения путей не вычисляются. Другие интерпретаторы — сито по вызовам.
+Не ловятся запись через переменную оболочки, `find -exec`, скрипт-файл, пишущий сам, и чтение спецификации
 агентом самим. Хук — перила для невраждебного агента, не замок.
 
 Разбор оболочки, корень пространства и state-каталог — из соседнего `inject_space_map.py`: один
@@ -39,6 +42,8 @@
 """
 from __future__ import annotations
 
+import ast
+import copy
 import datetime
 import json
 import os
@@ -241,23 +246,261 @@ def _segment_writes(toks: list[str], cwd: str) -> tuple[str, list[str]]:
     return cmd, out
 
 
-def script_writes(code: str) -> list[str]:
-    """Пути, в которые код интерпретатора пишет явно. Путь из os.path.join или f-строки не ловится."""
-    assigned = {name: path for name, _, path in PATH_ASSIGN_RE.findall(code)}
+class _PythonPaths:
+    """Статический срез путей: литералы, конкатенация, таблицы и конечные циклы.
+
+    Содержимое файлов, функции и произвольные выражения не вычисляются. Множество строк —
+    возможные значения пути; список/кортеж/словарь — таблица для распаковки и обхода.
+    """
+
+    def __init__(self):
+        self.env = {}
+        self.writes = []
+        self.modules = {name: name for name in ("pathlib", "io", "builtins")}
+        self.symbols = {"Path": "pathlib.Path", "open": "builtins.open"}
+
+    def value(self, node):
+        if isinstance(node, getattr(ast, "Index", ())):
+            return self.value(node.value)     # Python 3.8 оборачивает ключ Subscript в Index
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            return {node.value}
+        if isinstance(node, ast.Constant) and isinstance(node.value, bytes):
+            return {os.fsdecode(node.value)}
+        if isinstance(node, ast.JoinedStr) and all(
+                isinstance(n, ast.Constant) and isinstance(n.value, str) for n in node.values):
+            return {"".join(n.value for n in node.values)}   # f-строка без подстановок — литерал
+        if isinstance(node, ast.Name):
+            return self.env.get(node.id)
+        if isinstance(node, ast.List):
+            return [self.value(n) for n in node.elts]
+        if isinstance(node, ast.Tuple):
+            return tuple(self.value(n) for n in node.elts)
+        if isinstance(node, ast.Dict):
+            return {k: self.value(v) for key, v in zip(node.keys, node.values)
+                    for k in (self.value(key) or ()) if isinstance(k, str)}
+        if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Add):
+            a, b = self.value(node.left), self.value(node.right)
+            if isinstance(a, set) and isinstance(b, set):
+                return {x + y for x in a for y in b}
+            if isinstance(a, list) and isinstance(b, list):
+                return a + b
+            if isinstance(a, tuple) and isinstance(b, tuple):
+                return a + b
+        if isinstance(node, ast.Call):
+            fn = node.func
+            if node.args and (isinstance(fn, ast.Name) and self.symbols.get(fn.id) == "pathlib.Path" or
+                              isinstance(fn, ast.Attribute) and fn.attr == "Path" and
+                              isinstance(fn.value, ast.Name) and
+                              self.modules.get(fn.value.id) == "pathlib"):
+                paths = {""}
+                for arg in node.args:
+                    parts = self.value(arg)
+                    if not isinstance(parts, set):
+                        return None
+                    paths = {os.path.join(a, b) for a in paths for b in parts}
+                return paths
+            if isinstance(fn, ast.Name) and fn.id in {"list", "tuple"} and node.args:
+                values = self.iterable(self.value(node.args[0]))
+                return tuple(values) if fn.id == "tuple" and values is not None else values
+            if isinstance(fn, ast.Name) and not node.args and not node.keywords:
+                if fn.id == "dict":
+                    return {}
+                if fn.id == "tuple":
+                    return ()
+                if fn.id == "list":
+                    return []
+            if isinstance(fn, ast.Attribute):
+                obj = self.value(fn.value)
+                if isinstance(obj, dict) and not node.args and not node.keywords:
+                    if fn.attr == "items":
+                        return [[{k}, v] for k, v in obj.items()]
+                    if fn.attr == "keys":
+                        return [{k} for k in obj]
+        return None
+
+    @staticmethod
+    def iterable(value):
+        if isinstance(value, dict):
+            return [{k} for k in value]
+        return list(value) if isinstance(value, (list, tuple)) else None
+
+    def bind(self, target, value):
+        if isinstance(target, ast.Name):
+            self.env[target.id] = value
+        elif isinstance(target, (ast.Tuple, ast.List)):
+            for i, t in enumerate(target.elts):
+                self.bind(t, value[i] if isinstance(value, (list, tuple)) and i < len(value) else None)
+        elif isinstance(target, ast.Subscript):
+            obj, keys = self.value(target.value), self.value(target.slice)
+            if isinstance(obj, dict) and isinstance(keys, set):
+                for key in keys:
+                    obj[key] = value
+
+    def calls(self, expr):
+        if expr is None:
+            return
+        pending = [expr]
+        while pending:
+            node = pending.pop()
+            if isinstance(node, ast.Lambda):
+                continue                     # определение функции само не выполняет запись
+            pending.extend(ast.iter_child_nodes(node))
+            if not isinstance(node, ast.Call):
+                continue
+            fn, path, modes = node.func, None, None
+            if (isinstance(fn, ast.Name) and self.symbols.get(fn.id) in {"io.open", "builtins.open"} or
+                              isinstance(fn, ast.Attribute) and fn.attr == "open" and
+                              isinstance(fn.value, ast.Name) and
+                              self.modules.get(fn.value.id) in {"io", "builtins"}):
+                path = self.value(node.args[0]) if node.args else next(
+                    (self.value(kw.value) for kw in node.keywords if kw.arg == "file"), None)
+                modes = self.value(node.args[1]) if len(node.args) > 1 else None
+            elif isinstance(fn, ast.Attribute):
+                if fn.attr in {"write_text", "write_bytes"}:
+                    path, modes = self.value(fn.value), {"w"}
+                elif fn.attr == "open":
+                    path = self.value(fn.value)
+                    modes = self.value(node.args[0]) if node.args else None
+            for kw in node.keywords:
+                if kw.arg == "mode":
+                    modes = self.value(kw.value)
+            if isinstance(path, set) and isinstance(modes, set) and any(
+                    any(c in mode for c in "wax+") for mode in modes):
+                self.writes.extend(sorted(path))
+
+    @classmethod
+    def merge(cls, a, b):
+        if a is b:
+            return a
+        if isinstance(a, set) and isinstance(b, set):
+            return a | b
+        if isinstance(a, dict) and isinstance(b, dict):
+            return {k: cls.merge(a.get(k), b.get(k)) for k in a.keys() | b.keys()}
+        if a is None:
+            return b
+        if b is None:
+            return a
+        if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+            # Сохраняем позиции: строку таблицы могут распаковать после ветвления.
+            values = [cls.merge(a[i] if i < len(a) else None,
+                                b[i] if i < len(b) else None)
+                      for i in range(max(len(a), len(b)))]
+            return tuple(values) if isinstance(a, tuple) and isinstance(b, tuple) else values
+        return a if a == b else None
+
+    def run(self, statements):
+        for stmt in statements:
+            if isinstance(stmt, ast.Import):
+                for alias in stmt.names:
+                    if alias.name in {"pathlib", "io", "builtins"}:
+                        self.modules[alias.asname or alias.name] = alias.name
+            elif isinstance(stmt, ast.ImportFrom) and not stmt.level:
+                for alias in stmt.names:
+                    symbol = f"{stmt.module}.{alias.name}"
+                    if symbol in {"pathlib.Path", "io.open", "builtins.open"}:
+                        self.symbols[alias.asname or alias.name] = symbol
+            elif isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+                self.calls(stmt.value)
+                value = self.value(stmt.value)
+                targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+                for target in targets:
+                    self.bind(target, value)
+            elif isinstance(stmt, ast.AugAssign):
+                self.calls(stmt.value)
+                self.bind(stmt.target, self.value(ast.BinOp(
+                    left=stmt.target, op=stmt.op, right=stmt.value)))
+            elif isinstance(stmt, ast.Expr):
+                self.calls(stmt.value)
+            elif isinstance(stmt, (ast.For, ast.AsyncFor)):
+                self.calls(stmt.iter)
+                values = self.iterable(self.value(stmt.iter))
+                # Неизвестный цикл не наследует последнее значение переменной до него.
+                for value in values if values is not None else [None]:
+                    self.bind(stmt.target, value)
+                    self.run(stmt.body)
+                self.run(stmt.orelse)
+            elif isinstance(stmt, ast.If):
+                self.calls(stmt.test)
+                before = copy.deepcopy(self.env)
+                self.run(stmt.body)
+                yes = self.env
+                self.env = before
+                self.run(stmt.orelse)
+                self.env = self.merge(yes, self.env)
+            elif isinstance(stmt, ast.While):
+                self.calls(stmt.test)
+                before = copy.deepcopy(self.env)
+                # Достаточно одного статического прохода: цикл не исполняем.
+                self.run(stmt.body)
+                self.env = self.merge(before, self.env)
+                self.run(stmt.orelse)
+            elif isinstance(stmt, (ast.Try, getattr(ast, "TryStar", ast.Try))):
+                before = copy.deepcopy(self.env)
+                self.run(stmt.body)
+                self.run(stmt.orelse)
+                possible = self.merge(before, self.env)
+                outcomes = self.env
+                for handler in stmt.handlers:
+                    self.env = copy.deepcopy(possible)
+                    if handler.name:
+                        self.env[handler.name] = None
+                    self.run(handler.body)
+                    outcomes = self.merge(outcomes, self.env)
+                self.env = outcomes
+                self.run(stmt.finalbody)
+            elif isinstance(stmt, getattr(ast, "Match", ())):
+                self.calls(stmt.subject)
+                before = copy.deepcopy(self.env)
+                outcomes = before
+                for case in stmt.cases:
+                    self.env = copy.deepcopy(before)
+                    self.calls(case.guard)
+                    self.run(case.body)
+                    outcomes = self.merge(outcomes, self.env)
+                self.env = outcomes
+            elif isinstance(stmt, (ast.With, ast.AsyncWith)):
+                for item in stmt.items:
+                    self.calls(item.context_expr)
+                    if item.optional_vars:
+                        self.bind(item.optional_vars, None)
+                self.run(stmt.body)
+            elif isinstance(stmt, ast.Assert):
+                self.calls(stmt.test)
+                self.calls(stmt.msg)
+
+
+def script_writes(code: str, *, python: bool = True) -> list[str]:
+    """Явные записи inline-скрипта; код не исполняется. Динамические пути не ловятся."""
+    if python:
+        try:
+            tree = ast.parse(code)
+        except SyntaxError:
+            pass
+        else:
+            paths = _PythonPaths()
+            paths.run(tree.body)
+            return list(dict.fromkeys(paths.writes))
+    # Присваивания и записи читаются по порядку: одна переменная часто используется для
+    # нескольких файлов. Последнее присваивание во всём скрипте не относится к ранним записям.
+    events = [(m.start(), True, m) for m in PATH_ASSIGN_RE.finditer(code)]
+    events += [(m.start(), False, m) for rx in WRITE_CALL_RES for m in rx.finditer(code)]
+    assigned = {}
     out = []
-    for rx in WRITE_CALL_RES:
-        for m in rx.finditer(code):
-            groups = m.groupdict()
-            path = groups.get("lit") or assigned.get(groups.get("var") or "")
-            if path:
-                out.append(path)
+    for _, is_assignment, m in sorted(events, key=lambda event: event[0]):
+        if is_assignment:
+            assigned[m.group(1)] = m.group(3)
+            continue
+        groups = m.groupdict()
+        path = groups.get("lit") or assigned.get(groups.get("var") or "")
+        if path:
+            out.append(path)
     return out
 
 
 def bash_writes(text: str, cwd: str) -> list[str]:
     """Файлы, в которые пишет команда оболочки. Сито, а не парсер: лишний кандидат отсеет
     `spec_of`, а ложная спецификация стоит одного отказа за сессию."""
-    if not NAME_RE.search(text):
+    if not NAME_RE.search(text) and not re.search(r"\bpython3?\b", text):
         return []
     found: list[str] = []
     if "*** Begin Patch" in text:                      # Codex зовёт apply_patch и через оболочку
@@ -271,7 +514,11 @@ def bash_writes(text: str, cwd: str) -> list[str]:
             if seg:
                 cmd, writes = _segment_writes(seg, cwd)
                 if cmd in SCRIPT_CMDS:                 # код интерпретатора: только явная запись
-                    writes += script_writes(" ".join(seg) + "\n" + body)
+                    flags = {"-c"} if cmd in {"python", "python3"} else {"-e", "--eval"}
+                    # С -c/-e heredoc — входные данные, а не исполняемый код.
+                    code = next((seg[i + 1] for i, flag in enumerate(seg[:-1]) if flag in flags),
+                                body or " ".join(seg))
+                    writes += script_writes(code, python=cmd in {"python", "python3"})
                 found += [os.path.join(cwd, os.path.expanduser(p)) for p in writes]
                 # `cd X && tee a.md`: дальше пути от X (Cowork ходит так по VM); через `|` cd не
                 # действует — там подоболочка, и чужой cwd дал бы ложный отказ

@@ -8,6 +8,7 @@
 
 - [!plugins.md](!plugins.md) — сводка знаний
 - [codex-plugins.md](codex-plugins.md) — плагины Codex: какой манифест читается, что грузится, маркетплейсы и автообновление, доверие к хукам, один пакет для Codex и Claude Code
+- [plugin-update-hook-paths.md](plugin-update-hook-paths.md) — каталоги версий и пути хуков при обновлении: риск Codex, удержание Claude Code, границы переносимости
 - [agent-plugins-standard.md](agent-plugins-standard.md) — Agent Plugins 1.0: вендор-нейтральный стандарт упаковки (skills + MCP), расхождения с форматом Anthropic, CLI-трансляция
 
 ## Связи

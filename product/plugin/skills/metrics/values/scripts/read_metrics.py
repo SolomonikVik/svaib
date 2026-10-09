@@ -7,16 +7,22 @@
     python3 read_metrics.py --book <снимок>.xlsx --card <карта>.json [--upto 2026-09] [--json]
 
 Что код выводит из книги сам: строку метрики (по меткам), ось периодов (шапка),
-режим процента (формат ячейки). Что обязано быть в карте: книга, лист, путь меток,
-единица и масштаб — из формата ячейки они не выводятся.
+режим процента (формат ячейки). Книга, лист, метки и единица берутся из паспорта.
+Масштаб по умолчанию 1; иной масштаб агент переносит из «Числа в книге».
+labels — адрес для одного прогона, отдельного поля пути меток в паспорте нет.
 
-Расхождение книги с описанием метрики не отказ: строку сдвинули, лист переименовали, но метки
-нашлись — читаем и говорим, насколько разошлось. Книга перестала опознаваться (метки не
-находятся, шапка не парсится, кандидатов несколько) — отказ по этой метрике, без числа.
+strict_labels: true требует точный лист и дословные метки без нормализации и поиска подстрокой.
+plan_source в записи метрики задаёт собственные book (локальный xlsx, необязательно),
+sheet, labels, unit, scale и year плана. Его ряд присоединяется к plan этой метрики.
+Путь book разрешается от каталога запуска, как --book; Google-книгу заранее выгружают.
+
+В строгом режиме сдвиг строки допустим, изменение имени листа или метки — отказ без числа.
+При нескольких кандидатах или непонятной оси периодов число также не выдаётся.
+Совместимость старых карт: без strict_labels допускаются похожие листы и метки с пометкой.
 """
 from __future__ import annotations
 
-import argparse, datetime as dt, json, re, sys
+import argparse, datetime as dt, json, math, re, sys, zipfile
 from pathlib import Path
 
 try:
@@ -110,17 +116,19 @@ def _match(path, want, exact):
     return i == len(want)
 
 
-def find_rows(grid, labels, first_value_col):
+def find_rows(grid, labels, first_value_col, strict=False):
     """Строки по пути меток. Сначала точное совпадение; подстрока — только если точных ноль.
 
     Подстрока на живых книгах ловит лишнее: «% churn rate» входит в «% churn rate partners»,
     «fact» — в «fact (2025)». Поэтому неоднозначность не разрешается: отдаём всех кандидатов,
     решение принимает вызывающий, а значение не выводится.
+    strict=True отключает подстроку и нормализацию регистра/пробелов.
     """
-    want = [norm(x) for x in labels]
-    for exact in (True, False):
+    normalize = (lambda value: '' if value is None else str(value)) if strict else norm
+    want = [normalize(x) for x in labels]
+    for exact in ((True,) if strict else (True, False)):
         hits = [r for r in range(len(grid))
-                if _match([norm(grid[r][c]) for c in range(first_value_col)], want, exact)]
+                if _match([normalize(grid[r][c]) for c in range(first_value_col)], want, exact)]
         if hits:
             return hits, ('exact' if exact else 'substring')
     return [], 'none'
@@ -136,7 +144,7 @@ def find_column(grid, label, max_scan=10):
     return None, None
 
 
-def read_by_column(grid, ws, item):
+def read_by_column(grid, ws, item, strict=False):
     """Значение на пересечении строки-по-меткам и колонки-по-заголовку.
 
     Так адресуются оперативные листы: ряда по месяцам нет, есть колонка «Month» и
@@ -147,7 +155,7 @@ def read_by_column(grid, ws, item):
     hrow, col = find_column(grid, item["column_label"])
     if col is None:
         return None, f"колонка «{item['column_label']}» не найдена"
-    hits, mode = find_rows(grid, item["labels"], col)
+    hits, mode = find_rows(grid, item["labels"], col, strict=strict)
     if len(hits) != 1:
         return None, ("меток не найдено" if not hits
                       else f"неоднозначно: {len(hits)} строк {[h + 1 for h in hits]}")
@@ -160,7 +168,7 @@ def read_by_column(grid, ws, item):
     return (val, r + 1, mode), None
 
 
-def read_cell(ws, grid, item):
+def read_cell(ws, grid, item, strict=False):
     """Адрес одной ячейкой: значение текущего периода, которого нет в ряду по месяцам.
 
     Так адресуются оперативные показатели («прогноз месяца», «накопленным итогом»):
@@ -172,7 +180,8 @@ def read_cell(ws, grid, item):
     if not guard.get("cell") or not guard.get("label"):
         return None, "адрес ячейкой без guard: нужна метка-подтверждение"
     got = ws[guard["cell"]].value
-    if norm(got) != norm(guard["label"]):
+    normalize = (lambda value: '' if value is None else str(value)) if strict else norm
+    if normalize(got) != normalize(guard["label"]):
         return None, (f"guard не сошёлся: {guard['cell']} = {got!r}, "
                       f"ожидалось {guard['label']!r} — строки съехали")
     cell = ws[item["cell"]]
@@ -183,17 +192,19 @@ def read_cell(ws, grid, item):
             else v * (item.get("scale") or 1)), None
 
 
-def resolve_sheet(wb, name):
+def resolve_sheet(wb, name, strict=False):
     """Лист по имени; переименовали — ищем единственный похожий и говорим об этом."""
     if name in wb.sheetnames:
         return name, None
+    if strict:
+        return None, f"лист «{name}» не найден"
     cand = [s for s in wb.sheetnames if norm(name) in norm(s) or norm(s) in norm(name)]
     if len(cand) == 1:
         return cand[0], f"лист «{name}» не найден, читаю «{cand[0]}»"
     return None, f"лист «{name}» не найден, похожих {len(cand)}"
 
 
-def _read_impl(book, card, year=None, upto=None):
+def _read_impl(book, card, year=None, upto=None, kind="факт"):
     """upto — последний период, за который бывает ФАКТ (по умолчанию текущий месяц).
 
     В книгах формулы считают и будущие месяцы: пустой сентябрь выдаёт 0, а рост
@@ -201,8 +212,16 @@ def _read_impl(book, card, year=None, upto=None):
     обрезается по upto. План на будущее остаётся: он и должен смотреть вперёд.
     """
     wb = openpyxl.load_workbook(book, data_only=True)
+    try:
+        return _read_workbook(wb, card, year, upto, kind)
+    finally:
+        wb.close()
+
+
+def _read_workbook(wb, card, year, upto, kind):
     cache, out = {}, []
     for item in card["metrics"]:
+        strict = bool(item.get("strict_labels") or card.get("strict_labels"))
         row = {"metric": item["name"], "unit": item.get("unit"), "notes": [], "values": {}, "plan": {},
                "companion": bool(item.get("year_offset"))}
         if needs_scale(item.get("unit")) and item.get("scale") is None:
@@ -215,17 +234,18 @@ def _read_impl(book, card, year=None, upto=None):
             row["gap"] = {"what": "unit", "metric": item["name"],
                           "unit": item.get("unit"), "spec_file": item.get("spec_file")}
 
-        sheet, note = resolve_sheet(wb, item["sheet"])
+        sheet, note = resolve_sheet(wb, item["sheet"], strict=strict)
         if note:
             row["notes"].append(note)
         if sheet is None:
             row["status"] = "refused"; row["reason"] = note; out.append(row); continue
+        row["sheet"] = sheet
         if sheet not in cache:
             ws = wb[sheet]; g = sheet_grid(ws); cache[sheet] = (ws, g, find_period_axis(g))
         ws, grid, axis = cache[sheet]
 
         if item.get("column_label"):
-            got, err = read_by_column(grid, ws, item)
+            got, err = read_by_column(grid, ws, item, strict=strict)
             if err:
                 row["status"] = "refused"; row["reason"] = err; out.append(row); continue
             value, r, mode = got
@@ -238,7 +258,7 @@ def _read_impl(book, card, year=None, upto=None):
             row["status"] = "ok_with_notes"; out.append(row); continue
 
         if item.get("cell"):
-            value, err = read_cell(ws, grid, item)
+            value, err = read_cell(ws, grid, item, strict=strict)
             if err:
                 row["status"] = "refused"; row["reason"] = err; out.append(row); continue
             period = item.get("period") or upto or ""
@@ -252,7 +272,7 @@ def _read_impl(book, card, year=None, upto=None):
         first = min(cols.values())
 
         def series(labels, kind):
-            hits, mode = find_rows(grid, labels, first)
+            hits, mode = find_rows(grid, labels, first, strict=strict)
             if len(hits) != 1:
                 return None, (f"меток не найдено" if not hits
                               else f"неоднозначно: {len(hits)} строк {[h + 1 for h in hits]}"), None
@@ -279,16 +299,16 @@ def _read_impl(book, card, year=None, upto=None):
                 row["notes"].append(f"{kind}: метка найдена неточно")
             return r + 1, None, vals
 
-        r, err, vals = series(item["labels"], "факт")
+        r, err, vals = series(item["labels"], kind)
         if err:
             row["status"] = "refused"; row["reason"] = err; out.append(row); continue
         row["row"] = r; row["values"] = vals
         now = dt.date.today().strftime("%Y-%m")
-        if now in vals:
+        if kind == "факт" and now in vals:
             row["notes"].append(f"{now} — месяц не закрыт, значение неокончательное")
         if item.get("expected_row") and item["expected_row"] != r:
             row["notes"].append(f"строка была {item['expected_row']}, стала {r} — книга разошлась с описанием метрики")
-        if item.get("plan_labels"):
+        if item.get("plan_labels") and "plan_source" not in item:
             pr, perr, pvals = series(item["plan_labels"], "план")
             if perr:
                 row["notes"].append(f"план не прочитан: {perr}")
@@ -301,8 +321,52 @@ def _read_impl(book, card, year=None, upto=None):
 
 def read(book, card, year=None, upto=None):
     """Публичный вход: upto по умолчанию — текущий месяц."""
-    return _read_impl(book, card, year or card.get("year"),
-                      upto or dt.date.today().strftime("%Y-%m"))
+    year = year or card.get("year")
+    upto = upto or dt.date.today().strftime("%Y-%m")
+    rows = _read_impl(book, card, year, upto)
+    for item, row in zip(card["metrics"], rows):
+        if "plan_source" not in item or row["status"] == "refused":
+            continue
+        source = item["plan_source"]
+        row["plan"] = {}
+        try:
+            if not isinstance(source, dict):
+                raise ValueError("plan_source должен содержать адрес плана")
+            plan_item = dict(source)
+            plan_item["name"] = item["name"]
+            plan_item.setdefault("sheet", item["sheet"])
+            plan_item.setdefault("unit", item.get("unit"))
+            plan_item.setdefault("scale", 1)
+            # Новый адрес плана всегда проверяется строго; старый plan_labels остаётся совместимым.
+            plan_item["strict_labels"] = True
+            if not plan_item.get("sheet"):
+                raise ValueError("лист плана не указан")
+            if not plan_item.get("cell") and (not isinstance(plan_item.get("labels"), list)
+                                              or not plan_item["labels"]
+                                              or any(not str(label).strip() for label in plan_item["labels"])):
+                raise ValueError("метки плана не указаны")
+            if norm(plan_item["unit"]) != norm(item.get("unit")):
+                raise ValueError(f"единица плана «{plan_item['unit']}» отличается от единицы факта «{item.get('unit')}»")
+            scale = plan_item["scale"]
+            if isinstance(scale, bool) or not isinstance(scale, (int, float)) or not math.isfinite(scale) or scale <= 0:
+                raise ValueError("масштаб плана должен быть положительным числом")
+            plan_book = source.get("book", book)
+            plan_year = source.get("year", year)
+            plan_row = _read_impl(plan_book, {"year": plan_year, "metrics": [plan_item]}, plan_year, upto, kind="план")[0]
+            if plan_row["status"] == "refused":
+                raise ValueError(plan_row["reason"])
+            if not plan_row["values"]:
+                raise ValueError("числовых значений плана нет")
+            row["plan"] = plan_row["values"]
+            row["plan_source"] = {"book": str(plan_book), "sheet": plan_row["sheet"], "row": plan_row.get("row")}
+            row["notes"].extend(f"план: {note}" for note in plan_row["notes"])
+            if source.get("source_note"):
+                row["notes"].append(f"план: {source['source_note']}")
+        except (OSError, TypeError, ValueError, zipfile.BadZipFile, openpyxl.utils.exceptions.InvalidFileException) as exc:
+            row["notes"].append(f"план не прочитан: {exc}")
+            row["plan_status"] = "refused"
+        row["status"] = "ok" if not row["notes"] else "ok_with_notes"
+    return rows
 
 
 def render(rows, source_note=None):

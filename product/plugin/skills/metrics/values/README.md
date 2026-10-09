@@ -13,10 +13,10 @@ type: index
 | Файл | Что делает |
 |---|---|
 | [SKILL.md](SKILL.md) | как агент разбирает запрос, читает описания метрик, добывает книгу и отвечает |
-| [scripts/read_metrics.py](scripts/read_metrics.py) | чтение значений из книги по карте адресов: строка по меткам, ось периодов, единицы, пометки о расхождениях |
+| [scripts/read_metrics.py](scripts/read_metrics.py) | чтение факта и плана по карте адресов; план может быть на другом листе или в другой книге, у каждого ряда свои периоды и масштаб |
 | [scripts/calculator.py](scripts/calculator.py) | производные: выполнение плана, отклонение, изменение к прошлому периоду, рост к прошлому году |
-| [scripts/snapshot.py](scripts/snapshot.py) | кэш снимка книги вне базы клиента, свежесть по дате изменения файла |
-| [tests/](tests/) | разбор шапки периодов `read_metrics.py`: `python3 -m unittest discover -s tests` из папки скилла |
+| [scripts/snapshot.py](scripts/snapshot.py) | кэш снимка Google-книги; проверка доступности и даты изменения локального xlsx без Drive |
+| [tests/](tests/) | периоды, точные метки, локальные книги и план из другого листа/файла с расчётом; `python3 -m unittest discover -s tests` из папки скилла, Python с `openpyxl` |
 
 ## Чего здесь нет
 

@@ -7,6 +7,7 @@
     python3 snapshot.py check <fileId> --modified <modifiedTime>   # качать или нет
     python3 snapshot.py put   <fileId> --file <скачанный>.xlsx --modified <modifiedTime> [--title T]
     python3 snapshot.py path  <fileId>
+    python3 snapshot.py local <путь>.xlsx  # локальная книга: читать оригинал без Drive
 
 Свежесть — по `modifiedTime` книги: он меняется от любой правки, поэтому ошибается только
 в безопасную сторону. Метаданные недоступны — снимок годен 24 часа и помечается как
@@ -91,6 +92,20 @@ def cmd_path(a):
     return out({"book": str(book), "exists": book.exists(), "mark": load_mark(a.file_id)})
 
 
+def cmd_local(a):
+    book = Path(a.file).expanduser().resolve()
+    try:
+        if not book.is_file():
+            return out({"action": "refuse", "reason": f"локальная книга недоступна: {book}"}, rc=1)
+        modified = dt.datetime.fromtimestamp(book.stat().st_mtime, dt.timezone.utc).isoformat(timespec="seconds")
+        with book.open("rb"):
+            pass
+    except OSError as exc:
+        return out({"action": "refuse", "reason": f"локальная книга недоступна: {exc}"}, rc=1)
+    return out({"action": "read", "book": str(book), "modifiedTime": modified,
+                "note": f"данные книги от {modified[:10]}"})
+
+
 def out(doc, rc=0):
     print(json.dumps(doc, ensure_ascii=False, indent=2))
     return rc
@@ -103,6 +118,7 @@ def main():
     p = sub.add_parser("put"); p.add_argument("file_id"); p.add_argument("--file", required=True)
     p.add_argument("--modified", required=True); p.add_argument("--title", default=""); p.set_defaults(fn=cmd_put)
     g = sub.add_parser("path"); g.add_argument("file_id"); g.set_defaults(fn=cmd_path)
+    l = sub.add_parser("local"); l.add_argument("file"); l.set_defaults(fn=cmd_local)
     a = ap.parse_args()
     return a.fn(a)
 
