@@ -24,9 +24,8 @@
 новые скиллы подхватываются без настроек. Вне готового пространства
 (`hook_space.ready_usage_root`) обработчик выходит, не читая транскрипт и ничего не создавая.
 Состояние открытых отрезков — вне пространства, файл на сессию. Сбой — stderr и код 0.
-`кто` — `subject` из кэша идентичности хука карты (`space_map.read_cache`, тот же ключ, срок не
-важен) на момент открытия запуска; нет записи — клетка пустая. В Codex `кто` пуст: этот кэш
-привязан к аккаунту Claude.
+`кто` — `subject` из записи идентичности текущей сессии (`space_map.read_session`)
+на момент открытия запуска; нет записи — клетка пустая в любом харнесе.
 """
 from __future__ import annotations
 
@@ -74,6 +73,8 @@ ORPHAN_AGE = 3600  # секунд без движения — сессия сч�
 LOG_LIMIT = 1_000_000  # байт лога, дальше — ротация в .1
 NAME_RE = re.compile(r"^[A-Za-z0-9][\w.-]*$")
 SKILL_FILE_RE = re.compile(r"""([^\s'"`;|&<>()]*[/\\]skills[/\\]([A-Za-z0-9][\w.-]*)[/\\](?:SKILL\.md|scripts[/\\]))""")
+QUOTED_SKILL_FILE_RE = re.compile(r"""["']([^"'\r\n]*[/\\]skills[/\\][A-Za-z0-9][\w.-]*[/\\](?:SKILL\.md|scripts[/\\])[^"'\r\n]*)["']""")
+RELATIVE_SKILL_FILE_RE = re.compile(r"""(?:^|(?<=[\s'";|&]))(skills[/\\][A-Za-z0-9][\w.-]*[/\\](?:SKILL\.md|scripts[/\\]))""")
 FOREIGN_SLASH_RE = re.compile(r"\s*/[A-Za-z][\w.-]*(?::[\w.-]+)?(?:\s|$)")  # команда, а не путь вроде /etc/hosts
 FOREIGN_CODEX_RE = re.compile(r"\s*\$[A-Za-z][\w.-]*(?::[\w.-]+)?(?![\w:.-])")
 COMMAND = "команда"
@@ -245,16 +246,16 @@ def skill_by_file(path) -> tuple[str, str] | None:
     модуль, который зовут агентом, читает инструкцию по пути из пакета, где его вызвали."""
     if not isinstance(path, str) or not path or "\0" in path:
         return None
-    m = SKILL_FILE_RE.search(path)
-    if not m or not NAME_RE.match(m.group(2)):
+    m = re.search(r"(?:^|[/\\])skills[/\\]([A-Za-z0-9][\w.-]*)[/\\](?:SKILL\.md|scripts[/\\])", path)
+    if not m or not NAME_RE.match(m.group(1)):
         return None
-    head = m.group(1)
-    base_dir = os.path.normcase(os.path.realpath(os.path.expanduser(head[:head.replace("\\", "/").rfind("/skills/")])))
-    own = os.path.normcase(os.path.realpath(plugin_root()))
-    same = base_dir == own or (os.path.dirname(base_dir) == os.path.dirname(own)
-                               and plugin_name(base_dir) == plugin_name(own) is not None)
-    skill_md = os.path.join(base_dir, "skills", m.group(2), "SKILL.md")
-    return (m.group(2), skill_md) if same and os.path.isfile(skill_md) else None
+    base_dir = os.path.realpath(os.path.expanduser(path[:m.start()]))
+    own = os.path.realpath(plugin_root())
+    same = os.path.normcase(base_dir) == os.path.normcase(own) or (
+        os.path.normcase(os.path.dirname(base_dir)) == os.path.normcase(os.path.dirname(own))
+        and plugin_name(base_dir) == plugin_name(own) is not None)
+    skill_md = os.path.join(base_dir, "skills", m.group(1), "SKILL.md")
+    return (m.group(1), skill_md) if same and os.path.isfile(skill_md) else None
 
 
 def resolve_skill(kind: str, value) -> tuple[str, str] | None:
@@ -263,10 +264,35 @@ def resolve_skill(kind: str, value) -> tuple[str, str] | None:
         return plugin_skill(value)
     if kind == "file":
         return skill_by_file(value)
-    if kind == "command" and isinstance(value, (str, list)):
-        text = value if isinstance(value, str) else " ".join(str(v) for v in value)
-        for m in SKILL_FILE_RE.finditer(text):
-            found = skill_by_file(m.group(1))
+    if kind == "command" and isinstance(value, list):
+        # argv уже разделён: путь с пробелами остаётся одним аргументом.
+        for arg in value:
+            found = skill_by_file(arg) if isinstance(arg, str) else None
+            found = found or resolve_skill("command", arg)
+            if found:
+                return found
+        return None
+    if kind == "command" and isinstance(value, str):
+        text = value
+        # Rollout хранит arguments как JSON: сначала снять этот слой, иначе Windows '\\'
+        # и кавычки пути останутся JSON-escape, а путь с пробелами потеряет начало.
+        try:
+            decoded = json.loads(text)
+        except ValueError:
+            decoded = None
+        if isinstance(decoded, dict):
+            for v in decoded.values():
+                if isinstance(v, (str, list)):
+                    found = resolve_skill("command", v)
+                    if found:
+                        return found
+        elif isinstance(decoded, list):
+            return resolve_skill("command", decoded)
+        paths = [m.group(1) for m in QUOTED_SKILL_FILE_RE.finditer(text)]
+        paths += [m.group(1) for m in SKILL_FILE_RE.finditer(text)]
+        paths += [m.group(1) for m in RELATIVE_SKILL_FILE_RE.finditer(text)]
+        for path in paths:
+            found = skill_by_file(path)
             if found:
                 return found
     return None
@@ -300,7 +326,7 @@ def new_launch(state: dict, ev: dict, key: str, skill: tuple[str, str], plugin: 
               "skill": skill[0], "skill_path": skill[1], "version": skill_version(skill[1]), "plugin": plugin,
               "method": method, "root": root, "root_real": os.path.realpath(root), "turn": 1,
               "start": time.time(), "last": time.time(), "transcript": ev.get("transcript_path"),
-              "who": "" if harness == "codex" else who(root),  # кто — на момент вызова: к записи аккаунт мог смениться
+              "who": who(root, sid),  # кто — на момент вызова, не при записи строки
               "cowork": os.environ.get("CLAUDE_CODE_IS_COWORK") == "1", "harness": harness, "key": key}
     state["launch"] = launch
     return launch
@@ -500,16 +526,15 @@ def os_name() -> str:
     return f"{system} {platform.release()}".strip()
 
 
-def who(root: str) -> str:
-    """`subject` пользователя из кэша хука карты: ключ — email аккаунта Claude и корень базы.
-    Нет записи, чужой корень, другой аккаунт, сбой — пусто: человека не угадываем."""
+def who(root: str, session_id: str) -> str:
+    """`subject` из записи текущей сессии; без неё человека не угадываем."""
     try:
         from pathlib import Path
 
         import space_map  # генератор карты лежит рядом с хуком; грузится только при открытии запуска
 
-        rec = space_map.read_cache(space_map.account_email(), Path(root))
-        return rec["subject"] if rec else ""  # срок не нужен: subject_id неизменен, ключ — аккаунт и база
+        rec = space_map.read_session(session_id, Path(root))
+        return rec["subject"] if rec else ""
     except Exception as e:  # noqa: BLE001 — без `кто` строка всё равно пишется
         log("who failed", error=f"{type(e).__name__}: {e}")
         return ""
@@ -592,7 +617,7 @@ def append(root: str, lines) -> bool:
         # одно имя архива и не перенесут уже новую таблицу. Таблицу к этому моменту закрыли:
         # Windows не переименует открытый файл.
         guard = os.path.join(hook_space.state_dir(), "usage", "archive-" + hashlib.sha1(
-            os.path.realpath(path).encode()).hexdigest()[:12] + ".lock")
+            os.path.normcase(os.path.realpath(path)).encode()).hexdigest()[:12] + ".lock")
         os.makedirs(os.path.dirname(guard), exist_ok=True)
         with locked(guard, "a+"):
             try:
@@ -738,6 +763,11 @@ def run(mode: str, ev: dict) -> None:
 
 def main() -> None:
     mode = sys.argv[1] if len(sys.argv) > 1 else ""
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     if hook_space is None or usage_claude is None:
         print("usage_log: нет hook_space.py или usage_claude.py рядом с хуком", file=sys.stderr)
         sys.exit(0)

@@ -38,6 +38,16 @@ def run(draft, source, points):
 class TestAnchorCheck(unittest.TestCase):
     points = [line[2:] for line in DRAFT.splitlines()]
 
+    def test_trace_keeps_source_section_for_judge(self):
+        """Одинаковая строка задачи и решённой задачи не должна выглядеть одинаково."""
+        point = "Анна · собрать отчёт — «Соберу отчёт завтра» [00:10]"
+        source = "**Анна** [00:10]: Соберу отчёт завтра.\n"
+        task, _ = run(f"## Тема\n\n**Задачи**\n- {point}\n", source, [point])
+        done, _ = run(f"## Тема\n\n**Решённые задачи**\n- {point}\n", source, [point])
+        self.assertIn("Секция черновика: Задачи", task)
+        self.assertIn("Секция черновика: Решённые задачи", done)
+        self.assertNotEqual(task, done)
+
     def test_normalized_match_and_attribution(self):
         """Разнобой (регистр, тире, ё→е, перенос строки) находке не мешает."""
         report, stats = run(DRAFT, SOURCE, [self.points[0]])
@@ -125,6 +135,16 @@ class TestAnchorCheck(unittest.TestCase):
         point = "Статусы документов · решение — «Окей» [05:00]"
         report, _ = run(f"- {point}\n", source, [point])
         self.assertIn("найден · Эрик [05:00]", report)
+
+    def test_each_quote_uses_its_own_timecode(self):
+        source = ("**Эрик** [50:32]: И с бибишкой.\n"
+                  "**Виктор** [51:09]: И с бибишкой.\n")
+        point = ("Рабочее место · задача — «И с бибишкой» [50:32]; "
+                 "«И с бибишкой» [51:09]")
+        report, stats = run(f"- {point}\n", source, [point])
+        self.assertEqual(stats["full"], 2)
+        self.assertIn("найден · Эрик [50:32]", report)
+        self.assertIn("найден · Виктор [51:09]", report)
 
     def test_header_counters_match_body(self):
         """Счётчики шапки равны фактическому содержимому отчёта."""
@@ -342,6 +362,49 @@ class TestSourceForms(unittest.TestCase):
         report, stats = run(f"- {point}\n", source, [point])
         self.assertEqual((stats["full"], stats["miss"]), (1, 0))
         self.assertIn("найден · Виктор", report)
+
+    def test_webvtt_timecode_selects_repeated_quote(self):
+        """Время отдельной строки VTT принадлежит следующей реплике."""
+        source = ("WEBVTT\n\n"
+                  "00:00:10.000 --> 00:00:11.000\n<v Анна>Хорошо.\n\n"
+                  "00:10:00.000 --> 00:10:01.000\n<v Борис>Хорошо.\n")
+        point = "Согласие · решение — «Хорошо» [10:00]"
+        report, stats = run(f"**Решения**\n- {point}\n", source, [point])
+        self.assertEqual((stats["full"], stats["miss"]), (1, 0))
+        self.assertIn("адрес якоря: таймкоды", report)
+        self.assertIn("«Хорошо» — найден · Борис [10:00]", report)
+
+    def test_webvtt_cue_settings_keep_timecode(self):
+        """Настройки после диапазона VTT не становятся речью или голосом."""
+        source = ("WEBVTT\n\n"
+                  "00:00:10.000 --> 00:00:11.000 align:start position:0%\n"
+                  "<v Анна>Хорошо.</v>\n\n"
+                  "00:10:00.000 --> 00:10:01.000 align:start position:0%\n"
+                  "<v Борис>Хорошо.</v>\n")
+        point = "Согласие · решение — «Хорошо» [10:00]"
+        report, stats = run(f"**Решения**\n- {point}\n", source, [point])
+        self.assertEqual((stats["full"], stats["miss"]), (1, 0))
+        self.assertIn("«Хорошо» — найден · Борис [10:00]", report)
+        self.assertNotIn("**align", report)
+
+    def test_webvtt_numeric_payload_is_not_cue_number(self):
+        """Число после строки времени — речь; номер cue стоит до неё."""
+        source = ("WEBVTT\n\n"
+                  "1\n00:10:00.000 --> 00:10:01.000\n"
+                  "<v Анна>\n1000000\n</v>\n")
+        point = "Анна · бюджет утверждён в размере 1000000 — «1000000» [10:00]"
+        report, stats = run(f"**Решения**\n- {point}\n", source, [point])
+        self.assertEqual((stats["full"], stats["miss"]), (1, 0))
+        self.assertIn("«1000000» — найден · Анна [10:00]", report)
+
+    def test_webvtt_numeric_payload_before_next_cue_is_kept(self):
+        source = ("WEBVTT\n\n"
+                  "00:10:00.000 --> 00:10:01.000\n<v Анна>\n1000000\n\n"
+                  "00:10:05.000 --> 00:10:06.000\n<v Борис>Сумму зафиксировали.\n")
+        point = "Анна · бюджет утверждён в размере 1000000 — «1000000» [10:00]"
+        report, stats = run(f"**Решения**\n- {point}\n", source, [point])
+        self.assertEqual((stats["full"], stats["miss"]), (1, 0))
+        self.assertIn("«1000000» — найден · Анна [10:00]", report)
 
     def test_no_markup_declares_missing_attribution(self):
         """Разметки нет — след говорит об этом прямо, а не оставляет поле пустым."""

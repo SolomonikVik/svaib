@@ -24,7 +24,7 @@ OpenKnowledge — открытый (GPL-3.0) «AI-native markdown IDE / LLM-wiki
 ## Три слоя (архитектура)
 
 1. **Редактор** — WYSIWYG над markdown/MDX; богатый контент: интерактивный HTML/JS, Mermaid, LaTeX, видео, PDF.
-2. **Инструменты агента** — **MCP + skills**: агент ищет, навигирует и поддерживает базу (read/write). Интеграции: Claude, Cursor, Codex, OpenCode, OpenClaw, Pi, Antigravity + встроенный TUI.
+2. **Инструменты агента** — **MCP + skills**: агент ищет, навигирует и поддерживает базу (read/write). Интеграции: Claude, Cursor, Codex, OpenCode, OpenClaw, [Pi](../coding/pi/!pi.md), Antigravity + встроенный TUI.
 3. **Контент** — обычные .md/.mdx на диске, source of truth, версионируются git'ом.
 
 ## Ключевые механики

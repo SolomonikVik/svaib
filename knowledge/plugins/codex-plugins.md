@@ -4,7 +4,7 @@ source: "https://developers.openai.com/plugins/build/plugins"
 source_type: docs
 status: processed
 added: 2026-09-18
-updated: 2026-10-08
+updated: 2026-10-13
 review_by: 2026-12-18
 tags: [plugins, codex, openai, claude-code, marketplace, hooks, mcp, portability, agent-plugins]
 publish: false
@@ -48,6 +48,8 @@ Codex (CLI, TUI, desktop) ставит плагины из маркетплей�
 
 🟡 **«Validation rejects `hooks`».** Эта фраза из встроенной спецификации `plugin-creator` относится к валидатору публикации в каталоге OpenAI, а не к локальному рантайму. `codex plugin add` ставит плагин с хуками, и хук срабатывает.
 
+Правила публичной поставки проверяются отдельно от этого снимка рантайма: запрет hooks, включение MCP в первоначальную заявку и ограничения продажи цифровых подписок на 2026-10-12 — [публикация и монетизация](plugin-distribution-monetization.md).
+
 ## MCP в плагине
 
 - **Legacy `.mcp.json`** разбирается в ту же структуру, что `[mcp_servers]` в `config.toml`. Работают `required`, `startup_timeout_sec`, `tool_timeout_sec`, `enabled_tools`/`disabled_tools`, `bearer_token_env_var`, `http_headers`, `oauth`. `type` принимает `http`, `streamable_http`, `stdio`. Относительный `cwd` считается от корня плагина. Подстановки `${CLAUDE_PLUGIN_ROOT}` или `${PLUGIN_ROOT}` в `args` в коде нет.
@@ -89,6 +91,8 @@ Codex (CLI, TUI, desktop) ставит плагины из маркетплей�
 
 ## Один пакет для Codex и Claude Code
 
+Эта совместимость не распространяется автоматически на другие хосты: [OpenCode V2](../coding/opencode/!opencode.md) требует отдельной упаковки и адаптера хуков.
+
 Проверено установкой в оба хоста. Одно дерево без `.codex-plugin/` обслуживает оба:
 
 ```
@@ -122,6 +126,7 @@ marketplace-repo/
 
 ## Связанные файлы
 
+- [plugin-distribution-monetization.md](plugin-distribution-monetization.md) — публичный каталог OpenAI: допуск пакета, MCP и ограничения оплаты
 - [!plugins.md](!plugins.md) — плагины как формат и экосистема, формат Anthropic
 - [agent-plugins-standard.md](agent-plugins-standard.md) — Agent Plugins 1.0: портативное ядро, которое Codex поддерживает частично
 - [../cases/coman-os.md](../cases/coman-os.md) — живая поставка под Claude Code и Codex: расхождения контракта хуков

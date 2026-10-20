@@ -1,6 +1,7 @@
 ---
 title: "Тип overview — обзор узла"
 status: draft
+file_patterns: ["[0-9][0-9]_overview.md"]
 ---
 
 # Спецификация типа `overview` — обзор узла

@@ -10,8 +10,8 @@
 запись уже по контракту; повторно та же спецификация не приходит. Отказ, а не добавленный
 контекст: контекст приходит вместе с записью, которая к тому моменту уже выполнена.
 
-Тип файла — по каноническому имени (KIT_RE, REFERENCE_NAMES): kit-файлы `NN_<тип>.md`, выжимка встречи
-`meetings/<папка>/summary.md`, справочные файлы из спецификации `reference`. Первой идёт
+Типы и имена файлов — из `file_patterns` в YAML-шапках спецификаций: новые спецификации
+подключаются без изменения хука. Если подходят несколько, выдаются все. Первой идёт
 `00_general.md` — общие правила читаются до спецификации типа (README папки спецификаций).
 Обычно всё приходит одним отказом; не влезшее в BUDGET — следующим. Имена сравниваются без учёта
 регистра: на macOS и Windows `02_Active.md` — тот же файл.
@@ -32,7 +32,7 @@ Inline Python разбирается статически: присваиван�
 разбор на оба хука (снятие обёртки Codex, JS code-mode, имена shell-инструментов).
 
 Спецификации ищутся: `SVAIB_FILE_SPECS` → рядом с хуком в плагине
-(`../skills/space/scaffold/file-specs`) → канон в репозитории svaib. Версия структуры пространства
+(`../skills/space-scaffold/file-specs`) → канон в репозитории svaib. Версия структуры пространства
 (`.svaib/space.json`) расходится с версией плагина (`version.txt` скилла) — отказ называет расхождение. Метки «подано» — в state-каталоге
 машины (тот же, что у хука карты, и его уборка старше 7 дней), по сессии и субагенту — у субагента
 свой контекст; Codex `agent_id` в событии не гарантирует, тогда субагент делит метки с сессией.
@@ -45,6 +45,8 @@ from __future__ import annotations
 import ast
 import copy
 import datetime
+import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -68,13 +70,8 @@ SPEC_DIR_CANDIDATES = (
 # проекты. Служебную папку заводит миграция структуры вместе с плагином.
 SPACE_MARK = ".svaib"
 GENERAL = "00_general.md"
-KIT_RE = re.compile(r"^\d\d_(overview|active|backlog|progress|decisions)\.md$", re.I)
-REFERENCE_NAMES = {"person.md", "profile.md", "architecture.md", "setup.md", "glossary.md", "speech-aliases.md"}
 SKIP_DIRS = {"_templates", "zz_archive", "node_modules"}          # шаблоны и архив — не рабочие файлы
 WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "apply_patch"}
-# Каноническое имя где-то в тексте команды — быстрый отсев: без него оболочку не разбираем.
-NAME_RE = re.compile(r"[\w./~-]*?(?:\d\d_(?:overview|active|backlog|progress|decisions)|summary|person|profile|"
-                     r"architecture|setup|glossary|speech-aliases)\.md", re.I)
 REDIRECTS = {">", ">>", ">|", "&>", "&>>"}
 SEPARATORS = {"|", "||", "&&", ";", "&", "(", ")"}
 COPY_CMDS = {"cp", "mv", "install", "ln", "rsync"}
@@ -134,6 +131,61 @@ def spec_dir(root: str) -> str | None:
     return None
 
 
+def spec_catalog(sdir: str, *, strict: bool = False) -> dict[str, list[str]]:
+    """Маски — однострочный JSON-массив в YAML-шапке; сторонний YAML-парсер не нужен.
+
+    Каталог перечитывается на каждом событии: добавленный файл виден и в текущей сессии.
+    Ошибка одной спецификации не выключает остальные; причина остаётся в логе.
+    """
+    catalog = {}
+    for name in sorted(os.listdir(sdir)):
+        if not name.endswith(".md") or name in {GENERAL, "README.md"}:
+            continue
+        path = os.path.join(sdir, name)
+        if not os.path.isfile(path):
+            continue
+        try:
+            with open(path, encoding="utf-8-sig") as f:
+                if f.readline().strip() != "---":
+                    raise ValueError("нет YAML-шапки с file_patterns")
+                patterns, closed, seen = None, False, False
+                for line in f:
+                    if line.strip() == "---":
+                        closed = True
+                        break
+                    if line.startswith("file_patterns:"):
+                        if seen:
+                            raise ValueError("повтор file_patterns")
+                        seen = True
+                        patterns = json.loads(line.partition(":")[2])
+                if not closed:
+                    raise ValueError("YAML-шапка не закрыта")
+                if not isinstance(patterns, list) or not patterns or any(
+                    not isinstance(p, str) or not p or "\\" in p or re.match(r"^[A-Za-z]:", p) or
+                    any(part in {"", ".", "..", "**"} for part in p.split("/"))
+                    for p in patterns
+                ):
+                    raise ValueError("file_patterns: нужен непустой JSON-массив относительных масок")
+            catalog[name] = patterns
+        except (OSError, ValueError, RecursionError) as e:
+            if strict:
+                raise ValueError(f"{name}: {e}") from e
+            log("invalid-spec", spec=name, error=str(e))
+    return catalog
+
+
+def matches_pattern(parts: list[str], pattern: str) -> bool:
+    """Маска имени — в любом узле; несколько компонентов — суффикс пути.
+
+    *, ? и [] работают внутри компонента; * не перескакивает через папки.
+    """
+    pattern_parts = pattern.lower().split("/")
+    return len(parts) >= len(pattern_parts) and all(
+        fnmatch.fnmatchcase(part.lower(), mask)
+        for part, mask in zip(parts[-len(pattern_parts):], pattern_parts)
+    )
+
+
 def sid_part(sid: str) -> str:
     return SID_RE.sub("_", sid)[:80]           # как у хука карты
 
@@ -145,7 +197,12 @@ def session_key(hook_input: dict) -> str:
 
 
 def marker_path(key: str, spec: str) -> str:
-    return os.path.join(state_dir(), "sessions", f"{key}.spec.{SID_RE.sub('_', spec)}")
+    name = SID_RE.sub("_", spec)
+    if name != spec or len(name) > 80:
+        # Новые имена спецификаций не должны сливаться после нормализации или превышать
+        # лимит basename метки. Старые короткие ASCII-имена сохраняют прежние метки.
+        name = name[:48] + "." + hashlib.sha256(spec.encode("utf-8")).hexdigest()[:16]
+    return os.path.join(state_dir(), "sessions", f"{key}.spec.{name}")
 
 
 def marker_set(key: str, spec: str, call: str = "") -> None:
@@ -236,7 +293,7 @@ def _segment_writes(toks: list[str], cwd: str) -> tuple[str, list[str]]:
     if cmd == "tee":
         out += plain
     elif cmd in INPLACE_CMDS and any(re.match(r"^-[a-zA-Z]*i|^--in-place", t) for t in rest):
-        out += plain                                   # скрипт sed тоже попадёт — отсеет spec_of
+        out += plain                                   # скрипт sed тоже попадёт — отсеет specs_of
     elif cmd in COPY_CMDS and len(plain) >= 2:
         dest = plain[-1]
         if dest.endswith("/") or os.path.isdir(os.path.join(cwd, os.path.expanduser(dest))):
@@ -497,11 +554,103 @@ def script_writes(code: str, *, python: bool = True) -> list[str]:
     return out
 
 
+def powershell_writes(text: str, cwd: str) -> list[str]:
+    """Буквальные цели cmdlet и redirect; динамические выражения остаются вне сита."""
+    found, segment = [], []
+    locations = []
+    setters = {"set-content", "add-content", "out-file", "sc", "ac", "new-item", "ni",
+               "tee-object", "tee", "clear-content", "clc"}
+    copies = {"copy-item", "move-item", "cp", "copy", "mv", "move", "cpi", "mi"}
+    renames = {"rename-item", "ren", "rni"}
+    tokens = nav.powershell_literal_arrays(nav.powershell_tokens(text))
+    for tok in tokens + [nav.PowerShellToken(";", operator=True)]:
+        if not nav.ps_operator(tok, {";", "|", "||", "&&", "(", ")"}):
+            segment.append(tok)
+            continue
+        if segment:
+            if nav.ps_operator(segment[0], {"&"}):
+                segment = segment[1:]
+            if not segment:
+                continue
+            cmd = os.path.basename(segment[0]).lower()
+            named, positional, redirects = {}, [], []
+            def values_at(index):
+                """Один аргумент или буквальный список через запятую, без вычисления выражений."""
+                if index >= len(segment) or segment[index].operator:
+                    return [], index
+                values = [segment[index]]
+                index += 1
+                while index + 1 < len(segment) and nav.ps_operator(segment[index], {","}) and not segment[index + 1].operator:
+                    values.append(segment[index + 1])
+                    index += 2
+                return values, index
+            def first(key):
+                return (named.get(key) or [""])[0]
+            i = 1
+            while i < len(segment):
+                arg = segment[i]
+                if nav.ps_operator(arg, {">", ">>"}) and i + 1 < len(segment):
+                    if not segment[i + 1].operator:
+                        redirects.append(segment[i + 1])
+                    i += 2
+                elif arg.startswith("-") and not arg.quoted:
+                    key, colon, value = arg.lower().partition(":")
+                    if colon:
+                        named[key] = [arg.split(":", 1)[1]]
+                    elif i + 1 < len(segment) and (segment[i + 1].quoted or not segment[i + 1].startswith("-")) and key in {
+                            "-path", "-literalpath", "-filepath", "-destination", "-newname", "-value", "-encoding",
+                            "-filter", "-include", "-exclude", "-itemtype", "-name"}:
+                        named[key], i = values_at(i + 1)
+                        continue
+                    i += 1
+                else:
+                    values, next_i = values_at(i)
+                    if values:
+                        positional.append(values)
+                    i = max(i + 1, next_i)
+            paths = list(redirects)
+            sources = named.get("-literalpath") or named.get("-path") or (positional[0] if positional else [])
+            if cmd in setters:
+                destinations = named.get("-filepath") or sources
+                if cmd in {"new-item", "ni"}:
+                    if first("-itemtype").lower() == "directory":
+                        destinations = []
+                    elif named.get("-name"):
+                        destinations = [os.path.join(directory, first("-name")) for directory in sources or ["."]]
+                paths += destinations
+            elif cmd in copies:
+                minimum = 1 if named.get("-path") or named.get("-literalpath") else 2
+                dest = first("-destination") or (positional[-1][0] if len(positional) >= minimum else "")
+                if dest:
+                    if os.path.isdir(os.path.join(cwd, dest)) or dest.endswith(("/", "\\")):
+                        paths += [os.path.join(dest, os.path.basename(source)) for source in sources]
+                    else:
+                        paths.append(dest)
+            elif cmd in renames:
+                name = first("-newname") or (positional[-1][0] if len(positional) >= (1 if named.get("-path") or named.get("-literalpath") else 2) else "")
+                if name:
+                    paths += [os.path.join(os.path.dirname(source), name) for source in sources]
+            elif cmd in {"cd", "set-location", "sl", "chdir", "push-location", "pushd"} and tok != "|" and sources:
+                directory = os.path.abspath(os.path.join(cwd, sources[0]))
+                if os.path.isdir(directory):
+                    if cmd in {"push-location", "pushd"}:
+                        locations.append(cwd)
+                    cwd = directory
+            elif cmd in {"pop-location", "popd"} and locations:
+                cwd = locations.pop()
+            elif cmd.removesuffix(".exe") in {"python", "python3", "py", "node"}:
+                flag = "-e" if cmd.removesuffix(".exe") == "node" else "-c"
+                if flag in segment and segment.index(flag) + 1 < len(segment):
+                    paths += script_writes(segment[segment.index(flag) + 1], python=flag == "-c")
+            found += [os.path.join(cwd, os.path.expanduser(p)) for p in paths if p and "$" not in p]
+        segment = []
+    return found
+
+
 def bash_writes(text: str, cwd: str) -> list[str]:
     """Файлы, в которые пишет команда оболочки. Сито, а не парсер: лишний кандидат отсеет
-    `spec_of`, а ложная спецификация стоит одного отказа за сессию."""
-    if not NAME_RE.search(text) and not re.search(r"\bpython3?\b", text):
-        return []
+    `specs_of`, а ложная спецификация стоит одного отказа за сессию.
+    Разбор не отсекается по именам: новый тип и составной путь должны доходить до каталога."""
     found: list[str] = []
     if "*** Begin Patch" in text:                      # Codex зовёт apply_patch и через оболочку
         found += [a or b for a, b in PATCH_RE.findall(text)]
@@ -540,7 +689,8 @@ def targets_of(hook_input: dict, root: str) -> list[str]:
         # Codex: пути только в тексте заплатки, файлов может быть несколько; поле зависит от версии
         paths = [a or b for v in ti.values() if isinstance(v, str) for a, b in PATCH_RE.findall(v)]
     elif is_shell(tool):
-        paths = bash_writes(nav.shell_text(ti), cwd)
+        text = nav.shell_text(ti)
+        paths = powershell_writes(text, cwd) if nav.powershell_input(ti, tool) else bash_writes(text, cwd)
     else:
         paths = [ti[k] for k in ("file_path", "path") if isinstance(ti.get(k), str)]
     out = []
@@ -551,30 +701,21 @@ def targets_of(hook_input: dict, root: str) -> list[str]:
     return out
 
 
-def spec_of(root: str, sdir: str, target: str) -> str | None:
-    """Имя файла спецификации для цели записи или None, если файл не канонический."""
+def specs_of(root: str, sdir: str, target: str, catalog: dict[str, list[str]]) -> list[str]:
+    """Все подходящие спецификации цели записи с сохранением исключений пространства."""
     try:
         rel = os.path.relpath(target, root)
     except ValueError:                        # Windows: другой диск — не наше пространство
-        return None
-    if rel == ".." or rel.startswith(".." + os.sep) or os.path.realpath(target).startswith(sdir + os.sep):
-        return None
+        return []
+    if rel == ".." or rel.startswith(".." + os.sep) or os.path.normcase(os.path.realpath(target)).startswith(os.path.normcase(sdir + os.sep)):
+        return []
     parts = rel.split(os.sep)
     if any(p.startswith(".") or p.lower() in SKIP_DIRS for p in parts[:-1]):
-        return None
+        return []
     if any(a == "scaffold" and b == "templates" for a, b in zip(parts, parts[1:])):   # шаблоны в исходнике скилла
-        return None
-    name = parts[-1].lower()
-    m = KIT_RE.match(name)
-    if m:
-        spec = f"{m.group(1)}.md"
-    elif name == "summary.md" and len(parts) >= 3 and parts[-3].lower() == "meetings":
-        spec = "meeting-summary.md"
-    elif name in REFERENCE_NAMES:
-        spec = "reference.md"
-    else:
-        return None
-    return spec if os.path.isfile(os.path.join(sdir, spec)) else None
+        return []
+    return [spec for spec, patterns in catalog.items()
+            if any(matches_pattern(parts, pattern) for pattern in patterns)]
 
 
 def _version(v: str) -> tuple[int, ...] | None:
@@ -617,7 +758,7 @@ def version_note(root: str, sdir: str) -> str:
 
 
 def read_spec(sdir: str, spec: str) -> str:
-    with open(os.path.join(sdir, spec), encoding="utf-8") as f:
+    with open(os.path.join(sdir, spec), encoding="utf-8-sig") as f:
         return f.read().strip()
 
 
@@ -643,10 +784,10 @@ def pre_write(hook_input: dict) -> None:
         log("skip", reason="no specs", root=root)
         return
     key = session_key(hook_input)
+    catalog = spec_catalog(sdir)
     files: dict[str, list[str]] = {}          # спецификация → файлы, которые под неё пишутся
     for t in targets_of(hook_input, root):
-        spec = spec_of(root, sdir, t)
-        if spec:
+        for spec in specs_of(root, sdir, t, catalog):
             files.setdefault(spec, []).append(os.path.relpath(t, root))
     if not files:
         return
@@ -666,11 +807,14 @@ def pre_write(hook_input: dict) -> None:
             log("deny-same-turn", specs=fresh)
         return
 
-    names = listed([f for fs in files.values() for f in fs])
-    kinds = ", ".join(f"`{s[:-3]}`" for s in files)
+    unread = [s for s in files if s in pending] or list(files)
+    names = listed(list(dict.fromkeys(f for s in unread for f in files[s])))
+    kinds = ", ".join(f"`{s[:-3]}`" for s in unread)
     head = (f"Запись в {names} остановлена: это канонический файл пространства (тип {kinds}), "
             "а его спецификации в этой сессии ещё не было. Прочитай спецификацию ниже, сверь с ней "
-            "задуманную правку и повтори запись. Повторно эта спецификация не придёт.")
+            "задуманную правку и повтори запись. Область применения каждого типа смотри в поле "
+            "`file_patterns` его спецификации. Применяй её ко всем совпадающим файлам в этой сессии. "
+            "Повторно эта спецификация не придёт.")
     more = "Спецификация приходит частями: следующая часть — при повторной попытке записи."
     batch, size = [], len(head) + len(more)
     for s in pending:
@@ -690,7 +834,7 @@ def pre_write(hook_input: dict) -> None:
 
 def main():
     mode = sys.argv[1].lower() if len(sys.argv) > 1 else "pre-write"
-    for stream in (sys.stdin, sys.stdout):    # Windows: консольная кодировка роняет кириллицу, отказ теряется
+    for stream in (sys.stdin, sys.stdout, sys.stderr):    # Windows: консольная кодировка роняет кириллицу, отказ теряется
         try:
             stream.reconfigure(encoding="utf-8")
         except (AttributeError, ValueError):
@@ -698,7 +842,7 @@ def main():
     try:
         raw = sys.stdin.read()
         hook_input = json.loads(raw) if raw.strip() else {}
-    except (json.JSONDecodeError, OSError):
+    except (json.JSONDecodeError, OSError, UnicodeError):
         hook_input = {}
     try:
         if mode == "pre-write":

@@ -32,7 +32,7 @@ def _walk_up(start: str):
     """Каталоги от start вверх, не доходя до $HOME: в домашнем каталоге может лежать чужой маркер."""
     home = os.path.abspath(os.path.expanduser("~"))
     current = os.path.abspath(start)
-    while current != home:
+    while os.path.normcase(current) != os.path.normcase(home):
         yield current
         parent = os.path.dirname(current)
         if parent == current:
@@ -50,7 +50,7 @@ def find_root(start: str) -> str | None:
 
 
 def _same(a: str, b: str) -> bool:
-    return os.path.realpath(a) == os.path.realpath(b)
+    return os.path.normcase(os.path.realpath(a)) == os.path.normcase(os.path.realpath(b))
 
 
 def _workspace_folders() -> list[str]:
@@ -108,7 +108,7 @@ def resolve_root(hook_input: dict, on_ambiguous: Callable[[int, int, list[str]],
 def _foreign(path: str, real_root: str) -> bool:
     """На пути от path к корню — другая база или свой проект: другая `.svaib/` или маркер."""
     for current in _walk_up(os.path.realpath(path)):
-        if current == real_root:
+        if os.path.normcase(current) == os.path.normcase(real_root):
             return False
         if has_root_marker(current) or os.path.isdir(os.path.join(current, ".svaib")):
             return True

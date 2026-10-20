@@ -2,7 +2,7 @@
 title: "Plugins — система расширения AI-агентов: формат, экосистема, best practices"
 status: processed
 added: 2026-02-13
-updated: 2026-10-08
+updated: 2026-10-13
 review_by: 2026-12-08
 tags: [plugins, claude-code, cowork, marketplace, ecosystem, svaib-product, skill-graph]
 publish: false
@@ -12,7 +12,7 @@ publish: false
 
 ## Кратко
 
-Плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Всё файловое (Markdown + JSON), zero code, zero build steps. Единый формат для Claude Code (CLI, разработчики) и Cowork (GUI, knowledge workers). Public beta с октября 2025. Экосистема: official marketplace (dev-плагины + LSP + интеграции), knowledge-work плагины для Cowork (отраслевые), растущие community-маркетплейсы. Cross-platform: Codex ставит пакет в формате Claude Code без трансляции — скиллы, MCP и command-хуки ([codex-plugins.md](codex-plugins.md)), остальные хосты совместимы через Agent Skills стандарт; с августа 2026 обёртку описывает вендор-нейтральный [Agent Plugins 1.0](agent-plugins-standard.md), но только для скиллов и MCP. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
+В формате Claude Code плагин — пакет для распространения AI-расширений: Skills + Commands + Agents + Hooks + MCP + LSP. Упаковка файловая (Markdown + JSON), без обязательного кода entrypoint и сборки; тот же формат используется в Cowork. Public beta с октября 2025. Экосистема: official marketplace (dev-плагины + LSP + интеграции), knowledge-work плагины для Cowork (отраслевые), растущие community-маркетплейсы. Codex ставит пакет в формате Claude Code без трансляции — скиллы, MCP и command-хуки ([codex-plugins.md](codex-plugins.md)). Совместимость Agent Skills у других хостов не означает совместимость пакета: [OpenCode V2](../coding/opencode/!opencode.md) требует отдельного JS/TS-entrypoint и адаптера хуков. С августа 2026 обёртку описывает вендор-нейтральный [Agent Plugins 1.0](agent-plugins-standard.md), но только для скиллов и MCP. Для SVAIB: плагин — готовый delivery mechanism для модели подписки "Skills + Agents + Онтология".
 
 ---
 
@@ -174,6 +174,8 @@ Claude Code подставляет в тексте `SKILL.md` и `${CLAUDE_PLUGI
 
 Дистрибуция Git-based, не NPM. Децентрализованная — любой Git-репо может быть маркетплейсом.
 
+Официальный каталог — отдельный канал с собственными правилами: локальная совместимость не гарантирует допуска к публикации. На 2026-10-12 OpenAI допускает hooks при ручной установке в Codex desktop, но запрещает их в публичном каталоге. Публикация также не предоставляет автоматически оплату подписки и контроль доступа. Условия Claude и OpenAI, коммерческие ограничения и отличие каталога от SaaS-маркетплейса — [публикация и монетизация](plugin-distribution-monetization.md).
+
 ### Источники плагинов
 
 | Тип | Описание |
@@ -273,7 +275,13 @@ claude plugin install <name> --scope project
 
 ### Что это значит для продукта
 
-Ядро контента (Skills + MCP-коннекторы) — на открытых стандартах, портабельно. Автоматика (hooks, commands) — переписывается, потому что это обёртка, а не экспертиза. Клиент не залочен на одну платформу: ценность в содержании Skills, не в формате доставки.
+Совместимость нужно разделять на формат ресурсов и исполнение. [OMP](../coding/omp.md) читает Claude marketplace, но исполняет собственные JS/TS-фабрики хуков. [Qwen Code](../coding/qwen-code.md) преобразует Claude-пакет и поддерживает command-хуки, однако имена инструментов и импорт MCP требуют проверки. [Kimi Code](../coding/kimi-code.md) использует собственный манифест. [Hermes](../coding/hermes.md) и [Goose](../coding/goose.md) также различают portable-компоненты и хостовые hooks/agents. [Aider](../coding/aider.md) не предоставляет эквивалент всего lifecycle-плагина.
+
+[OpenCode](../coding/opencode/!opencode.md) имеет отдельный V2-контракт регистрации и контекста. [Pi](../coding/pi/!pi.md) допускает общий extension-мост, но импорт скиллов, выполнение хуков, субагенты и обновление источника остаются отдельными механизмами.
+
+Ядро обработчиков можно сохранять на Python: адаптер нормализует событие, инструмент, аргументы, окружение и ответ. Stop не нужно привязывать к одной схеме JSONL, если хост передаёт последний ответ прямо в событии. Доверие хука и способность продолжить ход проверяются отдельно. Подробнее — [контракт переноса хуков](cross-harness-hooks.md).
+
+Обновление зарегистрированного пакета не означает обновление импортированного marketplace; fetch ветки не равен выбору последнего стабильного релиза. Согласованность комплекта и пути открытой сессии — [жизненный цикл обновлений](plugin-update-hook-paths.md). Подключение хоста к [BB через ACP](../tools/bb.md) этих различий не отменяет.
 
 ### Claude Code ↔ Cowork ↔ Desktop
 
@@ -428,6 +436,9 @@ Product vision описывает модель подписки: клиент п
 
 ## Связанные файлы
 
+- [OpenCode](../coding/opencode/!opencode.md) — плагины и хуки V2, совместимость по компонентам и результат установки Claude-пакета.
+- [Pi](../coding/pi/!pi.md) — совместимость Claude-поставки через расширения, сохранение Python-хуков и обновления.
+- [plugin-distribution-monetization.md](plugin-distribution-monetization.md) — официальный каталог и собственный marketplace, ограничения публичной поставки и монетизации
 - [codex-plugins.md](codex-plugins.md) — плагины Codex: форматы манифеста, маркетплейсы, обновление, хуки с доверием, один пакет для Codex и Claude Code
 - [agent-plugins-standard.md](agent-plugins-standard.md) — Agent Plugins 1.0: спецификация вендор-нейтральной обёртки, расхождения с форматом Anthropic, механика CLI-трансляции
 - [skills/!skills.md](../skills/!skills.md) — Skills как компонент плагина: формат SKILL.md, проектирование, экосистема

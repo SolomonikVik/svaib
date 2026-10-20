@@ -1,6 +1,7 @@
 ---
 title: "Тип backlog — будущая работа"
 status: draft
+file_patterns: ["[0-9][0-9]_backlog.md"]
 ---
 
 # Спецификация типа `backlog` — отложенное

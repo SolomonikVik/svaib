@@ -2,7 +2,7 @@
 title: "Skills — исполняемые инструкции для AI — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-09-08
+updated: 2026-10-13
 review_by: 2026-11-11
 tags: [skills, index, marketplace, ecosystem, skill-graph, patterns, tooling, code-enforcement, rule-enforcement, hooks, fallback, verification, claude-5]
 publish: false
@@ -303,6 +303,10 @@ Causes и solutions:
 ## Экосистема
 
 ### Стандарт и установка
+
+Совместимость Agent Skills не равна совместимости целого плагина. Например, [OpenCode V2](../coding/opencode/!opencode.md) читает Claude/agent-совместимые каталоги скиллов, но для Claude-пакета и его хуков нужен отдельный адаптер хоста. В [Pi](../coding/pi/!pi.md) прямое подключение каталога и импорт из Claude marketplace загрузили скиллы; хуки, субагенты и обновление источника требуют собственного подключения и проверки.
+
+Схема `SKILL.md` не гарантирует перенос allowlist агента, хуков и обновления источника. Эти границы отдельно разбираются в [контракте рантайма](../coding/agent-runtime-contract.md) и [переносе хуков](../plugins/cross-harness-hooks.md).
 
 Открытый стандарт Agent Skills (декабрь 2025). Принят OpenAI (Codex CLI), поддерживается 40+ AI-агентами. Скилл для Claude Code работает в Cursor, Copilot, Cline без изменений. Org-level deployment (декабрь 2025) — админы разворачивают workspace-wide с авто-обновлением. Спецификация: [github.com/anthropics/skills/spec](https://github.com/anthropics/skills/tree/main/spec)
 

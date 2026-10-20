@@ -2,6 +2,7 @@
 title: "Выжимка встречи — файл памяти встречи"
 updated: 2026-09-01
 status: draft
+file_patterns: ["meetings/*/summary.md"]
 ---
 
 # Выжимка встречи — файл памяти встречи

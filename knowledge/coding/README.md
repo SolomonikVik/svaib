@@ -23,6 +23,19 @@
 
 ### Среды и инструменты
 
+- [codex.md](codex.md) — Codex CLI: провайдер Responses, плагины, доверие хукам, разрешения и длинные сессии.
+- [orca.md](orca.md) — Orca IDE: координация CLI-агентов, среды на задачу и восстановление долгих сессий.
+- [omp.md](omp.md) — OMP: Claude marketplace, JS/TS-хуки и сохранение Python за мостом.
+- [qwen-code.md](qwen-code.md) — Qwen Code: импорт Claude-пакета, command-хуки, память и ACP.
+- [kimi-code.md](kimi-code.md) — Kimi Code: собственный манифест, command-хуки, агенты и обновления.
+- [hermes.md](hermes.md) — Hermes: модельный контекст, shell-хуки, согласие и portable plugin subset.
+- [goose.md](goose.md) — Goose: плагины, контекст хуков, HTTP MCP и обновление Git-источника.
+- [aider.md](aider.md) — Aider: границы плагинов и сторонних ACP-мостов.
+- [deepseek-harness.md](deepseek-harness.md) — DSH: композиции профилей, экспериментальные мосты Python-хуков, MCP/OAuth и ACP.
+- [agent-runtime-contract.md](agent-runtime-contract.md) — проверка провайдера, контекста, инструментов, компакции и разрешений.
+- [harness-regional-availability.md](harness-regional-availability.md) — лицензия CLI/SDK, региональные условия и независимый API.
+- [OpenCode](opencode/README.md) — особенности среды, совместимость с Claude/Codex, плагины и хуки V2.
+- [Pi](pi/README.md) — переиспользование Claude/Codex-поставки, Python-хуки через расширения, проверки готовых мостов и обновления.
 - [claude-code.md](claude-code.md) — Claude Code: CLI, расширения, плагины, система расширения
 - [third-party-models.md](third-party-models.md) — сторонние модели в харнессах Claude Code и Codex: протоколы (Messages vs Responses), шлюзы (LiteLLM, OpenRouter, claude-code-router), Agent SDK / Codex SDK / OpenAI Agents SDK, опыт svaib с Agent SDK на модели OpenAI
 - [agent-teams.md](agent-teams.md) — Agent Teams в Claude Code: multi-agent разработка

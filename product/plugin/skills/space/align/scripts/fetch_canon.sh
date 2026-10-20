@@ -69,6 +69,11 @@ CACHE_REL="$CANON_REL"
 
 fail() { echo "канон недоступен: $*" >&2; exit 1; }
 emit() { echo "CANON=$1/$CANON_REL"; echo "SNAPSHOT=$2"; }
+emit_unverified() {
+  if [[ "$(sed -n 's/^via: //p' "$1/FETCHED.txt" 2>/dev/null | tail -1)" == "raw:walk" ]]; then
+    echo "UNVERIFIED=состав канона не сверялся: список файлов недоступен"
+  fi
+}
 
 # метаданные снимка: пишутся целиком и при первой выгрузке, и при её повторении — «возраст»
 # всегда одна строка, поэтому кэш живёт сутки от последней выгрузки, а файл не растёт
@@ -98,18 +103,20 @@ if [[ -L "$LINK" ]]; then
   case "$link_target" in "$ROOT"/*) ;; *) fail "ссылка кэша $LINK ведёт наружу кэша" ;; esac
 fi
 
-cache_intact() {  # снимок в кэше цел: README на месте и файлов столько же, сколько записано
-  local want have
+cache_intact() {  # проверяем состав и содержимое, а не только число файлов
+  local want have actual
   [[ -f "$LINK/$CANON_REL/README.md" ]] || return 1
   want="$(sed -n 's/^files: //p' "$LINK/FETCHED.txt" 2>/dev/null | tail -1)"
   [[ "$want" =~ ^[0-9]+$ ]] || return 1   # нет записи о составе — доверять нечему
   have="$(find "$LINK/$CANON_REL" -type f 2>/dev/null | wc -l | tr -d ' ')"
-  [[ "$have" == "$want" ]]
+  [[ "$have" == "$want" ]] || return 1
+  actual="$(python3 "$SELF_DIR/snapshot_id.py" "$LINK/$CANON_REL" 2>/dev/null)" || return 1
+  [[ "$actual" == "$(current_sha)" ]]
 }
 
 if [[ $FORCE -eq 0 ]] && cache_intact; then
   age="$(current_age)"
-  if [[ "$age" -lt $MAX_AGE ]]; then emit "$LINK" "$(current_sha)"; echo "VIA=cache"; exit 0; fi
+  if [[ "$age" -lt $MAX_AGE ]]; then emit "$LINK" "$(current_sha)"; echo "VIA=cache"; emit_unverified "$LINK"; exit 0; fi
 fi
 
 command -v curl >/dev/null || fail "нет curl"
@@ -137,7 +144,7 @@ stale_or_fail() {
   # кэш лежит по своему адресу, а не по тому, что спросили у релиза
   CANON_REL="$CACHE_REL"
   if [[ $FORCE -eq 0 ]] && cache_intact; then
-    emit "$LINK" "$(current_sha)"; echo "VIA=cache"; echo "STALE=$(current_age)s ($*)"; exit 0
+    emit "$LINK" "$(current_sha)"; echo "VIA=cache"; echo "STALE=$(current_age)s ($*)"; emit_unverified "$LINK"; exit 0
   fi
   fail "$@"
 }
@@ -146,24 +153,46 @@ stale_or_fail() {
 # Разбирает python3: имена приходят снаружи, и путь из них нормализуется, а не склеивается как есть
 list_canon_files() {
   local out="$work/listing.json" code
-  code="$(curl -sSL --connect-timeout 10 --max-time 15 -w '%{http_code}' \
-    "${LIST_URL}/${REPO}@${REF}?structure=flat" -o "$out" 2>/dev/null || true)"
+  if ! code="$(curl -sSL --connect-timeout 10 --max-time 15 -w '%{http_code}' \
+    "${LIST_URL}/${REPO}@${REF}?structure=flat" -o "$out.part" 2>/dev/null)"; then
+    rm -f "$out.part"
+    return 1
+  fi
   [[ "$code" == "200" ]] || return 1
+  mv "$out.part" "$out"
   python3 "$SELF_DIR/parse_listing.py" "$out" "$CANON_REL" "$work/files.tsv" || return 1
   cut -f1 "$work/files.tsv" > "$work/files.txt"
   [[ -s "$work/files.txt" ]]
 }
 
 # залпами по $BATCH: параллельные запросы внутри одного вызова, каждый со своим таймаутом
+download_file() {
+  local f="$1" part
+  part="$(mktemp "$work/download.XXXXXX")"
+  if curl -fsS --retry 1 --connect-timeout 10 --max-time 25 -o "$part" "${RAW_URL}/${REPO}/${REF}/${f}" 2>/dev/null; then
+    mv "$part" "$top/$f"
+  else
+    rm -f "$part"
+    return 1
+  fi
+}
+
 download_batch() {
-  local list="$1" n=0 f
+  local list="$1" n=0 f pid failed=0
+  local pids=()
   while IFS= read -r f; do
     [[ -n "$f" ]] || continue
     mkdir -p "$top/$(dirname "$f")"
-    curl -fsS --retry 1 --connect-timeout 10 --max-time 25 -o "$top/$f" "${RAW_URL}/${REPO}/${REF}/${f}" 2>/dev/null &
-    n=$((n+1)); (( n % BATCH == 0 )) && wait || true
+    download_file "$f" &
+    pids+=("$!")
+    n=$((n+1))
+    if (( n % BATCH == 0 )); then
+      for pid in "${pids[@]}"; do wait "$pid" || failed=1; done
+      pids=()
+    fi
   done < "$list"
-  wait || true
+  for pid in "${pids[@]}"; do wait "$pid" || failed=1; done
+  return "$failed"
 }
 
 # чего не хватает после залпа: файла нет, он пуст или размером не тот, что обещан списком.
@@ -190,6 +219,29 @@ norm_path() {
   printf '%s' "$p"
 }
 
+# Ссылки внутри fenced Markdown — примеры, а не зависимости канона.
+# Закрывает блок только тот же символ и не более короткая последовательность.
+markdown_links() {
+  python3 - "$1" <<'PY'
+import re
+import sys
+
+fence = None
+with open(sys.argv[1], encoding="utf-8") as source:
+    for line in source:
+        marker = re.match(r"^ {0,3}(`{3,}|~{3,})([^\r\n]*)[\r\n]*$", line)
+        if fence is not None:
+            if marker and marker[1][0] == fence[0] and len(marker[1]) >= len(fence) and not marker[2].strip():
+                fence = None
+            continue
+        if marker and (marker[1][0] != "`" or "`" not in marker[2]):
+            fence = marker[1]
+            continue
+        for match in re.finditer(r"\]\(([^)\s]+\.md)", line):
+            print(match[1])
+PY
+}
+
 # чего канон ждёт, но на диске ещё нет: список мог отстать (у jsDelivr свой кэш) или его не было
 # вовсе. Ссылки за пределы канона не берём — область скилла сам канон; пробованное не повторяем
 extra_from_links() {
@@ -197,15 +249,16 @@ extra_from_links() {
   : > "$out"; touch "$work/tried.txt"
   while IFS= read -r src; do
     rel="${src#$top/}"; dir="$(dirname "$rel")"
-    { grep -oE '\]\([^)[:space:]]+\.md' "$src" 2>/dev/null || true; } | sed 's/^](//' | while IFS= read -r link; do
+    markdown_links "$src" | while IFS= read -r link; do
       case "$link" in http*|/*|\#*|mailto:*) continue ;; esac
       cand="$(norm_path "$dir/$link")"
       [[ "$cand" == "$CANON_REL/"* ]] || continue
+      echo "$cand" >> "$work/required.txt"
       [[ -s "$top/$cand" ]] && continue
       grep -qxF "$cand" "$work/tried.txt" && continue
       echo "$cand"
     done
-  done < <(find "$top/$CANON_REL" -type f -name '*.md' 2>/dev/null) | sort -u | head -n "$MAX_EXTRA" > "$out" || true
+  done < <(find "$top/$CANON_REL" -type f -name '*.md' 2>/dev/null) | sort -u > "$out" || true
 }
 
 VIA="raw"; LISTED=1
@@ -214,19 +267,21 @@ if ! list_canon_files; then
   printf "$CANON_REL/%s\n" $SEED > "$work/files.txt"
   VIA="raw:walk"; LISTED=0
 fi
-download_batch "$work/files.txt"
+printf '%s/README.md\n' "$CANON_REL" > "$work/required.txt"
+if ((LISTED)); then cat "$work/files.txt" >> "$work/required.txt"; fi
+download_batch "$work/files.txt" || true
 # один повтор недостающего: сеть моргнула на части файлов — это не повод терять весь канон
 missing_into "$work/files.txt" "$work/missing.txt"
 if [[ -s "$work/missing.txt" ]]; then
   while IFS= read -r f; do [[ -n "$f" ]] && rm -f "$top/$f"; done < "$work/missing.txt"
-  download_batch "$work/missing.txt"
+  download_batch "$work/missing.txt" || true
 fi
 if [[ ! -s "$top/$CANON_REL/README.md" ]]; then
   # один диагностический запрос — только на отказе: без него причину не назвать
   code="$(curl -sSL --connect-timeout 10 --max-time 20 -w '%{http_code}' -o /dev/null \
     "${RAW_URL}/${REPO}/${REF}/${CANON_REL}/README.md" 2>/dev/null || true)"
   case "$code" in
-    404) fail "ref «$REF» в ${REPO} не найден (HTTP 404)" ;;
+    404) stale_or_fail "ref «$REF» в ${REPO} не найден (HTTP 404)" ;;
     403|429) stale_or_fail "GitHub ограничил запросы (HTTP $code) — повторить позже" ;;
     *) stale_or_fail "README канона не отдан (HTTP ${code:-нет ответа}: сеть или allowlist raw.githubusercontent.com)" ;;
   esac
@@ -237,24 +292,38 @@ for _ in $(seq 1 "$MAX_WAVES"); do
   (( SECONDS < BUDGET )) || break
   extra_from_links "$work/extra.txt"
   [[ -s "$work/extra.txt" ]] || break
-  cat "$work/extra.txt" >> "$work/tried.txt"
-  download_batch "$work/extra.txt"
+  head -n "$MAX_EXTRA" "$work/extra.txt" > "$work/batch.txt"
+  cat "$work/batch.txt" >> "$work/tried.txt"
+  download_batch "$work/batch.txt" || true
 done
+
+# Последняя волна могла открыть новые ссылки прямо у предела времени/волн.
+# Они уже известны и обязательны: UNVERIFIED не оправдывает их недоставку.
+extra_from_links "$work/extra.txt"
 
 # пустой файл выглядит как прочитанный, а содержания в нём нет: одна попытка перекачать и отказ
 find "$top/$CANON_REL" -type f -empty 2>/dev/null | sed "s|^$top/||" > "$work/empty.txt" || true
 if [[ -s "$work/empty.txt" ]]; then
   while IFS= read -r f; do [[ -n "$f" ]] && rm -f "$top/$f"; done < "$work/empty.txt"
-  download_batch "$work/empty.txt"
-  find "$top/$CANON_REL" -type f -empty 2>/dev/null | sed "s|^$top/$CANON_REL/||" > "$work/empty2.txt" || true
-  if [[ -s "$work/empty2.txt" ]]; then
-    stale_or_fail "часть канона приехала пустой: $(tr '\n' ' ' < "$work/empty2.txt" | sed 's/ *$//')"
-  fi
+  download_batch "$work/empty.txt" || true
+  find "$top/$CANON_REL" -type f -empty 2>/dev/null | sed "s|^$top/||" > "$work/empty2.txt" || true
+  while IFS= read -r f; do
+    if grep -qxF "$f" "$work/required.txt"; then
+      stale_or_fail "часть канона приехала пустой: ${f#$CANON_REL/}"
+    fi
+    # Необязательный SEED с пустым ответом не становится файлом снимка.
+    rm -f "$top/$f"
+  done < "$work/empty2.txt"
 fi
 
-# список обещал файлы — канон обязан приехать целиком, иначе это не канон, а его огрызок
-missing_into "$work/files.txt" "$work/missing.txt"
-if ((LISTED)) && [[ -s "$work/missing.txt" ]]; then
+# Повтор пустого файла мог впервые принести текст с новыми ссылками.
+# Даже после завершения обхода такие зависимости должны попасть в обязательный состав.
+extra_from_links "$work/extra.txt"
+
+# README, список источника и обнаруженные ссылки обязательны; необязательные SEED — нет.
+sort -u "$work/required.txt" > "$work/required-all.txt"
+missing_into "$work/required-all.txt" "$work/missing.txt"
+if [[ -s "$work/missing.txt" ]]; then
   stale_or_fail "канон приехал неполным, не отдано: $(tr '\n' ' ' < "$work/missing.txt" | sed "s|$CANON_REL/||g; s| *$||")"
 fi
 
@@ -265,11 +334,12 @@ fi
 sha="$(python3 "$SELF_DIR/snapshot_id.py" "$top/$CANON_REL")" || fail "не посчитать отпечаток снимка"
 
 dest="$ROOT/${REF_KEY}@${sha}"
-# снимок с тем же отпечатком мог остаться повреждённым от прежней выгрузки — сверяем состав
+# снимок с тем же адресом мог повредиться: проверяем и состав, и содержимое
 if [[ -f "$dest/$CANON_REL/README.md" ]]; then
   have="$(find "$dest/$CANON_REL" -type f | wc -l | tr -d ' ')"
   want="$(find "$top/$CANON_REL" -type f | wc -l | tr -d ' ')"
-  if [[ "$have" != "$want" ]]; then mv "$dest" "$dest.broken.$$" 2>/dev/null || rm -rf "$dest"; fi
+  have_sha="$(python3 "$SELF_DIR/snapshot_id.py" "$dest/$CANON_REL" 2>/dev/null || true)"
+  if [[ "$have" != "$want" || "$have_sha" != "$sha" ]]; then mv "$dest" "$dest.broken.$$" 2>/dev/null || rm -rf "$dest"; fi
 fi
 if [[ ! -f "$dest/$CANON_REL/README.md" ]]; then
   # публикация атомарна: собираем в уникальном каталоге, потом один mv
@@ -290,4 +360,4 @@ find "$ROOT" -maxdepth 1 -type d -name "${REF_KEY}@*" ! -name "$(basename "$dest
 emit "$LINK" "$sha"
 echo "VIA=$VIA"
 # без списка состав канона не с чем сверить: файлы целы и непусты, но что их все — не доказано
-if ((LISTED == 0)); then echo "UNVERIFIED=состав канона не сверялся: список файлов недоступен"; fi
+emit_unverified "$LINK"

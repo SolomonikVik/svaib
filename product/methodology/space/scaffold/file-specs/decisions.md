@@ -1,6 +1,7 @@
 ---
 title: "Тип decisions — журнал решений"
 status: draft
+file_patterns: ["[0-9][0-9]_decisions.md"]
 ---
 
 # Спецификация типа `decisions` — журнал решений

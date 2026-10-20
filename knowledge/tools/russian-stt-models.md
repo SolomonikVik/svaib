@@ -121,4 +121,4 @@ Whisper-модели могут исполняться через разные �
 ## Связанные файлы
 
 - [meeting-transcription.md](meeting-transcription.md) — выбор инструмента записи и транскрибации встреч: контуры данных, механика выгрузки, приёмочный тест русского
-- [../../product/01_overview.md](../../product/01_overview.md) — вижен продукта SVAIB
+- [../../product/01_overview.md](../../product/01_overview.md) — обзор продукта SVAIB

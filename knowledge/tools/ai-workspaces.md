@@ -3,7 +3,7 @@ title: "AI-оболочки — среды для работы с AI (катал
 source_type: docs
 status: raw
 added: 2026-02-11
-updated: 2026-09-24
+updated: 2026-10-13
 review_by: 2026-09-14
 tags: [tools, ai-workspace, shells, catalog]
 publish: false
@@ -60,7 +60,8 @@ publish: false
 **Модели:** 75+ моделей — Claude, OpenAI, Gemini, локальные.
 **Ключевое:** Два встроенных агента (build + plan). LSP-интеграция. Мультипровайдерность — работает с любой моделью. Open-source.
 **Ссылка:** https://opencode.ai
-**GitHub:** https://github.com/opencode-ai/opencode
+**GitHub:** https://github.com/anomalyco/opencode
+**Подробнее:** [OpenCode — особенности среды и расширений](../coding/opencode/!opencode.md): совместимость компонентов, API плагинов V2 и границы переноса хуков.
 
 ---
 
@@ -76,6 +77,8 @@ publish: false
 ---
 
 ### bb (get-bb)
+
+Подробно о разделении оболочки и движка, ACP/MCP и местах установки плагина — [BB](bb.md).
 
 **Что:** Открытая оболочка (MIT) поверх агентных движков: десктопный и веб-интерфейс, CLI и API. Движки сохраняют собственные механизмы работы, а bb объединяет их в одном рабочем месте. Код можно форкнуть и настроить.
 **Движки и модели:** Claude Code, Codex, OpenCode и другие поддерживаемые агенты. bb использует их авторизацию; оплата зависит от выбранного движка — подписка провайдера или API. Через OpenCode можно подключить модели разных провайдеров, в том числе Gemini и DeepSeek, и локальные модели. bb не снимает ограничений провайдера и сам по себе не защищает его аккаунт от блокировки.
@@ -144,7 +147,7 @@ publish: false
 КЛИЕНТ выбирает оболочку          SVAIB даёт содержимое
 ─────────────────────────          ─────────────────────
 Claude Code / Cowork              Skills + Agents + Онтология
-OpenCode / Codex / VS Code / bb   (подписка, см. product/01_overview.md)
+OpenCode / Codex / VS Code / bb   (подписка, см. product/offerings-and-pricing/saas.md)
 ValeDesk (закрытый контур)
 ```
 

@@ -4,8 +4,8 @@ source: "https://code.claude.com/docs"
 source_type: docs
 status: processed
 added: 2026-01-30
-updated: 2026-09-15
-review_by: 2026-11-03
+updated: 2026-10-13
+review_by: 2027-01-13
 tags: [claude-code, tools, plugins, mcp, hooks, agents, anthropic, permissions, sandbox, remote-control, workflows, verification, routines]
 publish: false
 ---
@@ -323,6 +323,14 @@ Claude пишет собственный харнес на лету под ко�
 
 ## Безопасность
 
+### Лицензия и региональная доступность
+
+Claude Code не является OSS-харнессом: [его лицензия](https://github.com/anthropics/claude-code/blob/main/LICENSE.md) сохраняет права Anthropic и отсылает к Commercial Terms. Публичный репозиторий и открытый sandbox runtime не меняют лицензию самого CLI.
+
+Региональные правила Anthropic распространяются на Claude Code, включая использование через облачные платформы; смена модельного endpoint не даёт опубликованного исключения. Текущая политика и границы правового вывода — в [региональной доступности харнессов](harness-regional-availability.md). Программная обёртка CLI и лицензии её компонентов — в [Claude Agent SDK](../agents/claude-agent-sdk.md).
+
+### Изоляция и разрешения
+
 - **Файловая изоляция** — macOS Seatbelt, Linux namespaces. Claude Code может работать только с разрешёнными директориями
 - **Сетевая изоляция** — только одобренные серверы
 - **Permission tiers** — default, plan, acceptEdits, bypassPermissions
@@ -479,6 +487,8 @@ Effort и thinking budget — независимые параметры. High ef
 - **AI System Files** — CLAUDE.md в контексте ландшафта (AGENTS.md, GEMINI.md, soul.md), кросс-чтение, стандартизация AAIF, best practices и лимиты. См. [context/ai-system-files.md](../context/ai-system-files.md)
 - **Context engineering под Claude 5** — почему накопленные инструкции и скиллы приходится сокращать при смене поколения моделей. См. [context/context-engineering-claude5.md](../context/context-engineering-claude5.md)
 - **Сторонние модели и Agent SDK** — шлюз через `ANTHROPIC_BASE_URL`, позиция Anthropic, сравнение с Codex, ловушки Agent SDK на модели OpenAI. См. [third-party-models.md](third-party-models.md)
+- **Claude Agent SDK** — программное управление тем же runtime и границы лицензий его компонентов. См. [claude-agent-sdk.md](../agents/claude-agent-sdk.md)
+- **Региональная доступность** — лицензия CLI, условия сервисов и ограничения использования из РФ. См. [harness-regional-availability.md](harness-regional-availability.md)
 
 ## Источники
 

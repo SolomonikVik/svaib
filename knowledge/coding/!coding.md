@@ -2,7 +2,7 @@
 title: "AI-кодинг — среды разработки, AI-ассистенты и практики"
 status: processed
 added: 2026-01-30
-updated: 2026-09-24
+updated: 2026-10-13
 review_by: 2026-10-21
 tags: [coding, ai-coding, ide, claude-code, index, methodology, testing, ui-design, design-mcp, likec4, diagramming-as-code, workflows, claude-5, openspec, third-party-models, llm-gateway]
 publish: false
@@ -18,17 +18,29 @@ publish: false
 
 | Инструмент | Тип | Open source | Ключевое |
 |-----------|-----|-------------|----------|
-| **Claude Code** | CLI + VS Code ext | Нет | Наш основной. Skills, Hooks, MCP, Agent Teams |
-| **Codex** (OpenAI) | Desktop app (Mac) + CLI | CLI — open source | Параллельные агенты в threads, автоматизации, встроенные скиллы |
+| **[Claude Code](claude-code.md)** | CLI + VS Code ext | Нет | Родные плагины; условия использования и региональная политика отдельны от настройки модели |
+| **[Codex](codex.md)** (OpenAI) | Desktop app + CLI | CLI — Apache 2.0 | Собственные провайдеры Responses, скиллы и плагины; хуки требуют доверия |
+| **[Orca](orca.md)** (Stably) | IDE над CLI-агентами | MIT | Координация задач и worktrees; границу доступа задаёт выбранная среда исполнения |
+| **[OpenCode](opencode/!opencode.md)** | Агентная среда, CLI | Да | Скиллы и MCP переносимы по компонентам; для Claude/Codex-поставки нужен отдельный адаптер плагина и хуков V2 |
+| **[Pi](pi/!pi.md)** | Агентная среда, CLI + SDK | Да | Расширения позволяют сохранить Python-хуки за общим адаптером; импорт скиллов не даёт совместимости всего Claude-плагина и автообновления marketplace |
+| **[OMP](omp.md)** | Агентная среда, CLI | MIT | Родной Claude marketplace; command-хуки требуют моста к JS/TS API |
+| **[Qwen Code](qwen-code.md)** | Агентная среда, CLI + ACP | Apache 2.0 | Claude importer и command-хуки; формат пакета, память и обновления проверяются отдельно |
+| **[Kimi Code](kimi-code.md)** | Агентная среда, CLI + ACP | MIT | Собственный manifest, Python command-хуки и отдельные агенты |
+| **[Hermes](hermes.md)** | Агентная среда, CLI + ACP | MIT | Shell-хуки и portable skills/MCP; контекст модели и завершение хода имеют собственные ограничения |
+| **[Goose](goose.md)** | Агентная среда, CLI + ACP | Apache 2.0 | Git-плагины и core-обновления; HTTP MCP и контекст хуков не равны Claude-контракту |
+| **[Aider](aider.md)** | CLI-кодинг ассистент | Apache 2.0 | Модель подключается отдельно; полного lifecycle-плагина нет, ACP зависит от моста |
+| **[DeepSeek Harness](deepseek-harness.md)** | Модульная агентная среда, профили + ACP | MIT; лицензии backend-компонентов отдельны | Ресурсы собираются профилем; экспериментальные Claude/Codex-мосты требуют проверки Stop, OAuth и жизненного цикла |
 | **Cursor** | IDE | Нет | Форк VS Code с AI, Cursor Rules |
 | **Windsurf** | IDE | Нет | Ex-Codeium, Cascade (agentic assistant), Plan Mode |
 | **Antigravity** | IDE | Нет | Google, agent-first |
 | **Cline** | Extension | Apache 2.0 | Open source AI-агент, bring-your-own-inference, MCP |
 | **GitHub Copilot** | Extension | Нет | Самый массовый, интеграция в VS Code/JetBrains |
 
-Рынок AI-кодинг инструментов меняется быстро — данные актуальны на февраль 2026.
+Рынок меняется быстро: остальные IDE-строки сохраняют исторический срез; клиентские харнесы и их контракты проверены 2026-10-13. Текущие ограничения — в отдельных материалах, а не в универсальном рейтинге.
 
-**Модель под харнессом заменяема, протокол — нет.** Claude Code и Codex принимают модель из любого эндпоинта, но каждый говорит на своём протоколе: Claude Code — Anthropic Messages, Codex — только OpenAI Responses API. Чужая модель подключается через шлюз-переводчик (LiteLLM, OpenRouter, claude-code-router): у Codex это штатный `model_providers`, у Claude Code — путь сообщества, который Anthropic не поддерживает. Agent SDK и Codex SDK запускают бинарь своего CLI и наследуют те же ограничения. На практике серверные инструменты вендора и тонкие механики харнесса (подсказки хуков, подсчёт цены) с чужой моделью ломаются молча. Детали и опыт svaib: [third-party-models.md](third-party-models.md).
+**Модель заменяема при совместимости протокола.** Codex использует Responses, Claude Code — Messages; сторонний endpoint не меняет лицензию runtime и региональные условия. Подробнее — [сторонние модели](third-party-models.md) и [доступность харнесов](harness-regional-availability.md).
+
+**Установка — только первый уровень проверки.** Скиллы, агенты, Python-хуки, MCP, версия открытой сессии и поведение после компакции проверяются отдельно. Общий порядок — [контракт рантайма](agent-runtime-contract.md), перевод событий — [перенос хуков](../plugins/cross-harness-hooks.md), интерфейс над движком — [BB и ACP](../tools/bb.md).
 
 ## Два уровня AI-кодинга
 
@@ -41,6 +53,8 @@ publish: false
 **Cross-model review** — одна модель пишет код/план, другая ревьюит. Паттерн "senior review" из software engineering, переложенный на AI. Работает даже когда writer не в форме — reviewer ловит ошибки. Реализация через Claude Code Skill: Claude пишет → отправляет в OpenAI Codex → получает замечания → дорабатывает (до 3 итераций). Скилл: [codex-review](https://github.com/artwist-polyakov/polyakov-claude-skills/tree/main/plugins/codex-review/skills/codex-review). Ревьюер не привязан к Codex — завтра может быть другая модель.
 
 ## Автономные агенты и инфраструктура
+
+Оркестратор ведёт задачи и сессии; Git worktree разделяет изменения, а контейнер или VM ограничивает доступ процесса. **[Orca IDE](orca.md)** объединяет CLI-агентов, просмотр изменений и координацию исполнителей. Рецепт среды задаёт создание, возобновление и очистку ресурсов; хранение истории и сохранение живого процесса проверяются отдельно. Для нескольких долгих сессий важны постоянно включённый хост и сохранность данных перед удалением среды.
 
 **[AutoForge](https://github.com/AutoForgeAI/autoforge)** (автор Leon Van Zyl, ранее Autocoder) — долгоживущий автономный кодинг-агент на Claude Agent SDK. Двухагентная архитектура: Initializer разбивает проект на фичи, Coding Agent реализует их последовательно. SQLite для трекинга между сессиями, React-мониторинг. Multi-model (Claude, Ollama, GLM, Kimi). Наш опыт: 80% проекта через AutoForge, 20% добиваешь в Claude Code CLI. Идеален для PoC и несложных задач.
 

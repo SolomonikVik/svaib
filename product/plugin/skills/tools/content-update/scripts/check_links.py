@@ -6,27 +6,18 @@
 
     python3 check_links.py file1.md file2.md ...
 """
-import re
 import sys
 from pathlib import Path
 
-LINK = re.compile(r"\]\(([^)#\s]+)(?:#[^)]*)?\)")
-SKIP = ("http://", "https://", "mailto:", "tel:")
+from markdown_links import broken_links as find_broken_links
 
 
 def broken_links(md: Path):
     try:
-        text = md.read_text(encoding="utf-8")
-    except OSError as e:
-        yield f"{md}: не читается ({e.strerror})"
-        return
-    for lineno, line in enumerate(text.splitlines(), 1):
-        for m in LINK.finditer(line):
-            target = m.group(1)
-            if target.startswith(SKIP):
-                continue
-            if not (md.parent / target).resolve().exists():
-                yield f"{md}:{lineno}  {target}"
+        for lineno, target in find_broken_links(md):
+            yield f"{md}:{lineno}  {target}"
+    except (OSError, UnicodeError) as e:
+        yield f"{md}: не читается ({e})"
 
 
 def main(argv):

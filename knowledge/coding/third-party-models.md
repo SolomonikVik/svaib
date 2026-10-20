@@ -4,8 +4,8 @@ source: "https://github.com/openai/codex"
 source_type: repo
 status: processed
 added: 2026-09-24
-updated: 2026-09-24
-review_by: 2026-12-24
+updated: 2026-10-13
+review_by: 2027-01-13
 tags: [codex, claude-code, agent-sdk, codex-sdk, openai-agents-sdk, litellm, openrouter, claude-code-router, llm-gateway, model-providers, responses-api]
 publish: false
 ---
@@ -14,7 +14,7 @@ publish: false
 
 ## Кратко
 
-Оба харнесса берут модель из любого эндпоинта, но говорят каждый на своём протоколе: Codex — только OpenAI Responses API (`/v1/responses`), Claude Code — Anthropic Messages (плюс форматы Bedrock и Vertex). Чужая модель подключается через шлюз-переводчик (LiteLLM, OpenRouter, claude-code-router). У Codex это штатный путь через `model_providers`; у Claude Code — путь сообщества: Anthropic прямо не поддерживает маршрутизацию в не-Claude модели. SDK обоих (Claude Agent SDK, Codex SDK) запускают бинарь своего CLI и наследуют его ограничения.
+Сторонняя модель подключается к харнессу через endpoint совместимого протокола: Codex использует OpenAI Responses API, Claude Code — Anthropic Messages или форматы облачных провайдеров. Если протоколы различаются, нужен шлюз-переводчик; поддержка протокола ещё не гарантирует качество инструментальных вызовов. Claude Agent SDK и Codex SDK управляют runtime своих CLI, поэтому смена модели не заменяет агентный цикл и не меняет лицензию runtime.
 
 > **Снимок:** код `openai/codex` на 2026-09-24, офдоки Claude Code, LiteLLM и OpenRouter на ту же дату, опыт серверного харнесса svaib (август–сентябрь 2026).
 
@@ -41,6 +41,7 @@ name = "My gateway"
 base_url = "http://localhost:4000/v1"
 env_key = "GW_API_KEY"
 wire_api = "responses"
+requires_openai_auth = false
 ```
 
 У провайдера ещё есть заголовки (`http_headers`, `env_http_headers`), ключ через команду (`auth`), ретраи и таймауты стрима. `wire_api = "chat"` Codex отвергает с ошибкой — поэтому модель без Responses API подключается только через переводчик:
@@ -51,6 +52,8 @@ wire_api = "responses"
 - **Anthropic напрямую — нет.** OpenAI-совместимый эндпоинт Anthropic отдаёт только Chat Completions и сама Anthropic называет его не production-ready.
 
 Codex заточен под модели GPT (промпты, `apply_patch`, каталог моделей); с чужой моделью харнесс работает, но качество работы с инструментами не гарантировано.
+
+Авторизация custom-провайдера отделена от OpenAI: `requires_openai_auth` по умолчанию выключен, а ключ берётся из собственного `env_key` или настроенного механизма `auth`. Поддержку Responses API и модельных возможностей проверяют по [текущей схеме конфигурации](https://developers.openai.com/codex/config-reference), не только по надписи «OpenAI-compatible». Лицензия CLI и доступность сервисов — отдельные вопросы: [региональная доступность](harness-regional-availability.md).
 
 **Codex SDK.** TypeScript-версия запускает CLI и обменивается JSONL через stdin/stdout; настройки уходят флагами `--config` (опции `config`, `configOverrides`, `baseUrl`). Python (`openai-codex`) говорит с `codex app-server`; `thread_start` принимает `model`, `model_provider` и `config`. Сторонняя модель в SDK — тот же `model_providers` с Responses API.
 
@@ -64,6 +67,8 @@ Codex заточен под модели GPT (промпты, `apply_patch`, к�
 - **claude-code-router** — локальный шлюз моделей для кодинг-агентов; теперь обслуживает не только Claude Code, но и Codex, OpenCode и др. (протоколы OpenAI Chat/Responses, Anthropic Messages, Gemini).
 
 **Agent SDK** запускает тот же бинарь Claude Code, поэтому переменные и ограничения — те же. Модель задаётся опцией `model` или окружением; claude.ai-логин в продуктах на SDK сторонним разработчикам без согласования с Anthropic не разрешён — только API-ключ.
+
+Открытая лицензия Python-обёртки SDK не распространяется на встроенный Claude Code; TypeScript SDK также имеет собственные условия Anthropic. Смена endpoint не меняет эти условия. Компоненты и границы переиспользования разобраны в [Claude Agent SDK](../agents/claude-agent-sdk.md), география использования — в [региональной доступности](harness-regional-availability.md).
 
 ## OpenAI Agents SDK — не аналог Codex SDK
 
@@ -100,5 +105,7 @@ Codex SDK управляет готовым агентом Codex. OpenAI Agents 
 ## Связанные файлы
 
 - [claude-code.md](claude-code.md) — Claude Code как харнесс и система расширения
+- [Claude Agent SDK](../agents/claude-agent-sdk.md) — архитектура runtime и лицензии компонентов
+- [Региональная доступность](harness-regional-availability.md) — лицензия программы и условия модельного сервиса
 - [../plugins/codex-plugins.md](../plugins/codex-plugins.md) — Codex как хост плагинов
 - [!coding.md](!coding.md) — сводка категории

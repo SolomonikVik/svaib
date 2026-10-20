@@ -1,9 +1,9 @@
 ---
 title: "Агентные системы — сводка знаний"
 status: processed
-updated: 2026-09-22
+updated: 2026-10-13
 added: 2026-01-30
-review_by: 2026-12-22
+review_by: 2027-01-13
 tags: [agents, subagents, mcp, multi-agent, patterns, hosting, workflows, verification, system-one, routing, guardrails]
 publish: false
 ---
@@ -31,10 +31,12 @@ AI-системы, способные автономно принимать ре
 
 | SDK | Вендор | Языки | Ключевая фича |
 |-----|--------|-------|---------------|
-| **Claude Agent SDK** | Anthropic | Python, TypeScript | Встроенные инструменты (Read, Write, Bash), субагенты через Task tool, Skills/CLAUDE.md |
+| **[Claude Agent SDK](claude-agent-sdk.md)** | Anthropic | Python, TypeScript | Программный интерфейс к runtime Claude Code: инструменты, субагенты, сессии, хуки и плагины |
 | **OpenAI Agents SDK** | OpenAI | Python, TypeScript | Handoffs (peer-to-peer передача управления), provider-agnostic, Realtime Agents |
 
 Оба SDK поддерживают MCP-серверы как инструменты. Claude Agent SDK — long-running процесс, деплоится в контейнерах (4 паттерна: ephemeral, long-running, hybrid, single). Провайдеры: Modal, Cloudflare, Daytona, E2B, Fly Machines, Vercel. Подробнее → subagents.md.
+
+Лицензию SDK проверяют вместе с исполняемыми зависимостями: Python-обёртка Claude Agent SDK — MIT, TypeScript SDK и runtime Claude Code — собственные условия Anthropic. Это разные компоненты; смена модельного endpoint не заменяет runtime. Разбор → [Claude Agent SDK](claude-agent-sdk.md), региональные условия → [доступность харнессов](../coding/harness-regional-availability.md).
 
 ### Оркестрационные (community)
 

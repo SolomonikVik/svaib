@@ -12,7 +12,7 @@
   ./space_map.py --base <корень> --personalize --whoami-file <json>
   ./space_map.py --base <корень> --print-model          # стабильный блок корневого файла
   ./space_map.py --base <корень> --write-model          # переписать его в AGENTS.md
-  ./space_map.py --base <корень> --cache-json           # кэш пользователя этой машины
+  ./space_map.py --base <корень> --cache-json --session-id <id>  # личность текущей сессии
 
 Python 3.9+, stdlib.
 """
@@ -162,12 +162,9 @@ ON_DEMAND_BLOCK = """\
 
 
 def coverage_line(base: Path, units, listed_files: int) -> str:
-    """Счётчики покрытия для «Границ карты»: полна на уровне юнитов, неполна на
-    уровне файлов — и говорит, насколько."""
-    total = md_counts(base).get(base.resolve(), 0)
-    return (f" Покрытие: management units {len(units)} — все верхнего уровня; файлов с адресом "
-            f"в карте {listed_files} из {total} в дереве — карта полна по management units и "
-            f"НЕполна по файлам.")
+    """Карта перечисляет верхние юниты; файлы в ней — выборка без обхода дерева."""
+    return (f" Покрытие: management units {len(units)} — все верхнего уровня; "
+            f"файлов с адресом в карте {listed_files} — выборка, полное дерево проверяй листингом.")
 
 
 def read_head(path: Path, limit: int = 40):
@@ -223,29 +220,6 @@ def md_files(d: Path):
     return sorted(p for p in d.iterdir() if p.is_file() and p.suffix == ".md")
 
 
-_MD_COUNTS: dict = {}
-
-
-def md_counts(base: Path) -> dict:
-    """Число .md в каждом каталоге дерева (рекурсивно), один os.walk на базу —
-    вместо rglob на каждый юнит и на всё дерево (Drive)."""
-    base = base.resolve()
-    if base in _MD_COUNTS:
-        return _MD_COUNTS[base]
-    counts: dict = {}
-    for root, dirs, files in os.walk(base):
-        dirs[:] = [d for d in dirs if not d.startswith(".") and d not in SERVICE_DIRS]
-        n = sum(1 for f in files if f.endswith(".md"))
-        p = Path(root)
-        counts[p] = counts.get(p, 0) + n
-        for anc in p.parents:
-            counts[anc] = counts.get(anc, 0) + n
-            if anc == base:
-                break
-    _MD_COUNTS[base] = counts
-    return counts
-
-
 def subdirs(d: Path):
     return sorted(
         p for p in d.iterdir()
@@ -294,13 +268,12 @@ def kit_of(d: Path) -> str | None:
 def describe_dir_line(d: Path, base: Path) -> str:
     rel = d.relative_to(base)
     mission = mission_of_dir(d)
-    n = md_counts(base).get(d.resolve(), 0)
     if d.name == "zz_archive":
-        return f"- `{rel}/` — архив, только по явной надобности (файлов: {n})"
+        return f"- `{rel}/` — архив, только по явной надобности"
     if d.name == "_inbox":
-        return f"- `{rel}/` — входящее до разбора (файлов: {n})"
+        return f"- `{rel}/` — входящее до разбора"
     kit = kit_of(d)
-    kit_part = f" (kit: {kit}; файлов: {n})" if kit else (f" (файлов: {n})" if n else "")
+    kit_part = f" (kit: {kit})" if kit else ""
     return f"- `{rel}/` — {mission or d.name}{kit_part}"
 
 
@@ -432,10 +405,6 @@ def node_map(node: Path, base: Path, deep: bool = False) -> str:
         lines.append(f"- … ещё файлов: {len(plain) - 15} — смотри листингом")
     if ds:
         lines.append(f"- {ds}")
-    # счётчики: если дерево базы уже обойдено (корневая карта) — берём его; иначе обходим
-    # только узел (хук node-enter: отдельный процесс на каждый вход, полный обход svaib
-    # под нагрузкой стенда стоил 0,6–1,4 с на вызов)
-    counts = _MD_COUNTS.get(base.resolve()) or md_counts(node)
     if (node / ".svaib").is_dir():                     # скрытая, но на неё ведут маршруты корня
         lines.append("- `.svaib/` — служебное агента: правила владельца, находки, учёт скиллов, версия пространства")
     for sd in subdirs(node):
@@ -444,20 +413,20 @@ def node_map(node: Path, base: Path, deep: bool = False) -> str:
         sfiles = md_files(sd)
         sds = dated_summary(sfiles, dated_dirs(sd))
         m = mission_of_dir(sd)
-        n = counts.get(sd.resolve(), 0)
         # служебные — не узлы даже с README/китом, вход туда не даёт хук (NOT_NODES)
         is_node = sd.name not in NODE_EXCLUDED and (sd / NODE_MARKER_FILE).is_file()
         kit = kit_of(sd) if is_node else None          # кит показываем только у узла со своей картой
-        kit_part = f"unit, kit: {kit}; " if kit else ("узел; " if is_node else "")
+        kit_part = f"unit, kit: {kit}" if kit else ("узел" if is_node else "")
         if sd.name == "zz_archive":
-            lines.append(f"- `{sd.name}/` — архив (файлов: {n}), только по явной надобности")
+            lines.append(f"- `{sd.name}/` — архив, только по явной надобности")
         elif sd.name == "_inbox":
-            lines.append(f"- `{sd.name}/` — входящее до разбора (файлов: {n})")
+            lines.append(f"- `{sd.name}/` — входящее до разбора")
         elif sds:
-            tag = f" ({kit_part.rstrip('; ')})" if kit_part else ""   # пометка не терялась у датированных групп
+            tag = f" ({kit_part})" if kit_part else ""   # пометка не терялась у датированных групп
             lines.append(f"- `{sd.name}/` — {m or sd.name}: {sds}{tag}")
         else:
-            lines.append(f"- `{sd.name}/` — {m or sd.name} ({kit_part}файлов: {n})")
+            tag = f" ({kit_part})" if kit_part else ""
+            lines.append(f"- `{sd.name}/` — {m or sd.name}{tag}")
         if deep and not sds and sd.name != "zz_archive":
             for f in sfiles[:8]:
                 fm = mission_of_file(f)
@@ -567,19 +536,16 @@ def skills_registry(base: Path) -> str | None:
 
 
 # ---------------------------------------------------------------------------
-# Идентичность от платформы, кэш на машине
+# Идентичность от платформы, запись сессии на машине
 #
 # «Кто» приходит из MCP `whoami` (subject, tenant, profile_path, about). Ответ
 # ловит PostToolUse-хук и отдаёт сюда JSON целиком — без интерполяции в shell.
-# Генератор по profile_path читает профиль в пространстве, выводит юниты зоны
-# и пишет кэш в state-каталог машины — ВНЕ репозитория и Drive. Кэш ключуется
-# email аккаунта Claude + корнем пространства (один аккаунт, две базы),
-# хранит tenant для сверки, живёт CACHE_TTL_HOURS. Без email кэша нет: каждая
-# сессия персонализируется заново через whoami (Cowork).
+# Генератор по profile_path читает профиль в пространстве и выводит юниты зоны;
+# хук сохраняет результат для этой сессии в state-каталоге машины. Ключ —
+# session_id + корень пространства; новая сессия всегда узнаёт пользователя через MCP.
 # ---------------------------------------------------------------------------
 
-CACHE_TTL_HOURS = 24
-CACHE_VERSION = 3   # 3 — запись несёт `onboarding` из whoami; старая версия не читается, агент зовёт whoami заново
+SESSION_VERSION = 1
 
 
 def state_dir() -> Path:
@@ -591,58 +557,40 @@ def state_dir() -> Path:
     return Path.home() / ".local" / "state" / "svaib"
 
 
-def account_email() -> str:
-    """Email аккаунта Claude Code с этой машины; пусто — если файла нет (Cowork)."""
-    try:
-        d = json.loads((Path.home() / ".claude.json").read_text(encoding="utf-8"))
-        return ((d.get("oauthAccount") or {}).get("emailAddress") or "").strip().lower()
-    except (OSError, ValueError, AttributeError):
-        return ""
-
-
-def cache_path(email: str, base: Path) -> Path | None:
-    if not email:
+def session_path(session_id: str, base: Path) -> Path | None:
+    if not session_id:
         return None
-    key = hashlib.sha256(f"{email}\n{base.resolve()}".encode("utf-8")).hexdigest()[:20]
-    return state_dir() / "identity" / f"{key}.json"
+    key = hashlib.sha256(f"{session_id}\n{base.resolve()}".encode("utf-8")).hexdigest()[:20]
+    return state_dir() / "sessions" / f"{key}.identity.json"
 
 
-def _now() -> datetime.datetime:
-    return datetime.datetime.now(datetime.timezone.utc)
-
-
-def read_cache(email: str, base: Path) -> dict | None:
-    """Свежая запись этого аккаунта для этого корня, иначе None. Поле `fresh`
-    отдельно: протухшая запись возвращается с fresh=False (subject известен)."""
-    p = cache_path(email, base)
+def read_session(session_id: str, base: Path) -> dict | None:
+    """Личность только из текущей сессии и пространства."""
+    p = session_path(session_id, base)
     if p is None:
         return None
     try:
         d = json.loads(p.read_text(encoding="utf-8"))
     except (OSError, ValueError):
         return None
-    if not isinstance(d, dict) or d.get("v") != CACHE_VERSION:
+    if not isinstance(d, dict) or d.get("v") != SESSION_VERSION:
         return None
-    if d.get("email") != email or d.get("base") != str(base.resolve()):
+    if d.get("session") != session_id or d.get("base") != str(base.resolve()):
         return None
-    if not isinstance(d.get("subject"), str) or not isinstance(d.get("units"), list):
+    if not isinstance(d.get("subject"), str) or not d["subject"] or not isinstance(d.get("units"), list):
         return None
-    try:
-        age = _now() - datetime.datetime.fromisoformat(d["ts"])
-    except (KeyError, TypeError, ValueError):
-        return None
-    d["fresh"] = datetime.timedelta(0) <= age < datetime.timedelta(hours=CACHE_TTL_HOURS)
     d["units"] = [u for u in d["units"] if isinstance(u, str)]
-    d["name"] = clean_name(d.get("name"))   # старая запись имени не несёт — пусто, не отказ
+    d["name"] = clean_name(d.get("name"))
     d["preferences"] = clean_block(d.get("preferences"), PREFERENCES_LIMIT)
+    d["profile_path"] = d.get("profile_path") if isinstance(d.get("profile_path"), str) else ""
+    d["unit_source"] = d.get("unit_source") if d.get("unit_source") in ("профиль", "about", "указаны") else ""
     d["onboarding"] = d["onboarding"] if isinstance(d.get("onboarding"), dict) else None
     return d
 
 
-def write_cache(email: str, base: Path, rec: dict) -> Path | None:
-    """0600, атомарно (tmp + replace); без email — не пишется. `ts` записи сохраняется, если
-    есть: срок кэша отсчитывается от `whoami`, а не от поправки."""
-    p = cache_path(email, base)
+def write_session(session_id: str, base: Path, rec: dict) -> Path | None:
+    """Атомарная запись с правами 0600; без session_id личность не сохраняем."""
+    p = session_path(session_id, base)
     if p is None:
         return None
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -650,17 +598,16 @@ def write_cache(email: str, base: Path, rec: dict) -> Path | None:
         os.chmod(p.parent, 0o700)
     except OSError:
         pass
-    rec = dict(rec, v=CACHE_VERSION, email=email, base=str(base.resolve()))
-    rec.setdefault("ts", _now().isoformat(timespec="seconds"))
+    rec = dict(rec, v=SESSION_VERSION, session=session_id, base=str(base.resolve()))
     fd, tmp = tempfile.mkstemp(prefix=p.name + ".", suffix=".tmp", dir=str(p.parent))   # свой tmp на процесс
-    os.fchmod(fd, 0o600)
+    # mkstemp уже создаёт файл с 0600 на POSIX; fchmod отсутствует в Windows Python <= 3.12.
     with os.fdopen(fd, "w", encoding="utf-8") as f:
         json.dump(rec, f, ensure_ascii=False, indent=1)
     os.replace(tmp, p)
     return p
 
 
-ZONE_HEADINGS = ("зона", "роль", "responsib", "role")
+ZONE_HEADINGS = ("зона", "роль", "подраздел", "направлен", "responsib", "role")
 UNIT_RE = r"(?<![\w/]){unit}(?![\w-])"
 
 
@@ -693,6 +640,24 @@ def units_in_text(text: str, units_all: list[str]) -> list[str]:
     return [u for u in units_all if re.search(UNIT_RE.format(unit=re.escape(u.lower())), low)]
 
 
+def units_from_links(text: str, profile: Path, base: Path, units_all: list[str]) -> list[str]:
+    """Ссылки из секции ответственности на обзор или README корневого юнита."""
+    found = set()
+    for target in re.findall(r"(?<!!)\[[^\]]*\]\(([^\s)]+)", text):
+        path = target.strip("<>").split("#", 1)[0]
+        if not path or ":" in path:
+            continue
+        try:
+            resolved = (profile.parent / path).resolve()
+        except (OSError, RuntimeError):
+            continue
+        for unit in units_all:
+            unit_dir = (base / unit).resolve()
+            if resolved == unit_dir or (resolved.parent == unit_dir and resolved.name in ("01_overview.md", "README.md")):
+                found.add(unit)
+    return [unit for unit in units_all if unit in found]
+
+
 def profile_units(base: Path, profile_path: str, units_all: list[str]) -> list[str]:
     """Юниты зоны из профиля: frontmatter `units:` (канон) → имена юнитов в тексте
     секции «Роль/зона» (или первой секции — профиль не по канону). Проза наружу
@@ -704,7 +669,10 @@ def profile_units(base: Path, profile_path: str, units_all: list[str]) -> list[s
         raise ValueError(f"профиль {profile_path!r} вне пространства {base}")
     if not p.is_file():
         return []
-    text = p.read_text(encoding="utf-8", errors="replace")
+    try:
+        text = p.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return []
     found = [u for u in units_from_frontmatter(_frontmatter(text)) if u in units_all]
     if found:
         return found
@@ -717,7 +685,109 @@ def profile_units(base: Path, profile_path: str, units_all: list[str]) -> list[s
             break
     if not zone_text and sections:
         zone_text = sections[0].partition("\n")[2]
-    return units_in_text(zone_text, units_all)
+    found = set(units_in_text(zone_text, units_all))
+    found.update(units_from_links(zone_text, p, base, units_all))
+    return [u for u in units_all if u in found]
+
+
+def _goal_sections(text: str) -> str:
+    """Цели из goal.md по заголовкам шаблона; стратегия и реестр проектов остаются в файле."""
+    matches = list(re.finditer(r"^##\s+(.+)$", text, re.M))
+    parts = []
+    for i, match in enumerate(matches):
+        heading = re.sub(r"^[^\w]+", "", match.group(1)).casefold()
+        if not heading.startswith(("цель", "цели", "долгосрочная цель", "goal", "goals", "long-term goal")):
+            continue
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        parts.append(text[match.start():end].strip())
+    return "\n\n".join(parts)
+
+
+def _overview_goal_lines(text: str) -> str:
+    """Явная цель или вклад в обзорном разделе; у старых overview — отдельный H2 цели."""
+    matches = list(re.finditer(r"^##\s+(.+)$", text, re.M))
+    for i, match in enumerate(matches):
+        if "цели и метрики успеха" not in match.group(1).casefold():
+            continue
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
+        section = text[match.end():end]
+        lines = [line.strip() for line in section.splitlines()
+                 if re.match(r"^\s*(?:[-*]\s*)?\*\*(?:Цель|Вклад в цель):\*\*", line, re.I)]
+        return "\n".join(lines)
+    return _goal_sections(text)
+
+
+def _root_links(text: str, base: Path, source: Path) -> str:
+    """Ссылки из источника цели показываем относительно корня, где агент читает карту."""
+    def replace(match: re.Match) -> str:
+        target = match.group(2)
+        wrapped = target.startswith("<") and target.endswith(">")
+        if wrapped:
+            target = target[1:-1]
+        path, marker, fragment = target.partition("#")
+        if not path or path.startswith("/") or ":" in path:
+            return match.group(0)
+        try:
+            resolved = (source.parent / path).resolve()
+        except (OSError, RuntimeError):
+            return match.group(0)
+        if base not in resolved.parents:
+            return match.group(0)
+        rewritten = f"{resolved.relative_to(base)}{marker}{fragment}"
+        return f"[{match.group(1)}](<{rewritten}>)" if wrapped else f"[{match.group(1)}]({rewritten})"
+
+    return re.sub(r"(?<!!)\[([^\]]+)\]\(([^)]+)\)", replace, text)
+
+
+def _read_workspace_file(base: Path, path: Path) -> str:
+    try:
+        resolved = path.resolve()
+        if base not in resolved.parents or not resolved.is_file():
+            return ""
+        return resolved.read_text(encoding="utf-8", errors="replace")
+    except (OSError, RuntimeError):
+        return ""
+
+
+def is_ceo_profile(profile_path: str) -> bool:
+    return Path(profile_path).parts[:1] == ("00_ceo",)
+
+
+def goals_context(base: Path, profile_path: str, units: list[str], source: str = "профиль") -> str:
+    """Известная часть цепочки: CEO → цели компании; профиль → юниты → их цели.
+
+    До цели вышестоящего юнита не идём: форма этой связи ещё не определена каноном.
+    """
+    base = base.resolve()
+    parts = []
+    if is_ceo_profile(profile_path):
+        goal = base / "01_company" / "01_strategic" / "goal.md"
+        raw = _read_workspace_file(base, goal)
+        if raw:
+            content = _root_links(_goal_sections(raw), base, goal)
+            if content:
+                parts.append(f"**Компания** — источник `01_company/01_strategic/goal.md`:\n\n{content}")
+    elif source in ("профиль", "указаны"):
+        for unit in dict.fromkeys(units):
+            if unit in ("", ".", "..") or "/" in unit or "\\" in unit:
+                continue
+            unit_dir = base / unit
+            if not unit_dir.is_dir() or unit_dir.is_symlink():
+                continue
+            goal = unit_dir / "01_strategic" / "goal.md"
+            raw = _read_workspace_file(base, goal)
+            if raw:
+                content = _root_links(_goal_sections(raw), base, goal)
+                if content:
+                    parts.append(f"**{unit}/** — источник `{unit}/01_strategic/goal.md`:\n\n{content}")
+                    continue
+            overview = unit_dir / "01_overview.md"
+            raw = _read_workspace_file(base, overview)
+            if raw:
+                content = _root_links(_overview_goal_lines(raw), base, overview)
+                if content:
+                    parts.append(f"**{unit}/** — краткая запись из `{unit}/01_overview.md`:\n\n{content}")
+    return "## Цели персонального контекста\n\n" + "\n\n".join(parts) if parts else ""
 
 
 def clean_name(value) -> str:
@@ -820,10 +890,8 @@ def parse_whoami(raw) -> dict:
             "onboarding": data["onboarding"] if isinstance(data.get("onboarding"), dict) else None}
 
 
-def apply_update_me(base: Path, raw) -> bool:
-    """После `update_me`: пришедшие в ответе `onboarding` и `preferences` — в кэш этой машины
-    (пустые `preferences` очищают), срок кэша не продлевается. Отказ `onboarding-conflict` несёт
-    текущий `onboarding` — пишется только он. Ни одного из полей или нет кэша — ничего."""
+def apply_update_me(base: Path, session_id: str, raw) -> bool:
+    """После `update_me` обновить поля личности в текущей сессии."""
     try:
         data = tool_payload(raw)
     except ValueError:
@@ -835,23 +903,21 @@ def apply_update_me(base: Path, raw) -> bool:
         fields["onboarding"] = data["onboarding"]
     if "preferences" in data and (data["preferences"] is None or isinstance(data["preferences"], str)):
         fields["preferences"] = clean_block(data["preferences"] or "", PREFERENCES_LIMIT)
-    email = account_email()
-    rec = read_cache(email, base) if fields else None
+    rec = read_session(session_id, base) if fields else None
     if not rec:
         return False
-    rec.pop("fresh", None)
-    return write_cache(email, base, dict(rec, **fields)) is not None
+    return write_session(session_id, base, dict(rec, **fields)) is not None
 
 
 # ---------------------------------------------------------------------------
 # Онбординг пользователя под строкой «За клавиатурой»: «два и два» — два последних
 # пройденных и два следующих этапа. План = каталог этапов плагина × личное человека ×
 # отметки (dev/it-onboarding/_plan.md, «Архитектура статусов»); тот же расчёт ведёт скилл
-# `space-onboarding`. Каталог — производный от таблиц методологии, его кладёт сборка рядом со
+# `onboarding`. Каталог — производный от таблиц методологии, его кладёт сборка рядом со
 # скиллом (как спецификации `space-scaffold` для inject_file_spec.py); без поставки блока нет.
 # ---------------------------------------------------------------------------
 
-STAGES_PATH = (Path(os.path.abspath(__file__)).parent.parent / "skills" / "space-onboarding" / "references"
+STAGES_PATH = (Path(os.path.abspath(__file__)).parent.parent / "skills" / "onboarding" / "references"
                / "stages.json")
 STATE_NOTES = {"waiting": "жду", "deferred": "отложен", "unverified": "не удалось проверить"}
 
@@ -936,15 +1002,14 @@ def onboarding_block(rec: dict) -> str:
                 title(s) + (f" (зачтён по `{src}`)" if src != s["id"] else "") for s, src in done))
         if nxt:
             lines.append("- дальше: " + "; ".join(todo(s) for s in nxt))
-        lines.append("- весь путь — скилл `space-onboarding`")
+        lines.append("- весь путь — скилл `onboarding`")
         return "\n".join(lines)
     except Exception:  # noqa: BLE001 — блок онбординга не имеет права уронить карту
         return ""
 
 
 def personalize(base: Path, who: dict, units_override: list[str] | None = None) -> tuple[str, dict]:
-    """После whoami: юниты зоны (профиль → about → override), подкарты зоны, кэш.
-    Возвращает (текст для контекста, запись кэша)."""
+    """После whoami: юниты зоны и подкарты; возвращает текст и запись сессии."""
     base = base.resolve()
     units_all = [u.name for u in subdirs(base) if u.name not in ("zz_archive", "_inbox")]
     units = profile_units(base, who.get("profile_path", ""), units_all)
@@ -958,24 +1023,28 @@ def personalize(base: Path, who: dict, units_override: list[str] | None = None) 
     units = [u for u in units if u in units_all]
     rec = {"subject": who["subject"], "name": who.get("name", ""), "preferences": who.get("preferences", ""),
            "tenant": who.get("tenant", ""), "role": who.get("role", ""),
-           "profile_path": who.get("profile_path", ""), "units": units, "onboarding": who.get("onboarding")}
-    email = account_email()
-    cp = write_cache(email, base, rec)
-    remembered = (f"запомнен на этой машине на {CACHE_TTL_HOURS} ч" if cp
-                  else "аккаунт Claude на машине не определён — кэша нет, в следующей сессии снова `whoami`")
+           "profile_path": who.get("profile_path", ""), "units": units, "unit_source": source,
+           "onboarding": who.get("onboarding")}
     lines = [f"{who_line(who['subject'], who.get('name', ''))}, профиль "
-             f"`{who.get('profile_path') or '—'}` — персональная подкарта зоны; {remembered}."
+             f"`{who.get('profile_path') or '—'}` — персональная подкарта зоны этой сессии."
              f"{keyboard_line(who.get('name', ''))}{onboarding_block(rec)}"
              f"{preferences_line(who.get('preferences', ''))}"]
     if units:
         lines.append(f"\n**Management units зоны** ({source}): " + " · ".join(f"`{u}/`" for u in units))
+        goals = goals_context(base, who.get("profile_path", ""), units, source)
+        if goals:
+            lines.append("\n" + goals)
         for u in units:
             lines.append("\n" + node_map(base / u, base))
     else:
-        lines.append("\nManagement units зоны не выведены ни из профиля, ни из `about`. Персональной подкарты нет: "
-                     "работай по общей карте — подкарта узла приходит при первом обращении к его файлам "
-                     f"(папки верхнего уровня: {', '.join(units_all)}). Точный источник зоны — поле "
-                     "`units:` в шапке профиля.")
+        if not is_ceo_profile(who.get("profile_path", "")):
+            lines.append("\nManagement units зоны не выведены ни из профиля, ни из `about`. Персональной подкарты нет: "
+                         "работай по общей карте — подкарта узла приходит при первом обращении к его файлам "
+                         f"(папки верхнего уровня: {', '.join(units_all)}). Точный источник зоны — поле "
+                         "`units:` в шапке профиля.")
+        goals = goals_context(base, who.get("profile_path", ""), units, source)
+        if goals:
+            lines.append("\n" + goals)
     return "\n".join(lines), rec
 
 
@@ -1044,13 +1113,14 @@ def add_prod_args(ap: argparse.ArgumentParser) -> None:
                     help="--emit без стабильного блока (модель пространства, как ходить): он "
                          "живёт в корневом AGENTS.md и приходит каждый ход")
     ap.add_argument("--cache-json", action="store_true",
-                    help="напечатать кэш пользователя этой машины для --base (JSON, {} если нет)")
+                    help="напечатать личность текущей сессии для --base (JSON, {} если нет)")
+    ap.add_argument("--session-id", default="", help="--cache-json: ID сессии")
     ap.add_argument("--print-model", action="store_true",
                     help="напечатать стабильный блок корневого файла (единый источник текста)")
     ap.add_argument("--write-model", action="store_true",
                     help="подготовить раздел карты в AGENTS.md шаблона или новой миграции (--base)")
     ap.add_argument("--personalize", action="store_true",
-                    help="после whoami — подкарты зоны по профилю + кэш пользователя на машине")
+                    help="после whoami — подкарты зоны по профилю")
     ap.add_argument("--whoami-file", default="",
                     help="--personalize: файл с ответом whoami (JSON); `-` — stdin. Не через shell-аргументы")
     ap.add_argument("--subject", default="", help="--personalize без файла: subject_id из whoami")
@@ -1065,7 +1135,7 @@ def run_prod(args) -> bool:
     # --- прод-режимы: ничего не пишут в пространство ---
     try:
         if args.cache_json:
-            print(json.dumps(read_cache(account_email(), src) or {}, ensure_ascii=False))
+            print(json.dumps(read_session(args.session_id, src) or {}, ensure_ascii=False))
             return True
         if args.print_model:
             # Без HTML-комментария-маркера: наличие блока в CLAUDE.md/AGENTS.md

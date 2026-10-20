@@ -1,6 +1,7 @@
 ---
 title: "Тип progress — хроника"
 status: draft
+file_patterns: ["[0-9][0-9]_progress.md"]
 ---
 
 # Спецификация типа `progress` — хроника

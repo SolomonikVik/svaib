@@ -47,6 +47,12 @@ HEAD_TIME = re.compile(r"[\[(]\s*\d{1,3}[:.,]\d[^\])\n]{0,20}\s*[\])]|"
 DASH_SEP = re.compile(r"\s+[—–-]\s+")
 #: Блок субтитров: строка-номер имеет смысл только рядом с `-->`.
 CUE_MARK = re.compile(r"\d\s*(?:-+>|—>|–>|→|⟶)\s*\d")
+# Отдельная строка WebVTT: диапазон времени и необязательные настройки cue.
+VTT_CUE = re.compile(
+    r"^\s*(?P<start>\d{1,3}:[0-5]\d(?::[0-5]\d)?(?:[.,]\d+)?)"
+    r"\s*-->\s*\d{1,3}:[0-5]\d(?::[0-5]\d)?(?:[.,]\d+)?"
+    r"(?:\s+[A-Za-z][\w-]*:\S+)*\s*$"
+)
 #: Скобочная приписка к имени: `Иван (PM)`, `Анна (продажи)`, `Speaker [2]`.
 NAME_PAREN = re.compile(r"\s*[\[(][^\])\n]{0,40}[\])]\s*")
 #: Разметка документа, которой не бывает в записи разговора: заголовки и таблицы.
@@ -61,6 +67,8 @@ NOT_IN_NAME = set("[]()`|→←↑↓•#=~")
 HEAD_LIMIT = 80
 #: Таймкод в тексте точки — по нему ищется опорная реплика.
 TIMECODE = re.compile(r"(?<![\d:])(\d{1,3}):([0-5]\d)(?::([0-5]\d))?(?![\d:])")
+# Секция точки берётся из черновика, а не угадывается по тексту записи.
+POINT_SECTION = re.compile(r"^\*\*(Решения|Задачи|Решённые задачи)\*\*$")
 
 #: Кусок цитаты короче трёх слов отдельно не ищется: совпадёт где угодно.
 MIN_SEG = 3
@@ -337,11 +345,23 @@ def parse_source(lines: list):
     lines = strip_frontmatter(lines)
     speakers = detect_speakers(lines)
     has_cues = any(CUE_MARK.search(l) for l in lines)
-    turns, current = [], ""
+    turns, current, pending_tc = [], "", None
     for i, raw in enumerate(lines, 1):
+        cue = VTT_CUE.fullmatch(raw) if has_cues else None
+        if cue:
+            pending_tc = _read_time(cue.group("start"))
+            continue
         tc, rest = lead_time(raw)
         if not rest.strip():
+            if tc is not None:
+                pending_tc = tc  # VTT: время отдельной строкой перед репликой
             continue
+        if has_cues and rest.strip().isdigit() and tc is None:
+            next_line = lines[i] if i < len(lines) else ""
+            if VTT_CUE.fullmatch(next_line):
+                continue  # номер блока субтитров стоит перед строкой времени
+        tc = tc or pending_tc
+        pending_tc = None
         who, head_tc, text, _ = split_speaker(rest)
         if who not in speakers:
             who, text = None, rest
@@ -349,8 +369,6 @@ def parse_source(lines: list):
             tc = tc or head_tc
         if who is None and rest.strip() in speakers:
             who, text = rest.strip(), ""
-        if who is None and has_cues and text.strip().isdigit() and tc is None:
-            continue  # номер блока субтитров — только там, где блоки есть
         if who is not None:
             current = who
         elif tc is None:
@@ -605,11 +623,29 @@ ADDR_RU = {"timecode": "таймкоды", "line": "строки источни�
            "mixed": "таймкоды у части реплик, у остальных строки"}
 
 
+def point_sections(draft_text: str) -> dict:
+    """Возвращает секции дословных строк черновика, выбранных как точки."""
+    found, section = {}, None
+    for raw in draft_text.splitlines():
+        line = raw.strip()
+        if line.startswith("## "):
+            section = None
+        match = POINT_SECTION.fullmatch(line)
+        if match:
+            section = match.group(1)
+            continue
+        if section and re.match(r"^[-*+]\s+", line):
+            point = re.sub(r"^[-*+]\s+", "", line)
+            found.setdefault(point, set()).add(section)
+    return found
+
+
 def build_report(draft_text: str, source_text: str, points: list,
                  source_name: str = "", window: int = 400, context: int = 250):
     turns, fmt = parse_source(source_text.splitlines())
     toks, meta, positions = build_index(turns)
     draft_norm = " ".join(tokenize(draft_text))
+    sections_by_point = point_sections(draft_text)
     first_tok = {}  # реплика → позиция её первого токена: опора поиска по таймкоду точки
     for idx, (ti, _, _) in enumerate(meta):
         first_tok.setdefault(ti, idx)
@@ -623,6 +659,11 @@ def build_report(draft_text: str, source_text: str, points: list,
             warnings.append(f"точка {n} не является строкой черновика — проверь вход")
         quotes = ["".join(g for g in m.groups() if g) for m in QUOTE_SPAN.finditer(point)]
         lines = [f"## Точка {n}", f"> {point}"]
+        source_sections = sections_by_point.get(point, set())
+        section = next(iter(source_sections)) if len(source_sections) == 1 else "не определена"
+        lines.append(f"Секция черновика: {section}")
+        if len(source_sections) != 1:
+            warnings.append(f"точка {n}: исходная секция не определена однозначно")
         hint = None  # адрес точки → вхождение якоря ищется рядом, не первым по файлу
         bare = QUOTE_SPAN.sub("", point)
         m_tc = TIMECODE.search(bare)
@@ -642,9 +683,11 @@ def build_report(draft_text: str, source_text: str, points: list,
         for m_q in QUOTE_SPAN.finditer(point):
             tail = point[m_q.end():m_q.end() + 40]
             m_ql = LINEREF.search(tail)
+            m_qtc = TIMECODE.search(tail)
             qh = hint
-            if m_ql and tail.lstrip().startswith("["):
-                qti = turn_by_line(turns, int(m_ql.group(1)))
+            if tail.lstrip().startswith("[") and (m_ql or m_qtc):
+                qti = (turn_by_line(turns, int(m_ql.group(1))) if m_ql
+                       else turn_by_timecode(turns, seconds(m_qtc.group())))
                 if qti is not None:
                     qh = first_tok.get(qti, hint)
             qhints.append(qh)

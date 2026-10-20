@@ -1,6 +1,7 @@
 ---
 title: "Тип active — текущая работа"
 status: draft
+file_patterns: ["[0-9][0-9]_active.md"]
 ---
 
 # Спецификация типа `active` — текущая работа

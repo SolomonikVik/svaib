@@ -146,7 +146,7 @@ def _agent_skill(entries: list[dict], resolve) -> tuple[str, str, str] | None:
             inp = b.get("input") if isinstance(b.get("input"), dict) else {}
             found = resolve("name", inp.get("skill")) if b.get("name") == "Skill" else \
                 resolve("file", inp.get("file_path")) if b.get("name") == "Read" else \
-                resolve("command", inp.get("command")) if b.get("name") == "Bash" else None
+                resolve("command", inp.get("command")) if b.get("name") in {"Bash", "PowerShell"} else None
             if found:
                 return found[0], found[1], "модель"
     return None

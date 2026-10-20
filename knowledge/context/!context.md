@@ -2,7 +2,7 @@
 title: "Context Engineering, RAG, Memory — сводка знаний"
 status: processed
 added: 2026-01-30
-updated: 2026-09-22
+updated: 2026-10-13
 review_by: 2026-12-22
 tags: [context-engineering, rag, memory, temporal-graphs, extraction, ai-dotfiles, index, progressive-disclosure, google-drive, integrations, icm, hybrid-search, agentic-rag, agentic-search, graphrag, lightrag, chunking, metadata, metrics, claude-5]
 publish: false
@@ -47,6 +47,8 @@ LLM-ассистент с бизнес-метриками работает не 
 Одна из пяти архитектур хранения памяти агентов (→ [agent-memory.md](agent-memory.md)). Решает ключевое ограничение обычного RAG — отсутствие темпоральности. Каждый факт/отношение имеет временные метки, конфликты разрешаются через invalidation. Bi-temporal model различает "когда произошло" и "когда узнали". Критично для продукта SVAIB: решения на встречах обновляются, AI должен знать что актуально сейчас. Два живых фреймворка: Graphiti (Zep, Neo4j, MCP-сервер) и Hindsight (Vectorize.io, PostgreSQL, биомиметическая память). Подробнее → [temporal-graphs.md](temporal-graphs.md). Практический опыт работы с Graphiti (метрики, кейсы, оптимизация) → [temporal-graphs-doronin.md](temporal-graphs-doronin.md)
 
 ### AI System Files — конфигурационные файлы для AI-ассистентов
+
+Контракт контекста зависит также от рантайма: compaction меняет модельную историю, усечение выдачи инструмента не равно потере исходного файла, а восстановление сессии должно вернуть инструкции и адреса канонических источников. Проверки после повторного сжатия и resume — [контракт агентного рантайма](../coding/agent-runtime-contract.md); подача инструкций хуком — [перенос событий между хостами](../plugins/cross-harness-hooks.md).
 
 Каждый AI coding-ассистент использует конфигурационные файлы двух типов: **инструкции** (CLAUDE.md, AGENTS.md, GEMINI.md — "как работать с проектом") и **персона/память** (soul.md, identity.md, memory.md — "кто ты и что помнишь"). Все сходятся на Markdown и иерархической загрузке по директориям. AGENTS.md движется к кросс-платформенному стандарту через AAIF (Linux Foundation, основатели: Anthropic, OpenAI, Block). Подробная карта 13 инструментов, кросс-чтение файлов, импорты и автозагрузка (`@import` у Claude vs его отсутствие у Codex), best practices, anti-patterns и лимиты → [ai-system-files.md](ai-system-files.md).
 

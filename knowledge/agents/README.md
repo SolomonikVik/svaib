@@ -7,6 +7,7 @@
 ## Файлы
 
 - [!agents.md](!agents.md) — сводка знаний
+- [claude-agent-sdk.md](claude-agent-sdk.md) — программное управление Claude Code: runtime, инструменты, плагины и границы лицензий Python/TypeScript SDK
 - [workflow-automation.md](workflow-automation.md) — workflow-first vs agent-first и гибрид (агент пишет workflow): decision frame, схемы, граница применимости
 - [mcp.md](mcp.md) — MCP: протокол, экосистема, SDK, security
 - [agent-authorization.md](agent-authorization.md) — авторизация агентов: acting-as, права = права человека ∩ scope, Zanzibar-стек (OpenFGA/SpiceDB/OPA), MCP поверх OAuth 2.1, agent gateway

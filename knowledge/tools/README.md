@@ -15,6 +15,7 @@
 - [paperclip.md](paperclip.md) — Paperclip: open-source оркестратор AI-агентов как компании (org chart, бюджеты, governance) — слой над OpenClaw/Manus
 - [company-brain.md](company-brain.md) — Company Brain (Supermemory): open-source AI-сотрудник в Slack — граф прав памяти, правила записи, проактивность, расписания fail-closed, подтверждения и аренда доступа
 - [ai-workspaces.md](ai-workspaces.md) — AI-оболочки: каталог сред для работы с AI
+- [bb.md](bb.md) — BB: интерфейс над агентными движками, ACP, границы плагинов и способов запуска.
 - [obsidian.md](obsidian.md) — Obsidian как md-платформа: командная коллаборация (Relay/CRDT), agent-writable через MCP
 - [openknowledge.md](openknowledge.md) — OpenKnowledge (Inkeep): AI-native md IDE / LLM-wiki, нативный MCP для агентов, GPL-3.0
 - [web-scraping-apis.md](web-scraping-apis.md) — Web Scraping APIs: прокси-сервисы для AI

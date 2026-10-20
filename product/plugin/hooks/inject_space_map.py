@@ -16,14 +16,14 @@ SessionStart нет. SessionStart остаётся для `compact`/`clear` — 
 
 Кто пользователь — от платформы (`whoami`), не с машины. Персонализация детерминирована
 хуком PostToolUse: он получает ответ `whoami` целиком (JSON), зовёт генератор без shell,
-инжектит подкарту зоны и пишет кэш (state-каталог машины, вне репозитория и Drive; ключ —
-email аккаунта Claude + корень пространства; TTL 24 ч). Следующая сессия стартует
-персональной картой без MCP. Кэш протух / другой аккаунт / другая база → общая карта +
-короткая просьба вызвать `whoami`. Без MCP агент исходит из сведений об аккаунте.
+инжектит подкарту зоны и сохраняет личность для хуков этой сессии (state-каталог машины,
+вне репозитория и Drive; ключ — session_id + корень пространства). Новая сессия
+начинается с общей карты и вызывает `whoami`; после сжатия карта восстанавливается
+из записи текущей сессии. Без MCP личность не угадывается.
 
 Под строкой «За клавиатурой» — ближайшие этапы онбординга («два и два»): статус `onboarding`
-из кэша × каталог этапов скилла `space-onboarding` (`space_map.onboarding_block`). Ответ
-`update_me` несёт итоговые статус и `preferences` — хук кладёт их в кэш, не продлевая срок записи.
+из записи сессии × каталог этапов скилла `onboarding` (`space_map.onboarding_block`). Ответ
+`update_me` несёт итоговые статус и `preferences` — хук обновляет запись сессии.
 
 Подкарта узла — при входе в узел. Узел — папка
 верхнего уровня безусловно (кроме служебных, `_inbox`, `zz_archive`) **и** любая папка глубже
@@ -91,11 +91,11 @@ ENTER_TOOLS = ("Read", "Glob", "Grep", "Bash")   # Bash — агент чита�
 # в `tool_input.command`, то есть совместимо с Claude; но команда завёрнута в `/bin/bash -lc`,
 # и без снятия обёртки путь не разбирается. Имена ниже — страховка на code-mode, где вызов
 # приходит под своим именем; незнакомый инструмент пишется в лог и входом не считается.
-SHELL_TOOLS = ("exec", "shell", "local_shell", "unified_exec", "exec_command", "container.exec",
+SHELL_TOOLS = ("PowerShell", "exec", "shell", "local_shell", "unified_exec", "exec_command", "container.exec",
                "mcp__workspace__bash")   # Cowork «Only on this computer»: bash в VM — MCP-инструмент
 SHELL_INPUT_KEYS = ("command", "cmd", "input", "script", "code")   # где лежит текст команды
 # code-mode: команда лежит внутри JS-вызова — `await tools.exec_command({cmd:"sed …"})`
-JS_EXEC_RE = re.compile(r"""exec_command\s*\(\s*\{[^{}]*?(?:cmd|command)\s*:\s*(["'`])(.*?)\1""",
+JS_EXEC_RE = re.compile(r"""exec_command\s*\(\s*\{[^{}]*?(?:cmd|command)\s*:\s*(["'`])((?:\\.|(?!\1).)*?)\1""",
                         re.S)
 BASH_LIST_CMDS = {"cat", "head", "tail", "sed", "less", "more", "ls", "find", "tree", "grep", "rg", "awk", "wc", "stat", "file", "cd"}
 BASH_PATTERN_CMDS = {"grep", "rg"}   # первый не-флаг — паттерн, не путь
@@ -216,7 +216,7 @@ def node_key(hook_input: dict) -> str:
 def node_marker_path(session_id: str, node: str) -> str:
     import hashlib
     sid = SID_RE.sub("_", session_id)[:121]
-    raw = node.strip("/")
+    raw = os.path.normcase(node).replace(os.sep, "/").strip("/")
     digest = hashlib.sha1(raw.encode("utf-8")).hexdigest()[:8]
     # хеш — за пределами усечения: длинный путь резать можно, хеш — нет,
     # иначе разные узлы с общим префиксом длиннее ~50 символов делят один файл-маркер
@@ -261,7 +261,134 @@ def _literal_lead(pattern: str) -> str:
     return "/".join(lead)
 
 
-def bash_paths(command: str, cwd: str, root: str) -> list[str]:
+def powershell_input(ti: dict, tool: str = "") -> bool:
+    """Диалект команды: имя инструмента, явная оболочка или обёртка Codex."""
+    if tool == "PowerShell":
+        return True
+    shell = str(ti.get("shell") or "").replace("\\", "/").rsplit("/", 1)[-1].lower()
+    if shell in {"pwsh", "pwsh.exe", "powershell", "powershell.exe"}:
+        return True
+    text = next((ti[k] for k in SHELL_INPUT_KEYS if isinstance(ti.get(k), str)), "")
+    executable = re.match(r'''^\s*(?:&\s*)?(?:"([^"]+)"|'([^']+)'|([^\s"']+))''', text)
+    if executable:
+        name = next(value for value in executable.groups() if value is not None)
+        if name.replace("\\", "/").rsplit("/", 1)[-1].lower() in {"pwsh", "pwsh.exe", "powershell", "powershell.exe"}:
+            return True
+        if name.replace("\\", "/").rsplit("/", 1)[-1].lower().removesuffix(".exe") in {"bash", "sh", "zsh", "dash"}:
+            return False
+    return os.name == "nt" and tool not in {"Bash", "mcp__workspace__bash"} and not shell
+
+
+class PowerShellToken(str):
+    """Текст аргумента и его синтаксическая роль: строка ';' не оператор ;."""
+
+    def __new__(cls, value: str, *, operator: bool = False, quoted: bool = False, start: int = -1):
+        token = super().__new__(cls, value)
+        token.operator, token.quoted = operator, quoted
+        token.start = start
+        return token
+
+
+def ps_operator(token: str, values) -> bool:
+    return getattr(token, "operator", False) and token in values
+
+
+def powershell_tokens(text: str) -> list[PowerShellToken]:
+    """Буквальные аргументы PowerShell; обратный слеш — часть пути, не escape Bash.
+
+    Подстановки не вычисляются. Одинарные кавычки удваиваются, в двойных escape — backtick.
+    Это сито путей, не исполнение и не полный парсер PowerShell.
+    """
+    out, token, quote, quoted, token_start, i = [], [], "", False, -1, 0
+    def flush():
+        nonlocal quoted, token_start
+        if token or quoted:
+            out.append(PowerShellToken("".join(token), quoted=quoted, start=token_start))
+            token.clear()
+        quoted = False
+        token_start = -1
+    while i < len(text):
+        ch = text[i]
+        if ch == "`" and quote != "'" and text[i + 1:i + 2] in {"\r", "\n"}:
+            i += 2
+            if text[i - 1] == "\r" and text[i:i + 1] == "\n":
+                i += 1
+            continue
+        if quote:
+            if ch == quote:
+                if quote == "'" and text[i:i + 2] == "''":
+                    token.append("'")
+                    i += 2
+                    continue
+                quote = ""
+            elif ch == "`" and quote == '"' and i + 1 < len(text):
+                i += 1
+                token.append(text[i])
+            else:
+                token.append(ch)
+        elif ch in "'\"":
+            if not token:
+                quoted = True
+                token_start = i
+            quote = ch
+        elif ch == "`" and i + 1 < len(text):
+            if not token:
+                token_start = i
+            i += 1
+            token.append(text[i])
+        elif ch == "#" and not token:
+            end = text.find("\n", i)
+            i = len(text) if end < 0 else end
+            continue
+        elif ch.isspace():
+            flush()
+            if ch == "\n":
+                out.append(PowerShellToken(";", operator=True, start=i))
+        elif ch in ";|&<>,()":
+            flush()
+            if i + 1 < len(text) and text[i + 1] == ch and ch in "|&<>":
+                out.append(PowerShellToken(ch * 2, operator=True, start=i))
+                i += 1
+            else:
+                out.append(PowerShellToken(ch, operator=True, start=i))
+        else:
+            if not token:
+                token_start = i
+            token.append(ch)
+        i += 1
+    flush()
+    return out
+
+
+def powershell_literal_arrays(tokens: list[PowerShellToken]) -> list[PowerShellToken]:
+    """Снять только скобки буквальных строковых массивов, без выполнения выражений."""
+    out, i = [], 0
+    while i < len(tokens):
+        if ps_operator(tokens[i], {"("}):
+            end = i + 1
+            values, expect_value = [], True
+            while end < len(tokens) and not ps_operator(tokens[end], {")"}):
+                token = tokens[end]
+                if expect_value and token.quoted and not token.operator:
+                    values.append(token)
+                elif not expect_value and ps_operator(token, {","}):
+                    values.append(token)
+                else:
+                    break
+                expect_value = not expect_value
+                end += 1
+            if end < len(tokens) and ps_operator(tokens[end], {")"}) and values and not expect_value:
+                if out and out[-1] == "@" and not out[-1].quoted:
+                    out.pop()
+                out.extend(values)
+                i = end + 1
+                continue
+        out.append(tokens[i])
+        i += 1
+    return out
+
+
+def bash_paths(command: str, cwd: str, root: str, *, powershell: bool = False) -> list[str]:
     """Пути пространства в команде Bash: токены, которые существуют под корнем (файл или каталог);
     у токена с glob-символами — литеральное начало. Флаги и чужие пути отбрасываются; у grep/rg
     первый не-флаг — паттерн, не путь; голый токен без «/» (`ls clients`) считается путём только
@@ -269,41 +396,53 @@ def bash_paths(command: str, cwd: str, root: str) -> list[str]:
     (`cat $FILE`, `$(pwd)/…`) не раскрываются: команда не выполняется."""
     import shlex
     try:
-        toks = shlex.split(command, posix=True)
+        toks = powershell_literal_arrays(powershell_tokens(command)) if powershell else shlex.split(command, posix=True)
     except ValueError:
         toks = command.split()
     out = []
     cmd = ""
     skip_pattern = False
     glued = False
+    locations = []
     for t in toks:
         if glued:                               # прошлый токен кончался `;` — новая команда
             cmd, glued = "", False
-        if t in ("|", "||", "&&", ";"):
+        separator = ps_operator(t, {"|", "||", "&&", ";", "&", "(", ")"}) if powershell else t in ("|", "||", "&&", ";")
+        if separator:
             cmd = ""
             continue
-        if t.endswith(";") and len(t) > 1:     # `for f in "a.md" "b.md"; do …` — `;` прилип к пути
+        if not powershell and t.endswith(";") and len(t) > 1:
             t, glued = t[:-1], True
         if not cmd and not re.match(r"^[A-Za-z_][A-Za-z0-9_]*=", t):
-            cmd = os.path.basename(t)
+            cmd = os.path.basename(t).lower() if powershell else os.path.basename(t)
+            if powershell and cmd in {"pop-location", "popd"} and locations:
+                cwd = locations.pop()
             skip_pattern = cmd in BASH_PATTERN_CMDS
             continue
-        if not t or t.startswith("-") or t in (">", ">>", "<"):
+        redirect = ps_operator(t, {">", ">>", "<"}) if powershell else t in (">", ">>", "<")
+        if not t or t.startswith("-") or redirect:
             continue
-        if cmd == "cd":   # `cd X && cat a.md`: дальше пути от X (так агент Cowork ходит по VM)
+        if cmd in ({"cd", "set-location", "sl", "chdir", "push-location", "pushd"} if powershell else {"cd"}):
             d = os.path.abspath(os.path.join(cwd, os.path.expanduser(t)))
             if os.path.isdir(d):
+                if powershell and cmd in {"push-location", "pushd"}:
+                    locations.append(cwd)
                 cwd = d
         if skip_pattern:
             skip_pattern = False
             continue
-        if "/" not in t and cmd not in BASH_LIST_CMDS:
+        reads = BASH_LIST_CMDS | {"get-content", "gc", "type", "get-childitem", "gci", "dir", "set-location", "sl", "chdir", "push-location", "pushd"}
+        if "/" not in t and (not powershell or "\\" not in t) and cmd not in (reads if powershell else BASH_LIST_CMDS):
             continue
         t = _literal_lead(t) if GLOB_CHARS & set(t) else t
         if not t:
             continue
         p = os.path.abspath(os.path.join(cwd, os.path.expanduser(t)))
-        if os.path.exists(p) and (p == root or p.startswith(root + os.sep)) and p not in out:
+        try:
+            inside = os.path.normcase(os.path.commonpath([p, root])) == os.path.normcase(root)
+        except ValueError:  # другой диск Windows
+            inside = False
+        if os.path.exists(p) and inside and p not in out:
             out.append(p)
     return out
 
@@ -315,13 +454,26 @@ def unwrap_shell(text: str) -> str:
     только `bash` и `-lc`, и вход в узел не срабатывает вовсе.
     """
     import shlex
+    ps = powershell_tokens(text)
+    if ps and ps[0] == "&":
+        ps = ps[1:]
+    if ps and ps[0].replace("\\", "/").rsplit("/", 1)[-1].lower() in {"powershell", "pwsh", "powershell.exe", "pwsh.exe"}:
+        for i, tok in enumerate(ps[:-1]):
+            if tok.lower() in {"-command", "-c"}:
+                if i + 2 == len(ps):
+                    return str(ps[i + 1])
+                if ps[i + 1].quoted:
+                    return str(ps[i + 1]) + " " + text[ps[i + 2].start:]
+                return text[ps[i + 1].start:]
+        return text
     try:
         parts = shlex.split(text, posix=True)
     except ValueError:
         return text
-    if len(parts) >= 3 and os.path.basename(parts[0]) in ("bash", "sh", "zsh", "dash"):
+    executable = ps[0].replace("\\", "/").rsplit("/", 1)[-1].lower().removesuffix(".exe") if ps else ""
+    if len(parts) >= 3 and executable in ("bash", "sh", "zsh", "dash"):
         for i, tok in enumerate(parts[1:], start=1):
-            if tok.startswith("-") and "c" in tok.lstrip("-") and i + 1 < len(parts):
+            if re.fullmatch(r"-[A-Za-z]*c[A-Za-z]*", tok) and i + 1 < len(parts):
                 return parts[i + 1]
     return text
 
@@ -338,7 +490,21 @@ def shell_text(ti: dict) -> str:
     if not parts:
         parts = [v for v in ti.values() if isinstance(v, str)]
     text = "\n".join(parts)
-    inner = [m.group(2) for m in JS_EXEC_RE.finditer(text)]
+    inner = []
+    for m in JS_EXEC_RE.finditer(text):
+        quote, value = m.group(1), m.group(2)
+        try:
+            if quote == '"':
+                value = json.loads(quote + value + quote)
+            elif quote == "'":
+                import ast
+                value = ast.literal_eval(quote + value + quote)
+            else:
+                escapes = {"\\": "\\", "n": "\n", "r": "\r", "t": "\t", "`": "`"}
+                value = re.sub(r"\\([\\nrt`])", lambda m: escapes[m.group(1)], value)
+        except (ValueError, SyntaxError):
+            pass
+        inner.append(value)
     return vm_to_host("\n".join(unwrap_shell(t) for t in (inner or [text])))
 
 
@@ -380,7 +546,7 @@ def targets_of(hook_input: dict, root: str) -> list[str]:
     if name == "Bash" or name in SHELL_TOOLS:
         # один путь для обоих харнесов: у Claude команда приходит как есть, у Codex —
         # в обёртке `/bin/bash -lc "…"` либо внутри JS code-mode; `shell_text` это снимает
-        return bash_paths(shell_text(ti), cwd, root)
+        return bash_paths(shell_text(ti), cwd, root, powershell=powershell_input(ti, name))
     if name not in ENTER_TOOLS:                     # неизвестный инструмент: разобрать и запомнить
         text = shell_text(ti)
         if not text:
@@ -417,7 +583,10 @@ def target_of(hook_input: dict) -> str | None:
 def node_of(root: str, target: str) -> str | None:
     """Узел верхнего уровня, внутри которого лежит target; None — корень, файл корня,
     служебное, скрытое или вне пространства."""
-    rel = os.path.relpath(target, root)
+    try:
+        rel = os.path.relpath(target, root)
+    except ValueError:  # Windows: обращение на другом диске не относится к пространству
+        return None
     first = rel.split(os.sep)[0]
     if rel.startswith("..") or first in (".", "") or first.startswith(".") \
             or first in SERVICE_DIRS or first in NOT_NODES:
@@ -464,42 +633,50 @@ def gc_markers() -> None:
 
 # ---------------------------------------------------------------------------- сборка контекста
 
-def map_context(gen, root: str, when: str, ask: bool) -> tuple[str, dict]:
-    """Карта (персональная при свежем кэше, иначе общая) + заголовок с меткой."""
+def map_context(gen, root: str, when: str, ask: bool, session_id: str = "") -> tuple[str, dict]:
+    """Карта (персональная после whoami в этой сессии, иначе общая)."""
     from pathlib import Path
     base = Path(root)
-    cache = gen.read_cache(gen.account_email(), base)
+    identity = gen.read_session(session_id, base)
     no_model = model_in_root(root)
-    personal = bool(cache and cache.get("fresh"))
-    units = list(cache.get("units") or []) if personal else []
+    personal = bool(identity)
+    units = list(identity.get("units") or []) if personal else []
     body = gen.emit_text(base, focus=units, no_model=no_model,
                          no_skills=os.environ.get("SVAIB_MAP_SKILLS") != "1")
     if personal:
-        zone = " · ".join(f"`{u}/`" for u in units) or "management units не выведены"
+        ceo = gen.is_ceo_profile(identity.get("profile_path", ""))
+        zone = ("зона " + " · ".join(f"`{u}/`" for u in units)) if units else (
+            "прямой маршрут к целям компании" if ceo else "management units зоны не выведены")
         head = (f"## Карта пространства {when}\n\n"
-                f"{gen.who_line(cache['subject'], cache.get('name', ''))}, профиль "
-                f"`{cache.get('profile_path') or '—'}`, зона {zone} — запомнен на этой машине по прошлому `whoami`.")
-        if not units:   # до блоков ниже: иначе фраза приклеивается к хвосту последнего из них
+                f"{gen.who_line(identity['subject'], identity.get('name', ''))}, профиль "
+                f"`{identity.get('profile_path') or '—'}`, {zone} — установлен через `whoami` в этой сессии.")
+        if not units and not ceo:   # до блоков ниже: иначе фраза приклеивается к хвосту последнего из них
             head += (" Management units зоны не выведены — работай по общей карте: подкарта узла придёт "
                      "при первом обращении к его файлам.")
-        head += (f"{gen.keyboard_line(cache.get('name', ''))}{gen.onboarding_block(cache)}"
-                 f"{gen.preferences_line(cache.get('preferences', ''))}")
+        head += (f"{gen.keyboard_line(identity.get('name', ''))}{gen.onboarding_block(identity)}"
+                 f"{gen.preferences_line(identity.get('preferences', ''))}")
     else:
         head = (f"## Карта пространства {when}\n\n"
                 f"`map_profile: general` — карта общая, пользователь не установлен.")
         if ask:
             head += "\n\n" + ASK_WHOAMI
-    meta = {"profile": cache["subject"] if personal else "general", "units": units, "no_model": no_model}
+    meta = {"profile": identity["subject"] if personal else "general", "units": units, "no_model": no_model}
     if body.startswith("## Карта пространства"):
         body = body.split("\n", 1)[1].lstrip("\n")  # H2 генератора — лишний, заголовок даёт хук
+    goals = gen.goals_context(base, identity.get("profile_path", ""), units,
+                              identity.get("unit_source", "")) if personal else ""
     rules = gen.space_rules(base)
-    return head + "\n\n" + body + ("\n\n" + rules if rules else ""), meta   # правила — после карты, не разрывают её
+    return head + ("\n\n" + goals if goals else "") + "\n\n" + body + ("\n\n" + rules if rules else ""), meta
 
 
 def personalize_context(gen, root: str, hook_input: dict) -> tuple[str, dict]:
     from pathlib import Path
     who = gen.parse_whoami(hook_input.get("tool_response"))
     text, rec = gen.personalize(Path(root), who)
+    try:
+        gen.write_session(hook_input.get("session_id") or "", Path(root), rec)
+    except OSError as exc:
+        log("skip", mode="post-whoami", reason=f"session write failed: {exc}")
     return "## Персонализация карты (после `whoami`)\n\n" + text, {"profile": who["subject"], "units": rec["units"]}
 
 
@@ -575,8 +752,8 @@ def run(mode: str, hook_input: dict) -> None:
         return
     if mode == "post-update-me":
         from pathlib import Path
-        ok = gen.apply_update_me(Path(root), hook_input.get("tool_response"))
-        log("ok" if ok else "skip", mode=mode, root=root, cache_updated=ok)
+        ok = gen.apply_update_me(Path(root), sid, hook_input.get("tool_response"))
+        log("ok" if ok else "skip", mode=mode, root=root, session_updated=ok)
         return
     if mode == "post-whoami":
         context, meta = personalize_context(gen, root, hook_input)
@@ -584,7 +761,7 @@ def run(mode: str, hook_input: dict) -> None:
         context, meta = "\n\n".join(node_context(gen, root, n) for n in nodes), {"node": "+".join(nodes), "event": event, "tool": tool}
     else:
         when = {"compact": "после сжатия контекста"}.get(mode, "на первом запросе сессии")
-        context, meta = map_context(gen, root, when, ask=(mode != "plain"))
+        context, meta = map_context(gen, root, when, ask=(mode != "plain"), session_id=sid)
     if mode == "first-prompt" and not marker_set(sid):
         return  # параллельный запуск уже доставил
     if mode == "node-enter":
@@ -609,6 +786,11 @@ def run(mode: str, hook_input: dict) -> None:
 
 def main():
     mode = sys.argv[1].lower() if len(sys.argv) > 1 else "first-prompt"
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        try:
+            stream.reconfigure(encoding="utf-8")
+        except (AttributeError, ValueError):
+            pass
     try:   # чтение и разбор ввода — внутри той же границы: битый байт в stdin не роняет хук
         raw = sys.stdin.read()
         run(mode, json.loads(raw) if raw.strip() else {})
